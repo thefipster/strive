@@ -1,0 +1,37 @@
+﻿namespace Fipster.TrackMe.Domain
+{
+    public enum Parameters
+    {
+        Duration,
+        StartTime,
+        Heartrate,
+        Speed,
+        Cadence,
+        AltitudeDelta,
+        Latitude,
+        Longitude,
+        Heading,
+        Altitude,
+        Distance,
+        MinAltitude,
+        MaxAltitude,
+        Temperature,
+        Rr,
+        Power,
+        Sport,
+        Steps,
+        Calories,
+        Timestamp,
+        MaxRr,
+        MinRr,
+        SleepDuration,
+        AsleepDuration,
+        SleepEfficiency,
+        SleepStart,
+        SleepEnd,
+        SleepScore,
+        SleepContinuity,
+        SleepPercentage,
+        Bodyweight,
+    }
+}

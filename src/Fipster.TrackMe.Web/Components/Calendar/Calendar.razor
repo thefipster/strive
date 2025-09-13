@@ -1,0 +1,48 @@
+@inherits ComponentBaseWithState
+@inject ApiService Api
+@inject NavigationManager NavigationManager
+
+<div class="calendar" role="grid" aria-label="Five-week calendar with weekly summary column">
+    <div class="calendar-header d-flex flex-row justify-content-between">
+        <div>
+            <h1 class="d-flex gap-5">
+                <MudIconButton OnClick="() => PrevMonth()" Icon="@Icons.Material.Outlined.ArrowBackIos"
+                               Color="Color.Primary"/>
+                <MudButton Class="fip-calendar-date d-flex justify-space-between" OnClick="CalendarDateClicked" Variant="Variant.Text">
+                    <span>@CalendarModel.CurrentMonth.ToString("MMMM")</span>
+                    <span>@CalendarModel.CurrentMonth.ToString("yyyy")</span>
+                </MudButton>
+                <MudIconButton OnClick="() => NextMonth()" Icon="@Icons.Material.Outlined.ArrowForwardIos"
+                               Color="Color.Primary"/>
+            </h1>
+        </div>
+    </div>
+
+    <table aria-readonly="true">
+        <thead>
+        <tr>
+            <th scope="col">Mon</th>
+            <th scope="col">Tue</th>
+            <th scope="col">Wed</th>
+            <th scope="col">Thu</th>
+            <th scope="col">Fri</th>
+            <th scope="col">Sat</th>
+            <th scope="col">Sun</th>
+            <th scope="col" class="summary-col">Summary</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (int week = 0; week < CalendarModel.WeekStarts.Count; week++)
+        {
+            <Week Index="(week + 1)" Start="CalendarModel.WeekStarts[week]" Data="Data"/>
+        }
+        </tbody>
+    </table>
+</div>
+
+<MudDialog @bind-Visible="DialogOpen">
+    <DialogContent>
+        <MudDatePicker Editable="true" TitleDateFormat="MMMM"  PickerVariant="PickerVariant.Static" Date="CalendarModel.CurrentMonth" DateChanged="DatePickerChanged"
+                       OpenTo="OpenTo.Month" FixDay="1"/>
+    </DialogContent>
+</MudDialog>
