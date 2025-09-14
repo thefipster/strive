@@ -1,0 +1,36 @@
+namespace TheFipster.ActivityAggregator.Polar.Domain
+{
+    using System;
+    using System.Collections.Generic;
+
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using System.Globalization;
+
+    public  class PolarTakeoutPpiSamples
+    {
+        [JsonPropertyName("date")]
+        public DateTimeOffset Date { get; set; }
+
+        [JsonPropertyName("devicePpiSamplesList")]
+        public List<DevicePpiSamplesList> DevicePpiSamplesList { get; set; }
+    }
+
+    public class DevicePpiSamplesList
+    {
+        [JsonPropertyName("deviceId")]
+        public string DeviceId { get; set; }
+
+        [JsonPropertyName("ppiSamples")]
+        public List<PpiSample> PpiSamples { get; set; }
+    }
+
+    public class PpiSample
+    {
+        [JsonPropertyName("sampleDateTime")]
+        public DateTimeOffset SampleDateTime { get; set; }
+
+        [JsonPropertyName("pulseLength")]
+        public int PulseLength { get; set; }
+    }
+}
