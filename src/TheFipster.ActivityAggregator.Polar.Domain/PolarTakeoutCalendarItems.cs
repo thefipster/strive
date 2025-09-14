@@ -104,6 +104,6 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public double Value { get; set; }
 
         [JsonPropertyName("date")]
-        public DateTime Date { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

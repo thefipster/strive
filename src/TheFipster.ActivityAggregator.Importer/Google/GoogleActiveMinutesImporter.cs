@@ -2,14 +2,14 @@
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Google
+namespace TheFipster.ActivityAggregator.Importer.Google
 {
     public class GoogleActiveMinutesImporter : IFileClassifier
     {
         public string Type => "google_active_minutes";
         public DataSources Source => DataSources.FitbitTakeoutActiveMinutes;
 
-        private List<string> Header = new() { "timestamp,light,moderate,very" };
+        private readonly List<string> Header = new() { "timestamp,light,moderate,very" };
 
         public ImportClassification? Classify(string filepath)
         {

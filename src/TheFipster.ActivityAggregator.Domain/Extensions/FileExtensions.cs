@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using HashifyNet;
+using HashifyNet.Algorithms.XxHash3;
 
 namespace TheFipster.ActivityAggregator.Domain.Extensions;
 
@@ -13,5 +15,13 @@ public static class FileExtensions
         var hashString = BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
 
         return hashString;
+    }
+
+    public static async Task<string> HashXx3Async(this FileInfo file, CancellationToken token)
+    {
+        var hasher = HashFactory<IXxHash3>.Create();
+        await using var stream = File.OpenRead(file.FullName);
+        var hash = await hasher.ComputeHashAsync(stream, token);
+        return hash.AsHexString();
     }
 }

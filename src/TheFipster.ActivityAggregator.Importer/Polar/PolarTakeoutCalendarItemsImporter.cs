@@ -3,8 +3,8 @@ using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Polar.Domain;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar;
 
@@ -13,6 +13,8 @@ public class PolarTakeoutCalendarItemsImporter : IFileImporter
     public string Type => "polar_takeout_calendar_items";
 
     public DataSources Source => DataSources.PolarTakeoutCalendarItems;
+
+    private List<DateTime> dates = new();
 
     public ImportClassification? Classify(string filepath)
     {
@@ -41,7 +43,12 @@ public class PolarTakeoutCalendarItemsImporter : IFileImporter
 
         var result = new List<FileExtraction>();
 
-        foreach (var item in calendarItems.Weights)
+        foreach (
+            var item in calendarItems
+                .Weights.GroupBy(w => w.Timestamp.Date)
+                .Select(g => g.First())
+                .ToList()
+        )
         {
             var attributes = FileExtraction.EmptyAttributes;
             attributes.Add(
@@ -52,7 +59,7 @@ public class PolarTakeoutCalendarItemsImporter : IFileImporter
             var extraction = new FileExtraction(
                 Source,
                 file.Filepath,
-                item.Date,
+                item.Timestamp.Date,
                 DateRanges.Day,
                 attributes
             );

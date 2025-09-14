@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
@@ -47,7 +48,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var samples = hrm.GetSamples();
 
             if (samples == null || samples.Count == 0)
-                throw new ArgumentException("HR Data is empty.");
+                throw new ExtractionException(file.Filepath, "HR Data is empty.");
 
             var dateValue = meta["Date"];
             var startTimeValue = meta["StartTime"];

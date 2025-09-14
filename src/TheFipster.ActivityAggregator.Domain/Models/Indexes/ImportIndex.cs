@@ -1,8 +1,15 @@
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-public class ImportIndex(string filepath, string hash, IEnumerable<Classification> classifications)
+public class ImportIndex
 {
-    public string Filepath => filepath;
-    public string Hash => hash;
-    public IEnumerable<Classification> Classifications => classifications;
+    public ImportIndex(int version, string filepath, string hash)
+    {
+        Version = version;
+        Filepath = filepath;
+        Hash = hash;
+    }
+
+    public int Version { get; set; }
+    public string Filepath { get; set; }
+    public string Hash { get; set; }
 }

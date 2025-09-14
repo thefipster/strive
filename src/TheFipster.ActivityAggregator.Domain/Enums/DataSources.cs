@@ -43,7 +43,6 @@
         FitbitTakeoutUserSleepStages,
         FitbitTakeoutWeight,
         FitbitTakeoutCaloriesHeartrateZone,
-        PolarTakeoutAllTimeFile,
         PolarTakeoutSleepResult,
         PolarTakeoutSleepScore,
         PolarTakeoutCalendarItems,

@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
+namespace TheFipster.ActivityAggregator.Domain.Models;
 
 public class Classification(DataSources source, DateTime datetime, DateRanges range)
 {

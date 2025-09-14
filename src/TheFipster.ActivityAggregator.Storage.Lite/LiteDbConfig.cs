@@ -1,5 +1,5 @@
-using TheFipster.ActivityAggregator.Domain.Models;
 using LiteDB;
+using TheFipster.ActivityAggregator.Domain.Models;
 
 namespace TheFipster.ActivityAggregator.Storage.Lite;
 

@@ -1,5 +1,8 @@
-﻿using System.Text.Json;
+﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using TheFipster.ActivityAggregator.Domain.Extensions;
 
 namespace TheFipster.ActivityAggregator.Domain.Models
 {
@@ -65,6 +68,9 @@ namespace TheFipster.ActivityAggregator.Domain.Models
         [JsonPropertyName("sourceFile")]
         public string SourceFile { get; set; }
 
+        [JsonPropertyName("hash")]
+        public string Hash { get; set; }
+
         [JsonPropertyName("attributes")]
         public Dictionary<Parameters, string> Attributes { get; set; }
 
@@ -82,6 +88,45 @@ namespace TheFipster.ActivityAggregator.Domain.Models
 
             var json = File.ReadAllText(filepath);
             return FromJson(json);
+        }
+
+        public string GetValueHash()
+        {
+            var metrics = string.Join(
+                ",",
+                Attributes.OrderBy(kvp => kvp.Key).Select(kvp => $"{kvp.Key}:{kvp.Value}")
+            );
+
+            var series = string.Join(
+                ",",
+                Series
+                    .OrderBy(kvp => kvp.Key)
+                    .Select(kvp => $"{kvp.Key}:{string.Join(";", kvp.Value)}")
+            );
+
+            var combined = metrics + "|" + series;
+            using var sha = SHA256.Create();
+            var hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(combined));
+
+            Hash = Convert.ToHexString(hashBytes);
+            return Hash;
+        }
+
+        public string Write(string rootDir)
+        {
+            Hash = GetValueHash();
+            var filename = $"{Timestamp.ToRangeString(Range)}-{Source}-{Hash}.json";
+            var path = Path.Combine(rootDir, Range.GetPath(Timestamp));
+            var newFile = Path.Combine(path, filename);
+            var json = JsonSerializer.Serialize(this);
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            if (!File.Exists(newFile))
+                File.WriteAllText(newFile, json);
+
+            return newFile;
         }
 
         public static FileExtraction FromJson(string json)

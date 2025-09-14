@@ -2,7 +2,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TheFipster.ActivityAggregator.Pipeline.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Config;
-using TheFipster.ActivityAggregator.Pipeline.Services;
+using TheFipster.ActivityAggregator.Pipeline.Models;
+using TheFipster.ActivityAggregator.Pipeline.Stages;
 
 namespace TheFipster.ActivityAggregator.Pipeline;
 
@@ -19,8 +20,13 @@ public static class DependencyExtension
         services.Configure<ScannerConfig>(
             configuration.GetSection(ScannerConfig.ConfigSectionName)
         );
+        services.Configure<ExtractorConfig>(
+            configuration.GetSection(ExtractorConfig.ConfigSectionName)
+        );
 
-        services.AddScoped<IScannerService, ScannerService>();
+        services.AddSingleton<PipelineState>();
+        services.AddScoped<IScannerStage, ScannerStage>();
+        services.AddScoped<ITransfomerStage, TransformerStage>();
         services.AddScoped<IPipeline, Pipeline>();
 
         return services;

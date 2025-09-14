@@ -3,25 +3,41 @@ using TheFipster.ActivityAggregator.Pipeline.Models;
 
 namespace TheFipster.ActivityAggregator.Pipeline;
 
-public class Pipeline(IScannerService scannerService) : IPipeline
+public class Pipeline(
+    IScannerStage scanner,
+    IClassifierStage classifier,
+    ITransfomerStage transformer
+) : IPipeline
 {
     public event EventHandler<ProgressReportEventArgs>? ReportProgress;
     public event EventHandler<ErrorReportEventArgs>? ReportError;
 
     public async Task ExecuteAsync(CancellationToken token)
     {
-        scannerService.ReportProgress += ScannerServiceOnReportProgress;
-        scannerService.ReportError += ScannerServiceOnReportError;
+        scanner.ReportProgress += EmitProgress;
+        scanner.ReportError += EmitError;
+        scanner.ReportResult += (_, args) => classifier.Enqueue(args.Result);
 
-        await scannerService.ExecuteAsync(token);
+        classifier.ReportProgress += EmitProgress;
+        classifier.ReportError += EmitError;
+        classifier.ReportResult += (_, args) => transformer.Enqueue(args.Result);
+
+        transformer.ReportProgress += EmitProgress;
+        transformer.ReportError += EmitError;
+
+        await Task.WhenAll(
+            scanner.ExecuteAsync(token),
+            classifier.ExecuteAsync(token),
+            transformer.ExecuteAsync(token)
+        );
     }
 
-    private void ScannerServiceOnReportError(object? sender, ErrorReportEventArgs e)
+    private void EmitError(object? sender, ErrorReportEventArgs e)
     {
         ReportError?.Invoke(this, e);
     }
 
-    private void ScannerServiceOnReportProgress(object? sender, ProgressReportEventArgs e)
+    private void EmitProgress(object? sender, ProgressReportEventArgs e)
     {
         ReportProgress?.Invoke(this, e);
     }

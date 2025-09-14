@@ -1,16 +1,23 @@
-﻿using TheFipster.ActivityAggregator.Importer;
-using TheFipster.ActivityAggregator.Pipeline;
-using TheFipster.ActivityAggregator.Storage.Lite;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using TheFipster.ActivityAggregator.Cli;
+using TheFipster.ActivityAggregator.Importer;
+using TheFipster.ActivityAggregator.Pipeline;
+using TheFipster.ActivityAggregator.Storage.Lite;
 
 Console.WriteLine("Executing Pipeline");
 Console.WriteLine("==================");
 Console.WriteLine();
 
 var host = Host.CreateDefaultBuilder(args)
+    .UseSerilog(
+        (context, services, configuration) =>
+        {
+            configuration.ReadFrom.Configuration(context.Configuration).Enrich.FromLogContext();
+        }
+    )
     .ConfigureAppConfiguration(
         (context, config) =>
         {
@@ -23,6 +30,7 @@ var host = Host.CreateDefaultBuilder(args)
                 );
 
             config.AddEnvironmentVariables();
+
             config.AddCommandLine(args);
         }
     )
@@ -40,5 +48,5 @@ var host = Host.CreateDefaultBuilder(args)
 
 var runner = host.Services.GetRequiredService<Runner>();
 var token = host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping;
+
 await runner.ExecuteAsync(token);
-await host.RunAsync();
