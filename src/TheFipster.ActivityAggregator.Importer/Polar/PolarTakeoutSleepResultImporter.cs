@@ -2,43 +2,46 @@ using System.Globalization;
 using System.Text.Json;
 using System.Xml;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Polar.Domain;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar;
 
 public class PolarTakeoutSleepResultImporter : IFileImporter
 {
-    public string Type => "polar_takeout_sleep_result";
-
     public DataSources Source => DataSources.PolarTakeoutSleepResult;
 
-    public ImportClassification? Classify(string filepath)
+    private readonly HashSet<string> required =
+    [
+        "night",
+        "evaluation",
+        "sleepType",
+        "sleepSpan",
+        "asleepDuration",
+    ];
+
+    public ImportClassification Classify(FileProbe probe)
     {
-        var peeker = new FilePeeker(filepath);
+        var values = probe.GetJsonPropertiesWithValues();
 
-        var result = peeker.ReadChars(256);
+        if (!required.IsSubsetOf(values.Keys))
+            throw new ClassificationException(
+                probe.Filepath,
+                Source,
+                "Couldn't find required properties."
+            );
 
-        if (!result.Contains("\"evaluation\""))
-            return null;
-
-        if (!result.Contains("\"sleepSpan\""))
-            return null;
-
-        if (!result.Contains("\"asleepDuration\""))
-            return null;
-
-        var date = peeker.ReadTokens("night");
+        var date = values["night"];
         if (string.IsNullOrWhiteSpace(date))
-            return null;
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't find date value.");
 
         return new ImportClassification
         {
-            Filepath = filepath,
+            Filepath = probe.Filepath,
             Source = Source,
-            Filetype = Type,
             Datetime = DateTime.Parse(date),
             Datetype = DateRanges.AllTime,
         };

@@ -4,5 +4,6 @@ public class ScannerConfig
 {
     public const string ConfigSectionName = "Stages:Scanner";
 
-    public List<string> Include { get; private set; } = new();
+    public List<string> ExcludedFileExtensions { get; set; } = [];
+    public int MaxDegreeOfParallelism { get; set; } = 2;
 }

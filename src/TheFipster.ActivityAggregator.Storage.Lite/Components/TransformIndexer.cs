@@ -1,6 +1,4 @@
 using LiteDB;
-using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Lite.Context;
@@ -13,8 +11,10 @@ public class TransformIndexer(IndexerContext context) : ITransformIndexer
 
     public void Set(TransformIndex index) => collection.Upsert(index);
 
-    public TransformIndex Get(string id) => collection.FindById(new BsonValue(id));
+    public TransformIndex? GetById(string id) => collection.FindById(new BsonValue(id));
 
-    public IEnumerable<TransformIndex> Filter(DateTime filter) =>
-        collection.Find(x => x.Date == filter.ToDateString());
+    public IEnumerable<TransformIndex> GetFiltered(string filter) =>
+        collection.Find(x => x.Filter == filter);
+
+    public IEnumerable<TransformIndex> GetAll() => collection.FindAll();
 }

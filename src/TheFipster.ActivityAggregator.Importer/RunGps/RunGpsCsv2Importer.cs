@@ -1,4 +1,5 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
@@ -8,33 +9,34 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
 {
     public class RunGpsCsv2Importer : IFileImporter
     {
-        public const string Type = "rungps_csv2";
         public DataSources Source => DataSources.RunGpsCsvV2;
 
-        private List<string> Header =
+        private readonly List<string> header =
         [
             "type;latitude;longitude;speed;heading;altitude;slope;ascentRate;distance;timestamp;heartRate;gpsDilution;temperature;cadence;",
         ];
 
-        public ImportClassification? Classify(string filepath)
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
-            var lines = peeker.ReadLines(2);
+            var lines = probe.GetLines().Take(2).ToArray();
 
-            if (lines == null || lines.Count() != 2)
-                return null;
+            if (lines.Length != 2)
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't get two lines."
+                );
 
-            if (Header.All(x => x != lines.First()))
-                return null;
+            if (header.All(x => x != lines.First()))
+                throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
             var data = lines.Last().Split(";", StringSplitOptions.RemoveEmptyEntries);
             var date = DateTime.Parse(data[9]);
 
             return new ImportClassification
             {
-                Filepath = filepath,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Filetype = Type,
                 Datetime = date,
                 Datetype = DateRanges.Day,
             };
@@ -43,7 +45,7 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
         public List<FileExtraction> Extract(ArchiveIndex file)
         {
             var csv = new CsvFile(file.Filepath, ";");
-            var lines = csv.ReadLines();
+            var lines = csv.ReadLines().ToArray();
             var start = lines.First(x => x[0] == "TrainingStart");
             var end = lines.Last(x => x[0] == "TrainingStop");
             var positions = lines.Where(x => x[0] == "Position");

@@ -1,4 +1,6 @@
-﻿namespace TheFipster.ActivityAggregator.Importer.Modules.Abstractions
+﻿using TheFipster.ActivityAggregator.Importer.Abstractions;
+
+namespace TheFipster.ActivityAggregator.Importer.Modules.Abstractions
 {
     public interface ISourceLoader
     {

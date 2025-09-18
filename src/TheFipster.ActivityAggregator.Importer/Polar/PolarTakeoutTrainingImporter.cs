@@ -1,36 +1,48 @@
 ﻿using System.Globalization;
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Polar.Domain;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarTakeoutTrainingImporter : IFileImporter
     {
-        public const string Type = "polar_takeout_training";
         public DataSources Source => DataSources.PolarTakeoutTraining;
+        private readonly HashSet<string> required =
+        [
+            "exportVersion",
+            "startTime",
+            "stopTime",
+            "duration",
+        ];
 
-        public ImportClassification? Classify(string filepath)
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
+            var values = probe.GetJsonPropertiesWithValues();
 
-            var result = peeker.ReadChars(1024);
-            if (!result.Contains("\"stopTime\""))
-                return null;
+            if (!required.IsSubsetOf(values.Keys))
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find required properties."
+                );
 
-            var date = peeker.ReadTokens("startTime");
-
+            var date = values["startTime"];
             if (string.IsNullOrWhiteSpace(date))
-                return null;
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find date value."
+                );
 
             return new ImportClassification
             {
-                Filepath = filepath,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Filetype = Type,
                 Datetime = DateTime.Parse(date),
                 Datetype = DateRanges.Time,
             };
@@ -72,43 +84,43 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
             attributes.Add(Parameters.Sport, exercise.Sport);
 
-            var altitudeSeries = createSimpleSeries(exercise.Samples.Altitude, Parameters.Altitude);
-            appendSeries(result, start, attributes, altitudeSeries, file);
+            var altitudeSeries = CreateSimpleSeries(exercise.Samples.Altitude, Parameters.Altitude);
+            AppendSeries(result, start, attributes, altitudeSeries, file);
 
-            var distanceSeries = createSimpleSeries(exercise.Samples.Distance, Parameters.Distance);
-            appendSeries(result, start, attributes, distanceSeries, file);
+            var distanceSeries = CreateSimpleSeries(exercise.Samples.Distance, Parameters.Distance);
+            AppendSeries(result, start, attributes, distanceSeries, file);
 
-            var heartrateSeries = createSimpleSeries(
+            var heartrateSeries = CreateSimpleSeries(
                 exercise.Samples.HeartRate,
                 Parameters.Heartrate
             );
-            appendSeries(result, start, attributes, heartrateSeries, file);
+            AppendSeries(result, start, attributes, heartrateSeries, file);
 
-            var temperatureSeries = createSimpleSeries(
+            var temperatureSeries = CreateSimpleSeries(
                 exercise.Samples.Temperature,
                 Parameters.Temperature
             );
-            appendSeries(result, start, attributes, temperatureSeries, file);
+            AppendSeries(result, start, attributes, temperatureSeries, file);
 
-            var cadenceSeries = createSimpleSeries(exercise.Samples.Cadence, Parameters.Cadence);
-            appendSeries(result, start, attributes, cadenceSeries, file);
+            var cadenceSeries = CreateSimpleSeries(exercise.Samples.Cadence, Parameters.Cadence);
+            AppendSeries(result, start, attributes, cadenceSeries, file);
 
-            var speedSeries = createSimpleSeries(exercise.Samples.Speed, Parameters.Speed);
-            appendSeries(result, start, attributes, speedSeries, file);
+            var speedSeries = CreateSimpleSeries(exercise.Samples.Speed, Parameters.Speed);
+            AppendSeries(result, start, attributes, speedSeries, file);
 
-            var powerSeries = createPowerSeries(exercise.Samples.LeftPedalCrankBasedPower);
-            appendSeries(result, start, attributes, powerSeries, file);
+            var powerSeries = CreatePowerSeries(exercise.Samples.LeftPedalCrankBasedPower);
+            AppendSeries(result, start, attributes, powerSeries, file);
 
-            var routeSeries = createRoute(exercise.Samples.RecordedRoute);
-            appendSeries(result, start, attributes, routeSeries, file);
+            var routeSeries = CreateRoute(exercise.Samples.RecordedRoute);
+            AppendSeries(result, start, attributes, routeSeries, file);
 
-            var rrSeries = createRrSeries(exercise.Samples.Rr, start.DateTime);
-            appendSeries(result, start, attributes, rrSeries, file);
+            var rrSeries = CreateRrSeries(exercise.Samples.Rr);
+            AppendSeries(result, start, attributes, rrSeries, file);
 
             return result;
         }
 
-        private void appendSeries(
+        private void AppendSeries(
             List<FileExtraction> result,
             DateTimeOffset start,
             Dictionary<Parameters, string> attributes,
@@ -129,10 +141,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 );
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? createRrSeries(
-            List<RrSample> samples,
-            DateTime date
-        )
+        private Dictionary<Parameters, IEnumerable<string>>? CreateRrSeries(List<RrSample>? samples)
         {
             if (samples == null || samples.Count == 0)
                 return null;
@@ -146,8 +155,8 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return series;
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? createPowerSeries(
-            List<IntSample> samples
+        private Dictionary<Parameters, IEnumerable<string>>? CreatePowerSeries(
+            List<IntSample>? samples
         )
         {
             if (samples == null || samples.Count == 0)
@@ -166,7 +175,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return series;
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? createRoute(List<GpsSample> samples)
+        private Dictionary<Parameters, IEnumerable<string>>? CreateRoute(List<GpsSample>? samples)
         {
             if (samples == null || samples.Count == 0)
                 return null;
@@ -195,8 +204,8 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return series;
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? createSimpleSeries(
-            List<DoubleSample> samples,
+        private Dictionary<Parameters, IEnumerable<string>>? CreateSimpleSeries(
+            List<DoubleSample>? samples,
             Parameters type
         )
         {
@@ -210,7 +219,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var start = samples.First().DateTime;
             var basicSeries = samples
                 .Where(x => x.Value.HasValue)
-                .Select(x => (x.Value ?? double.NaN).ToString());
+                .Select(x => (x.Value ?? double.NaN).ToString(CultureInfo.InvariantCulture));
             var durationSeries = samples.Select(x =>
                 ((int)(x.DateTime - start).TotalSeconds).ToString()
             );

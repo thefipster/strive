@@ -1,9 +1,14 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Abstractions;
+using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
 using TheFipster.ActivityAggregator.Pipeline.Models.Events;
 using TheFipster.ActivityAggregator.Storage.Abstractions;
@@ -12,44 +17,46 @@ namespace TheFipster.ActivityAggregator.Pipeline.Stages;
 
 public class ClassifierStage(
     PipelineState state,
+    IOptions<ClassifierConfig> config,
     IImporterRegistry registry,
-    IScanIndexer indexer,
+    IClassificationIndexer indexer,
     ILogger<ClassifierStage> logger
 ) : IClassifierStage
 {
-    public const int Version = 1;
-    public const string Name = "classifier";
+    public const string Id = "classifier";
+    public int Version => 1;
+    public string Name => Id;
+    public int Order => 20;
+
+    public ProgressCounters Counters { get; } = new();
 
     private readonly IEnumerable<IFileClassifier> classifiers = registry.LoadClassifiers();
 
-    private readonly ConcurrentQueue<ImportIndex> queue = new();
-    private CancellationToken token;
-    private readonly ProgressCounters counters = new();
+    private readonly ConcurrentQueue<ScanIndex> queue = new();
 
-    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    public async Task ExecuteAsync(CancellationToken ct)
     {
-        token = cancellationToken;
-        var tasks = new List<Task> { CreateReportTask(), CreateClassifyTask() };
+        var tasks = new List<Task>();
+        for (int i = 0; i < config.Value.MaxDegreeOfParallelism; i++)
+            tasks.Add(CreateClassifyTask(ct));
+
         await Task.WhenAll(tasks);
+        state.FinishedStages.Add(Name);
     }
 
-    public event EventHandler<ProgressReportEventArgs>? ReportProgress;
-    public event EventHandler<ErrorReportEventArgs>? ReportError;
     public event EventHandler<ResultReportEventArgs<ClassificationIndex>>? ReportResult;
 
-    public void Enqueue(ImportIndex import)
+    public void Enqueue(ScanIndex scan)
     {
-        queue.Enqueue(import);
-        counters.In.Increment();
+        queue.Enqueue(scan);
+        Counters.In.Increment();
     }
 
-    #region Classification
-
-    private Task CreateClassifyTask() =>
+    private Task CreateClassifyTask(CancellationToken ct) =>
         Task.Run(
             async () =>
             {
-                while (!token.IsCancellationRequested && JobsAvailable)
+                while (!ct.IsCancellationRequested && JobsAvailable)
                 {
                     if (queue.TryDequeue(out var import))
                     {
@@ -57,63 +64,84 @@ public class ClassifierStage(
                     }
                     else
                     {
-                        await Task.Delay(10, token);
+                        await Task.Delay(10, ct);
                     }
                 }
-
-                state.FinishedStages.Add(Name);
             },
-            token
+            ct
         );
 
-    private bool JobsAvailable =>
-        !state.FinishedStages.Contains(ScannerStage.Name) || !queue.IsEmpty;
+    private bool JobsAvailable => !state.FinishedStages.Contains(ScannerStage.Id) || !queue.IsEmpty;
 
-    private void Process(ImportIndex import)
+    private void Process(ScanIndex scan)
     {
-        var classifications = new ConcurrentBag<ImportClassification>();
-        Parallel.ForEach(
-            classifiers,
-            classifier =>
+        var index = indexer.GetById(scan.Filepath);
+        var file = new FileInfo(scan.Filepath);
+        if (index == null || index.IndexedAt < file.LastWriteTimeUtc || index.Version < Version)
+        {
+            var classifications = new ConcurrentBag<ImportClassification>();
+            foreach (var classifier in classifiers)
+                TryClassify(scan, classifier, classifications);
+
+            index = new ClassificationIndex(
+                Version,
+                scan.Filepath,
+                classifications.Select(result => result.ToClassification())
+            );
+
+            indexer.Set(index);
+            ReportClassificationResult(index);
+        }
+
+        Counters.Done.Increment();
+    }
+
+    private void TryClassify(
+        ScanIndex scan,
+        IFileClassifier classifier,
+        ConcurrentBag<ImportClassification> classifications
+    )
+    {
+        try
+        {
+            var probe = new FileProbe(scan.Filepath);
+            var result = classifier.Classify(probe);
+
+            if (result.Datetype != DateRanges.AllTime && result.Datetime == DateTime.MinValue)
             {
-                try
-                {
-                    var result = classifier.Classify(import.Filepath);
-                    if (result != null)
-                        classifications.Add(result);
-                }
-                catch (Exception e)
-                {
-                    logger.LogError(
-                        e,
-                        "Classification failed for file {File} using {Classifier}.",
-                        import.Filepath,
-                        classifier.Source
-                    );
-                }
+                var directory = new FileInfo(probe.Filepath).Directory;
+                var date = DateHelper.GetDateFromMyCollectionDirectory(directory);
+                result.Datetime = date;
             }
-        );
 
-        var index = new ClassificationIndex(
-            Version,
-            import.Filepath,
-            classifications.Select(result => result.ToClassification())
-        );
-
-        ReportClassificationResult(index);
+            classifications.Add(result);
+        }
+        catch (ClassificationException e)
+        {
+            logger.LogTrace(e, "Classification miss.");
+        }
+        catch (Exception e)
+        {
+            logger.LogError(
+                e,
+                "Classification failed for file {File} using {Classifier}.",
+                scan.Filepath,
+                classifier.Source
+            );
+        }
     }
 
     private void ReportClassificationResult(ClassificationIndex index)
     {
         if (!index.Classifications.Any())
         {
-            counters.Skip.Increment();
+            Counters.Skip.Increment();
             logger.LogError("No classification found for file {File}.", index.Filepath);
         }
 
         if (index.Classifications.Count() > 1)
         {
-            counters.Skip.Increment();
+            Counters.Skip.Increment();
             logger.LogError(
                 "Multiple classifications ({Classifications}) found for file {File}.",
                 string.Join(", ", index.Classifications.Select(x => x.Source)),
@@ -123,45 +151,8 @@ public class ClassifierStage(
 
         if (index.Classifications.Count() == 1)
         {
-            counters.Done.Increment();
-            counters.Out.Increment();
+            Counters.Out.Increment();
             ReportResult?.Invoke(this, new(index));
         }
     }
-
-    #endregion
-
-    #region Progress
-
-    private Task CreateReportTask()
-    {
-        var reportTask = Task.Run(
-            async () =>
-            {
-                while (!token.IsCancellationRequested && !state.FinishedStages.Contains(Name))
-                    await EmitProgress(1000);
-            },
-            token
-        );
-
-        return reportTask;
-    }
-
-    private async Task EmitProgress(int delayInMs)
-    {
-        await Task.Delay(TimeSpan.FromMilliseconds(delayInMs), token);
-        ReportProgress?.Invoke(
-            this,
-            new ProgressReportEventArgs(
-                Name,
-                0,
-                counters.In.Value,
-                counters.Done.Value,
-                counters.Skip.Value,
-                counters.Out.Value
-            )
-        );
-    }
-
-    #endregion
 }

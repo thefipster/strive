@@ -1,21 +1,24 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarProTrainerPddImporter : IFileClassifier
     {
-        public string Type => "polar_protrainer_pdd";
         public DataSources Source => DataSources.PolarProTrainerPdd;
 
-        public ImportClassification? Classify(string filepath)
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
-
-            var result = peeker.ReadChars(128);
+            var result = probe.GetText();
             if (result.Length < 9 || result.Substring(0, 9) != "[DayInfo]")
-                return null;
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find day info section."
+                );
 
             var lines = result.Split('\n');
             var line = lines[2];
@@ -31,9 +34,8 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
             return new ImportClassification
             {
-                Filepath = filepath,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Filetype = Type,
                 Datetime = datetime,
                 Datetype = DateRanges.Day,
             };

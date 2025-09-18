@@ -10,16 +10,17 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarProTrainerHrmImporter : IFileImporter
     {
-        public string Type => "polar_protrainer_hrm";
         public DataSources Source => DataSources.PolarProTrainerHrm;
 
-        public ImportClassification? Classify(string filepath)
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
-
-            var result = peeker.ReadChars(192);
+            var result = probe.GetText();
             if (result.Length < 8 || result.Substring(0, 8) != "[Params]")
-                return null;
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find params section."
+                );
 
             var lines = result.Split('\n');
 
@@ -29,13 +30,12 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var timeLine = lines.First(x => x.Substring(0, 9) == "StartTime");
             var timeParts = timeLine.Split("=");
 
-            var datetime = getDate(dateParts[1], timeParts[1]);
+            var datetime = GetDate(dateParts[1], timeParts[1]);
 
             return new ImportClassification
             {
-                Filepath = filepath,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Filetype = Type,
                 Datetime = datetime,
                 Datetype = DateRanges.Time,
             };
@@ -52,10 +52,10 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
             var dateValue = meta["Date"];
             var startTimeValue = meta["StartTime"];
-            var date = getDate(dateValue, startTimeValue);
+            var date = GetDate(dateValue, startTimeValue);
 
             var durationValue = meta["Length"];
-            int duration = getStartTime(durationValue);
+            int duration = GetStartTime(durationValue);
 
             var interval = int.Parse(meta["Interval"]);
             var smode = meta["SMode"];
@@ -63,7 +63,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var slot = 0;
 
             var heartrateSeries = samples[slot].Select(x => x.ToString()).ToList();
-            var timeSeries = generateTimeSeries(interval, heartrateSeries);
+            var timeSeries = GenerateTimeSeries(interval, heartrateSeries);
 
             var attributes = new Dictionary<Parameters, string>
             {
@@ -112,7 +112,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return [result];
         }
 
-        private List<string> generateTimeSeries(int interval, List<string> speedSeries)
+        private List<string> GenerateTimeSeries(int interval, List<string> speedSeries)
         {
             var timeSeries = new List<string>();
             for (int i = 0; i < speedSeries.Count; i++)
@@ -120,7 +120,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return timeSeries;
         }
 
-        private static int getStartTime(string durationValue)
+        private static int GetStartTime(string durationValue)
         {
             var lengthSplit = durationValue.Split(".");
             var lengthParts = lengthSplit[0].Split(":");
@@ -133,7 +133,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return duration;
         }
 
-        private static DateTime getDate(string dateValue, string startTimeValue)
+        private static DateTime GetDate(string dateValue, string startTimeValue)
         {
             var year = int.Parse(dateValue.Substring(0, 4));
             var month = int.Parse(dateValue.Substring(4, 2));

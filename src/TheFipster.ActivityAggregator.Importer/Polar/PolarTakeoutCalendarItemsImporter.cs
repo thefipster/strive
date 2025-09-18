@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -10,26 +11,30 @@ namespace TheFipster.ActivityAggregator.Importer.Polar;
 
 public class PolarTakeoutCalendarItemsImporter : IFileImporter
 {
-    public string Type => "polar_takeout_calendar_items";
-
     public DataSources Source => DataSources.PolarTakeoutCalendarItems;
 
-    private List<DateTime> dates = new();
+    private readonly HashSet<string> required =
+    [
+        "exportVersion",
+        "perceivedRecovery",
+        "physicalInformations",
+    ];
 
-    public ImportClassification? Classify(string filepath)
+    public ImportClassification Classify(FileProbe probe)
     {
-        var peeker = new FilePeeker(filepath);
+        var props = probe.GetJsonPropertyNames();
 
-        var result = peeker.ReadChars(256);
-
-        if (!result.Contains("\"perceivedRecovery\""))
-            return null;
+        if (!required.IsSubsetOf(props))
+            throw new ClassificationException(
+                probe.Filepath,
+                Source,
+                "Couldn't find required properties."
+            );
 
         return new ImportClassification
         {
-            Filepath = filepath,
+            Filepath = probe.Filepath,
             Source = Source,
-            Filetype = Type,
             Datetype = DateRanges.AllTime,
         };
     }

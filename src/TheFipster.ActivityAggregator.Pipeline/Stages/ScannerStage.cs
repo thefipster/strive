@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
@@ -5,105 +7,114 @@ using TheFipster.ActivityAggregator.Pipeline.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
 using TheFipster.ActivityAggregator.Pipeline.Models.Events;
+using TheFipster.ActivityAggregator.Storage.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Pipeline.Stages;
 
-public class ScannerStage(IOptions<ScannerConfig> scannerConfig, PipelineState state)
-    : IScannerStage
+public class ScannerStage(
+    PipelineState state,
+    IOptions<ScannerConfig> config,
+    IScanIndexer indexer,
+    ILogger<ScannerStage> logger
+) : IScannerStage
 {
-    public const int Version = 1;
-    public const string Name = "scanner";
+    public const string Id = "scanner";
+    public int Version => 1;
+    public string Name => Id;
+    public int Order => 10;
 
-    private readonly ScannerConfig config = scannerConfig.Value;
-    private CancellationToken token;
-    private readonly ProgressCounters counters = new();
+    public ProgressCounters Counters { get; } = new();
 
-    public event EventHandler<ProgressReportEventArgs>? ReportProgress;
-    public event EventHandler<ErrorReportEventArgs>? ReportError;
-    public event EventHandler<ResultReportEventArgs<ImportIndex>>? ReportResult;
+    private readonly ConcurrentQueue<string> queue = new();
 
-    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    private HashSet<string> excludedFileExtensions =
+        config.Value.ExcludedFileExtensions.ToHashSet();
+
+    public event EventHandler<ResultReportEventArgs<ScanIndex>>? ReportResult;
+
+    public void Enqueue(string import)
     {
-        token = cancellationToken;
-        var tasks = new List<Task> { CreateScanTask(), CreateReportTask() };
-        await Task.WhenAll(tasks);
+        queue.Enqueue(import);
+        Counters.In.Increment();
     }
 
-    #region Scanner
-
-    private Task CreateScanTask() =>
-        Task.Run(
-            () =>
-            {
-                Parallel.ForEach(
-                    config.Include,
-                    new ParallelOptions { MaxDegreeOfParallelism = 4, CancellationToken = token },
-                    ScanImportDirectory
-                );
-                state.FinishedStages.Add(Name);
-            },
-            token
-        );
-
-    private void ScanImportDirectory(string directoryPath)
+    public async Task ExecuteAsync(CancellationToken ct)
     {
-        Parallel.ForEachAsync(
-            Directory
-                .EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories)
-                .Select(filepath => new FileInfo(filepath)),
-            new ParallelOptions { MaxDegreeOfParallelism = 4, CancellationToken = token },
-            async (file, _) =>
+        await RunStageAsync(ct);
+        state.FinishedStages.Add(Name);
+    }
+
+    private async Task RunStageAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested && !queue.IsEmpty)
+        {
+            if (queue.TryDequeue(out var input))
             {
-                counters.In.Increment();
-                await ProcessFileAsync(file);
-                counters.Done.Increment();
+                await ProcessDirectoryAsync(input, ct);
             }
-        );
-    }
-
-    private async Task ProcessFileAsync(FileInfo file)
-    {
-        var filepath = file.FullName;
-        var hash = await file.HashXx3Async(token);
-        var import = new ImportIndex(Version, filepath, hash);
-
-        ReportResult?.Invoke(this, new(import));
-        counters.Out.Increment();
-    }
-
-    #endregion
-
-    #region Progress
-
-    private Task CreateReportTask()
-    {
-        var reportTask = Task.Run(
-            async () =>
+            else
             {
-                while (!token.IsCancellationRequested && !state.FinishedStages.Contains(Name))
-                    await EmitProgress(1000);
-            },
-            token
-        );
-
-        return reportTask;
+                await Task.Delay(10, ct);
+            }
+        }
     }
 
-    private async Task EmitProgress(int delayInMs)
+    private async Task ProcessDirectoryAsync(string directoryPath, CancellationToken ct)
     {
-        await Task.Delay(TimeSpan.FromMilliseconds(delayInMs), token);
-        ReportProgress?.Invoke(
-            this,
-            new ProgressReportEventArgs(
-                Name,
-                0,
-                counters.In.Value,
-                counters.Done.Value,
-                counters.Skip.Value,
-                counters.Out.Value
-            )
+        if (!EnsureDirectory(directoryPath))
+            return;
+
+        await Parallel.ForEachAsync(
+            EnumerateFiles(directoryPath),
+            new ParallelOptions
+            {
+                MaxDegreeOfParallelism = config.Value.MaxDegreeOfParallelism,
+                CancellationToken = ct,
+            },
+            (file, ctp) => ProcessFile(file, directoryPath, ctp)
         );
+
+        Counters.Done.Increment();
     }
 
-    #endregion
+    private async ValueTask ProcessFile(FileInfo file, string inputDir, CancellationToken ct)
+    {
+        if (excludedFileExtensions.Contains(file.Extension))
+        {
+            Counters.Skip.Increment();
+            return;
+        }
+
+        var hash = await file.HashXx3Async(ct);
+        var index = indexer.GetById(file.FullName);
+
+        if (index == null || index.IndexedAt < file.LastWriteTimeUtc || index.Version < Version)
+        {
+            index = new ScanIndex(Version, inputDir, file.FullName, hash);
+            indexer.Set(index);
+            ReportResult?.Invoke(this, new(index));
+            Counters.Out.Increment();
+        }
+        else
+        {
+            Counters.Skip.Increment();
+        }
+    }
+
+    private IEnumerable<FileInfo> EnumerateFiles(string directoryPath)
+    {
+        return Directory
+            .EnumerateFiles(directoryPath, "*", SearchOption.AllDirectories)
+            .Select(filepath => new FileInfo(filepath));
+    }
+
+    private bool EnsureDirectory(string directoryPath)
+    {
+        if (Directory.Exists(directoryPath))
+            return true;
+
+        logger.LogError($"Directory {directoryPath} does not exist");
+        Counters.Skip.Increment();
+        return false;
+    }
 }

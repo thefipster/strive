@@ -12,12 +12,10 @@ namespace TheFipster.ActivityAggregator.Importer.Modules.Abstractions
         }
 
         public string? Filepath { get; set; }
-        public string? Filetype { get; set; }
         public DataSources Source { get; set; }
         public DateTime Datetime { get; set; }
         public DateRanges Datetype { get; set; }
 
-        public bool Skip { get; set; }
         public string[] DatePieces =>
             Datetype switch
             {

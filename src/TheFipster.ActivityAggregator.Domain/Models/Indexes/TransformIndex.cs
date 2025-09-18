@@ -20,6 +20,8 @@ public class TransformIndex
         Timestamp = timestamp;
         Range = range;
 
+        IndexedAt = DateTime.UtcNow;
+
         // Computed values
         Date = Timestamp.ToDateString();
         Time = Timestamp.ToTimeString();
@@ -27,6 +29,7 @@ public class TransformIndex
     }
 
     public int Version { get; set; }
+    public DateTime IndexedAt { get; set; }
     public string Filepath { get; set; }
     public string SourceFilepath { get; set; }
     public DataSources Source { get; set; }

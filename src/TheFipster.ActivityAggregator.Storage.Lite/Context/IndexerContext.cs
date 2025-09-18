@@ -21,11 +21,14 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
             database = new LiteDatabase(file.FullName, Mapper);
         }
 
-        public ILiteCollection<ClassificationIndex> GetScanCollection() =>
-            database.GetCollection<ClassificationIndex>("ScanIndex");
+        public ILiteCollection<ScanIndex> GetScanCollection() =>
+            database.GetCollection<ScanIndex>("ScanIndex");
 
         public ILiteCollection<TransformIndex> GetTransformCollection() =>
             database.GetCollection<TransformIndex>("TransformIndex");
+
+        public ILiteCollection<ClassificationIndex> GetClassificationCollection() =>
+            database.GetCollection<ClassificationIndex>("ClassificationIndex");
 
         public void Dispose() => database?.Dispose();
 
@@ -38,7 +41,7 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
                 mapper.Entity<UnifiedRecord>().Id(x => x.Timestamp);
                 mapper.Entity<ClassificationIndex>().Id(x => x.Filepath);
                 mapper.Entity<TransformIndex>().Id(x => x.Filepath);
-                mapper.Entity<ImportIndex>().Id(x => x.Filepath);
+                mapper.Entity<ScanIndex>().Id(x => x.Filepath);
 
                 return mapper;
             }

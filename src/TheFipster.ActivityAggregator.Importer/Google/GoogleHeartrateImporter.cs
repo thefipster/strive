@@ -1,35 +1,34 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Google
+namespace TheFipster.ActivityAggregator.Importer.Google;
+
+public class GoogleHeartrateImporter : IFileClassifier
 {
-    public class GoogleHeartrateImporter : IFileClassifier
+    public DataSources Source => DataSources.FitbitTakeoutHeartrate;
+    private readonly string header = "timestamp,beats per minute";
+
+    public ImportClassification Classify(FileProbe probe)
     {
-        public string Type => "google_heartrate";
-        public DataSources Source => DataSources.FitbitTakeoutHeartrate;
+        var lines = probe.GetLines().Take(2).ToArray();
+        if (lines.Length != 2)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't get two lines.");
 
-        private List<string> Header = new() { "timestamp,beats per minute" };
+        if (header != lines.First())
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
-        public ImportClassification? Classify(string filepath)
+        var cells = lines.Last().Split(",");
+        var date = DateTime.Parse(cells[0]);
+
+        return new ImportClassification
         {
-            var peeker = new FilePeeker(filepath);
-
-            var header = peeker.ReadLines(2);
-            if (header.Count() != 2 || Header.All(x => x != header.First()))
-                return null;
-
-            var cells = header.Last().Split(",");
-            var date = DateTime.Parse(cells[0]);
-
-            return new ImportClassification
-            {
-                Filepath = filepath,
-                Source = Source,
-                Filetype = Type,
-                Datetime = date,
-                Datetype = filepath.Contains("daily") ? DateRanges.AllTime : DateRanges.Day,
-            };
-        }
+            Filepath = probe.Filepath,
+            Source = Source,
+            Datetime = date,
+            Datetype = probe.Filepath.Contains("daily") ? DateRanges.AllTime : DateRanges.Day,
+        };
     }
 }

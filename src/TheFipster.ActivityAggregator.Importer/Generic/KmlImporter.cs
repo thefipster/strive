@@ -1,31 +1,33 @@
 ﻿using System.Globalization;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Generic
+namespace TheFipster.ActivityAggregator.Importer.Generic
 {
     public class KmlImporter : IFileImporter
     {
-        public const string Type = "kml";
         public DataSources Source => DataSources.Kml;
 
-        public ImportClassification? Classify(string filepath)
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
-            var lines = peeker.ReadLines(10);
+            var props = probe.GetXmlPropsAndAttributes();
 
-            if (lines.All(x => !x.Contains("<kml")))
-                return null;
+            if (!props.Contains("kml"))
+                throw new ClassificationException(probe.Filepath, Source, "Couldn't find kml tag.");
+
+            var directory = new FileInfo(probe.Filepath).Directory;
+            var date = DateHelper.GetDateFromMyCollectionDirectory(directory);
 
             return new ImportClassification
             {
-                Filepath = filepath,
-                Filetype = Type,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Datetype = DateRanges.Time,
+                Datetime = date,
+                Datetype = DateRanges.Day,
             };
         }
 

@@ -1,32 +1,36 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Gpsies
 {
     public class GpsiesCsvImporter : IFileClassifier
     {
-        public string Type => "gpsies_csv";
         public DataSources Source => DataSources.GpsiesCsv;
 
-        private List<string> Header = new() { "Latitude,Longitude,Elevation" };
+        private readonly List<string> header = ["Latitude,Longitude,Elevation"];
 
-        public ImportClassification? Classify(string filepath)
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
-            var lines = peeker.ReadLines(2);
+            var lines = probe.GetLines().Take(2).ToArray();
 
-            if (lines == null || lines.Count() != 2)
-                return null;
+            if (lines.Length != 2)
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't get two lines."
+                );
 
-            if (Header.All(x => x != lines.First()))
-                return null;
+            if (header.All(x => x != lines.First()))
+                throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
             return new ImportClassification
             {
-                Filepath = filepath,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Filetype = Type,
+                Datetime = DateTime.MaxValue,
                 Datetype = DateRanges.Day,
             };
         }

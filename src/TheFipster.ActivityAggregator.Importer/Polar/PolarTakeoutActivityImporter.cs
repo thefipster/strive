@@ -1,36 +1,52 @@
 ﻿using System.Globalization;
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Polar.Domain;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarTakeoutActivityImporter : IFileImporter
     {
-        public string Type => "polar_takeout_activity";
         public DataSources Source => DataSources.PolarTakeoutActivity;
 
-        public ImportClassification? Classify(string filepath)
+        private readonly HashSet<string> required = ["exportVersion", "date"];
+        private readonly string[] found = ["samples", "summary"];
+
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
+            var values = probe.GetJsonPropertiesWithValues();
 
-            var result = peeker.ReadChars(256);
-            if (!result.Contains("\"stepCount\"") && !result.Contains("\"mets\""))
-                return null;
+            if (!required.IsSubsetOf(values.Keys))
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find required properties."
+                );
 
-            var date = peeker.ReadTokens("date");
+            if (!values.Keys.Contains(found[0]) && !values.Keys.Contains(found[1]))
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find any needed properties."
+                );
+
+            var date = values["date"];
 
             if (string.IsNullOrWhiteSpace(date))
-                return null;
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find date value."
+                );
 
             return new ImportClassification
             {
-                Filepath = filepath,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Filetype = Type,
                 Datetime = DateTime.Parse(date),
                 Datetype = DateRanges.Day,
             };

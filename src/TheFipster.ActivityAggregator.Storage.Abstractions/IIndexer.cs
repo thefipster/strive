@@ -1,10 +1,12 @@
 namespace TheFipster.ActivityAggregator.Storage.Abstractions;
 
-public interface IIndexer<TIndex, TId, TFilter>
+public interface IIndexer<TIndex>
 {
     void Set(TIndex index);
 
-    TIndex? Get(TId id);
+    TIndex? GetById(string id);
 
-    IEnumerable<TIndex> Filter(TFilter filter);
+    IEnumerable<TIndex> GetFiltered(string filter);
+
+    IEnumerable<TIndex> GetAll();
 }

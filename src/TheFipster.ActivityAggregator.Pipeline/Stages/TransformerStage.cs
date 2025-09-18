@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
@@ -12,82 +13,80 @@ using TheFipster.ActivityAggregator.Storage.Abstractions;
 namespace TheFipster.ActivityAggregator.Pipeline.Stages;
 
 public class TransformerStage(
-    IOptions<ExtractorConfig> options,
     PipelineState state,
+    IOptions<ExtractorConfig> config,
     IImporterRegistry registry,
-    ITransformIndexer indexer
+    ITransformIndexer indexer,
+    ILogger<TransformerStage> logger
 ) : ITransfomerStage
 {
-    public const int Version = 1;
-    public const string Name = "transformer";
+    public const string Id = "transformer";
+    public int Version => 1;
+    public string Name => Id;
+    public int Order => 30;
 
-    private readonly ExtractorConfig config = options.Value;
+    public ProgressCounters Counters { get; } = new();
+
     private readonly IEnumerable<IFileExtractor> extractors = registry.LoadExtractors();
-
     private readonly ConcurrentQueue<ClassificationIndex> queue = new();
-    private CancellationToken token;
-    private readonly ProgressCounters counters = new();
 
-    public event EventHandler<ProgressReportEventArgs>? ReportProgress;
-    public event EventHandler<ErrorReportEventArgs>? ReportError;
     public event EventHandler<ResultReportEventArgs<TransformIndex>>? ReportResult;
 
     public void Enqueue(ClassificationIndex classification)
     {
         queue.Enqueue(classification);
-        counters.In.Increment();
+        Counters.In.Increment();
     }
 
-    public async Task ExecuteAsync(CancellationToken cancellationToken)
+    public async Task ExecuteAsync(CancellationToken ct)
     {
-        token = cancellationToken;
-        var tasks = new List<Task> { CreateTransformTask(), CreateReportTask() };
+        var tasks = new List<Task>();
+        for (int i = 0; i < config.Value.MaxDegreeOfParallelism; i++)
+            tasks.Add(CreateTransformTask(ct));
+
         await Task.WhenAll(tasks);
+        state.FinishedStages.Add(Name);
     }
 
-    #region Transform
+    private Task CreateTransformTask(CancellationToken ct) =>
+        Task.Run(async () => await LoopAsync(ct), ct);
 
-    private Task CreateTransformTask()
+    private async Task LoopAsync(CancellationToken ct)
     {
-        var extractionTask = Task.Run(
-            async () =>
-            {
-                while (!token.IsCancellationRequested && JobsAvailable)
-                {
-                    if (queue.TryDequeue(out var input))
-                    {
-                        try
-                        {
-                            TryTransform(input);
-                        }
-                        catch (Exception e)
-                        {
-                            ReportError?.Invoke(this, new ErrorReportEventArgs(Name, e));
-                        }
-                    }
-                    else
-                    {
-                        await Task.Delay(10, token);
-                    }
-                }
-
-                state.FinishedStages.Add(Name);
-            },
-            token
-        );
-
-        return extractionTask;
+        while (!ct.IsCancellationRequested && JobsAvailable)
+            await TryDequeue(ct);
     }
 
     private bool JobsAvailable =>
-        !state.FinishedStages.Contains(ClassifierStage.Name) || !queue.IsEmpty;
+        !state.FinishedStages.Contains(ClassifierStage.Id) || !queue.IsEmpty;
+
+    private async Task TryDequeue(CancellationToken ct)
+    {
+        if (queue.TryDequeue(out var input))
+        {
+            try
+            {
+                TryTransform(input);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Transformation failed for file {File}.", input.Filepath);
+            }
+
+            Counters.Done.Increment();
+        }
+        else
+        {
+            await Task.Delay(10, ct);
+        }
+    }
 
     private void TryTransform(ClassificationIndex input)
     {
         if (input.Classifications.Count() == 1)
             Transform(input);
         else
-            counters.Skip.Increment();
+            Counters.Skip.Increment();
     }
 
     private void Transform(ClassificationIndex input)
@@ -97,7 +96,7 @@ public class TransformerStage(
 
         if (extractor == null)
         {
-            counters.Skip.Increment();
+            Counters.Skip.Increment();
             return;
         }
 
@@ -115,7 +114,7 @@ public class TransformerStage(
             extractions,
             extraction =>
             {
-                var filepath = extraction.Write(config.OutputDir);
+                var filepath = extraction.Write(config.Value.OutputDir);
 
                 var index = new TransformIndex(
                     Version,
@@ -130,49 +129,11 @@ public class TransformerStage(
                 EmitResult(index);
             }
         );
-
-        counters.Done.Increment();
     }
 
     private void EmitResult(TransformIndex index)
     {
         ReportResult?.Invoke(this, new(index));
-        counters.Out.Increment();
+        Counters.Out.Increment();
     }
-
-    #endregion
-
-    #region Progress
-
-    private Task CreateReportTask()
-    {
-        var reportTask = Task.Run(
-            async () =>
-            {
-                while (!token.IsCancellationRequested && !state.FinishedStages.Contains(Name))
-                    await EmitProgress(1000);
-            },
-            token
-        );
-
-        return reportTask;
-    }
-
-    private async Task EmitProgress(int delayInMs)
-    {
-        await Task.Delay(TimeSpan.FromMilliseconds(delayInMs), token);
-        ReportProgress?.Invoke(
-            this,
-            new ProgressReportEventArgs(
-                Name,
-                0,
-                counters.In.Value,
-                counters.Done.Value,
-                counters.Skip.Value,
-                counters.Out.Value
-            )
-        );
-    }
-
-    #endregion
 }

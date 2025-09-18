@@ -26,6 +26,7 @@ public static class DependencyExtension
 
         services.AddSingleton<PipelineState>();
         services.AddScoped<IScannerStage, ScannerStage>();
+        services.AddScoped<IClassifierStage, ClassifierStage>();
         services.AddScoped<ITransfomerStage, TransformerStage>();
         services.AddScoped<IPipeline, Pipeline>();
 
