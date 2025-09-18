@@ -1,8 +1,7 @@
 ﻿using Fipster.TrackMe.Importer.Cli.Sources;
+using TheFipster.ActivityAggregator.Importer.Generic;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
-using TheFipster.ActivityAggregator.Importer.Modules.Generic;
 using TheFipster.ActivityAggregator.Importer.Modules.Google;
-using TheFipster.ActivityAggregator.Importer.Modules.RunGps;
 using TheFipster.ActivityAggregator.Importer.Polar;
 using TheFipster.ActivityAggregator.Importer.RunGps;
 

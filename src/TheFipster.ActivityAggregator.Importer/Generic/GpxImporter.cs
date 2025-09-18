@@ -1,29 +1,27 @@
 ﻿using System.Globalization;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Generic
+namespace TheFipster.ActivityAggregator.Importer.Generic
 {
     public class GpxImporter : IFileImporter
     {
-        public const string Type = "gpx";
         public DataSources Source => DataSources.Gpx;
 
-        public ImportClassification? Classify(string filepath)
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
-            var lines = peeker.ReadLines(24);
+            var props = probe.GetXmlPropsAndAttributes();
 
-            if (lines.All(x => !x.Contains("<gpx")))
-                return null;
+            if (!props.Contains("gpx"))
+                throw new ClassificationException(probe.Filepath, Source, "Couldn't find gpx tag.");
 
             return new ImportClassification
             {
-                Filepath = filepath,
-                Filetype = Type,
+                Filepath = probe.Filepath,
                 Source = Source,
                 Datetype = DateRanges.Day,
             };

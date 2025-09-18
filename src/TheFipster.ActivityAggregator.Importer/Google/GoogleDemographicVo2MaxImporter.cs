@@ -1,31 +1,30 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Google
+namespace TheFipster.ActivityAggregator.Importer.Google;
+
+public class GoogleDemographicVo2MaxImporter : IFileClassifier
 {
-    public class GoogleDemographicVo2MaxImporter : IFileClassifier
+    public DataSources Source => DataSources.FitbitTakeoutDemographicVo2Max;
+    private readonly string header = "timestamp,demographic vo2max";
+
+    public ImportClassification Classify(FileProbe probe)
     {
-        public string Type => "google_demographic_vo2max";
-        public DataSources Source => DataSources.FitbitTakeoutDemographicVo2Max;
+        var lines = probe.GetLines().Take(1).ToArray();
+        if (lines.Length != 1)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
-        private List<string> Header = new() { "timestamp,demographic vo2max" };
+        if (header != lines.First())
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
-        public ImportClassification? Classify(string filepath)
+        return new ImportClassification
         {
-            var peeker = new FilePeeker(filepath);
-
-            var header = peeker.ReadLines(1);
-            if (header.Count() != 1 || Header.All(x => x != header.First()))
-                return null;
-
-            return new ImportClassification
-            {
-                Filepath = filepath,
-                Source = Source,
-                Filetype = Type,
-                Datetype = DateRanges.AllTime,
-            };
-        }
+            Filepath = probe.Filepath,
+            Source = Source,
+            Datetype = DateRanges.AllTime,
+        };
     }
 }

@@ -1,44 +1,80 @@
+using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Pipeline.Abstractions;
+using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
 
 namespace TheFipster.ActivityAggregator.Pipeline;
 
 public class Pipeline(
+    PipelineState state,
+    IOptions<PipelineConfig> config,
     IScannerStage scanner,
     IClassifierStage classifier,
     ITransfomerStage transformer
 ) : IPipeline
 {
+    private CancellationToken token;
+
+    private readonly IEnumerable<IStage> stages = [scanner, classifier, transformer];
+
     public event EventHandler<ProgressReportEventArgs>? ReportProgress;
-    public event EventHandler<ErrorReportEventArgs>? ReportError;
 
-    public async Task ExecuteAsync(CancellationToken token)
+    public async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        scanner.ReportProgress += EmitProgress;
-        scanner.ReportError += EmitError;
-        scanner.ReportResult += (_, args) => classifier.Enqueue(args.Result);
+        token = cancellationToken;
 
-        classifier.ReportProgress += EmitProgress;
-        classifier.ReportError += EmitError;
+        // plumbing
+        scanner.ReportResult += (_, args) => classifier.Enqueue(args.Result);
         classifier.ReportResult += (_, args) => transformer.Enqueue(args.Result);
 
-        transformer.ReportProgress += EmitProgress;
-        transformer.ReportError += EmitError;
+        // filling
+        foreach (var input in config.Value.ImportDirectories)
+            scanner.Enqueue(input);
 
+        // running
         await Task.WhenAll(
             scanner.ExecuteAsync(token),
             classifier.ExecuteAsync(token),
-            transformer.ExecuteAsync(token)
+            transformer.ExecuteAsync(token),
+            CreateReportTask()
         );
+
+        // flushing
+        await EmitProgress(10);
     }
 
-    private void EmitError(object? sender, ErrorReportEventArgs e)
+    private Task CreateReportTask()
     {
-        ReportError?.Invoke(this, e);
+        var reportTask = Task.Run(
+            async () =>
+            {
+                while (!token.IsCancellationRequested && AnyStageRunning)
+                    await EmitProgress(100);
+            },
+            token
+        );
+
+        return reportTask;
     }
 
-    private void EmitProgress(object? sender, ProgressReportEventArgs e)
+    private bool AnyStageRunning => state.FinishedStages.Count < stages.Count();
+
+    private async Task EmitProgress(int delayInMs)
     {
-        ReportProgress?.Invoke(this, e);
+        await Task.Delay(TimeSpan.FromMilliseconds(delayInMs), token);
+        foreach (var stage in stages)
+        {
+            ReportProgress?.Invoke(
+                this,
+                new ProgressReportEventArgs(
+                    stage.Name,
+                    stage.Order,
+                    stage.Counters.In.Value,
+                    stage.Counters.Done.Value,
+                    stage.Counters.Skip.Value,
+                    stage.Counters.Out.Value
+                )
+            );
+        }
     }
 }

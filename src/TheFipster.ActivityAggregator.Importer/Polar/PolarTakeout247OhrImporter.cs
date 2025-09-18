@@ -1,31 +1,47 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarTakeout247OhrImporter : IFileClassifier
     {
-        public string Type => "polar_takeout_247ohr";
         public DataSources Source => DataSources.PolarTakeout247Ohr;
 
-        public ImportClassification? Classify(string filepath)
+        private readonly HashSet<string> required =
+        [
+            "deviceDays",
+            "userId",
+            "deviceId",
+            "date",
+            "samples",
+        ];
+
+        public ImportClassification Classify(FileProbe probe)
         {
-            var peeker = new FilePeeker(filepath);
+            var values = probe.GetJsonPropertiesWithValues();
 
-            var result = peeker.ReadChars(256);
-            if (!result.Contains("\"deviceDays\""))
-                return null;
+            if (!required.IsSubsetOf(values.Keys))
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find required properties."
+                );
 
-            var date = peeker.ReadTokens("date");
+            var date = values["date"];
             if (string.IsNullOrWhiteSpace(date))
-                return null;
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find date value."
+                );
 
             return new ImportClassification
             {
-                Filepath = filepath,
+                Filepath = probe.Filepath,
                 Source = Source,
-                Filetype = Type,
                 Datetime = DateTime.Parse(date),
                 Datetype = DateRanges.Month,
             };

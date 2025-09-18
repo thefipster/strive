@@ -4,5 +4,7 @@ public class ExtractorConfig
 {
     public const string ConfigSectionName = "Stages:Extractor";
 
-    public string OutputDir { get; set; }
+    public string OutputDir { get; set; } = "extraction";
+
+    public int MaxDegreeOfParallelism { get; set; } = 2;
 }

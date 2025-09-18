@@ -1,7 +1,7 @@
-﻿using TheFipster.ActivityAggregator.Importer.Gpsies;
+﻿using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Generic;
+using TheFipster.ActivityAggregator.Importer.Gpsies;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
-using TheFipster.ActivityAggregator.Importer.Modules.Generic;
-using TheFipster.ActivityAggregator.Importer.Modules.RunGps;
 using TheFipster.ActivityAggregator.Importer.Polar;
 using TheFipster.ActivityAggregator.Importer.RunGps;
 

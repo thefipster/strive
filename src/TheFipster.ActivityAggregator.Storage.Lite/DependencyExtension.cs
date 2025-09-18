@@ -17,6 +17,7 @@ public static class DependencyExtension
 
         services.AddSingleton<IndexerContext>();
         services.AddScoped<IScanIndexer, ScanIndexer>();
+        services.AddScoped<IClassificationIndexer, ClassificationIndexer>();
         services.AddScoped<ITransformIndexer, TransformIndexer>();
     }
 }

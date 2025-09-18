@@ -13,7 +13,7 @@
     />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj" />
+    <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Importer\TheFipster.ActivityAggregator.Importer.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj" />
   </ItemGroup>

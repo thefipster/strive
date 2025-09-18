@@ -1,34 +1,32 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Google
+namespace TheFipster.ActivityAggregator.Importer.Google;
+
+public class GoogleUserSleepScoreImporter : IFileClassifier
 {
-    public class GoogleUserSleepScoreImporter : IFileClassifier
+    public DataSources Source => DataSources.FitbitTakeoutUserSleepScore;
+
+    private readonly string header =
+        "sleep_id,sleep_score_id,data_source,score_utc_offset,score_time,overall_score,duration_score,composition_score,revitalization_score,sleep_time_minutes,deep_sleep_minutes,rem_sleep_percent,resting_heart_rate,sleep_goal_minutes,waso_count_long_wakes,waso_count_all_wake_time,restlessness_normalized,hr_below_resting_hr,sleep_score_created,sleep_score_last_updated";
+
+    public ImportClassification Classify(FileProbe probe)
     {
-        public string Type => "google_user_sleep_score";
-        public DataSources Source => DataSources.FitbitTakeoutUserSleepScore;
+        var lines = probe.GetLines().Take(1).ToArray();
+        if (lines.Length == 0)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
-        private List<string> Header = new()
+        if (header != lines.First())
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
+
+        return new ImportClassification
         {
-            "sleep_id,sleep_score_id,data_source,score_utc_offset,score_time,overall_score,duration_score,composition_score,revitalization_score,sleep_time_minutes,deep_sleep_minutes,rem_sleep_percent,resting_heart_rate,sleep_goal_minutes,waso_count_long_wakes,waso_count_all_wake_time,restlessness_normalized,hr_below_resting_hr,sleep_score_created,sleep_score_last_updated",
+            Filepath = probe.Filepath,
+            Source = Source,
+            Datetype = DateRanges.AllTime,
         };
-
-        public ImportClassification? Classify(string filepath)
-        {
-            var peeker = new FilePeeker(filepath);
-
-            var header = peeker.ReadLines(1);
-            if (header.Count() == 0 || Header.All(x => x != header.First()))
-                return null;
-
-            return new ImportClassification
-            {
-                Filepath = filepath,
-                Source = Source,
-                Filetype = Type,
-                Datetype = DateRanges.AllTime,
-            };
-        }
     }
 }

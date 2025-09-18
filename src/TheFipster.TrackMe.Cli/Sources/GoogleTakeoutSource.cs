@@ -1,4 +1,5 @@
-﻿using TheFipster.ActivityAggregator.Importer.Google;
+﻿using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Google;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Google;
 

@@ -1,84 +1,58 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
-using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Google
+namespace TheFipster.ActivityAggregator.Importer.Google;
+
+public class GoogleStepsImporter()
+    : GoogleCsvParser(DataSources.FitbitTakeoutSteps, DateRanges.Month, "timestamp,steps"),
+        IFileClassifier
 {
-    public class GoogleStepsImporter : IFileImporter
+    public List<FileExtraction> Extract(ArchiveIndex file)
     {
-        public string Type => "google_steps";
-        public DataSources Source => DataSources.FitbitTakeoutSteps;
+        var csv = new CsvFile(file.Filepath, ",");
+        var data = csv.ReadLines().Skip(1).Select(x => (DateTime.Parse(x[0]), int.Parse(x[1])));
+        var days = data.GroupBy(x => x.Item1.Date);
+        var results = new List<FileExtraction>();
 
-        private List<string> Header = ["timestamp,steps"];
-
-        public ImportClassification? Classify(string filepath)
+        foreach (var day in days)
         {
-            var peeker = new FilePeeker(filepath);
+            var date = day.Key;
+            var durationSeries = new List<string>();
+            var stepsSeries = new List<string>();
+            var steps = 0;
 
-            var header = peeker.ReadLines(2);
-            if (header.Count() != 2 || Header.All(x => x != header.First()))
-                return null;
-
-            var cells = header.Last().Split(",");
-            var date = DateTime.Parse(cells[0]);
-
-            return new ImportClassification
+            foreach (var sample in day)
             {
-                Filepath = filepath,
-                Source = Source,
-                Filetype = Type,
-                Datetime = date,
-                Datetype = DateRanges.Month,
-            };
-        }
-
-        public List<FileExtraction> Extract(ArchiveIndex file)
-        {
-            var csv = new CsvFile(file.Filepath, ",");
-            var data = csv.ReadLines().Skip(1).Select(x => (DateTime.Parse(x[0]), int.Parse(x[1])));
-            var days = data.GroupBy(x => x.Item1.Date);
-            var results = new List<FileExtraction>();
-
-            foreach (var day in days)
-            {
-                var date = day.Key;
-                var durationSeries = new List<string>();
-                var stepsSeries = new List<string>();
-                var steps = 0;
-
-                foreach (var sample in day)
-                {
-                    var duration = (int)sample.Item1.TimeOfDay.TotalSeconds;
-                    durationSeries.Add(duration.ToString());
-                    stepsSeries.Add(sample.Item2.ToString());
-                    steps += sample.Item2;
-                }
-
-                var series = new Dictionary<Parameters, IEnumerable<string>>()
-                {
-                    { Parameters.Duration, durationSeries },
-                    { Parameters.Steps, stepsSeries },
-                };
-
-                var attributes = new Dictionary<Parameters, string>()
-                {
-                    { Parameters.Steps, steps.ToString() },
-                };
-
-                var result = new FileExtraction(
-                    Source,
-                    file.Filepath,
-                    day.Key,
-                    DateRanges.Day,
-                    attributes,
-                    series
-                );
-                results.Add(result);
+                var duration = (int)sample.Item1.TimeOfDay.TotalSeconds;
+                durationSeries.Add(duration.ToString());
+                stepsSeries.Add(sample.Item2.ToString());
+                steps += sample.Item2;
             }
 
-            return results;
+            var series = new Dictionary<Parameters, IEnumerable<string>>()
+            {
+                { Parameters.Duration, durationSeries },
+                { Parameters.Steps, stepsSeries },
+            };
+
+            var attributes = new Dictionary<Parameters, string>()
+            {
+                { Parameters.Steps, steps.ToString() },
+            };
+
+            var result = new FileExtraction(
+                Source,
+                file.Filepath,
+                day.Key,
+                DateRanges.Day,
+                attributes,
+                series
+            );
+            results.Add(result);
         }
+
+        return results;
     }
 }

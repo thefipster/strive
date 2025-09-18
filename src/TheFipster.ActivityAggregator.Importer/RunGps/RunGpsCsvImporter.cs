@@ -1,41 +1,39 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.RunGps;
+namespace TheFipster.ActivityAggregator.Importer.RunGps;
 
 public class RunGpsCsvImporter : IFileImporter
 {
-    public const string Type = "rungps_csv";
     public DataSources Source => DataSources.RunGpsCsvV1;
 
-    private List<string> Header =
+    private readonly List<string> header =
     [
         "type;latitude;longitude;speed;heading;height;distance;timestamp;",
         "type;latitude;longitude;speed;heading;height;distance;timestamp;heartRate;gpsDilution;temperature;cadence;",
     ];
 
-    public ImportClassification? Classify(string filepath)
+    public ImportClassification Classify(FileProbe probe)
     {
-        var peeker = new FilePeeker(filepath);
-        var lines = peeker.ReadLines(2);
+        var lines = probe.GetLines().Take(2).ToArray();
 
-        if (lines == null || lines.Count() != 2)
-            return null;
+        if (lines.Length != 2)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't get two lines.");
 
-        if (Header.All(x => x != lines.First()))
-            return null;
+        if (header.All(x => x != lines.First()))
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
         var data = lines.Last().Split(";", StringSplitOptions.RemoveEmptyEntries);
         var date = DateTime.Parse(data[7]);
 
         return new ImportClassification
         {
-            Filepath = filepath,
+            Filepath = probe.Filepath,
             Source = Source,
-            Filetype = Type,
             Datetime = date,
             Datetype = DateRanges.Day,
         };
@@ -44,11 +42,10 @@ public class RunGpsCsvImporter : IFileImporter
     public List<FileExtraction> Extract(ArchiveIndex file)
     {
         var csv = new CsvFile(file.Filepath, ";");
-        var lines = csv.ReadLines();
+        var lines = csv.ReadLines().ToArray();
         var start = lines.First(x => x[0] == "TrainingStart");
         var end = lines.Last(x => x[0] == "TrainingStop");
         var positions = lines.Where(x => x[0] == "Position");
-        var gps = new List<GpsPoint>();
 
         var startDate = DateTime.Parse(start[7]);
         var endDate = DateTime.Parse(end[7]);
