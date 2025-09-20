@@ -11,77 +11,84 @@ using TheFipster.ActivityAggregator.Pipeline.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
 using TheFipster.ActivityAggregator.Pipeline.Models.Events;
+using TheFipster.ActivityAggregator.Pipeline.Pipelines;
 using TheFipster.ActivityAggregator.Storage.Abstractions;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Pipeline.Stages;
 
 public class ClassifierStage(
-    PipelineState state,
+    PipelineState<IngesterPipeline> state,
     IOptions<ClassifierConfig> config,
     IImporterRegistry registry,
-    IClassificationIndexer indexer,
+    IIndexer<ClassificationIndex> indexer,
     ILogger<ClassifierStage> logger
-) : IClassifierStage
+) : Stage<ScanIndex, ClassificationIndex>, IClassifierStage
 {
-    public const string Id = "classifier";
     public int Version => 1;
-    public string Name => Id;
     public int Order => 20;
-
-    public ProgressCounters Counters { get; } = new();
+    public event EventHandler<ResultReportEventArgs<ClassificationIndex>>? ReportResult;
 
     private readonly IEnumerable<IFileClassifier> classifiers = registry.LoadClassifiers();
-
-    private readonly ConcurrentQueue<ScanIndex> queue = new();
 
     public async Task ExecuteAsync(CancellationToken ct)
     {
         var tasks = new List<Task>();
-        for (int i = 0; i < config.Value.MaxDegreeOfParallelism; i++)
+        for (int i = 0; i < config.Value.MaxDegreeOfParallelismDequeing; i++)
             tasks.Add(CreateClassifyTask(ct));
 
         await Task.WhenAll(tasks);
-        state.FinishedStages.Add(Name);
-    }
-
-    public event EventHandler<ResultReportEventArgs<ClassificationIndex>>? ReportResult;
-
-    public void Enqueue(ScanIndex scan)
-    {
-        queue.Enqueue(scan);
-        Counters.In.Increment();
+        state.FinishedStages.Add(GetType().Name);
     }
 
     private Task CreateClassifyTask(CancellationToken ct) =>
-        Task.Run(
-            async () =>
+        Task.Run(async () => await LoopAsync(ct), ct);
+
+    private async Task LoopAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested && JobsAvailable)
+            await TryDequeue(ct);
+    }
+
+    private bool JobsAvailable =>
+        !state.FinishedStages.Contains(nameof(ScannerStage)) || !queue.IsEmpty;
+
+    private async Task TryDequeue(CancellationToken ct)
+    {
+        if (queue.TryDequeue(out var input))
+        {
+            try
             {
-                while (!ct.IsCancellationRequested && JobsAvailable)
-                {
-                    if (queue.TryDequeue(out var import))
-                    {
-                        Process(import);
-                    }
-                    else
-                    {
-                        await Task.Delay(10, ct);
-                    }
-                }
-            },
-            ct
-        );
+                ProcessInput(input);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Bundling failed for input {Input}.", input);
+            }
 
-    private bool JobsAvailable => !state.FinishedStages.Contains(ScannerStage.Id) || !queue.IsEmpty;
+            Counters.Done.Increment();
+        }
+        else
+        {
+            await Task.Delay(10, ct);
+        }
+    }
 
-    private void Process(ScanIndex scan)
+    private void ProcessInput(ScanIndex scan)
     {
         var index = indexer.GetById(scan.Filepath);
         var file = new FileInfo(scan.Filepath);
         if (index == null || index.IndexedAt < file.LastWriteTimeUtc || index.Version < Version)
         {
             var classifications = new ConcurrentBag<ImportClassification>();
-            foreach (var classifier in classifiers)
-                TryClassify(scan, classifier, classifications);
+            Parallel.ForEach(
+                classifiers,
+                new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = config.Value.MaxDegreeOfParallelismClassifying,
+                },
+                classifier => TryClassify(scan, classifier, classifications)
+            );
 
             index = new ClassificationIndex(
                 Version,
@@ -92,8 +99,6 @@ public class ClassifierStage(
             indexer.Set(index);
             ReportClassificationResult(index);
         }
-
-        Counters.Done.Increment();
     }
 
     private void TryClassify(

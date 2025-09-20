@@ -25,5 +25,8 @@
         public static string ToDateString(this DateTime date) => date.ToString("yyyyMMdd");
 
         public static string ToTimeString(this DateTime date) => date.ToString("HHmmss");
+
+        public static string ToDateTimeString(this DateTime date) =>
+            date.ToString("yyyyMMdd_HHmmss");
     }
 }

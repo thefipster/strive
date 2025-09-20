@@ -23,4 +23,44 @@ public static class DateHelper
         var cells = line.Split(separator);
         return DateTime.Parse(cells[index]);
     }
+
+    public static DateTime GetDateFromExtraction(DirectoryInfo directory)
+    {
+        // ...\pipeline\extractor\2025\08\12\
+
+        var day = directory.Name;
+        var month = directory.Parent?.Name;
+        var year = directory.Parent?.Parent?.Name;
+
+        if (string.IsNullOrEmpty(month) || string.IsNullOrEmpty(year) || string.IsNullOrEmpty(day))
+            throw new ArgumentException(
+                $"Directory path {directory.FullName} is not suitable for date conversion."
+            );
+
+        return DateTime.Parse($"{year}-{month}-{day}");
+    }
+
+    public static DateTime GetDatetimeFromExtraction(DirectoryInfo directory)
+    {
+        // ...\pipeline\extractor\2025\08\12\14_00
+
+        if (directory.Parent == null)
+            throw new ArgumentException(
+                $"Directory path {directory.FullName} has no parent directory."
+            );
+
+        var time = directory.Name;
+        var date = GetDateFromExtraction(directory.Parent);
+        if (
+            int.TryParse(time.Substring(0, 2), out var hours)
+            && int.TryParse(time.Substring(3, 2), out var minutes)
+        )
+        {
+            return date.AddHours(hours).AddMinutes(minutes);
+        }
+
+        throw new ArgumentException(
+            $"Directory path {directory.FullName} is not suitable for time conversion."
+        );
+    }
 }

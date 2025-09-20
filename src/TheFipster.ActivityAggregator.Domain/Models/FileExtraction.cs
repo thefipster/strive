@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 
 namespace TheFipster.ActivityAggregator.Domain.Models
@@ -13,6 +14,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models
             Attributes = new Dictionary<Parameters, string>();
             Series = new Dictionary<Parameters, IEnumerable<string>>();
             SourceFile = string.Empty;
+            Hash = string.Empty;
         }
 
         public FileExtraction(

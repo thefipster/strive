@@ -1,3 +1,5 @@
+using TheFipster.ActivityAggregator.Domain.Enums;
+
 namespace TheFipster.ActivityAggregator.Domain.Exceptions;
 
 public class ClassificationException : Exception

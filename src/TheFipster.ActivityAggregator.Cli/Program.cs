@@ -7,13 +7,12 @@ using TheFipster.ActivityAggregator.Importer;
 using TheFipster.ActivityAggregator.Pipeline;
 using TheFipster.ActivityAggregator.Storage.Lite;
 
-Console.WriteLine("Executing Pipeline");
-Console.WriteLine("==================");
+Console.WriteLine("Pipeline App started.");
 Console.WriteLine();
 
 var host = Host.CreateDefaultBuilder(args)
     .UseSerilog(
-        (context, services, configuration) =>
+        (context, _, configuration) =>
         {
             configuration.ReadFrom.Configuration(context.Configuration).Enrich.FromLogContext();
         }

@@ -1,9 +1,12 @@
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 public class TransformIndex
 {
+    public TransformIndex() { }
+
     public TransformIndex(
         int version,
         string filepath,
@@ -20,8 +23,6 @@ public class TransformIndex
         Timestamp = timestamp;
         Range = range;
 
-        IndexedAt = DateTime.UtcNow;
-
         // Computed values
         Date = Timestamp.ToDateString();
         Time = Timestamp.ToTimeString();
@@ -29,15 +30,15 @@ public class TransformIndex
     }
 
     public int Version { get; set; }
-    public DateTime IndexedAt { get; set; }
-    public string Filepath { get; set; }
-    public string SourceFilepath { get; set; }
+    public DateTime IndexedAt { get; set; } = DateTime.UtcNow;
+    public string? Filepath { get; set; }
+    public string? SourceFilepath { get; set; }
     public DataSources Source { get; set; }
     public DateTime Timestamp { get; set; }
     public DateRanges Range { get; set; }
 
     // Computed values
-    public string Date { get; set; }
-    public string Time { get; set; }
-    public string Filter { get; set; }
+    public string? Date { get; set; }
+    public string? Time { get; set; }
+    public string? Filter { get; set; }
 }

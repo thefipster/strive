@@ -4,5 +4,6 @@ public class ClassifierConfig
 {
     public const string ConfigSectionName = "Stages:Classifier";
 
-    public int MaxDegreeOfParallelism { get; set; } = 2;
+    public int MaxDegreeOfParallelismDequeing { get; set; } = 2;
+    public int MaxDegreeOfParallelismClassifying { get; set; } = 2;
 }

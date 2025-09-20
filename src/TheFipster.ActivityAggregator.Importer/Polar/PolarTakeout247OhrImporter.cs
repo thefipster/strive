@@ -1,4 +1,5 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
@@ -21,7 +22,14 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         public ImportClassification Classify(FileProbe probe)
         {
-            var values = probe.GetJsonPropertiesWithValues();
+            var values = probe.JsonValues;
+
+            if (values == null)
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find valid json."
+                );
 
             if (!required.IsSubsetOf(values.Keys))
                 throw new ClassificationException(

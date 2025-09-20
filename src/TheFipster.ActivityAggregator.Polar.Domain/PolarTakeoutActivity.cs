@@ -7,31 +7,31 @@
     public partial class PolarTakeoutActivity
     {
         [JsonPropertyName("exportVersion")]
-        public string ExportVersion { get; set; }
+        public required string ExportVersion { get; set; }
 
         [JsonPropertyName("date")]
         public DateTime Date { get; set; }
 
         [JsonPropertyName("summary")]
-        public Summary Summary { get; set; }
+        public Summary? Summary { get; set; }
 
         [JsonPropertyName("samples")]
-        public Samples Samples { get; set; }
+        public Samples? Samples { get; set; }
 
         [JsonPropertyName("physicalInformation")]
-        public PhysicalInformation PhysicalInformation { get; set; }
+        public PhysicalInformation? PhysicalInformation { get; set; }
     }
 
     public partial class Samples
     {
         [JsonPropertyName("mets")]
-        public List<Met> Mets { get; set; }
+        public List<Met>? Mets { get; set; }
 
         [JsonPropertyName("steps")]
-        public List<Met> Steps { get; set; }
+        public List<Met>? Steps { get; set; }
 
         [JsonPropertyName("metSources")]
-        public List<string> MetSources { get; set; }
+        public List<string>? MetSources { get; set; }
     }
 
     public partial class Met

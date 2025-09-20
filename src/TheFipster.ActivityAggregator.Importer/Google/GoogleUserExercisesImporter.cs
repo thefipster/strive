@@ -1,4 +1,5 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
@@ -15,9 +16,9 @@ public class GoogleUserExercisesImporter : IFileClassifier
 
     public ImportClassification Classify(FileProbe probe)
     {
-        var lines = probe.GetLines().Take(1).ToArray();
+        var lines = probe.Lines?.Take(1).ToArray();
 
-        if (lines.Length == 0)
+        if (lines == null || lines.Length == 0)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
         if (header != lines.First())

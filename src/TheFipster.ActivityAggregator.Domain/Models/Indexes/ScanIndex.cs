@@ -1,10 +1,20 @@
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-public class ScanIndex(int version, string directory, string filepath, string hash)
+public class ScanIndex
 {
-    public int Version { get; set; } = version;
+    public ScanIndex() { }
+
+    public ScanIndex(int version, string directory, string filepath, string hash)
+    {
+        Version = version;
+        Directory = directory;
+        Filepath = filepath;
+        Hash = hash;
+    }
+
+    public int Version { get; set; }
     public DateTime IndexedAt { get; set; } = DateTime.UtcNow;
-    public string Directory { get; set; } = directory;
-    public string Filepath { get; set; } = filepath;
-    public string Hash { get; set; } = hash;
+    public string? Directory { get; set; }
+    public string? Filepath { get; set; }
+    public string? Hash { get; set; }
 }

@@ -14,7 +14,7 @@ namespace TheFipster.ActivityAggregator.Domain.Tools
         public double GetLength(IEnumerable<GpsPoint> points)
         {
             double totalMeters = 0;
-            GpsPoint lastPoint = null;
+            GpsPoint? lastPoint = null;
             foreach (var point in points)
             {
                 if (lastPoint != null)
@@ -28,7 +28,7 @@ namespace TheFipster.ActivityAggregator.Domain.Tools
 
         public double HaversineDistance(GpsPoint p1, GpsPoint p2)
         {
-            const double R = 6371000; // Earth radius in meters
+            const double r = 6371000; // Earth radius in meters
             double lat1 = DegreesToRadians(p1.Latitude);
             double lat2 = DegreesToRadians(p2.Latitude);
             double dLat = lat2 - lat1;
@@ -39,7 +39,7 @@ namespace TheFipster.ActivityAggregator.Domain.Tools
                 + Math.Cos(lat1) * Math.Cos(lat2) * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
 
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c;
+            return r * c;
         }
 
         public double DegreesToRadians(double degrees) => degrees * Math.PI / 180.0;

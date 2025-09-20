@@ -1,4 +1,5 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
@@ -19,7 +20,10 @@ public class RunGpsCsvImporter : IFileImporter
 
     public ImportClassification Classify(FileProbe probe)
     {
-        var lines = probe.GetLines().Take(2).ToArray();
+        var lines = probe.Lines?.Take(2).ToArray();
+
+        if (lines == null)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
         if (lines.Length != 2)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't get two lines.");

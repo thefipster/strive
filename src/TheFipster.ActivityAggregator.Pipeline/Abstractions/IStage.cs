@@ -5,17 +5,15 @@ namespace TheFipster.ActivityAggregator.Pipeline.Abstractions;
 
 public interface IStage<in TInput, TOutput> : IStage
 {
-    void Enqueue(TInput import);
+    void Enqueue(TInput input);
     event EventHandler<ResultReportEventArgs<TOutput>>? ReportResult;
 
-    Task ExecuteAsync(CancellationToken token);
+    Task ExecuteAsync(CancellationToken ct);
 }
 
 public interface IStage
 {
     int Version { get; }
-    string Name { get; }
     int Order { get; }
-
     ProgressCounters Counters { get; }
 }

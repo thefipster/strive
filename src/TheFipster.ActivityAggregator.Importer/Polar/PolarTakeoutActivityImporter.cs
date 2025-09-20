@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
@@ -18,7 +19,14 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         public ImportClassification Classify(FileProbe probe)
         {
-            var values = probe.GetJsonPropertiesWithValues();
+            var values = probe.JsonValues;
+
+            if (values == null)
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find valid json."
+                );
 
             if (!required.IsSubsetOf(values.Keys))
                 throw new ClassificationException(
@@ -63,26 +71,18 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var result = new FileExtraction(Source, file.Filepath, date, DateRanges.Day);
 
             if (activity.Summary != null)
-                result.Attributes = getAttributes(activity.Summary);
+                result.Attributes = GetAttributes(activity.Summary);
 
-            if (
-                activity.Samples != null
-                && activity.Samples.Steps != null
-                && activity.Samples.Steps.Count > 0
-            )
-            {
-                result.Series = createStepsSeries(activity.Samples.Steps);
-            }
+            if (activity.Samples is { Steps.Count: > 0 })
+                result.Series = CreateStepsSeries(activity.Samples.Steps);
 
             if (result.Attributes.Any() || result.Series.Any())
-            {
                 return [result];
-            }
 
             throw new ArgumentException("Polar takeout activity yielded to data.");
         }
 
-        private Dictionary<Parameters, string> getAttributes(Summary summary)
+        private Dictionary<Parameters, string> GetAttributes(Summary summary)
         {
             var attributes = FileExtraction.EmptyAttributes;
 
@@ -96,7 +96,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return attributes;
         }
 
-        private Dictionary<Parameters, IEnumerable<string>> createStepsSeries(List<Met> samples)
+        private Dictionary<Parameters, IEnumerable<string>> CreateStepsSeries(List<Met> samples)
         {
             var durationSeries = new List<string>();
             var stepsSeries = new List<string>();

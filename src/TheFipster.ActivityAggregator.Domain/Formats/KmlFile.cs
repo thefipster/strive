@@ -19,63 +19,23 @@ namespace TheFipster.ActivityAggregator.Domain.Formats
                 throw new ArgumentException("File is not kml");
         }
 
-        public static void Write(string filepath, GenericCollectionFile<GpsPoint> track)
-        {
-            var info = new FileInfo(filepath);
-            XNamespace ns = "http://www.opengis.net/kml/2.2";
-
-            // Build coordinates string "lon,lat,alt"
-            string coordinates = string.Join(
-                " ",
-                track
-                    .Data.ToList()
-                    .ConvertAll(p =>
-                        $"{p.Longitude.ToString(CultureInfo.InvariantCulture)},{p.Latitude.ToString(CultureInfo.InvariantCulture)},0"
-                    )
-            );
-
-            new XDocument(
-                new XElement(
-                    ns + "kml",
-                    new XElement(
-                        ns + "Document",
-                        new XElement(
-                            ns + "Placemark",
-                            new XElement(ns + "name", info.Name),
-                            new XElement(
-                                ns + "Style",
-                                new XAttribute("id", "orangeLine"),
-                                new XElement(
-                                    ns + "LineStyle",
-                                    new XElement(ns + "color", "ff00a5ff"),
-                                    new XElement(ns + "width", "3")
-                                )
-                            ),
-                            new XElement(
-                                ns + "LineString",
-                                new XElement(ns + "coordinates", coordinates)
-                            )
-                        )
-                    )
-                )
-            ).Save(filepath);
-            ;
-        }
-
         public IEnumerable<GpsPoint> GetPoints()
         {
             XNamespace ns1 = "http://earth.google.com/kml/2.1";
             XNamespace ns2 = "http://www.opengis.net/kml/2.2";
 
-            var coordinatess = doc.Descendants(ns1 + "LineString").Elements(ns1 + "coordinates");
+            var linesString = doc.Descendants(ns1 + "LineString")
+                .Elements(ns1 + "coordinates")
+                .ToArray();
 
-            if (coordinatess.Count() == 0)
+            if (linesString.Length == 0)
             {
-                coordinatess = doc.Descendants(ns2 + "LineString").Elements(ns2 + "coordinates");
+                linesString = doc.Descendants(ns2 + "LineString")
+                    .Elements(ns2 + "coordinates")
+                    .ToArray();
             }
 
-            var coordinates = coordinatess.FirstOrDefault()?.Value;
-
+            var coordinates = linesString.FirstOrDefault()?.Value;
             if (coordinates != null)
             {
                 return coordinates

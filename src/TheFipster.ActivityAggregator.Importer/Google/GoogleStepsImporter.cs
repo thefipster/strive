@@ -1,13 +1,15 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Google;
 
 public class GoogleStepsImporter()
     : GoogleCsvParser(DataSources.FitbitTakeoutSteps, DateRanges.Month, "timestamp,steps"),
-        IFileClassifier
+        IFileImporter
 {
     public List<FileExtraction> Extract(ArchiveIndex file)
     {

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using TheFipster.ActivityAggregator.Domain.Enums;
 
 namespace TheFipster.ActivityAggregator.Domain.Models
 {

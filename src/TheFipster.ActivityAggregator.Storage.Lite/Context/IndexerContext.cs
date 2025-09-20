@@ -1,6 +1,6 @@
 ﻿using LiteDB;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 namespace TheFipster.ActivityAggregator.Storage.Lite.Context
@@ -15,22 +15,20 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
 
             var file = new FileInfo(config.IndexFile);
 
+            if (file.Directory == null)
+                throw new ConfigException("Indexer database file", "Directory was null???");
+
             if (!Directory.Exists(file.Directory.FullName))
                 Directory.CreateDirectory(file.Directory.FullName);
 
             database = new LiteDatabase(file.FullName, Mapper);
         }
 
-        public ILiteCollection<ScanIndex> GetScanCollection() =>
-            database.GetCollection<ScanIndex>("ScanIndex");
+        public ILiteCollection<T> GetCollection<T>() => database.GetCollection<T>(typeof(T).Name);
 
-        public ILiteCollection<TransformIndex> GetTransformCollection() =>
-            database.GetCollection<TransformIndex>("TransformIndex");
+        public ILiteCollection<T> GetCollection<T>(string name) => database.GetCollection<T>(name);
 
-        public ILiteCollection<ClassificationIndex> GetClassificationCollection() =>
-            database.GetCollection<ClassificationIndex>("ClassificationIndex");
-
-        public void Dispose() => database?.Dispose();
+        public void Dispose() => database.Dispose();
 
         private BsonMapper Mapper
         {
@@ -38,10 +36,12 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
             {
                 var mapper = BsonMapper.Global;
 
-                mapper.Entity<UnifiedRecord>().Id(x => x.Timestamp);
+                mapper.Entity<ImportIndex>().Id(x => x.OutputDirectory);
+                mapper.Entity<ScanIndex>().Id(x => x.Filepath);
                 mapper.Entity<ClassificationIndex>().Id(x => x.Filepath);
                 mapper.Entity<TransformIndex>().Id(x => x.Filepath);
-                mapper.Entity<ScanIndex>().Id(x => x.Filepath);
+                mapper.Entity<BundleIndex>().Id(x => x.Id);
+                mapper.Entity<UnifyIndex>().Id(x => x.Id);
 
                 return mapper;
             }

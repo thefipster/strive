@@ -35,7 +35,7 @@ namespace TheFipster.ActivityAggregator.Domain.Formats
         {
             var points = doc.Descendants(xmlns + "trkpt")
                 .Select(pt => new GpxPoint(
-                    double.Parse(pt.Attribute("lat").Value, CultureInfo.InvariantCulture),
+                    double.Parse(pt.Attribute("lat")?.Value, CultureInfo.InvariantCulture),
                     double.Parse(pt.Attribute("lon").Value, CultureInfo.InvariantCulture),
                     pt.Element(xmlns + "ele") != null
                         ? double.Parse(

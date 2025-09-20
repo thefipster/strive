@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
@@ -14,15 +15,23 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         public ImportClassification Classify(FileProbe probe)
         {
-            var result = probe.GetText();
-            if (result.Length < 8 || result.Substring(0, 8) != "[Params]")
+            var text = probe.Text;
+
+            if (string.IsNullOrEmpty(text))
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find any text."
+                );
+
+            if (text.Length < 8 || text.Substring(0, 8) != "[Params]")
                 throw new ClassificationException(
                     probe.Filepath,
                     Source,
                     "Couldn't find params section."
                 );
 
-            var lines = result.Split('\n');
+            var lines = text.Split('\n');
 
             var dateLine = lines.First(x => x.Substring(0, 4) == "Date");
             var dateParts = dateLine.Split("=");
