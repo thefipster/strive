@@ -2,12 +2,11 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
 {
     using System;
     using System.Collections.Generic;
-
+    using System.Globalization;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using System.Globalization;
 
-    public partial class PolarTakeoutSleepScore
+    public class PolarTakeoutSleepScore
     {
         [JsonPropertyName("night")]
         public DateTimeOffset Night { get; set; }

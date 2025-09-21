@@ -2,6 +2,7 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
@@ -21,21 +22,21 @@ public class GoogleStepsImporter()
         foreach (var day in days)
         {
             var date = day.Key;
-            var durationSeries = new List<string>();
+            var timestampSeries = new List<string>();
             var stepsSeries = new List<string>();
             var steps = 0;
 
             foreach (var sample in day)
             {
-                var duration = (int)sample.Item1.TimeOfDay.TotalSeconds;
-                durationSeries.Add(duration.ToString());
+                var timestamp = date.AddSeconds(sample.Item1.TimeOfDay.TotalSeconds);
+                timestampSeries.Add(timestamp.ToString(DateHelper.SecondFormat));
                 stepsSeries.Add(sample.Item2.ToString());
                 steps += sample.Item2;
             }
 
-            var series = new Dictionary<Parameters, IEnumerable<string>>()
+            var series = new Dictionary<Parameters, List<string>>()
             {
-                { Parameters.Duration, durationSeries },
+                { Parameters.Timestamp, timestampSeries },
                 { Parameters.Steps, stepsSeries },
             };
 

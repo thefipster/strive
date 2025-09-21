@@ -2,12 +2,9 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
 {
     using System;
     using System.Collections.Generic;
-
-    using System.Text.Json;
     using System.Text.Json.Serialization;
-    using System.Globalization;
 
-    public  class PolarTakeoutPpiSamples
+    public class PolarTakeoutPpiSamples
     {
         [JsonPropertyName("date")]
         public DateTimeOffset Date { get; set; }

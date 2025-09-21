@@ -6,7 +6,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
-    public partial class PolarTakeoutCalendarItems
+    public class PolarTakeoutCalendarItems
     {
         [JsonPropertyName("exportVersion")]
         public string ExportVersion { get; set; }
@@ -30,7 +30,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public List<object> Feedbacks { get; set; }
     }
 
-    public partial class Feeling
+    public class Feeling
     {
         [JsonPropertyName("value")]
         public string Value { get; set; }
@@ -39,7 +39,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public DateTimeOffset Date { get; set; }
     }
 
-    public partial class Note
+    public class Note
     {
         [JsonPropertyName("note")]
         public string NoteNote { get; set; }
@@ -98,7 +98,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public DateTime? Birthday { get; set; }
     }
 
-    public partial class Weight
+    public class Weight
     {
         [JsonPropertyName("weight")]
         public double Value { get; set; }

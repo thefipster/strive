@@ -11,7 +11,7 @@
         Gpx,
         PolarTakeoutActivity,
         PolarTakeout247Ohr,
-        PolarTakeoutGenericPeriod,
+        PolarTakeoutGenericPeriodTemperature,
         PolarTakeoutPpi,
         PolarTakeoutTarget,
         PolarTakeoutTraining,
@@ -46,5 +46,8 @@
         PolarTakeoutSleepResult,
         PolarTakeoutSleepScore,
         PolarTakeoutCalendarItems,
+        PolarTakeoutGenericPeriodSpo2,
+        PolarTakeoutGenericPeriodSkinContact,
+        PolarTakeoutGenericPeriodEcg,
     }
 }

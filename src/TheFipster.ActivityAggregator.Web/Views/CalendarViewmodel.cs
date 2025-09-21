@@ -1,10 +1,9 @@
-﻿using Fipster.TrackMe.Web.Services;
-
-namespace Fipster.TrackMe.Web.Views
+﻿namespace TheFipster.ActivityAggregator.Web.Views
 {
     public class CalendarViewmodel
     {
-        public CalendarViewmodel() : this(DateTime.Today) { }
+        public CalendarViewmodel()
+            : this(DateTime.Today) { }
 
         public CalendarViewmodel(DateTime date)
         {

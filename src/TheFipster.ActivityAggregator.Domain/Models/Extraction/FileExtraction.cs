@@ -11,8 +11,8 @@ namespace TheFipster.ActivityAggregator.Domain.Models
     {
         public FileExtraction()
         {
-            Attributes = new Dictionary<Parameters, string>();
-            Series = new Dictionary<Parameters, IEnumerable<string>>();
+            Attributes = new();
+            Series = new();
             SourceFile = string.Empty;
             Hash = string.Empty;
         }
@@ -48,8 +48,20 @@ namespace TheFipster.ActivityAggregator.Domain.Models
             string sourceFile,
             DateTime timestamp,
             DateRanges range,
+            Dictionary<Parameters, List<string>> series
+        )
+            : this(source, sourceFile, timestamp, range)
+        {
+            Series = series;
+        }
+
+        public FileExtraction(
+            DataSources source,
+            string sourceFile,
+            DateTime timestamp,
+            DateRanges range,
             Dictionary<Parameters, string> attributes,
-            Dictionary<Parameters, IEnumerable<string>> series
+            Dictionary<Parameters, List<string>> series
         )
             : this(source, sourceFile, timestamp, range, attributes)
         {
@@ -77,11 +89,14 @@ namespace TheFipster.ActivityAggregator.Domain.Models
         public Dictionary<Parameters, string> Attributes { get; set; }
 
         [JsonPropertyName("series")]
-        public Dictionary<Parameters, IEnumerable<string>> Series { get; set; }
+        public Dictionary<Parameters, List<string>> Series { get; set; }
+
+        [JsonPropertyName("events")]
+        public List<UnifiedEvent> Events { get; set; } = new();
 
         public static Dictionary<Parameters, string> EmptyAttributes => new();
 
-        public static Dictionary<Parameters, IEnumerable<string>> EmptySeries => new();
+        public static Dictionary<Parameters, List<string>> EmptySeries => new();
 
         public static FileExtraction FromFile(string filepath)
         {

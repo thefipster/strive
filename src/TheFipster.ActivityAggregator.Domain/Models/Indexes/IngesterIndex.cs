@@ -1,19 +1,40 @@
+using System.Text.Json.Serialization;
+
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-public class IngesterIndex(
-    string inputFile,
-    ScanIndex scanIndex,
-    ClassificationIndex classificationIndex
-)
+public class IngesterIndex
 {
-    public string Filepath { get; } = inputFile;
-    public string? ImportDirectory { get; } = scanIndex.Directory;
-    public string? Hash { get; } = scanIndex.Hash;
-    public string? Classification { get; } = classificationIndex.Classification;
+    public IngesterIndex() { }
 
-    public int ScannerVersion { get; } = scanIndex.Version;
-    public DateTime ScannedAt { get; } = scanIndex.IndexedAt;
+    public IngesterIndex(
+        string inputFile,
+        ScanIndex scanIndex,
+        ClassificationIndex classificationIndex
+    )
+    {
+        Filepath = inputFile;
+        ImportDirectory = scanIndex.Directory;
+        Hash = scanIndex.Hash;
+        Classification = classificationIndex.Classification;
+        ScannerVersion = scanIndex.Version;
+        ScannedAt = scanIndex.IndexedAt;
+        ClassifierVersion = classificationIndex.Version;
+        ClassifiedAt = classificationIndex.IndexedAt;
+    }
 
-    public int ClassifierVersion { get; } = classificationIndex.Version;
-    public DateTime ClassifiedAt { get; } = classificationIndex.IndexedAt;
+    public string? Filepath { get; set; }
+
+    public string? ImportDirectory { get; set; }
+
+    public string? Hash { get; set; }
+
+    public string? Classification { get; set; }
+
+    public int ScannerVersion { get; set; }
+
+    public DateTime ScannedAt { get; set; }
+
+    public int ClassifierVersion { get; set; }
+
+    public DateTime ClassifiedAt { get; set; }
 }

@@ -33,5 +33,11 @@
         SleepContinuity,
         SleepPercentage,
         Bodyweight,
+        DeviceWorn,
+        EcgQuality,
+        EcgAmplitudeMv,
+        HeartrateVariability,
+        BloodOxygenPercent,
+        MetabolicRate,
     }
 }

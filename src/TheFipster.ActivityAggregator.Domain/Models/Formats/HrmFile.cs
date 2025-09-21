@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using TheFipster.ActivityAggregator.Domain.Tools;
 
-namespace TheFipster.ActivityAggregator.Domain.Formats
+namespace TheFipster.ActivityAggregator.Domain.Models.Formats
 {
     public class HrmFile
     {

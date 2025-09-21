@@ -79,7 +79,7 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
                 lastPoint = point;
             }
 
-            var series = new Dictionary<Parameters, IEnumerable<string>>
+            var series = new Dictionary<Parameters, List<string>>
             {
                 { Parameters.Latitude, latSeries },
                 { Parameters.Longitude, lonSeries },

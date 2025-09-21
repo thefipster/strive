@@ -60,7 +60,7 @@ public class RunGpsCsvImporter : IFileImporter
         attributes.Add(Parameters.Duration, duration.ToString());
         attributes.Add(Parameters.Distance, end[6]);
 
-        var durationSeries = new List<string>();
+        var timestampSeries = new List<string>();
         var latSeries = new List<string>();
         var lonSeries = new List<string>();
         var speedSeries = new List<string>();
@@ -78,12 +78,11 @@ public class RunGpsCsvImporter : IFileImporter
             distanceSeries.Add(position[6]);
 
             var timestamp = DateTime.Parse(position[7]);
-            var seconds = (int)(timestamp - startDate).TotalSeconds;
-            durationSeries.Add(seconds.ToString());
+            timestampSeries.Add(timestamp.ToString(DateHelper.SecondFormat));
         }
 
         var series = FileExtraction.EmptySeries;
-        series.Add(Parameters.Duration, durationSeries);
+        series.Add(Parameters.Timestamp, timestampSeries);
         series.Add(Parameters.Latitude, latSeries);
         series.Add(Parameters.Longitude, lonSeries);
         series.Add(Parameters.Speed, speedSeries);

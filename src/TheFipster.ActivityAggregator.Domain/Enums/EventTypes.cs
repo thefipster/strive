@@ -1,6 +1,7 @@
 namespace TheFipster.ActivityAggregator.Domain.Enums;
 
-public class EventTypes
+public enum EventTypes
 {
-    
+    Spo2Measurement,
+    EcgTest,
 }

@@ -1,0 +1,19 @@
+@page "/conflicts"
+
+@inject ApiService Api
+
+<MudPaper Class="ma-10 pa-10">
+    <MudText Typo="Typo.h3">Conflicts</MudText>
+    <MudTable Items="@Conflicts" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Primary">
+        <HeaderContent>
+            <MudTh>Timestamp</MudTh>
+            <MudTh>Kind</MudTh>
+            <MudTh>Version</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Timestamp">@context.Timestamp</MudTd>
+            <MudTd DataLabel="Kind">@context.Kind</MudTd>
+            <MudTd DataLabel="Version">@context.Version</MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>

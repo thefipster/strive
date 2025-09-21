@@ -4,6 +4,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
@@ -71,20 +72,16 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
             var slot = 0;
 
+            var result = new FileExtraction(Source, file.Filepath, date, DateRanges.Time);
+
             var heartrateSeries = samples[slot].Select(x => x.ToString()).ToList();
-            var timeSeries = GenerateTimeSeries(interval, heartrateSeries);
+            var timeSeries = GenerateTimeSeries(date, interval, heartrateSeries);
 
-            var attributes = new Dictionary<Parameters, string>
-            {
-                { Parameters.StartTime, date.ToString("s") },
-                { Parameters.Duration, duration.ToString() },
-            };
+            result.Attributes.Add(Parameters.StartTime, date.ToString(DateHelper.SecondFormat));
+            result.Attributes.Add(Parameters.Duration, duration.ToString());
 
-            var series = new Dictionary<Parameters, IEnumerable<string>>
-            {
-                { Parameters.Duration, timeSeries },
-                { Parameters.Heartrate, heartrateSeries },
-            };
+            result.Series.Add(Parameters.Timestamp, timeSeries);
+            result.Series.Add(Parameters.Heartrate, heartrateSeries);
 
             if (smode.Substring(0, 1) == "1")
             {
@@ -93,39 +90,35 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                     .Select(x => Math.Round(x / 10.0, 1).ToString(CultureInfo.InvariantCulture))
                     .ToList();
 
-                series.Add(Parameters.Speed, speedSeries);
+                result.Series.Add(Parameters.Speed, speedSeries);
             }
 
             if (smode.Substring(1, 1) == "1")
             {
                 slot++;
                 var cadenceSeries = samples[slot].Select(x => x.ToString()).ToList();
-                series.Add(Parameters.Cadence, cadenceSeries);
+                result.Series.Add(Parameters.Cadence, cadenceSeries);
             }
 
             if (smode.Substring(2, 1) == "1")
             {
                 slot++;
                 var altitudeSeries = samples[slot].Select(x => x.ToString()).ToList();
-                series.Add(Parameters.AltitudeDelta, altitudeSeries);
+                result.Series.Add(Parameters.AltitudeDelta, altitudeSeries);
             }
 
-            var result = new FileExtraction(
-                Source,
-                file.Filepath,
-                date,
-                DateRanges.Time,
-                attributes,
-                series
-            );
             return [result];
         }
 
-        private List<string> GenerateTimeSeries(int interval, List<string> speedSeries)
+        private List<string> GenerateTimeSeries(
+            DateTime date,
+            int interval,
+            List<string> speedSeries
+        )
         {
             var timeSeries = new List<string>();
             for (int i = 0; i < speedSeries.Count; i++)
-                timeSeries.Add((i * interval).ToString());
+                timeSeries.Add(date.AddSeconds(i * interval).ToString(DateHelper.SecondFormat));
             return timeSeries;
         }
 

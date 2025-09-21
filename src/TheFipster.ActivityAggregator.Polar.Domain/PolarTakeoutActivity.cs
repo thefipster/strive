@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
-    public partial class PolarTakeoutActivity
+    public class PolarTakeoutActivity
     {
         [JsonPropertyName("exportVersion")]
         public required string ExportVersion { get; set; }
@@ -16,13 +16,13 @@
         public Summary? Summary { get; set; }
 
         [JsonPropertyName("samples")]
-        public Samples? Samples { get; set; }
+        public StepSamples? Samples { get; set; }
 
         [JsonPropertyName("physicalInformation")]
         public PhysicalInformation? PhysicalInformation { get; set; }
     }
 
-    public partial class Samples
+    public class StepSamples
     {
         [JsonPropertyName("mets")]
         public List<Met>? Mets { get; set; }
@@ -34,7 +34,7 @@
         public List<string>? MetSources { get; set; }
     }
 
-    public partial class Met
+    public class Met
     {
         [JsonPropertyName("localTime")]
         public TimeSpan LocalTime { get; set; }
@@ -43,7 +43,7 @@
         public double Value { get; set; }
     }
 
-    public partial class Summary
+    public class Summary
     {
         [JsonPropertyName("startTime")]
         public TimeSpan StartTime { get; set; }
@@ -76,7 +76,7 @@
         public List<ActivityLevel> ActivityLevels { get; set; }
     }
 
-    public partial class ActivityLevel
+    public class ActivityLevel
     {
         [JsonPropertyName("level")]
         public string Level { get; set; }

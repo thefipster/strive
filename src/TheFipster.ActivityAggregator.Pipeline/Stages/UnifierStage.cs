@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Tools;
@@ -18,7 +19,8 @@ public class UnifierStage(
     PipelineState<MergerPipeline> state,
     IOptions<UnifierConfig> config,
     IIndexer<UnifyIndex> indexer,
-    IUnifiedRecordWriter writer,
+    ILiteDbWriter<UnifiedRecord> records,
+    IInventoryService inventory,
     ILogger<UnifierStage> logger
 ) : Stage<BundleIndex, UnifyIndex>, IUnifierStage
 {
@@ -71,23 +73,25 @@ public class UnifierStage(
 
     private Task ProcessInput(BundleIndex bundle)
     {
-        var fragments = new List<FileExtraction>();
+        var extractions = new List<FileExtraction>();
         foreach (var file in bundle.Extractions)
         {
             var extraction = FileExtraction.FromFile(file);
-            fragments.Add(extraction);
+            extractions.Add(extraction);
         }
 
-        var allMetrics = fragments.Select(x => x.Attributes).ToArray();
-        var mergeResult = Merger.Merge(allMetrics);
+        var allMetrics = extractions.Select(x => x.Attributes).ToArray();
+        var mergedMetrics = Merger.Merge(allMetrics);
 
         var unifiedRecord = new UnifiedRecord(
             bundle.Timestamp,
             bundle.Kind,
-            mergeResult.Resolved,
-            mergeResult.Conflicts
+            mergedMetrics.Resolved,
+            mergedMetrics.Conflicts
         );
-        writer.Upsert(unifiedRecord);
+
+        records.Set(unifiedRecord);
+        inventory.Update(unifiedRecord);
 
         var unifiedIndex = new UnifyIndex(
             Version,

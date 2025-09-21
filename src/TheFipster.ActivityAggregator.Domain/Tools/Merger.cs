@@ -41,4 +41,9 @@ public class Merger
 
         return valueMap;
     }
+
+    public static object Merge(params Dictionary<Parameters, List<string>>[] series)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,11 +1,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Storage.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Activity;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Activity;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Context;
+using TheFipster.ActivityAggregator.Storage.Lite.Services;
 
 namespace TheFipster.ActivityAggregator.Storage.Lite;
 
@@ -28,6 +31,11 @@ public static class DependencyExtension
         services.AddScoped<IMasterIndexer, MasterIndexer>();
 
         services.AddSingleton<ActivityContext>();
-        services.AddScoped<IUnifiedRecordWriter, UnifiedRecordWriter>();
+        services.AddScoped<ILiteDbWriter<UnifiedRecord>, UnifiedRecordWriter>();
+        services.AddScoped<ILiteDbReader<UnifiedRecord, DateTime>, UnifiedRecordReader>();
+        services.AddScoped<ILiteDbWriter<Inventory>, InventoryWriter>();
+        services.AddScoped<ILiteDbReader<Inventory, int>, InventoryReader>();
+
+        services.AddScoped<IInventoryService, InventoryService>();
     }
 }

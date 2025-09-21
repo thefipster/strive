@@ -1,0 +1,10 @@
+
+    <MudContainer Class="d-flex justify-space-between flex-grow-1" Fixed="true">
+        @if (monthlyInventory.Any())
+        {
+            @foreach (var month in monthlyInventory.OrderBy(x => x.Key))
+            {
+                <MonthColumn Month="@month.Key" Inventory="@month.Value"/>
+            }
+        }
+    </MudContainer>

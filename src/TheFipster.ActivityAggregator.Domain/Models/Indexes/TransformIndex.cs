@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 
@@ -30,15 +31,23 @@ public class TransformIndex
     }
 
     public int Version { get; set; }
+
     public DateTime IndexedAt { get; set; } = DateTime.UtcNow;
+
     public string? Filepath { get; set; }
+
     public string? SourceFilepath { get; set; }
+
     public DataSources Source { get; set; }
+
     public DateTime Timestamp { get; set; }
+
     public DateRanges Range { get; set; }
 
     // Computed values
     public string? Date { get; set; }
+
     public string? Time { get; set; }
+
     public string? Filter { get; set; }
 }

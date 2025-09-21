@@ -1,0 +1,122 @@
+@using TheFipster.ActivityAggregator.Domain.Enums
+
+@if (Index == null)
+{
+}
+else
+{
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderAvatar>
+                <MudAvatar
+                    Color="Color.Dark">
+                    @if (Index.Kind == DataKind.Day)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Today" Color="Color.Default"/>
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Watch" Color="Color.Default"/>
+                    }
+                </MudAvatar>
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText
+                    Typo="Typo.body1">@(Index.Kind == DataKind.Day ? Index.Timestamp.ToString("dd.MM.yyyy") : Index.Timestamp.ToString("dd.MM.yyyy HH:mm"))</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @if (Index.HasConflicts)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Color="Color.Error"/>
+                }
+                else
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success"/>
+                }
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudExpansionPanels MultiExpansion="true">
+                <MudExpansionPanel Text="Transformations">
+                    <MudSimpleTable Bordered="false" Dense="true">
+                        <tbody>
+                        @foreach (var transform in Index.Transformations.Select(x => x.Source).Distinct())
+                        {
+                            <tr>
+                                <td>@transform</td>
+                            </tr>
+                        }
+                        @foreach (var import in Index.Imports)
+                        {
+
+                        }
+                        </tbody>
+                    </MudSimpleTable>
+                </MudExpansionPanel>
+                <MudExpansionPanel Text="Source Files">
+                    <MudSimpleTable Bordered="false" Dense="true">
+                        <tbody>
+                        @foreach (var import in Index.Imports)
+                        {
+                            <tr>
+                                <td>@(new FileInfo(import.Filepath).Name)</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </MudSimpleTable>
+                </MudExpansionPanel>
+                <MudExpansionPanel Text="Processing">
+                    <MudSimpleTable Bordered="false" Dense="true">
+                        <tbody>
+                        <tr>
+                            <td>Unified</td>
+                            <td>@Index.UnifiedAt.ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        <tr>
+                            <td>Bundled</td>
+                            <td>@Index.BundledAt.ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        <tr>
+                            <td>Transform end</td>
+                            <td>@Index.Transformations.Max(x => x.IndexedAt).ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        <tr>
+                            <td>Transform start</td>
+                            <td>@Index.Transformations.Min(x => x.IndexedAt).ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        <tr>
+                            <td>Classify end</td>
+                            <td>@Index.Imports.Max(x => x.ClassifiedAt).ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        <tr>
+                            <td>Classify start</td>
+                            <td>@Index.Imports.Min(x => x.ClassifiedAt).ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        <tr>
+                            <td>Scan end</td>
+                            <td>@Index.Imports.Max(x => x.ScannedAt).ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        <tr>
+                            <td>Scan start</td>
+                            <td>@Index.Imports.Min(x => x.ScannedAt).ToString("dd.MM.yyyy HH:mm:ss.fff")</td>
+                        </tr>
+                        </tbody>
+                    </MudSimpleTable>
+                </MudExpansionPanel>
+                <MudExpansionPanel Text="Metrics">
+                    <MudSimpleTable Bordered="false" Dense="true">
+                        <tbody>
+                        @foreach (var metric in Activity.Metrics)
+                        {
+                            <tr>
+                                <td>@metric.Key</td>
+                                <td>@metric.Value</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </MudSimpleTable>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </MudCardContent>
+    </MudCard>
+}

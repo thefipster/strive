@@ -65,21 +65,119 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var json = File.ReadAllText(file.Filepath);
             var activity =
                 JsonSerializer.Deserialize<PolarTakeoutActivity>(json)
-                ?? throw new ArgumentException("Couldn't parse polar takeout activity.");
+                ?? throw new ArgumentException(
+                    $"Couldn't parse polar takeout activity file {file.Filepath}."
+                );
 
-            var date = activity.Date;
-            var result = new FileExtraction(Source, file.Filepath, date, DateRanges.Day);
+            var results = new List<FileExtraction>();
+            results = AppendSummaryAttributes(results, file, activity);
+            results = AppendStepsSeries(results, file, activity);
+            results = AppendMetsSeries(results, file, activity);
 
+            if (results.Any())
+                return results;
+
+            throw new ExtractionException(file.Filepath, "Couldn't find any data.");
+        }
+
+        private List<FileExtraction> AppendMetsSeries(
+            List<FileExtraction> results,
+            ArchiveIndex file,
+            PolarTakeoutActivity activity
+        )
+        {
+            if (
+                activity.Samples == null
+                || activity.Samples.Mets == null
+                || activity.Samples.Mets.Count == 0
+            )
+                return results;
+
+            var metsSeries = new List<string>();
+            var timestampSeries = new List<string>();
+
+            foreach (var sample in activity.Samples.Mets)
+            {
+                var timestamp = activity.Date.AddSeconds(sample.LocalTime.TotalSeconds);
+                timestampSeries.Add(timestamp.ToString(DateHelper.SecondFormat));
+                metsSeries.Add(((int)sample.Value).ToString());
+            }
+
+            var series = FileExtraction.EmptySeries;
+            series.Add(Parameters.Timestamp, timestampSeries);
+            series.Add(Parameters.MetabolicRate, metsSeries);
+
+            var result = new FileExtraction(
+                Source,
+                file.Filepath,
+                activity.Date,
+                DateRanges.Day,
+                series
+            );
+
+            results.Add(result);
+            return results;
+        }
+
+        private List<FileExtraction> AppendStepsSeries(
+            List<FileExtraction> results,
+            ArchiveIndex file,
+            PolarTakeoutActivity activity
+        )
+        {
+            if (
+                activity.Samples == null
+                || activity.Samples.Steps == null
+                || activity.Samples.Steps.Count == 0
+            )
+                return results;
+
+            var stepsSeries = new List<string>();
+            var timestampSeries = new List<string>();
+
+            foreach (var sample in activity.Samples.Steps)
+            {
+                var timestamp = activity.Date.AddSeconds(sample.LocalTime.TotalSeconds);
+                timestampSeries.Add(timestamp.ToString(DateHelper.SecondFormat));
+                stepsSeries.Add(((int)sample.Value).ToString());
+            }
+
+            var series = FileExtraction.EmptySeries;
+            series.Add(Parameters.Timestamp, timestampSeries);
+            series.Add(Parameters.Steps, stepsSeries);
+
+            var result = new FileExtraction(
+                Source,
+                file.Filepath,
+                activity.Date,
+                DateRanges.Day,
+                series
+            );
+
+            results.Add(result);
+            return results;
+        }
+
+        private List<FileExtraction> AppendSummaryAttributes(
+            List<FileExtraction> results,
+            ArchiveIndex file,
+            PolarTakeoutActivity activity
+        )
+        {
             if (activity.Summary != null)
-                result.Attributes = GetAttributes(activity.Summary);
+            {
+                var attributes = GetAttributes(activity.Summary);
+                var result = new FileExtraction(
+                    Source,
+                    file.Filepath,
+                    activity.Date,
+                    DateRanges.Day,
+                    attributes
+                );
+                results.Add(result);
+            }
 
-            if (activity.Samples is { Steps.Count: > 0 })
-                result.Series = CreateStepsSeries(activity.Samples.Steps);
-
-            if (result.Attributes.Any() || result.Series.Any())
-                return [result];
-
-            throw new ArgumentException("Polar takeout activity yielded to data.");
+            return results;
         }
 
         private Dictionary<Parameters, string> GetAttributes(Summary summary)
@@ -94,24 +192,6 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             attributes.Add(Parameters.Calories, summary.Calories.ToString());
 
             return attributes;
-        }
-
-        private Dictionary<Parameters, IEnumerable<string>> CreateStepsSeries(List<Met> samples)
-        {
-            var durationSeries = new List<string>();
-            var stepsSeries = new List<string>();
-
-            foreach (var sample in samples)
-            {
-                durationSeries.Add(((int)sample.LocalTime.TotalSeconds).ToString());
-                stepsSeries.Add(((int)sample.Value).ToString());
-            }
-
-            var series = FileExtraction.EmptySeries;
-            series.Add(Parameters.Duration, durationSeries);
-            series.Add(Parameters.Steps, stepsSeries);
-
-            return series;
         }
     }
 }

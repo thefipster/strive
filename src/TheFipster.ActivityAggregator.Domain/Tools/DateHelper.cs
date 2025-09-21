@@ -63,4 +63,10 @@ public static class DateHelper
             $"Directory path {directory.FullName} is not suitable for time conversion."
         );
     }
+
+    public static string MillisecondFormat => "yyyy-MM-ddTHH:mm:ss.fff";
+    public static string SecondFormat => "s";
+    public static string MinuteFormat => "yyyy-MM-ddTHH:mm";
+    public static string DayFormat => "yyyy-MM-dd";
+    public static string MonthFormat => "yyyy-MM";
 }

@@ -1,24 +1,45 @@
+using System.Text.Json.Serialization;
 using TheFipster.ActivityAggregator.Domain.Enums;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-public class MasterIndex(
-    UnifyIndex unifiedIndex,
-    BundleIndex bundleIndex,
-    List<TransformIndex> transformIndexes,
-    List<IngesterIndex> ingesterIndexes
-)
+public class MasterIndex
 {
-    public DateTime Timestamp { get; } = bundleIndex.Timestamp;
-    public DataKind Kind { get; } = bundleIndex.Kind;
-    public bool HasConflicts { get; } = unifiedIndex.HasConflicts;
+    public MasterIndex() { }
 
-    public List<IngesterIndex> Imports { get; } = ingesterIndexes;
-    public List<TransformIndex> Transformations { get; } = transformIndexes;
+    public MasterIndex(
+        UnifyIndex unifiedIndex,
+        BundleIndex bundleIndex,
+        List<TransformIndex> transformIndexes,
+        List<IngesterIndex> ingesterIndexes
+    )
+    {
+        Timestamp = bundleIndex.Timestamp;
+        Kind = bundleIndex.Kind;
+        HasConflicts = unifiedIndex.HasConflicts;
+        Imports = ingesterIndexes;
+        Transformations = transformIndexes;
+        BundlerVersion = bundleIndex.Version;
+        BundledAt = bundleIndex.IndexedAt;
+        UnifierVersion = unifiedIndex.Version;
+        UnifiedAt = unifiedIndex.IndexedAt;
+    }
 
-    public int BundleVersion { get; } = bundleIndex.Version;
-    public DateTime BundledAt { get; } = bundleIndex.IndexedAt;
+    public DateTime Timestamp { get; set; }
 
-    public int UnifierVersion { get; } = unifiedIndex.Version;
-    public DateTime UnifiedAt { get; } = unifiedIndex.IndexedAt;
+    public DataKind Kind { get; set; }
+
+    public bool HasConflicts { get; set; }
+
+    public List<IngesterIndex> Imports { get; set; } = new();
+
+    public List<TransformIndex> Transformations { get; set; } = new();
+
+    public int BundlerVersion { get; set; }
+
+    public DateTime BundledAt { get; set; }
+
+    public int UnifierVersion { get; set; }
+
+    public DateTime UnifiedAt { get; set; }
 }
