@@ -1,8 +1,8 @@
-﻿using Fipster.TrackMe.Web.Views;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using TheFipster.ActivityAggregator.Web.Views;
 
-namespace Fipster.TrackMe.Web.Components.Calendar
+namespace TheFipster.ActivityAggregator.Web.Components.Calendar
 {
     public partial class Calendar
     {
@@ -19,7 +19,7 @@ namespace Fipster.TrackMe.Web.Components.Calendar
                 : DateTime.Parse(DateValue);
 
             CalendarModel.SetMonth(date);
-            Data = await Api.GetMonthASync(date);
+            Data = await Api.GetMonthIndexAsync(date);
 
             await base.OnInitializedAsync();
         }

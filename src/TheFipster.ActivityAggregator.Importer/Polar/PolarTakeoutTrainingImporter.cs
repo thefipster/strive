@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
@@ -22,7 +23,14 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         public ImportClassification Classify(FileProbe probe)
         {
-            var values = probe.GetJsonPropertiesWithValues();
+            var values = probe.JsonValues;
+
+            if (values == null)
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find valid json."
+                );
 
             if (!required.IsSubsetOf(values.Keys))
                 throw new ClassificationException(
@@ -124,7 +132,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             List<FileExtraction> result,
             DateTimeOffset start,
             Dictionary<Parameters, string> attributes,
-            Dictionary<Parameters, IEnumerable<string>>? series,
+            Dictionary<Parameters, List<string>>? series,
             ArchiveIndex file
         )
         {
@@ -141,46 +149,43 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 );
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? CreateRrSeries(List<RrSample>? samples)
+        private Dictionary<Parameters, List<string>>? CreateRrSeries(List<RrSample>? samples)
         {
             if (samples == null || samples.Count == 0)
                 return null;
 
-            var rr = samples.Select(x =>
-                x.Duration.Replace("PT", string.Empty).Replace("S", string.Empty)
-            );
+            var rr = samples
+                .Select(x => x.Duration.Replace("PT", string.Empty).Replace("S", string.Empty))
+                .ToList();
 
             var series = FileExtraction.EmptySeries;
             series.Add(Parameters.Rr, rr);
             return series;
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? CreatePowerSeries(
-            List<IntSample>? samples
-        )
+        private Dictionary<Parameters, List<string>>? CreatePowerSeries(List<IntSample>? samples)
         {
             if (samples == null || samples.Count == 0)
                 return null;
 
-            var start = samples.First().DateTime;
-            var powerSeries = samples.Select(x => x.CurrentPower.ToString());
-            var durationSeries = samples.Select(x =>
-                ((int)(x.DateTime - start).TotalSeconds).ToString()
-            );
+            var powerSeries = samples.Select(x => x.CurrentPower.ToString()).ToList();
+            var timestampSeries = samples
+                .Select(x => x.DateTime.ToString(DateHelper.SecondFormat))
+                .ToList();
 
             var series = FileExtraction.EmptySeries;
-            series.Add(Parameters.Duration, durationSeries);
+            series.Add(Parameters.Timestamp, timestampSeries);
             series.Add(Parameters.Power, powerSeries);
 
             return series;
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? CreateRoute(List<GpsSample>? samples)
+        private Dictionary<Parameters, List<string>>? CreateRoute(List<GpsSample>? samples)
         {
             if (samples == null || samples.Count == 0)
                 return null;
 
-            var durationSeries = new List<string>();
+            var timestampSeries = new List<string>();
             var altitudeSeries = new List<string>();
             var latitudeSeries = new List<string>();
             var longitudeSeries = new List<string>();
@@ -189,14 +194,14 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
             foreach (var point in samples)
             {
-                durationSeries.Add(((int)(point.DateTime - start).TotalSeconds).ToString());
+                timestampSeries.Add(point.DateTime.ToString(DateHelper.SecondFormat));
                 altitudeSeries.Add(point.Altitude.ToString(CultureInfo.InvariantCulture));
                 latitudeSeries.Add(point.Latitude.ToString(CultureInfo.InvariantCulture));
                 longitudeSeries.Add(point.Longitude.ToString(CultureInfo.InvariantCulture));
             }
 
             var series = FileExtraction.EmptySeries;
-            series.Add(Parameters.Duration, durationSeries);
+            series.Add(Parameters.Timestamp, timestampSeries);
             series.Add(Parameters.Altitude, altitudeSeries);
             series.Add(Parameters.Latitude, latitudeSeries);
             series.Add(Parameters.Longitude, longitudeSeries);
@@ -204,7 +209,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return series;
         }
 
-        private Dictionary<Parameters, IEnumerable<string>>? CreateSimpleSeries(
+        private Dictionary<Parameters, List<string>>? CreateSimpleSeries(
             List<DoubleSample>? samples,
             Parameters type
         )
@@ -219,13 +224,14 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var start = samples.First().DateTime;
             var basicSeries = samples
                 .Where(x => x.Value.HasValue)
-                .Select(x => (x.Value ?? double.NaN).ToString(CultureInfo.InvariantCulture));
-            var durationSeries = samples.Select(x =>
-                ((int)(x.DateTime - start).TotalSeconds).ToString()
-            );
+                .Select(x => (x.Value ?? double.NaN).ToString(CultureInfo.InvariantCulture))
+                .ToList();
+            var timestampSeries = samples
+                .Select(x => x.DateTime.ToString(DateHelper.SecondFormat))
+                .ToList();
 
             var series = FileExtraction.EmptySeries;
-            series.Add(Parameters.Duration, durationSeries);
+            series.Add(Parameters.Timestamp, timestampSeries);
             series.Add(type, basicSeries);
             return series;
         }

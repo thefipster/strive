@@ -1,0 +1,26 @@
+<MudPaper Class="d-flex flex-column align-center gap-4 flex-grow-1">
+    <MudText Typo="Typo.body1">@Month.ToString("MMMM")</MudText>
+    @if (dailyInventory.Any())
+    {
+        <MudSimpleTable Elevation="0" Dense="true" Bordered="false">
+            <tbody>
+            @foreach (var day in dailyInventory.OrderBy(x => x.Key))
+            {
+                <tr>
+                    <td class="align-right">@day.Key</td>
+                    <td>
+                        @if (day.Value.Any())
+                        {
+                            <MudIcon Class="ma-n1" Icon="@Icons.Material.Outlined.Check" Size="Size.Small" Color="Color.Info"/>
+                        }
+                        else
+                        {
+                            <MudIcon Class="ma-n1" Icon="@Icons.Material.Outlined.Close" Size="Size.Small" Color="Color.Default"/>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </MudSimpleTable>
+    }
+</MudPaper>

@@ -3,4 +3,4 @@ using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 namespace TheFipster.ActivityAggregator.Pipeline.Abstractions;
 
-public interface IUnifierStage : IStage<TransformIndex, UnifiedRecord> { }
+public interface IUnifierStage : IStage<BundleIndex, UnifyIndex> { }

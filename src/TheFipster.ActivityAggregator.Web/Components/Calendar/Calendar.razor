@@ -2,8 +2,8 @@
 @inject ApiService Api
 @inject NavigationManager NavigationManager
 
-<div class="calendar" role="grid" aria-label="Five-week calendar with weekly summary column">
-    <div class="calendar-header d-flex flex-row justify-content-between">
+<MudPaper Class="ma-10 pa-10">
+    <div class="calendar-header d-flex flex-row justify-center">
         <div>
             <h1 class="d-flex gap-5">
                 <MudIconButton OnClick="() => PrevMonth()" Icon="@Icons.Material.Outlined.ArrowBackIos"
@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <table aria-readonly="true">
+    <table>
         <thead>
         <tr>
             <th scope="col">Mon</th>
@@ -28,7 +28,6 @@
             <th scope="col">Fri</th>
             <th scope="col">Sat</th>
             <th scope="col">Sun</th>
-            <th scope="col" class="summary-col">Summary</th>
         </tr>
         </thead>
         <tbody>
@@ -38,6 +37,9 @@
         }
         </tbody>
     </table>
+</MudPaper>
+<div class="calendar" role="grid">
+
 </div>
 
 <MudDialog @bind-Visible="DialogOpen">

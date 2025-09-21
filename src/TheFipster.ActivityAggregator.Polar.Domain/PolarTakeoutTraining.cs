@@ -6,7 +6,7 @@
     using System.Text.Json;
     using System.Text.Json.Serialization;
 
-    public partial class PolarTakeoutTraining
+    public class PolarTakeoutTraining
     {
         [JsonPropertyName("exportVersion")]
         public string ExportVersion { get; set; }
@@ -63,7 +63,7 @@
         public LoadInformation LoadInformation { get; set; }
     }
 
-    public partial class Exercise
+    public class Exercise
     {
         [JsonPropertyName("startTime")]
         public DateTimeOffset StartTime { get; set; }
@@ -126,7 +126,7 @@
         public LoadInformation LoadInformation { get; set; }
     }
 
-    public partial class ExerciseAltitude
+    public class ExerciseAltitude
     {
         [JsonPropertyName("min")]
         public double Min { get; set; }
@@ -138,7 +138,7 @@
         public double Max { get; set; }
     }
 
-    public partial class AutoLap
+    public class AutoLap
     {
         [JsonPropertyName("lapNumber")]
         public long LapNumber { get; set; }
@@ -171,7 +171,7 @@
         public Dictionary<string, double> Power { get; set; }
     }
 
-    public partial class LoadInformation
+    public class LoadInformation
     {
         [JsonPropertyName("cardioLoad")]
         public double CardioLoad { get; set; }
@@ -198,7 +198,7 @@
         public string PerceivedLoadInterpretation { get; set; }
     }
 
-    public partial class Samples
+    public class Samples
     {
         [JsonPropertyName("rr")]
         public List<RrSample> Rr { get; set; }
@@ -228,7 +228,7 @@
         public List<GpsSample> RecordedRoute { get; set; }
     }
 
-    public partial class DoubleSample
+    public class DoubleSample
     {
         [JsonPropertyName("dateTime")]
         public DateTimeOffset DateTime { get; set; }
@@ -238,7 +238,7 @@
         public double? Value { get; set; }
     }
 
-    public partial class IntSample
+    public class IntSample
     {
         [JsonPropertyName("dateTime")]
         public DateTimeOffset DateTime { get; set; }
@@ -247,7 +247,7 @@
         public int CurrentPower { get; set; }
     }
 
-    public partial class GpsSample
+    public class GpsSample
     {
         [JsonPropertyName("dateTime")]
         public DateTimeOffset DateTime { get; set; }
@@ -262,7 +262,7 @@
         public double Altitude { get; set; }
     }
 
-    public partial class RrSample
+    public class RrSample
     {
         [JsonPropertyName("duration")]
         public string Duration { get; set; }
@@ -271,7 +271,7 @@
         public bool Offline { get; set; }
     }
 
-    public partial class Zones
+    public class Zones
     {
         [JsonPropertyName("speed")]
         public List<HeartRate> Speed { get; set; }
@@ -283,7 +283,7 @@
         public List<HeartRate> HeartRate { get; set; }
     }
 
-    public partial class HeartRate
+    public class HeartRate
     {
         [JsonPropertyName("lowerLimit")]
         public double LowerLimit { get; set; }
@@ -302,7 +302,7 @@
         public double? Distance { get; set; }
     }
 
-    public partial class PeriodData
+    public class PeriodData
     {
         [JsonPropertyName("type")]
         public string Type { get; set; }
@@ -320,7 +320,7 @@
         public List<SubPeriod> SubPeriods { get; set; }
     }
 
-    public partial class PeriodDataAttribute
+    public class PeriodDataAttribute
     {
         [JsonPropertyName("key")]
         public string Key { get; set; }
@@ -329,7 +329,7 @@
         public string TextValue { get; set; }
     }
 
-    public partial class SubPeriod
+    public class SubPeriod
     {
         [JsonPropertyName("type")]
         public string Type { get; set; }
@@ -348,7 +348,7 @@
         public List<SubPeriod> SubPeriods { get; set; }
     }
 
-    public partial class SubPeriodAttribute
+    public class SubPeriodAttribute
     {
         [JsonPropertyName("key")]
         public string Key { get; set; }
@@ -357,7 +357,7 @@
         public double NumericValue { get; set; }
     }
 
-    public partial class PhysicalInformationSnapshot
+    public class PhysicalInformationSnapshot
     {
         [JsonPropertyName("dateTime")]
         public DateTimeOffset DateTime { get; set; }

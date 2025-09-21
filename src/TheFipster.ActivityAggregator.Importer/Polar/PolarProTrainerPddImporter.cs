@@ -1,4 +1,5 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
@@ -12,15 +13,23 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         public ImportClassification Classify(FileProbe probe)
         {
-            var result = probe.GetText();
-            if (result.Length < 9 || result.Substring(0, 9) != "[DayInfo]")
+            var text = probe.Text;
+
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find any text."
+                );
+
+            if (text.Length < 9 || text.Substring(0, 9) != "[DayInfo]")
                 throw new ClassificationException(
                     probe.Filepath,
                     Source,
                     "Couldn't find day info section."
                 );
 
-            var lines = result.Split('\n');
+            var lines = text.Split('\n');
             var line = lines[2];
 
             var kvp = line.Split("\t");

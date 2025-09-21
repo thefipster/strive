@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -7,36 +8,45 @@ namespace TheFipster.ActivityAggregator.Domain.Tools;
 
 public class FileProbe
 {
-    private readonly byte[] buffer;
-    private readonly Encoding encoding;
+    private readonly Encoding encoding = Encoding.UTF8;
+
     private readonly FileInfo file;
+    private readonly byte[] buffer;
 
-    public FileProbe(string filePath, int maxBytes = 4096, Encoding? encoding = null)
+    public FileProbe(string filePath, int maxBytes = 4096, Encoding? customEncoding = null)
     {
-        file = new FileInfo(filePath);
-        this.encoding = encoding ?? Encoding.UTF8;
+        if (customEncoding != null)
+            encoding = customEncoding;
 
+        file = new FileInfo(filePath);
         using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         var length = Math.Min(maxBytes, (int)fs.Length);
         buffer = new byte[length];
         fs.ReadExactly(buffer, 0, length);
+
+        IsText = CheckIfTextFile();
+        if (!IsText)
+            return;
+
+        Text = GetText();
+        Lines = GetLines().ToList();
+        JsonValues = TryGetJsonValues();
+        if (JsonValues != null)
+            JsonTags = JsonValues.Keys.ToHashSet();
+
+        XmlTags = TryGetXmlTags().ToHashSet();
     }
 
     public string Filepath => file.FullName;
+    public ReadOnlyMemory<byte> Bytes => buffer;
+    public bool IsText { get; }
+    public string? Text { get; }
+    public List<string>? Lines { get; }
+    public HashSet<string>? JsonTags { get; }
+    public HashSet<string>? XmlTags { get; }
+    public Dictionary<string, string?>? JsonValues { get; }
 
-    public ReadOnlyMemory<byte> GetBytes => buffer;
-
-    public string GetText() => encoding.GetString(buffer);
-
-    public IEnumerable<string> GetLines()
-    {
-        using var reader = new StringReader(GetText());
-        string? line;
-        while ((line = reader.ReadLine()) != null)
-            yield return line;
-    }
-
-    public bool IsText()
+    private bool CheckIfTextFile()
     {
         if (buffer.Length == 0)
             return false;
@@ -53,118 +63,74 @@ public class FileProbe
         return ratio > 0.9;
     }
 
-    /// Collect property names only
-    public HashSet<string> GetJsonPropertyNames()
+    private string GetText() => encoding.GetString(buffer);
+
+    private IEnumerable<string> GetLines()
     {
-        var props = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        if (!IsText())
-            return props;
-
-        var reader = new Utf8JsonReader(buffer, isFinalBlock: false, state: default);
-
-        try
-        {
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonTokenType.PropertyName)
-                {
-                    props.Add(reader.GetString() ?? "");
-                }
-            }
-        }
-        catch (Exception)
-        {
-            return [];
-        }
-
-        return props;
+        using var reader = new StringReader(GetText());
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+            yield return line;
     }
 
     /// Collect a dictionary of property -> first encountered value (as string)
-    public Dictionary<string, string?> GetJsonPropertiesWithValues()
+    private Dictionary<string, string?>? TryGetJsonValues()
     {
-        var props = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-
-        if (!IsText())
-            return props;
-
-        var reader = new Utf8JsonReader(buffer, isFinalBlock: false, state: default);
-        string? lastProp = null;
-
         try
         {
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonTokenType.PropertyName)
-                {
-                    lastProp = reader.GetString();
-                }
-                else if (lastProp != null)
-                {
-                    // Record first value we see for this property
-                    if (!props.ContainsKey(lastProp))
-                    {
-                        string? value = reader.TokenType switch
-                        {
-                            JsonTokenType.String => reader.GetString(),
-                            JsonTokenType.Number => reader.TryGetInt64(out var i)
-                                ? i.ToString()
-                                : reader.GetDouble().ToString(CultureInfo.InvariantCulture),
-                            JsonTokenType.True => "true",
-                            JsonTokenType.False => "false",
-                            JsonTokenType.Null => "null",
-                            _ => null, // skip objects/arrays for simplicity
-                        };
-
-                        props[lastProp] = value;
-                    }
-                    lastProp = null;
-                }
-            }
+            return GetJsonValues();
         }
         catch (Exception)
         {
-            return new();
+            return null;
         }
+    }
 
+    private Dictionary<string, string?>? GetJsonValues()
+    {
+        var props = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+        var reader = new Utf8JsonReader(buffer, isFinalBlock: false, state: default);
+        string? lastProp = null;
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.PropertyName)
+            {
+                lastProp = reader.GetString();
+            }
+            else if (lastProp != null)
+            {
+                // Record first value we see for this property
+                if (!props.ContainsKey(lastProp))
+                {
+                    string? value = reader.TokenType switch
+                    {
+                        JsonTokenType.String => reader.GetString(),
+                        JsonTokenType.Number => reader.TryGetInt64(out var i)
+                            ? i.ToString()
+                            : reader.GetDouble().ToString(CultureInfo.InvariantCulture),
+                        JsonTokenType.True => "true",
+                        JsonTokenType.False => "false",
+                        JsonTokenType.Null => "null",
+                        _ => null, // skip objects/arrays for simplicity
+                    };
+
+                    props[lastProp] = value;
+                }
+                lastProp = null;
+            }
+        }
         return props;
     }
 
-    public IEnumerable<string> GetXmlPropsAndAttributes()
+    private IEnumerable<string> TryGetXmlTags()
     {
         var elements = new HashSet<string>();
         var attributes = new HashSet<string>();
 
         try
         {
-            var text = GetText();
-            using var reader = XmlReader.Create(
-                new StringReader(text),
-                new XmlReaderSettings
-                {
-                    IgnoreComments = true,
-                    IgnoreWhitespace = true,
-                    DtdProcessing = DtdProcessing.Ignore,
-                }
-            );
-
-            while (reader.Read())
-            {
-                if (reader.NodeType == XmlNodeType.Element)
-                {
-                    elements.Add(reader.LocalName);
-
-                    if (reader.HasAttributes)
-                    {
-                        while (reader.MoveToNextAttribute())
-                        {
-                            attributes.Add(reader.LocalName);
-                        }
-                        reader.MoveToElement();
-                    }
-                }
-            }
+            GetXmlTags(elements, attributes);
         }
         catch
         {
@@ -172,5 +138,36 @@ public class FileProbe
         }
 
         return elements.Concat(attributes);
+    }
+
+    private void GetXmlTags(HashSet<string> elements, HashSet<string> attributes)
+    {
+        var text = GetText();
+        using var reader = XmlReader.Create(
+            new StringReader(text),
+            new XmlReaderSettings
+            {
+                IgnoreComments = true,
+                IgnoreWhitespace = true,
+                DtdProcessing = DtdProcessing.Ignore,
+            }
+        );
+
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.Element)
+            {
+                elements.Add(reader.LocalName);
+
+                if (reader.HasAttributes)
+                {
+                    while (reader.MoveToNextAttribute())
+                    {
+                        attributes.Add(reader.LocalName);
+                    }
+                    reader.MoveToElement();
+                }
+            }
+        }
     }
 }

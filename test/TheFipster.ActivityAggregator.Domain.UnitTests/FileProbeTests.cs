@@ -13,13 +13,14 @@ public class FileProbeTests
         var bufferSize = 3000;
         var probe = new FileProbe(file, bufferSize);
 
-        var isText = probe.IsText();
-        var text = probe.GetText();
-        var lines = probe.GetLines();
-        var props = probe.GetJsonPropertyNames();
-        var values = probe.GetJsonPropertiesWithValues();
+        var isText = probe.IsText;
+        var text = probe.Text;
+        var lines = probe.Lines;
+        var props = probe.JsonTags;
+        var values = probe.JsonValues;
 
         isText.Should().BeTrue();
+        text.Should().NotBeNullOrWhiteSpace();
         text.Length.Should().Be(bufferSize);
         lines.Should().HaveCountGreaterThan(0);
         props.Should().HaveCountGreaterThan(0);
@@ -34,8 +35,8 @@ public class FileProbeTests
         var bufferSize = 3000;
         var probe = new FileProbe(file, bufferSize);
 
-        var isText = probe.IsText();
-        var props = probe.GetJsonPropertyNames();
+        var isText = probe.IsText;
+        var props = probe.JsonTags;
 
         isText.Should().BeTrue();
         props.Should().HaveCountGreaterThan(0);
@@ -49,12 +50,13 @@ public class FileProbeTests
         var bufferSize = 3000;
         var probe = new FileProbe(file, bufferSize);
 
-        var isText = probe.IsText();
-        var text = probe.GetText();
-        var lines = probe.GetLines();
-        var props = probe.GetXmlPropsAndAttributes();
+        var isText = probe.IsText;
+        var text = probe.Text;
+        var lines = probe.Lines;
+        var props = probe.XmlTags;
 
         isText.Should().BeTrue();
+        text.Should().NotBeNullOrWhiteSpace();
         text.Length.Should().Be(bufferSize);
         lines.Should().HaveCountGreaterThan(0);
         props.Should().HaveCountGreaterThan(0);
@@ -68,7 +70,7 @@ public class FileProbeTests
         var bufferSize = 3000;
         var probe = new FileProbe(file, bufferSize);
 
-        var isText = probe.IsText();
+        var isText = probe.IsText;
 
         isText.Should().BeFalse();
     }

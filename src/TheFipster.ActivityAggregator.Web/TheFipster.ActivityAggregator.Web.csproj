@@ -3,7 +3,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Fipster.TrackMe.Web</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MudBlazor" Version="8.11.0" />
@@ -11,6 +10,8 @@
   <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Importer\TheFipster.ActivityAggregator.Importer.csproj" />
+    <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj" />
+    <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Lite\TheFipster.ActivityAggregator.Storage.Lite.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Pages\CalendarPage.razor">

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Components;
 
-namespace Fipster.TrackMe.Web.Pages
+namespace TheFipster.ActivityAggregator.Web.Pages
 {
     public partial class ErrorPage
     {

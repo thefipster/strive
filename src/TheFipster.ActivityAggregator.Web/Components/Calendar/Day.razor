@@ -1,18 +1,10 @@
 ﻿<a href="/day/@Date.ToString("yyyy-MM-dd")">
-<section class="day-cell" aria-label="Monday">
-    <header class="day-header">
-        <span class="date-number">@Date.Day</span>
-        <span class="tags">Notes</span>
+<section class="fip-day-section">
+    <header class="fip-day-header">
+        <span class="fip-date-number">@Date.Day</span>
     </header>
-    <div class="day-notes">
-        @if (State == 1 ||State == 3)
-        {
-            <MudIcon Icon="@Icons.Material.Outlined.CalendarToday" />
-        }
-        @if (State == 2 || State == 3)
-        {
-            <MudIcon Icon="@Icons.Material.Outlined.Timer" />
-        }
+    <div class="fip-day-notes">
+        <MudText Typo="Typo.body1">@State items available.</MudText>
     </div>
 </section>
 </a>

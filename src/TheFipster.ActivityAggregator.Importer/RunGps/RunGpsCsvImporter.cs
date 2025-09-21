@@ -1,4 +1,5 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
@@ -19,7 +20,10 @@ public class RunGpsCsvImporter : IFileImporter
 
     public ImportClassification Classify(FileProbe probe)
     {
-        var lines = probe.GetLines().Take(2).ToArray();
+        var lines = probe.Lines?.Take(2).ToArray();
+
+        if (lines == null)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
         if (lines.Length != 2)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't get two lines.");
@@ -56,7 +60,7 @@ public class RunGpsCsvImporter : IFileImporter
         attributes.Add(Parameters.Duration, duration.ToString());
         attributes.Add(Parameters.Distance, end[6]);
 
-        var durationSeries = new List<string>();
+        var timestampSeries = new List<string>();
         var latSeries = new List<string>();
         var lonSeries = new List<string>();
         var speedSeries = new List<string>();
@@ -74,12 +78,11 @@ public class RunGpsCsvImporter : IFileImporter
             distanceSeries.Add(position[6]);
 
             var timestamp = DateTime.Parse(position[7]);
-            var seconds = (int)(timestamp - startDate).TotalSeconds;
-            durationSeries.Add(seconds.ToString());
+            timestampSeries.Add(timestamp.ToString(DateHelper.SecondFormat));
         }
 
         var series = FileExtraction.EmptySeries;
-        series.Add(Parameters.Duration, durationSeries);
+        series.Add(Parameters.Timestamp, timestampSeries);
         series.Add(Parameters.Latitude, latSeries);
         series.Add(Parameters.Longitude, lonSeries);
         series.Add(Parameters.Speed, speedSeries);

@@ -1,8 +1,9 @@
-﻿using TheFipster.ActivityAggregator.Domain.Models;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-namespace Fipster.TrackMe.Web.Pages
+namespace TheFipster.ActivityAggregator.Web.Pages
 {
     public partial class DayPage
     {
@@ -11,7 +12,9 @@ namespace Fipster.TrackMe.Web.Pages
 
         public DateTime? Date { get; set; }
 
-        public IEnumerable<FileExtraction>? Data { get; set; }
+        public IEnumerable<MasterIndex>? MasterIndexes { get; set; }
+
+        public IEnumerable<UnifiedRecord>? DayRecords { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -20,7 +23,8 @@ namespace Fipster.TrackMe.Web.Pages
             if (!string.IsNullOrWhiteSpace(DateValue))
             {
                 Date = DateTime.Parse(DateValue);
-                Data = await Api.GetDayAsync(Date.Value);
+                MasterIndexes = await Api.GetDayIndexAsync(Date.Value);
+                DayRecords = await Api.GetDayActivityAsync(Date.Value);
             }
         }
 

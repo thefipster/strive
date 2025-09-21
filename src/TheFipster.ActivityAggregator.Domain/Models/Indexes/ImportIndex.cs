@@ -1,9 +1,18 @@
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-public class ImportIndex(int version, string import, string output)
+public class ImportIndex
 {
-    public int Version { get; set; } = version;
+    public ImportIndex() { }
+
+    public ImportIndex(int version, string import, string output)
+    {
+        Version = version;
+        ImportPath = import;
+        OutputDirectory = output;
+    }
+
+    public int Version { get; set; }
     public DateTime IndexedAt { get; set; } = DateTime.UtcNow;
-    public string ImportPath { get; set; } = import;
-    public string OutputDirectory { get; set; } = output;
+    public string? ImportPath { get; set; }
+    public string? OutputDirectory { get; set; }
 }

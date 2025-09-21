@@ -1,12 +1,12 @@
-using TheFipster.ActivityAggregator.Importer.Modules;
+using TheFipster.ActivityAggregator.Storage.Lite;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddSingleton<DataIndexer>();
+builder.Services.AddLiteDbStorage(config);
 
 var app = builder.Build();
 

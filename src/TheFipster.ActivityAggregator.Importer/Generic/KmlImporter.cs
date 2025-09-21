@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
@@ -14,7 +15,14 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
 
         public ImportClassification Classify(FileProbe probe)
         {
-            var props = probe.GetXmlPropsAndAttributes();
+            var props = probe.XmlTags;
+
+            if (props == null)
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't find xml tags."
+                );
 
             if (!props.Contains("kml"))
                 throw new ClassificationException(probe.Filepath, Source, "Couldn't find kml tag.");
@@ -71,7 +79,7 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
                 lastPoint = point;
             }
 
-            var series = new Dictionary<Parameters, IEnumerable<string>>
+            var series = new Dictionary<Parameters, List<string>>
             {
                 { Parameters.Latitude, latSeries },
                 { Parameters.Longitude, lonSeries },

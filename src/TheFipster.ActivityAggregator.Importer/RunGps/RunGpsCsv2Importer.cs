@@ -1,4 +1,5 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
@@ -18,7 +19,14 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
 
         public ImportClassification Classify(FileProbe probe)
         {
-            var lines = probe.GetLines().Take(2).ToArray();
+            var lines = probe.Lines?.Take(2).ToArray();
+
+            if (lines == null)
+                throw new ClassificationException(
+                    probe.Filepath,
+                    Source,
+                    "Couldn't get any lines."
+                );
 
             if (lines.Length != 2)
                 throw new ClassificationException(
@@ -60,7 +68,7 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
             attributes.Add(Parameters.StartTime, startDate.ToString("s"));
             attributes.Add(Parameters.Distance, end[8]);
 
-            var durationSeries = new List<string>();
+            var timestampSeries = new List<string>();
             var latSeries = new List<string>();
             var lonSeries = new List<string>();
             var speedSeries = new List<string>();
@@ -80,12 +88,11 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
                 distanceSeries.Add(position[8]);
 
                 var timestamp = DateTime.Parse(position[9]);
-                var seconds = (int)(timestamp - date).TotalSeconds;
-                durationSeries.Add(seconds.ToString());
+                timestampSeries.Add(timestamp.ToString(DateHelper.SecondFormat));
             }
 
             var series = FileExtraction.EmptySeries;
-            series.Add(Parameters.Duration, durationSeries);
+            series.Add(Parameters.Timestamp, timestampSeries);
             series.Add(Parameters.Latitude, latSeries);
             series.Add(Parameters.Longitude, lonSeries);
             series.Add(Parameters.Speed, speedSeries);

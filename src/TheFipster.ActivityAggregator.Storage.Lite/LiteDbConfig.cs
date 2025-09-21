@@ -7,5 +7,6 @@ public class LiteDbConfig
 {
     public const string ConfigSectionName = "LiteDb";
 
-    public string IndexFile { get; set; }
+    public string IndexFile { get; set; } = "index.litedb";
+    public string ActivityFile { get; set; } = "activity.litedb";
 }

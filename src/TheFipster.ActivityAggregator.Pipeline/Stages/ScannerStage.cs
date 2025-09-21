@@ -7,27 +7,28 @@ using TheFipster.ActivityAggregator.Pipeline.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
 using TheFipster.ActivityAggregator.Pipeline.Models.Events;
+using TheFipster.ActivityAggregator.Pipeline.Pipelines;
 using TheFipster.ActivityAggregator.Storage.Abstractions;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Pipeline.Stages;
 
 public class ScannerStage(
-    PipelineState state,
+    PipelineState<IngesterPipeline> state,
     IOptions<ScannerConfig> config,
-    IScanIndexer indexer,
+    IIndexer<ScanIndex> indexer,
     ILogger<ScannerStage> logger
 ) : IScannerStage
 {
-    public const string Id = "scanner";
-    public int Version => 1;
-    public string Name => Id;
-    public int Order => 10;
+    public class IngesterPipeline { }
 
+    public int Version => 1;
+    public int Order => 10;
     public ProgressCounters Counters { get; } = new();
 
     private readonly ConcurrentQueue<string> queue = new();
 
-    private HashSet<string> excludedFileExtensions =
+    private readonly HashSet<string> excludedFileExtensions =
         config.Value.ExcludedFileExtensions.ToHashSet();
 
     public event EventHandler<ResultReportEventArgs<ScanIndex>>? ReportResult;
@@ -40,22 +41,40 @@ public class ScannerStage(
 
     public async Task ExecuteAsync(CancellationToken ct)
     {
-        await RunStageAsync(ct);
-        state.FinishedStages.Add(Name);
+        await CreateScannerTask(ct);
+        state.FinishedStages.Add(GetType().Name);
     }
 
-    private async Task RunStageAsync(CancellationToken ct)
+    private Task CreateScannerTask(CancellationToken ct) =>
+        Task.Run(async () => await LoopAsync(ct), ct);
+
+    private async Task LoopAsync(CancellationToken ct)
     {
-        while (!ct.IsCancellationRequested && !queue.IsEmpty)
+        while (!ct.IsCancellationRequested && JobsAvailable)
+            await TryDequeue(ct);
+    }
+
+    private bool JobsAvailable =>
+        !state.FinishedStages.Contains(nameof(ImporterStage)) || !queue.IsEmpty;
+
+    private async Task TryDequeue(CancellationToken ct)
+    {
+        if (queue.TryDequeue(out var input))
         {
-            if (queue.TryDequeue(out var input))
+            try
             {
                 await ProcessDirectoryAsync(input, ct);
             }
-            else
+            catch (Exception e)
             {
-                await Task.Delay(10, ct);
+                logger.LogError(e, "Bundling failed for input {Input}.", input);
             }
+
+            Counters.Done.Increment();
+        }
+        else
+        {
+            await Task.Delay(10, ct);
         }
     }
 
@@ -73,8 +92,6 @@ public class ScannerStage(
             },
             (file, ctp) => ProcessFile(file, directoryPath, ctp)
         );
-
-        Counters.Done.Increment();
     }
 
     private async ValueTask ProcessFile(FileInfo file, string inputDir, CancellationToken ct)

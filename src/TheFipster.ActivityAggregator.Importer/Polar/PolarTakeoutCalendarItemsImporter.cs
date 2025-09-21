@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Tools;
@@ -22,7 +23,10 @@ public class PolarTakeoutCalendarItemsImporter : IFileImporter
 
     public ImportClassification Classify(FileProbe probe)
     {
-        var props = probe.GetJsonPropertyNames();
+        var props = probe.JsonTags;
+
+        if (props == null)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't find valid json.");
 
         if (!required.IsSubsetOf(props))
             throw new ClassificationException(

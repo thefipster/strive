@@ -1,5 +1,12 @@
-﻿@page "/calendar/{dateValue?}"
+﻿@page "/calendar/year/{year?}"
 
-<PageTitle>Home</PageTitle>
+@inject ApiService Api
 
-<Calendar DateValue="@DateValue" />
+<PageTitle>Calendar</PageTitle>
+
+<MudPaper Class="ma-10 py-5">
+    @if (inventory.Any())
+    {
+        <YearCalendar Year="@year" Inventory="inventory" />
+    }
+</MudPaper>

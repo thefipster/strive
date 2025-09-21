@@ -2,12 +2,9 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
 {
     using System;
     using System.Collections.Generic;
-
-    using System.Text.Json;
     using System.Text.Json.Serialization;
-    using System.Globalization;
 
-    public partial class PolarTakeoutSleepResult
+    public class PolarTakeoutSleepResult
     {
         [JsonPropertyName("night")]
         public DateTimeOffset Night { get; set; }
@@ -19,7 +16,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public SleepResult SleepResult { get; set; }
     }
 
-    public partial class Evaluation
+    public class Evaluation
     {
         [JsonPropertyName("sleepType")]
         public string SleepType { get; set; }
@@ -40,7 +37,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public Interruptions Interruptions { get; set; }
     }
 
-    public partial class Analysis
+    public class Analysis
     {
         [JsonPropertyName("efficiencyPercent")]
         public double EfficiencyPercent { get; set; }
@@ -55,7 +52,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public long Feedback { get; set; }
     }
 
-    public partial class Interruptions
+    public class Interruptions
     {
         [JsonPropertyName("totalDuration")]
         public string TotalDuration { get; set; }
@@ -76,13 +73,13 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public long LongCount { get; set; }
     }
 
-    public partial class SleepResult
+    public class SleepResult
     {
         [JsonPropertyName("hypnogram")]
         public Hypnogram Hypnogram { get; set; }
     }
 
-    public partial class Hypnogram
+    public class Hypnogram
     {
         [JsonPropertyName("sleepStart")]
         public DateTimeOffset SleepStart { get; set; }
@@ -118,7 +115,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public bool BatteryRanOut { get; set; }
     }
 
-    public partial class SleepStateChange
+    public class SleepStateChange
     {
         [JsonPropertyName("offsetFromStart")]
         public string OffsetFromStart { get; set; }

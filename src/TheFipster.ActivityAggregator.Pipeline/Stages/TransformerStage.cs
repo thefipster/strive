@@ -8,21 +8,21 @@ using TheFipster.ActivityAggregator.Pipeline.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
 using TheFipster.ActivityAggregator.Pipeline.Models.Events;
+using TheFipster.ActivityAggregator.Pipeline.Pipelines;
 using TheFipster.ActivityAggregator.Storage.Abstractions;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Pipeline.Stages;
 
 public class TransformerStage(
-    PipelineState state,
+    PipelineState<IngesterPipeline> state,
     IOptions<ExtractorConfig> config,
     IImporterRegistry registry,
-    ITransformIndexer indexer,
+    IIndexer<TransformIndex> indexer,
     ILogger<TransformerStage> logger
 ) : ITransfomerStage
 {
-    public const string Id = "transformer";
     public int Version => 1;
-    public string Name => Id;
     public int Order => 30;
 
     public ProgressCounters Counters { get; } = new();
@@ -45,7 +45,7 @@ public class TransformerStage(
             tasks.Add(CreateTransformTask(ct));
 
         await Task.WhenAll(tasks);
-        state.FinishedStages.Add(Name);
+        state.FinishedStages.Add(GetType().Name);
     }
 
     private Task CreateTransformTask(CancellationToken ct) =>
@@ -58,7 +58,7 @@ public class TransformerStage(
     }
 
     private bool JobsAvailable =>
-        !state.FinishedStages.Contains(ClassifierStage.Id) || !queue.IsEmpty;
+        !state.FinishedStages.Contains(nameof(ClassifierStage)) || !queue.IsEmpty;
 
     private async Task TryDequeue(CancellationToken ct)
     {
@@ -114,7 +114,7 @@ public class TransformerStage(
             extractions,
             extraction =>
             {
-                var filepath = extraction.Write(config.Value.OutputDir);
+                var filepath = extraction.Write(config.Value.OutputDirectory);
 
                 var index = new TransformIndex(
                     Version,
