@@ -1,6 +1,7 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
+using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -10,6 +11,8 @@ namespace TheFipster.ActivityAggregator.Importer.Google;
 public class GoogleRunVo2MaxImporter : IFileClassifier
 {
     public DataSources Source => DataSources.FitbitTakeoutRunVo2Max;
+    public int ClassifierVersion => 1;
+    public int ExtractorVersion => 1;
 
     private readonly string header = "timestamp,run VO2 max";
 

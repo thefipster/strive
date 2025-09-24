@@ -4,6 +4,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
@@ -12,6 +13,8 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
     public class GpxImporter : IFileImporter
     {
         public DataSources Source => DataSources.Gpx;
+        public int ClassifierVersion => 1;
+        public int ExtractorVersion => 1;
 
         public ImportClassification Classify(FileProbe probe)
         {

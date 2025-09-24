@@ -6,9 +6,9 @@ namespace TheFipster.ActivityAggregator.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ActivityController(ILiteDbReader<UnifiedRecord, DateTime> reader) : ControllerBase
+public class ActivityController(ILiteDbReader<MergedRecord, DateTime> reader) : ControllerBase
 {
     [HttpGet("day")]
-    public IEnumerable<UnifiedRecord> GetDay(DateTime day) =>
+    public IEnumerable<MergedRecord> GetDay(DateTime day) =>
         reader.GetFiltered(x => x.Timestamp.Date == day.Date);
 }

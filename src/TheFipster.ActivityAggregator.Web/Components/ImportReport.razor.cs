@@ -10,5 +10,5 @@ public partial class ImportReport
     public MasterIndex? Index { get; set; }
 
     [Parameter]
-    public UnifiedRecord? Activity { get; set; }
+    public MergedRecord? Activity { get; set; }
 }

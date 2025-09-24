@@ -31,8 +31,8 @@ public static class DependencyExtension
         services.AddScoped<IMasterIndexer, MasterIndexer>();
 
         services.AddSingleton<ActivityContext>();
-        services.AddScoped<ILiteDbWriter<UnifiedRecord>, UnifiedRecordWriter>();
-        services.AddScoped<ILiteDbReader<UnifiedRecord, DateTime>, UnifiedRecordReader>();
+        services.AddScoped<ILiteDbWriter<MergedRecord>, UnifiedRecordWriter>();
+        services.AddScoped<ILiteDbReader<MergedRecord, DateTime>, UnifiedRecordReader>();
         services.AddScoped<ILiteDbWriter<Inventory>, InventoryWriter>();
         services.AddScoped<ILiteDbReader<Inventory, int>, InventoryReader>();
 

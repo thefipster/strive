@@ -3,4 +3,4 @@ using TheFipster.ActivityAggregator.Storage.Lite.Context;
 
 namespace TheFipster.ActivityAggregator.Storage.Lite.Components.Activity;
 
-public class UnifiedRecordWriter(ActivityContext context) : BaseWriter<UnifiedRecord>(context);
+public class UnifiedRecordWriter(ActivityContext context) : BaseWriter<MergedRecord>(context);

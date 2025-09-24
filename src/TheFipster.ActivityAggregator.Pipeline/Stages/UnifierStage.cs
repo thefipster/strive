@@ -3,7 +3,9 @@ using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Merger.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
@@ -19,8 +21,9 @@ public class UnifierStage(
     PipelineState<MergerPipeline> state,
     IOptions<UnifierConfig> config,
     IIndexer<UnifyIndex> indexer,
-    ILiteDbWriter<UnifiedRecord> records,
+    ILiteDbWriter<MergedRecord> records,
     IInventoryService inventory,
+    IMergeService merger,
     ILogger<UnifierStage> logger
 ) : Stage<BundleIndex, UnifyIndex>, IUnifierStage
 {
@@ -73,36 +76,38 @@ public class UnifierStage(
 
     private Task ProcessInput(BundleIndex bundle)
     {
-        var extractions = new List<FileExtraction>();
-        foreach (var file in bundle.Extractions)
-        {
-            var extraction = FileExtraction.FromFile(file);
-            extractions.Add(extraction);
-        }
+        var mergeSet = merger.Combine(bundle);
 
-        var allMetrics = extractions.Select(x => x.Attributes).ToArray();
-        var mergedMetrics = Merger.Merge(allMetrics);
-
-        var unifiedRecord = new UnifiedRecord(
-            bundle.Timestamp,
-            bundle.Kind,
-            mergedMetrics.Resolved,
-            mergedMetrics.Conflicts
-        );
-
-        records.Set(unifiedRecord);
-        inventory.Update(unifiedRecord);
-
-        var unifiedIndex = new UnifyIndex(
-            Version,
-            bundle.Timestamp,
-            bundle.Kind,
-            unifiedRecord.Conflicts.Any()
-        );
-        indexer.Set(unifiedIndex);
-
-        ReportResult?.Invoke(this, new(unifiedIndex));
-        Counters.Out.Increment();
-        return Task.CompletedTask;
+        throw new NotImplementedException();
+        // foreach (var file in bundle.Extractions)
+        // {
+        //     var extraction = FileExtraction.FromFile(file);
+        //     mergeSet.Extractions.Add(extraction);
+        // }
+        //
+        // var allMetrics = extractions.Select(x => x.Attributes).ToArray();
+        // var mergedMetrics = merger.Merge(allMetrics);
+        //
+        // var unifiedRecord = new MergedRecord(
+        //     bundle.Timestamp,
+        //     bundle.Kind,
+        //     mergedMetrics.Resolved,
+        //     mergedMetrics.Conflicts
+        // );
+        //
+        // records.Set(unifiedRecord);
+        // inventory.Update(unifiedRecord);
+        //
+        // var unifiedIndex = new UnifyIndex(
+        //     Version,
+        //     bundle.Timestamp,
+        //     bundle.Kind,
+        //     unifiedRecord.Conflicts.Any()
+        // );
+        // indexer.Set(unifiedIndex);
+        //
+        // ReportResult?.Invoke(this, new(unifiedIndex));
+        // Counters.Out.Increment();
+        // return Task.CompletedTask;
     }
 }

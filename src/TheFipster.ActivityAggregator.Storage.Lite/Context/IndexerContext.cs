@@ -16,7 +16,10 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
             var file = new FileInfo(config.IndexFile);
 
             if (file.Directory == null)
-                throw new ConfigException("Indexer database file", "Directory was null???");
+                throw new ConfigException(
+                    "Indexer database file",
+                    "Directory was null??? Didn't know that could happen..."
+                );
 
             if (!Directory.Exists(file.Directory.FullName))
                 Directory.CreateDirectory(file.Directory.FullName);

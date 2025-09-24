@@ -1,3 +1,5 @@
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 public class ClassificationIndex

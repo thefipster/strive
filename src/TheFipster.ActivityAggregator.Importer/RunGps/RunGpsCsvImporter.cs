@@ -3,6 +3,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Formats;
 using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
@@ -11,6 +12,8 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps;
 public class RunGpsCsvImporter : IFileImporter
 {
     public DataSources Source => DataSources.RunGpsCsvV1;
+    public int ClassifierVersion => 1;
+    public int ExtractorVersion => 1;
 
     private readonly List<string> header =
     [

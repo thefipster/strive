@@ -3,6 +3,7 @@ using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
@@ -12,6 +13,8 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
     public class PolarTakeout247OhrImporter : IFileImporter
     {
         public DataSources Source => DataSources.PolarTakeout247Ohr;
+        public int ClassifierVersion => 1;
+        public int ExtractorVersion => 1;
 
         private readonly HashSet<string> required =
         [

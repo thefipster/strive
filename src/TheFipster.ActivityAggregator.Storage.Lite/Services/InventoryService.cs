@@ -9,7 +9,7 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Services;
 public class InventoryService(ILiteDbWriter<Inventory> writer, ILiteDbReader<Inventory, int> reader)
     : IInventoryService
 {
-    public void Update(UnifiedRecord record)
+    public void Update(MergedRecord record)
     {
         var timestamp = record.Timestamp;
         var entries = Get(timestamp.Year, timestamp.Month, timestamp.Day);

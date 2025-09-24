@@ -14,7 +14,7 @@ namespace TheFipster.ActivityAggregator.Web.Pages
 
         public IEnumerable<MasterIndex>? MasterIndexes { get; set; }
 
-        public IEnumerable<UnifiedRecord>? DayRecords { get; set; }
+        public IEnumerable<MergedRecord>? DayRecords { get; set; }
 
         protected override async Task OnInitializedAsync()
         {

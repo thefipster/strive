@@ -28,10 +28,10 @@ namespace TheFipster.ActivityAggregator.Web.Services
             return await GetCollectionAsync<MasterIndex>(query);
         }
 
-        public async Task<IEnumerable<UnifiedRecord>> GetDayActivityAsync(DateTime date)
+        public async Task<IEnumerable<MergedRecord>> GetDayActivityAsync(DateTime date)
         {
             var query = $"/Activity/day?day={date:yyyy-MM-dd}";
-            return await GetCollectionAsync<UnifiedRecord>(query);
+            return await GetCollectionAsync<MergedRecord>(query);
         }
 
         public async Task<IEnumerable<UnifyIndex>> GetConflictsAsync()

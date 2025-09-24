@@ -4,4 +4,4 @@ using TheFipster.ActivityAggregator.Storage.Lite.Context;
 namespace TheFipster.ActivityAggregator.Storage.Lite.Components.Activity;
 
 public class UnifiedRecordReader(ActivityContext context)
-    : BaseReader<UnifiedRecord, DateTime>(context);
+    : BaseReader<MergedRecord, DateTime>(context);
