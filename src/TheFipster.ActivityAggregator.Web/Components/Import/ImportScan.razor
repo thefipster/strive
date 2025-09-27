@@ -14,46 +14,35 @@
     <MudCardContent Class="d-flex align-center">
         @if (indexes.Any())
         {
-            <MudSimpleTable Elevation="0" Style="width: 100%">
-                <thead>
-                <tr>
-                    <th>Index time</th>
-                    <th>Upload</th>
-                    <th>Action</th>
-                    <th>Files</th>
-                    <th>Scanned</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var index in indexes.OrderByDescending(x => x.IndexedAt))
-                {
-                    <tr>
-                        <td>@index.IndexedAt.ToString(DateHelper.UiSecondFormat)</td>
-                        <td>
-                            <MudText>
-                                @index.Files.First()
-                            </MudText>
-                        </td>
-                        <td>
-                            @if (indexLocked[index.Hash])
-                            {
-                                <MudProgressLinear Color="Color.Primary" Size="Size.Small" Indeterminate="true" Style="width: 54px;"/>
-                            }
-                            else
-                            {
-                                <MudButton Class="pa-n1 ma-n1" @onclick="() => OnScanClicked(index.Hash)" Variant="Variant.Text" Size="Size.Small">Scan</MudButton>
-                            }
-                        </td>
-                        <td>
-                            @index.Count
-                        </td>
-                        <td>
-                            @indexProgress[index.Hash]
-                        </td>
-                    </tr>
-                }
-                </tbody>
-            </MudSimpleTable>
+            <MudTable Loading="@indexLoading" Items="indexes" Elevation="0" Style="width: 100%">
+                <HeaderContent>
+                    <MudTh>Index time</MudTh>
+                    <MudTh>Upload</MudTh>
+                    <MudTh>Action</MudTh>
+                    <MudTh>Files</MudTh>
+                    <MudTh>Scanned</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Index time">@context.IndexedAt.ToString(DateHelper.UiSecondFormat)</MudTd>
+                    <MudTd DataLabel="Upload">@context.Files.First()</MudTd>
+                    <MudTd DataLabel="Action">
+                        @if (indexLocked[context.Hash])
+                        {
+                            <MudProgressLinear Color="Color.Primary" Size="Size.Small" Indeterminate="true" Style="width: 54px;"/>
+                        }
+                        else
+                        {
+                            <MudButton Class="pa-n1 ma-n1" @onclick="() => OnScanClicked(context.Hash)" Variant="Variant.Text" Size="Size.Small">Scan</MudButton>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Files">@context.Count</MudTd>
+                    <MudTd DataLabel="Scanned">@indexProgress[context.Hash]</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] { 50 }"
+                                   HideRowsPerPage="true" />
+                </PagerContent>
+            </MudTable>
         }
     </MudCardContent>
 </MudCard>

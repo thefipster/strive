@@ -8,6 +8,7 @@ public partial class ImportExtractor : ComponentBase
 {
     private IEnumerable<ImporterIndex> indexes = [];
     private bool showPopover;
+    private bool indexLoading = true;
 
     [Inject]
     public ApiService? Api { get; set; }
@@ -26,7 +27,10 @@ public partial class ImportExtractor : ComponentBase
     private async Task UpdateUploadsAsync()
     {
         if (Api != null)
-            indexes = await Api.GetImporterIndexesAsync();
+        {
+            indexes = (await Api.GetImporterIndexesAsync()).OrderByDescending(x => x.IndexedAt);
+            indexLoading = false;
+        }
 
         await InvokeAsync(StateHasChanged);
     }

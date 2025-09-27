@@ -12,6 +12,7 @@ public partial class ImportScan : ComponentBase
     private Dictionary<string, int> indexProgress = new();
     private Dictionary<string, bool> indexLocked = new();
     private HubConnection? hubConnection;
+    private bool indexLoading = true;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -36,12 +37,14 @@ public partial class ImportScan : ComponentBase
     {
         if (Api != null)
         {
-            indexes = await Api.GetImporterIndexesAsync();
+            indexes = (await Api.GetImporterIndexesAsync()).OrderByDescending(x => x.IndexedAt);
             foreach (var index in indexes)
             {
                 indexProgress.Add(index.Hash, 0);
                 indexLocked.Add(index.Hash, false);
             }
+
+            indexLoading = false;
         }
 
         await InvokeAsync(StateHasChanged);

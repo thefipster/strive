@@ -18,13 +18,8 @@
         @if (fileName != null)
         {
             <MudText Typo="Typo.body1">@fileName</MudText>
-            <MudProgressCircular Class="ma-5" Style="height: 100px; width: 100px" Color="Color.Primary" Value="@progress">
-                <ChildContent>
-                    <MudStack Spacing="0" AlignItems="AlignItems.Center" Justify="Justify.Center">
-                        <MudText Typo="Typo.subtitle2">@progress</MudText>
-                    </MudStack>
-                </ChildContent>
-            </MudProgressCircular>
+            <MudProgressLinear Class="my-5" Color="Color.Primary" Value="@progress"/>
+            <MudText Typo="Typo.subtitle2">@progress</MudText>
         }
     </MudCardContent>
 </MudCard>

@@ -14,6 +14,9 @@ public partial class ChunkUpload : ComponentBase
     private IJSObjectReference? module;
 
     [Parameter]
+    public EventCallback UploadFinished { get; set; }
+
+    [Parameter]
     public string Title { get; set; } = "File Upload";
 
     [Parameter]
@@ -66,9 +69,10 @@ public partial class ChunkUpload : ComponentBase
     [JSInvokable]
     public async Task OnCompleted(string finalName)
     {
-        await Task.Delay(1000);
-        if (Navigation != null)
-            Navigation.NavigateTo(Navigation.Uri, true);
+        await Task.Delay(100);
+        await UploadFinished.InvokeAsync(null);
+        // if (Navigation != null)
+        //     Navigation.NavigateTo(Navigation.Uri, true);
 
         //progress = 100;
         // fileName = null;

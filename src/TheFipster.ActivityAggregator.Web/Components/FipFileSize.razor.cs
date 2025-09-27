@@ -33,6 +33,10 @@ public partial class FipFileSize : ComponentBase
             size = Size / Kb;
             unit = "kb";
         }
+        else
+        {
+            size = Size;
+        }
 
         sizeText = $"{size:0.#} {unit}";
 
