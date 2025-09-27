@@ -1,7 +1,7 @@
 using System.IO.Compression;
 using TheFipster.ActivityAggregator.Services.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Services;
+namespace TheFipster.ActivityAggregator.Services.Components;
 
 public class Unzipper : IUnzipper
 {
@@ -11,11 +11,7 @@ public class Unzipper : IUnzipper
     /// <param name="zipFilePath">The full path to the zip file.</param>
     /// <param name="destinationDirectory">The directory to extract into.</param>
     /// <param name="overwrite">If files in the output directory should be overwritten.</param>
-    public static void Extract(
-        string zipFilePath,
-        string destinationDirectory,
-        bool overwrite = false
-    )
+    public void Extract(string zipFilePath, string destinationDirectory, bool overwrite = false)
     {
         if (string.IsNullOrWhiteSpace(zipFilePath))
             throw new ArgumentException("Zip file path must not be empty.", nameof(zipFilePath));

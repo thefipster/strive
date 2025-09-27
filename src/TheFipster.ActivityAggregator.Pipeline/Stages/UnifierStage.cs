@@ -1,16 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Merging;
-using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Merger.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Abstractions;
 using TheFipster.ActivityAggregator.Pipeline.Config;
 using TheFipster.ActivityAggregator.Pipeline.Models;
 using TheFipster.ActivityAggregator.Pipeline.Models.Events;
 using TheFipster.ActivityAggregator.Pipeline.Pipelines;
+using TheFipster.ActivityAggregator.Services.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Activity;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
@@ -23,7 +20,7 @@ public class UnifierStage(
     IIndexer<UnifyIndex> indexer,
     ILiteDbWriter<MergedRecord> records,
     IInventoryService inventory,
-    IMergeService merger,
+    IMerger merger,
     ILogger<UnifierStage> logger
 ) : Stage<BundleIndex, UnifyIndex>, IUnifierStage
 {

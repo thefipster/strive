@@ -9,4 +9,9 @@ public class Classification(DataSources source, DateTime datetime, DateRanges ra
     public DateRanges Range => range;
 
     public int Version { get; set; }
+
+    public override string ToString()
+    {
+        return Source.ToString();
+    }
 }

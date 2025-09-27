@@ -3,11 +3,11 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Merging;
-using TheFipster.ActivityAggregator.Merger.Abstractions;
+using TheFipster.ActivityAggregator.Services.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Merger.Services;
+namespace TheFipster.ActivityAggregator.Services.Components;
 
-public class MergeService : IMergeService
+public class Merger : IMerger
 {
     public MergedRecord Combine(BundleIndex bundle)
     {

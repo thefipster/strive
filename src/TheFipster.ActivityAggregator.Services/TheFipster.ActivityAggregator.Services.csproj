@@ -9,6 +9,14 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Http.Features">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.5\Microsoft.AspNetCore.Http.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.Core">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.5\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Importer\TheFipster.ActivityAggregator.Importer.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj" />

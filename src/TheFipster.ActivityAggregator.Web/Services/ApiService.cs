@@ -89,7 +89,12 @@ namespace TheFipster.ActivityAggregator.Web.Services
         {
             var response = await http.GetAsync(query);
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException($"{response.StatusCode} - {response.ReasonPhrase}");
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException(
+                    $"{(int)response.StatusCode} - {response.ReasonPhrase} - {body}"
+                );
+            }
 
             return await response.Content.ReadAsStringAsync();
         }

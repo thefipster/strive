@@ -1,6 +1,6 @@
-@Fipster.TrackMe.Api_HostAddress = http://localhost:5279
+@TheFipster.ActivityAggregator.Api_HostAddress = http://localhost:5279
 
-GET {{Fipster.TrackMe.Api_HostAddress}}/weatherforecast/
+GET {{TheFipster.ActivityAggregator.Api_HostAddress}}/
 Accept: application/json
 
 ###
