@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Api.Abtraction;
+namespace TheFipster.ActivityAggregator.Api.Abstraction;
 
 public interface IBackgroundTaskQueue
 {

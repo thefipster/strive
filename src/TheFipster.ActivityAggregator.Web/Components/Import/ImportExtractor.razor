@@ -1,15 +1,70 @@
+@using TheFipster.ActivityAggregator.Domain.Tools
 <MudCard Class="flex-1">
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">Uploads</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudIconButton Color="Color.Primary"
+            <MudIconButton Color="Color.Primary" OnClick="OnSyncClickedAsync"
                            Icon="@Icons.Material.Outlined.Sync">
             </MudIconButton>
         </CardHeaderActions>
     </MudCardHeader>
-    <MudCardContent>
-        <MudSimpleTable></MudSimpleTable>
+    <MudCardContent Class="d-flex align-center">
+        @if (indexes.Any())
+        {
+            <MudSimpleTable Elevation="0" Style="width: 100%">
+                <thead>
+                <tr>
+                    <th>Indexing Date</th>
+                    <th>First indexed file</th>
+                    <th>Zip size</th>
+                    <th>File count</th>
+                    <th>File size</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var index in indexes.OrderByDescending(x => x.IndexedAt))
+                {
+                    <tr>
+                        <td>@index.IndexedAt.ToString(DateHelper.UiSecondFormat)</td>
+                        <td class="d-flex gap-2">
+                            <MudText>
+                                @index.Files.First()
+                            </MudText>
+                            <MudText>
+                                @if (index.Files.Count > 1)
+                                {
+                                    <MudTooltip Placement="Placement.Top" Arrow="true">
+                                        <ChildContent>
+                                            @(index.Files.Count > 1 ? $"({index.Files.Count - 1} more)" : string.Empty)
+                                        </ChildContent>
+                                        <TooltipContent>
+                                            <MudText Typo="Typo.h6">All referenced files</MudText>
+                                            @foreach (var file in index.Files)
+                                            {
+                                                <MudText Typo="Typo.body1">@file</MudText>
+                                            }
+                                        </TooltipContent>
+                                    </MudTooltip>
+                                }
+                            </MudText>
+                        </td>
+                        <td>
+                            <FipFileSize Size="@index.PackedSize"></FipFileSize>
+                        </td>
+                        <td>@index.Count files</td>
+                        <td>
+                            <FipFileSize Size="@index.UnpackedSize"></FipFileSize>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </MudSimpleTable>
+        }
+        else
+        {
+            <MudText Class="py-10" Typo="Typo.body1">Upload something... come on what are you waiting for.</MudText>
+        }
     </MudCardContent>
 </MudCard>

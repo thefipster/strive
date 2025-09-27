@@ -66,10 +66,16 @@ public partial class ChunkUpload : ComponentBase
     [JSInvokable]
     public async Task OnCompleted(string finalName)
     {
-        progress = 100;
-        await Task.Delay(500);
+        await Task.Delay(1000);
         if (Navigation != null)
             Navigation.NavigateTo(Navigation.Uri, true);
+
+        //progress = 100;
+        // fileName = null;
+        // progress = 0;
+        // uploadDisabled = false;
+        // uploadId = null;
+        // await InvokeAsync(StateHasChanged);
     }
 
     [JSInvokable]

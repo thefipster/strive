@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 namespace TheFipster.ActivityAggregator.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/notify")]
 public class NotifyController : ControllerBase
 {
     private readonly HubConnection connection;

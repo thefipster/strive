@@ -1,4 +1,4 @@
-<MudCard Class="flex-1">
+<MudCard>
     <MudCardHeader>
         <CardHeaderContent>
             <MudText Typo="Typo.h6">@Title</MudText>
@@ -14,11 +14,17 @@
             </MudFileUpload>
         </CardHeaderActions>
     </MudCardHeader>
-    <MudCardContent>
+    <MudCardContent Class="d-flex flex-column align-center">
         @if (fileName != null)
         {
             <MudText Typo="Typo.body1">@fileName</MudText>
-            <MudProgressLinear Color="Color.Primary" Value="@progress" Class="mt-7" />
+            <MudProgressCircular Class="ma-5" Style="height: 100px; width: 100px" Color="Color.Primary" Value="@progress">
+                <ChildContent>
+                    <MudStack Spacing="0" AlignItems="AlignItems.Center" Justify="Justify.Center">
+                        <MudText Typo="Typo.subtitle2">@progress</MudText>
+                    </MudStack>
+                </ChildContent>
+            </MudProgressCircular>
         }
     </MudCardContent>
 </MudCard>

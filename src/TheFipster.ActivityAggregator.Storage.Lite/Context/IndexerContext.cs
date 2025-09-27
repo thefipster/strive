@@ -45,6 +45,7 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
                 mapper.Entity<TransformIndex>().Id(x => x.Filepath);
                 mapper.Entity<BundleIndex>().Id(x => x.Id);
                 mapper.Entity<UnifyIndex>().Id(x => x.Id);
+                mapper.Entity<ImporterIndex>().Id(x => x.Hash);
 
                 return mapper;
             }

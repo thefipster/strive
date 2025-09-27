@@ -28,6 +28,12 @@ namespace TheFipster.ActivityAggregator.Web.Services
             return await GetCollectionAsync<MasterIndex>(query);
         }
 
+        public async Task<IEnumerable<ImporterIndex>> GetImporterIndexesAsync()
+        {
+            var query = "/api/index/importer";
+            return await GetCollectionAsync<ImporterIndex>(query);
+        }
+
         public async Task<IEnumerable<MergedRecord>> GetDayActivityAsync(DateTime date)
         {
             var query = $"/Activity/day?day={date:yyyy-MM-dd}";
@@ -45,6 +51,19 @@ namespace TheFipster.ActivityAggregator.Web.Services
         {
             var query = $"/Inventory?year={year}";
             return await GetCollectionAsync<Inventory>(query);
+        }
+
+        public async Task Scan(string hash)
+        {
+            var query = $"/api/processing/scan/{hash}";
+            var response = await http.GetAsync(query);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException(
+                    $"{(int)response.StatusCode} - {response.ReasonPhrase} - {body}"
+                );
+            }
         }
 
         private async Task<TResult> GetSingleAsync<TResult>(string query)

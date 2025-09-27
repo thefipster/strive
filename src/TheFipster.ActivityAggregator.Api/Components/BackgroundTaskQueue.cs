@@ -1,5 +1,5 @@
 using System.Threading.Channels;
-using TheFipster.ActivityAggregator.Api.Abtraction;
+using TheFipster.ActivityAggregator.Api.Abstraction;
 
 namespace TheFipster.ActivityAggregator.Api.Components;
 

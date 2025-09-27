@@ -4,5 +4,5 @@ namespace TheFipster.ActivityAggregator.Services.Abstractions;
 
 public interface IScanner
 {
-    Task<ScannerIndex> CheckAsync(string filepath, CancellationToken ct);
+    Task<ScannerIndex> CheckAsync(string filepath, string origin, CancellationToken ct);
 }

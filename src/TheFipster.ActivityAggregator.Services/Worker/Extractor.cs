@@ -16,6 +16,7 @@ public class Extractor(IUnzipper unzip, IIndexer<ImporterIndex> indexer) : IExtr
     )
     {
         var file = new FileInfo(zipFilepath);
+        var zipSize = file.Length;
         var hash = await file.HashXx3Async(ct);
         var outputName = file.Name.Replace(file.Extension, string.Empty);
         var outputPath = Path.Combine(outputDirectory, outputName);
@@ -30,7 +31,8 @@ public class Extractor(IUnzipper unzip, IIndexer<ImporterIndex> indexer) : IExtr
         index = new ImporterIndex { Hash = hash, Output = outputPath };
         index.Files.Add(file.FullName);
         index.Count = count;
-        index.Size = size;
+        index.PackedSize = zipSize;
+        index.UnpackedSize = size;
         index.Actions.Log(ImporterActions.Extracted);
         return Updated(index);
     }

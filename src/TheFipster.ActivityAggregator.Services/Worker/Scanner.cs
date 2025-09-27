@@ -17,7 +17,7 @@ public class Scanner(
     IClassifier classifier
 ) : IScanner
 {
-    public async Task<ScannerIndex> CheckAsync(string filepath, CancellationToken ct)
+    public async Task<ScannerIndex> CheckAsync(string filepath, string origin, CancellationToken ct)
     {
         var file = new FileInfo(filepath);
         var hash = await file.HashXx3Async(ct);
@@ -26,7 +26,7 @@ public class Scanner(
         if (IndexIsAlreadyPublished(index, file))
             return Updated(index!);
 
-        index = EnsureIndexExists(index, hash);
+        index = EnsureIndexExists(index, origin, hash);
         AppendFileWhenNew(index, file);
         if (ExcludedByFileExtension(file, index))
             return Updated(index);
@@ -55,10 +55,10 @@ public class Scanner(
         return true;
     }
 
-    private ScannerIndex EnsureIndexExists(ScannerIndex? index, string hash)
+    private ScannerIndex EnsureIndexExists(ScannerIndex? index, string origin, string hash)
     {
         if (index == null)
-            index = new ScannerIndex { Hash = hash };
+            index = new ScannerIndex { Hash = hash, OriginHash = origin };
 
         return index;
     }

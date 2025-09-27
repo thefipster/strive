@@ -1,0 +1,59 @@
+@using TheFipster.ActivityAggregator.Domain.Tools
+
+<MudCard Class="flex-1">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Uploads</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Color="Color.Primary" OnClick="OnSyncClickedAsync"
+                           Icon="@Icons.Material.Outlined.Sync">
+            </MudIconButton>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent Class="d-flex align-center">
+        @if (indexes.Any())
+        {
+            <MudSimpleTable Elevation="0" Style="width: 100%">
+                <thead>
+                <tr>
+                    <th>Index time</th>
+                    <th>Upload</th>
+                    <th>Action</th>
+                    <th>Files</th>
+                    <th>Scanned</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var index in indexes.OrderByDescending(x => x.IndexedAt))
+                {
+                    <tr>
+                        <td>@index.IndexedAt.ToString(DateHelper.UiSecondFormat)</td>
+                        <td>
+                            <MudText>
+                                @index.Files.First()
+                            </MudText>
+                        </td>
+                        <td>
+                            @if (indexLocked[index.Hash])
+                            {
+                                <MudProgressLinear Color="Color.Primary" Size="Size.Small" Indeterminate="true" Style="width: 54px;"/>
+                            }
+                            else
+                            {
+                                <MudButton Class="pa-n1 ma-n1" @onclick="() => OnScanClicked(index.Hash)" Variant="Variant.Text" Size="Size.Small">Scan</MudButton>
+                            }
+                        </td>
+                        <td>
+                            @index.Count
+                        </td>
+                        <td>
+                            @indexProgress[index.Hash]
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </MudSimpleTable>
+        }
+    </MudCardContent>
+</MudCard>

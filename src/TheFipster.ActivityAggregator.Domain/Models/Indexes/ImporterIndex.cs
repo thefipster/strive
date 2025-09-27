@@ -11,5 +11,6 @@ public class ImporterIndex
     public List<string> Files { get; set; } = new();
     public Dictionary<DateTime, ImporterActions> Actions { get; set; } = new();
     public int Count { get; set; }
-    public long Size { get; set; }
+    public long UnpackedSize { get; set; }
+    public long PackedSize { get; set; }
 }
