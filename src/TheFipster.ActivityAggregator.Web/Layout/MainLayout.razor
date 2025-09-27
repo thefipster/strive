@@ -1,17 +1,14 @@
 ﻿@inherits LayoutComponentBase
 
-@inject NavigationManager Navigation
-
-<MudThemeProvider IsDarkMode="true" />
-<MudPopoverProvider />
-<MudDialogProvider />
+<MudThemeProvider IsDarkMode="true"/>
+<MudDialogProvider/>
 <MudSnackbarProvider />
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIcon Icon="@Icons.Material.Outlined.GpsFixed" Color="Color.Inherit" />
-        <MudText Typo="Typo.h5" Class="ml-3">Track Me</MudText>
-        <MudSpacer />
+        <MudIcon Class="ml-n2" Icon="@Icons.Material.Outlined.GpsFixed" Color="Color.Inherit"/>
+        <MudText Typo="Typo.h5" Class="ml-7">Fipsters Activity Aggregator</MudText>
+        <MudSpacer/>
         @if (pageName == "yearlyCalendar")
         {
             <MudIconButton Href="@($"calendar/year/{year - 1}")" Icon="@Icons.Material.Outlined.ArrowBackIos"
@@ -22,12 +19,12 @@
             <MudIconButton Href="@($"calendar/year/{year + 1}")" Icon="@Icons.Material.Outlined.ArrowForwardIos"
                            Color="Color.Primary"/>
         }
-        <MudSpacer />
+        <MudSpacer/>
     </MudAppBar>
-    <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
+    <MudDrawer Variant="@DrawerVariant.Mini" Open="drawerOpen" Color="Color.Primary" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu DrawerToggled="OnDrawerToggle" />
     </MudDrawer>
     <MudMainContent>
         @Body
-    </MudMainContent>   
+    </MudMainContent>
 </MudLayout>

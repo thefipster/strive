@@ -28,10 +28,10 @@ namespace TheFipster.ActivityAggregator.Web.Services
             return await GetCollectionAsync<MasterIndex>(query);
         }
 
-        public async Task<IEnumerable<UnifiedRecord>> GetDayActivityAsync(DateTime date)
+        public async Task<IEnumerable<MergedRecord>> GetDayActivityAsync(DateTime date)
         {
             var query = $"/Activity/day?day={date:yyyy-MM-dd}";
-            return await GetCollectionAsync<UnifiedRecord>(query);
+            return await GetCollectionAsync<MergedRecord>(query);
         }
 
         public async Task<IEnumerable<UnifyIndex>> GetConflictsAsync()
@@ -89,7 +89,12 @@ namespace TheFipster.ActivityAggregator.Web.Services
         {
             var response = await http.GetAsync(query);
             if (!response.IsSuccessStatusCode)
-                throw new HttpRequestException($"{response.StatusCode} - {response.ReasonPhrase}");
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException(
+                    $"{(int)response.StatusCode} - {response.ReasonPhrase} - {body}"
+                );
+            }
 
             return await response.Content.ReadAsStringAsync();
         }

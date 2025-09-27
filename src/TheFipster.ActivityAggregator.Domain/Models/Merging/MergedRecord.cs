@@ -1,18 +1,19 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Domain.Models.Unified;
 
 namespace TheFipster.ActivityAggregator.Domain.Models;
 
-public class UnifiedRecord
+public class MergedRecord
 {
-    public UnifiedRecord() { }
+    public MergedRecord() { }
 
-    public UnifiedRecord(DateTime timestamp, DataKind kind)
+    public MergedRecord(DateTime timestamp, DataKind kind)
     {
         Timestamp = timestamp;
         Kind = kind;
     }
 
-    public UnifiedRecord(
+    public MergedRecord(
         DateTime timestamp,
         DataKind kind,
         Dictionary<Parameters, string> metrics,
@@ -24,7 +25,7 @@ public class UnifiedRecord
         Conflicts = conflicts;
     }
 
-    public UnifiedRecord(
+    public MergedRecord(
         DateTime timestamp,
         DataKind kind,
         Dictionary<Parameters, string> metrics,
@@ -36,7 +37,7 @@ public class UnifiedRecord
         Samples = samples;
     }
 
-    public UnifiedRecord(
+    public MergedRecord(
         DateTime timestamp,
         DataKind kind,
         Dictionary<Parameters, string> metrics,
@@ -45,7 +46,7 @@ public class UnifiedRecord
     )
         : this(timestamp, kind, metrics, conflicts, new(), events) { }
 
-    public UnifiedRecord(
+    public MergedRecord(
         DateTime timestamp,
         DataKind kind,
         Dictionary<Parameters, string> metrics,

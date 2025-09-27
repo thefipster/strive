@@ -36,7 +36,7 @@ public class ActivityContext : IDisposable
         {
             var mapper = BsonMapper.Global;
 
-            mapper.Entity<UnifiedRecord>().Id(x => x.Timestamp);
+            mapper.Entity<MergedRecord>().Id(x => x.Timestamp);
 
             return mapper;
         }

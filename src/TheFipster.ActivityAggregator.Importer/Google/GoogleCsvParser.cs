@@ -1,14 +1,23 @@
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
+using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Google;
 
-public class GoogleCsvParser(DataSources source, DateRanges range, string header)
+public class GoogleCsvParser(
+    DataSources source,
+    DateRanges range,
+    string header,
+    int classifierVersion = 1,
+    int extractorVersion = 1
+)
 {
     public DataSources Source { get; } = source;
+    public int ClassifierVersion => classifierVersion;
+    public int ExtractorVersion => extractorVersion;
 
     public ImportClassification Classify(FileProbe probe)
     {

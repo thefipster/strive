@@ -1,4 +1,4 @@
-using AwesomeAssertions;
+using FluentAssertions;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Polar;

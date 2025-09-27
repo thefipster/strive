@@ -1,4 +1,4 @@
-using AwesomeAssertions;
+using FluentAssertions;
 using TheFipster.ActivityAggregator.Domain.Tools;
 
 namespace TheFipster.ActivityAggregator.Domain.UnitTests;

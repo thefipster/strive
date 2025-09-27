@@ -1,0 +1,24 @@
+<MudCard Class="flex-1">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudFileUpload T="IBrowserFile" Accept="@Filter" FilesChanged="OnFilesChanged">
+                <ActivatorContent>
+                    <MudIconButton Color="Color.Primary"
+                                   Disabled="@uploadDisabled"
+                                   Icon="@Icon">
+                    </MudIconButton>
+                </ActivatorContent>
+            </MudFileUpload>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (fileName != null)
+        {
+            <MudText Typo="Typo.body1">@fileName</MudText>
+            <MudProgressLinear Color="Color.Primary" Value="@progress" Class="mt-7" />
+        }
+    </MudCardContent>
+</MudCard>

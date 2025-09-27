@@ -1,9 +1,7 @@
-﻿using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models;
-using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+﻿using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Abstractions
+namespace TheFipster.ActivityAggregator.Domain.Models.Scanner
 {
     public class ImportClassification
     {

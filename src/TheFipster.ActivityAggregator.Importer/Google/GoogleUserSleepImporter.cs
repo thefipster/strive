@@ -1,6 +1,7 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
+using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -10,6 +11,8 @@ namespace TheFipster.ActivityAggregator.Importer.Google;
 public class GoogleUserSleepImporter : IFileClassifier
 {
     public DataSources Source => DataSources.FitbitTakeoutUserSleep;
+    public int ClassifierVersion => 1;
+    public int ExtractorVersion => 1;
 
     private readonly string header =
         "sleep_id,sleep_type,minutes_in_sleep_period,minutes_after_wake_up,minutes_to_fall_asleep,minutes_asleep,minutes_awake,minutes_longest_awakening,minutes_to_persistent_sleep,start_utc_offset,sleep_start,end_utc_offset,sleep_end,data_source,sleep_created,sleep_last_updated";

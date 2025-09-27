@@ -22,6 +22,14 @@ public static class DependencyExtension
         services.Configure<LiteDbConfig>(configuration.GetSection(LiteDbConfig.ConfigSectionName));
 
         services.AddSingleton<IndexerContext>();
+        services.AddSingleton<ActivityContext>();
+    }
+
+    public static void AddIndexStorage(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
         services.AddScoped<IIndexer<ImportIndex>, ImportIndexer>();
         services.AddScoped<IIndexer<ScanIndex>, ScanIndexer>();
         services.AddScoped<IIndexer<ClassificationIndex>, ClassificationIndexer>();
@@ -29,10 +37,15 @@ public static class DependencyExtension
         services.AddScoped<IIndexer<BundleIndex>, BundleIndexer>();
         services.AddScoped<IIndexer<UnifyIndex>, UnifiyIndexer>();
         services.AddScoped<IMasterIndexer, MasterIndexer>();
+    }
 
-        services.AddSingleton<ActivityContext>();
-        services.AddScoped<ILiteDbWriter<UnifiedRecord>, UnifiedRecordWriter>();
-        services.AddScoped<ILiteDbReader<UnifiedRecord, DateTime>, UnifiedRecordReader>();
+    public static void AddActivityStorage(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services.AddScoped<ILiteDbWriter<MergedRecord>, UnifiedRecordWriter>();
+        services.AddScoped<ILiteDbReader<MergedRecord, DateTime>, UnifiedRecordReader>();
         services.AddScoped<ILiteDbWriter<Inventory>, InventoryWriter>();
         services.AddScoped<ILiteDbReader<Inventory, int>, InventoryReader>();
 

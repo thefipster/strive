@@ -11,6 +11,9 @@ public class Inventory
         Year = timestamp.Year;
         Month = timestamp.Month;
         Day = timestamp.Day;
+        Hour = timestamp.Hour;
+        Minute = timestamp.Minute;
+
         SetId();
     }
 
@@ -19,15 +22,27 @@ public class Inventory
         Year = year;
         Month = month;
         Day = day;
+
         SetId();
     }
 
-    private void SetId() => Id = Year * 10000 + Month * 100 + Day;
+    public Inventory(int year, int month, int day, int hour, int minute)
+        : this(year, month, day)
+    {
+        Hour = hour;
+        Minute = minute;
 
-    public int Id { get; set; }
+        SetId();
+    }
+
+    private void SetId() => Id = $"{Year:4}{Month:2}{Day:2}{Hour:2}{Minute:2}";
+
+    public string Id { get; set; }
     public int Year { get; set; }
     public int Month { get; set; }
     public int Day { get; set; }
+    public int Hour { get; set; }
+    public int Minute { get; set; }
 
     public HashSet<Parameters> Metrics { get; set; } = [];
     public HashSet<SampleTypes> Series { get; set; } = [];

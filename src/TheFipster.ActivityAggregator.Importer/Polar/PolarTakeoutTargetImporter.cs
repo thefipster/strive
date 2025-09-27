@@ -1,15 +1,18 @@
 ﻿using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
+using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarTakeoutTargetImporter : IFileClassifier
     {
         public DataSources Source => DataSources.PolarTakeoutTarget;
+        public int ClassifierVersion => 1;
+        public int ExtractorVersion => 1;
+
         private readonly HashSet<string> required = ["exportVersion", "done", "name", "startTime"];
 
         public ImportClassification Classify(FileProbe probe)
