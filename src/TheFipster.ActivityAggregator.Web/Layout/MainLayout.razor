@@ -6,8 +6,8 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIcon Icon="@Icons.Material.Outlined.GpsFixed" Color="Color.Inherit"/>
-        <MudText Typo="Typo.h5" Class="ml-3">Track Me</MudText>
+        <MudIcon Class="ml-n2" Icon="@Icons.Material.Outlined.GpsFixed" Color="Color.Inherit"/>
+        <MudText Typo="Typo.h5" Class="ml-7">Fipsters Activity Aggregator</MudText>
         <MudSpacer/>
         @if (pageName == "yearlyCalendar")
         {
@@ -21,8 +21,8 @@
         }
         <MudSpacer/>
     </MudAppBar>
-    <MudDrawer Open="true" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu/>
+    <MudDrawer Variant="@DrawerVariant.Mini" Open="drawerOpen" Color="Color.Primary" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu DrawerToggled="OnDrawerToggle" />
     </MudDrawer>
     <MudMainContent>
         @Body

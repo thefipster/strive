@@ -7,7 +7,7 @@ using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Services.Worker;
 
-public class Importer(IUnzipper unzip, IIndexer<ImporterIndex> indexer) : IImporter
+public class Extractor(IUnzipper unzip, IIndexer<ImporterIndex> indexer) : IExtractor
 {
     public async Task<ImporterIndex> ReadAsync(
         string zipFilepath,
@@ -25,9 +25,12 @@ public class Importer(IUnzipper unzip, IIndexer<ImporterIndex> indexer) : IImpor
             return Updated(index!);
 
         unzip.Extract(zipFilepath, outputPath, true);
+        (var count, var size) = GetDirectoryStats(outputPath);
 
         index = new ImporterIndex { Hash = hash, Output = outputPath };
         index.Files.Add(file.FullName);
+        index.Count = count;
+        index.Size = size;
         index.Actions.Log(ImporterActions.Extracted);
         return Updated(index);
     }
@@ -48,5 +51,34 @@ public class Importer(IUnzipper unzip, IIndexer<ImporterIndex> indexer) : IImpor
     {
         indexer.Set(index);
         return index;
+    }
+
+    public (int fileCount, long totalSize) GetDirectoryStats(string directoryPath)
+    {
+        if (!Directory.Exists(directoryPath))
+            throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
+
+        int fileCount = 0;
+        long totalSize = 0;
+
+        void ProcessDirectory(string path)
+        {
+            var files = Directory.GetFiles(path);
+            fileCount += files.Length;
+
+            foreach (var file in files)
+            {
+                totalSize += new FileInfo(file).Length;
+            }
+
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                ProcessDirectory(dir);
+            }
+        }
+
+        ProcessDirectory(directoryPath);
+
+        return (fileCount, totalSize);
     }
 }

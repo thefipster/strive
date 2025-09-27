@@ -5,5 +5,5 @@ namespace TheFipster.ActivityAggregator.Services.Abstractions;
 
 public interface IUploader
 {
-    Task EnsureChunk(UploadChunkRequest request, ApiConfig config);
+    Task<string> EnsureChunk(UploadChunkRequest request, ApiConfig config);
 }

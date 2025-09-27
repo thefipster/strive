@@ -10,12 +10,12 @@ public class Uploader : IUploader
 {
     private static readonly ConcurrentDictionary<string, object> UploadLocks = new();
 
-    public async Task EnsureChunk(UploadChunkRequest request, ApiConfig config)
+    public async Task<string> EnsureChunk(UploadChunkRequest request, ApiConfig config)
     {
         try
         {
             Directory.CreateDirectory(config.UploadDirectoryPath);
-            await HandleChunk(request, config);
+            return await HandleChunk(request, config);
         }
         finally
         {
@@ -23,18 +23,23 @@ public class Uploader : IUploader
         }
     }
 
-    private static async Task HandleChunk(UploadChunkRequest request, ApiConfig config)
+    private static async Task<string?> HandleChunk(UploadChunkRequest request, ApiConfig config)
     {
         ValidateRequest(request, config);
 
         var filename = SanitizeFileName(request.FileName);
         var tempFilePath = Path.Combine(config.UploadDirectoryPath, request.UploadId + ".part");
-        var finalFilePath = Path.Combine(config.UploadDirectoryPath, filename);
 
         UploadLocks.GetOrAdd(request.UploadId, _ => new object());
         await AppendChunk(request, tempFilePath);
         if (request.ChunkIndex == request.TotalChunks - 1)
+        {
+            var finalFilePath = Path.Combine(config.UploadDirectoryPath, filename);
             FinalizeFile(request, tempFilePath, finalFilePath);
+            return finalFilePath;
+        }
+
+        return null;
     }
 
     private static void ValidateRequest(UploadChunkRequest request, ApiConfig config)

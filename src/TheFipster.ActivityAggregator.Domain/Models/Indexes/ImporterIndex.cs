@@ -10,4 +10,6 @@ public class ImporterIndex
     public DateTime IndexedAt { get; set; } = DateTime.UtcNow;
     public List<string> Files { get; set; } = new();
     public Dictionary<DateTime, ImporterActions> Actions { get; set; } = new();
+    public int Count { get; set; }
+    public long Size { get; set; }
 }
