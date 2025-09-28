@@ -37,6 +37,10 @@ public static class Setup
         services.AddTransient<IScanner, Scanner>();
         services.AddTransient<IScannerService, ScannerService>();
 
+        services.AddTransient<IIndexer<AssimilaterIndex>, BaseIndexer<AssimilaterIndex>>();
+        services.AddTransient<IAssimilater, Assimilater>();
+        services.AddTransient<IAssimilaterService, AssimilaterService>();
+
         return services;
     }
 

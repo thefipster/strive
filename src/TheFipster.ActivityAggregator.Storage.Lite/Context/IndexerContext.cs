@@ -50,6 +50,7 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
                 // new school
                 mapper.Entity<ImporterIndex>().Id(x => x.Hash);
                 mapper.Entity<ScannerIndex>().Id(x => x.Hash);
+                mapper.Entity<AssimilaterIndex>().Id(x => x.FileHash);
 
                 return mapper;
             }

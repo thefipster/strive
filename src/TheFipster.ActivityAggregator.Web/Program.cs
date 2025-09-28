@@ -31,5 +31,6 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.MapHub<EventHub>("/eventhub");
 app.MapHub<ScanHub>("/scanhub");
+app.MapHub<AssimilateHub>("/hubs/assimilate");
 
 app.Run();

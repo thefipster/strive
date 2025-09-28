@@ -4,6 +4,8 @@ namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class QueuedHostedService : BackgroundService
 {
+    private const int MaxDegreeOfParallelism = 4;
+
     private readonly IBackgroundTaskQueue taskQueue;
     private readonly ILogger<QueuedHostedService> logger;
 
@@ -15,9 +17,8 @@ public class QueuedHostedService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // Start 4 workers
         var workers = Enumerable
-            .Range(0, 4)
+            .Range(0, MaxDegreeOfParallelism)
             .Select(workerId => Task.Run(() => WorkerLoop(workerId, stoppingToken), stoppingToken))
             .ToArray();
 
@@ -55,6 +56,9 @@ public class QueuedHostedService : BackgroundService
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
+            }
+            finally
+            {
                 await Task.Delay(1000, stoppingToken);
             }
         }

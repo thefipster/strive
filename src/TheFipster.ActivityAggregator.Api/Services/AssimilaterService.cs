@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.SignalR.Client;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Services.Abstractions;
@@ -10,11 +11,17 @@ public class AssimilaterService : IAssimilaterService
 {
     private readonly IAssimilater assimilater;
     private readonly IIndexer<ScannerIndex> indexer;
+    private readonly HubConnection connection;
 
     public AssimilaterService(IAssimilater assimilater, IIndexer<ScannerIndex> indexer)
     {
         this.assimilater = assimilater;
         this.indexer = indexer;
+
+        connection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7260/hubs/assimilate")
+            .Build();
+        connection.StartAsync().Wait();
     }
 
     public async Task ConvergeImportAsync(ImporterIndex import, CancellationToken ct)
@@ -29,21 +36,21 @@ public class AssimilaterService : IAssimilaterService
 
         foreach (var index in indexes)
         {
-            await assimilater.StandardizeAsync(index, ct);
+            assimilater.Standardize(index);
             procCount++;
 
             if (watch.ElapsedMilliseconds > 1000)
             {
-                // await connection.InvokeAsync(
-                //     "Progress",
-                //     import.Hash,
-                //     procCount,
-                //     cancellationToken: ct
-                // );
+                await connection.InvokeAsync(
+                    "Progress",
+                    import.Hash,
+                    procCount,
+                    cancellationToken: ct
+                );
                 watch.Restart();
             }
         }
         watch.Stop();
-        // await connection.InvokeAsync("Finished", import.Hash, cancellationToken: ct);
+        await connection.InvokeAsync("Finished", import.Hash, cancellationToken: ct);
     }
 }

@@ -4,7 +4,7 @@ using HashifyNet.Algorithms.XxHash3;
 
 namespace TheFipster.ActivityAggregator.Domain.Extensions;
 
-public static class FileExtensions
+public static class HashExtensions
 {
     public static string GetMd5Hash(this FileInfo file)
     {
@@ -23,5 +23,20 @@ public static class FileExtensions
         await using var stream = File.OpenRead(file.FullName);
         var hash = await hasher.ComputeHashAsync(stream, token);
         return hash.AsHexString();
+    }
+
+    public static string ToUnorderedCollectionHash(this IEnumerable<byte[]> itemHashes)
+    {
+        var accumulator = new byte[32];
+
+        foreach (var hash in itemHashes)
+        {
+            for (int i = 0; i < accumulator.Length; i++)
+                accumulator[i] ^= hash[i]; // XOR folding
+        }
+
+        using var sha = SHA256.Create();
+        var colHash = sha.ComputeHash(accumulator);
+        return Convert.ToHexString(colHash);
     }
 }

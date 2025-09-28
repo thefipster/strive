@@ -107,7 +107,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models
             return FromJson(json);
         }
 
-        public string GetValueHash()
+        public byte[] ToHash()
         {
             var metrics = string.Join(
                 ",",
@@ -123,15 +123,19 @@ namespace TheFipster.ActivityAggregator.Domain.Models
 
             var combined = metrics + "|" + series;
             using var sha = SHA256.Create();
-            var hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(combined));
+            return sha.ComputeHash(Encoding.UTF8.GetBytes(combined));
+        }
 
-            Hash = Convert.ToHexString(hashBytes);
+        public string ToHashString()
+        {
+            var bytes = ToHash();
+            Hash = Convert.ToHexString(bytes);
             return Hash;
         }
 
         public string Write(string rootDir)
         {
-            Hash = GetValueHash();
+            Hash = ToHashString();
             var filename = $"{Timestamp.ToRangeString(Range)}-{Source}-{Hash}.json";
             var path = Path.Combine(rootDir, Range.GetPath(Timestamp));
             var newFile = Path.Combine(path, filename);

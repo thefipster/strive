@@ -47,6 +47,19 @@ namespace TheFipster.ActivityAggregator.Web.Services
             }
         }
 
+        public async Task Assimilate(string hash)
+        {
+            var query = $"/api/processing/assimilate/{hash}";
+            var response = await http.GetAsync(query);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException(
+                    $"{(int)response.StatusCode} - {response.ReasonPhrase} - {body}"
+                );
+            }
+        }
+
         private async Task<TResult> GetSingleAsync<TResult>(string query)
         {
             var json = await GetJsonBodyAsync(query);

@@ -1,5 +1,11 @@
 using System.Data;
+using System.Data.Common;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
+using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -8,10 +14,14 @@ using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Services.Worker;
 
-public class Assimilater(IIndexer<AssimilaterIndex> indexer, IImporterRegistry registry)
-    : IAssimilater
+public class Assimilater(
+    IIndexer<AssimilaterIndex> indexer,
+    IImporterRegistry registry,
+    IOptions<ApiConfig> config,
+    ILogger<Assimilater> logger
+) : IAssimilater
 {
-    public Task<AssimilaterIndex> StandardizeAsync(ScannerIndex index, CancellationToken ct)
+    public AssimilaterIndex Standardize(ScannerIndex index)
     {
         if (index.Files.Count == 0)
             throw new ArgumentException($"Index {index.Hash} has no files.", nameof(index));
@@ -21,9 +31,28 @@ public class Assimilater(IIndexer<AssimilaterIndex> indexer, IImporterRegistry r
 
         var file = index.Files.First();
         var source = index.Classification.Source;
+
+        var assimilation =
+            indexer.GetById(index.Hash)
+            ?? new AssimilaterIndex
+            {
+                OriginHash = index.OriginHash,
+                FileHash = index.Hash,
+                Source = source,
+            };
+
         var reader = registry.LoadExtractors().FirstOrDefault(x => x.Source == source);
         if (reader == null)
-            throw new ExtractionException(file, $"Could not find extractor for source {source}");
+        {
+            assimilation.Actions.Log(AssimilaterActions.NoExtractor);
+            return Updated(assimilation);
+        }
+
+        if (assimilation.ExtractorVersion >= reader.ExtractorVersion)
+        {
+            assimilation.Actions.Log(AssimilaterActions.NoOperation);
+            return Updated(assimilation);
+        }
 
         var archive = new ArchiveIndex
         {
@@ -34,16 +63,37 @@ public class Assimilater(IIndexer<AssimilaterIndex> indexer, IImporterRegistry r
             Md5Hash = index.Hash,
         };
 
-        var extractions = reader.Extract(archive);
-
-        var assimilation = new AssimilaterIndex
+        try
         {
-            OriginHash = index.OriginHash,
-            ValueHash = index.Hash,
-        };
+            var extractions = reader.Extract(archive);
+            var hash = extractions.Select(x => x.ToHash()).ToUnorderedCollectionHash();
 
-        throw new NotImplementedException();
+            foreach (var extraction in extractions)
+                extraction.Write(config.Value.ConvergeDirectoryPath);
 
-        return Task.FromResult(assimilation);
+            assimilation.ValueHash = hash;
+            assimilation.ExtractorVersion = reader.ExtractorVersion;
+            assimilation.Count = extractions.Count;
+            assimilation.Dates = extractions.Select(x => x.Timestamp.Date).Distinct().ToList();
+            assimilation.Actions.Log(AssimilaterActions.Extracted);
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(
+                e,
+                "Unexpected error during assimilation of file {File} with source {Source}.",
+                archive.Filepath,
+                archive.Source
+            );
+            assimilation.Actions.Log(AssimilaterActions.ExtractionFailed);
+        }
+
+        return Updated(assimilation);
+    }
+
+    private AssimilaterIndex Updated(AssimilaterIndex assimilation)
+    {
+        indexer.Set(assimilation);
+        return assimilation;
     }
 }

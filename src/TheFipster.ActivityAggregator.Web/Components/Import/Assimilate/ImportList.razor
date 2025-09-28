@@ -1,0 +1,48 @@
+@using TheFipster.ActivityAggregator.Domain.Tools
+
+<MudCard Class="flex-1">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Uploads</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Color="Color.Primary" OnClick="OnSyncClickedAsync"
+                           Icon="@Icons.Material.Outlined.Sync">
+            </MudIconButton>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent Class="d-flex align-center">
+        @if (indexes.Any())
+        {
+            <MudTable T="ImporterIndex" Loading="@indexLoading" Items="indexes" Elevation="0" OnRowClick="@(e => OnAssimilateRowClicked(e))" Style="width: 100%">
+                <HeaderContent>
+                    <MudTh>Index time</MudTh>
+                    <MudTh>Upload</MudTh>
+                    <MudTh>Hashes</MudTh>
+                    <MudTh>Classified</MudTh>
+                    <MudTh>Action</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Index time">@context.IndexedAt.ToString(DateHelper.UiSecondFormat)</MudTd>
+                    <MudTd DataLabel="Upload">@context.Files.First()</MudTd>
+                    <MudTd DataLabel="Hashes">@indexHashes[context.Hash]</MudTd>
+                    <MudTd DataLabel="Classified">@indexClassified[context.Hash]</MudTd>
+                    <MudTd DataLabel="Action">
+                        @if (indexLocked[context.Hash])
+                        {
+                            <MudProgressLinear Color="Color.Primary" Size="Size.Small" Indeterminate="true" Style="width: 100px;"/>
+                        }
+                        else
+                        {
+                            <MudButton Class="pa-n1 ma-n1" @onclick="() => OnScanClicked(context.Hash)" Variant="Variant.Text" Size="Size.Small">Assimilate</MudButton>
+                        }
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] { 15 }"
+                                   HideRowsPerPage="true" />
+                </PagerContent>
+            </MudTable>
+        }
+    </MudCardContent>
+</MudCard>

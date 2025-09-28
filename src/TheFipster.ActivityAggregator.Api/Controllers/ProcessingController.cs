@@ -8,38 +8,39 @@ namespace TheFipster.ActivityAggregator.Api.Controllers;
 
 [ApiController]
 [Route("api/processing")]
-public class ProcessingController : ControllerBase
+public class ProcessingController(
+    IIndexer<ImporterIndex> importIndex,
+    IScannerService scanner,
+    IAssimilaterService assimilater,
+    IBackgroundTaskQueue tasks
+) : ControllerBase
 {
-    private readonly HubConnection connection;
-    private readonly IIndexer<ImporterIndex> importIndex;
-    private readonly IScannerService scanner;
-    private readonly IBackgroundTaskQueue tasks;
-
-    public ProcessingController(
-        IIndexer<ImporterIndex> importIndex,
-        IScannerService scanner,
-        IBackgroundTaskQueue tasks
-    )
+    [HttpGet("scan/{importHash}")]
+    public IActionResult ExecuteScanning(string importHash)
     {
-        this.importIndex = importIndex;
-        this.scanner = scanner;
-        this.tasks = tasks;
-
-        connection = new HubConnectionBuilder().WithUrl("https://localhost:7260/scanhub").Build();
-        connection.StartAsync().Wait();
-    }
-
-    [HttpGet("scan/{import}")]
-    public IActionResult SendEvent(string import)
-    {
-        if (string.IsNullOrWhiteSpace(import))
+        if (string.IsNullOrWhiteSpace(importHash))
             return BadRequest();
 
-        var index = importIndex.GetById(import);
+        var index = importIndex.GetById(importHash);
         if (index == null)
             return NotFound();
 
         tasks.QueueBackgroundWorkItem(async ct => await scanner.CheckImportAsync(index, ct));
+
+        return Ok();
+    }
+
+    [HttpGet("assimilate/{importHash}")]
+    public IActionResult ExecuteAssimilating(string importHash)
+    {
+        if (string.IsNullOrWhiteSpace(importHash))
+            return BadRequest();
+
+        var index = importIndex.GetById(importHash);
+        if (index == null)
+            return NotFound();
+
+        tasks.QueueBackgroundWorkItem(async ct => await assimilater.ConvergeImportAsync(index, ct));
 
         return Ok();
     }
