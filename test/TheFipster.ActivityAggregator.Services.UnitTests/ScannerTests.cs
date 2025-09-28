@@ -32,13 +32,12 @@ public class ScannerTests
         var scanner = CreateScanner();
 
         // Act
-        var result = await scanner.CheckAsync(filepath, CancellationToken.None);
+        var result = await scanner.CheckAsync(filepath, "", CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
         result.Classification.Should().NotBeNull();
         result.Files.Should().HaveCount(1);
-        result.IsExcluded.Should().BeFalse();
         result.Conflicts.Should().BeEmpty();
         result.Actions.Should().HaveCount(1);
         result.Actions.Last().Value.Should().Be(ScannerActions.Classified);
@@ -63,13 +62,12 @@ public class ScannerTests
         var scanner = CreateScanner(options);
 
         // Act
-        var result = await scanner.CheckAsync(filepath, CancellationToken.None);
+        var result = await scanner.CheckAsync(filepath, "", CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
         result.Classification.Should().BeNull();
         result.Files.Should().HaveCount(1);
-        result.IsExcluded.Should().BeTrue();
         result.Conflicts.Should().BeEmpty();
         result.Actions.Should().HaveCount(1);
         result.Actions.Last().Value.Should().Be(ScannerActions.ExcludedByFileExtension);
@@ -83,13 +81,12 @@ public class ScannerTests
         var scanner = CreateScanner();
 
         // Act
-        var result = await scanner.CheckAsync(filepath, CancellationToken.None);
+        var result = await scanner.CheckAsync(filepath, "", CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
         result.Classification.Should().BeNull();
         result.Files.Should().HaveCount(1);
-        result.IsExcluded.Should().BeFalse();
         result.Conflicts.Should().BeEmpty();
         result.Actions.Should().HaveCount(1);
         result.Actions.Last().Value.Should().Be(ScannerActions.NotClassified);

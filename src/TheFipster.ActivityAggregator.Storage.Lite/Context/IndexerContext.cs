@@ -39,13 +39,17 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
             {
                 var mapper = BsonMapper.Global;
 
+                // old school
                 mapper.Entity<ImportIndex>().Id(x => x.OutputDirectory);
                 mapper.Entity<ScanIndex>().Id(x => x.Filepath);
                 mapper.Entity<ClassificationIndex>().Id(x => x.Filepath);
                 mapper.Entity<TransformIndex>().Id(x => x.Filepath);
                 mapper.Entity<BundleIndex>().Id(x => x.Id);
                 mapper.Entity<UnifyIndex>().Id(x => x.Id);
+
+                // new school
                 mapper.Entity<ImporterIndex>().Id(x => x.Hash);
+                mapper.Entity<ScannerIndex>().Id(x => x.Hash);
 
                 return mapper;
             }

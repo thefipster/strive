@@ -10,9 +10,8 @@ public class ScannerIndex
     public required string OriginHash { get; set; }
 
     public DateTime IndexedAt { get; set; } = DateTime.UtcNow;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public bool IsExcluded { get; set; }
-    public ScannerRejections? ExclusionReason { get; set; }
     public Classification? Classification { get; set; }
     public List<Classification> Conflicts { get; set; } = new();
     public List<string> Files { get; set; } = new();

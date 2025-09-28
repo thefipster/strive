@@ -12,7 +12,7 @@ public partial class ConflictsPage : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        Conflicts = await Api.GetConflictsAsync();
+        // Conflicts = await Api.GetConflictsAsync();
         loading = false;
 
         await base.OnParametersSetAsync();

@@ -46,6 +46,7 @@ public class Extractor(IUnzipper unzip, IIndexer<ImporterIndex> indexer) : IExtr
             index.Files.Add(file.FullName);
 
         index.Actions.Log(ImporterActions.NoOperation);
+        index.IndexedAt = DateTime.UtcNow;
         return true;
     }
 

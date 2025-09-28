@@ -24,7 +24,8 @@
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Indexing Date">@context.IndexedAt.ToString(DateHelper.UiMinuteFormat)</MudTd>
-                    <MudTd DataLabel="First indexed file">@context.Files.FirstOrDefault()
+                    <MudTd DataLabel="First indexed file">
+                        @context.Files.FirstOrDefault()
                         <MudTooltip Placement="Placement.Top" Arrow="true">
                             <ChildContent>
                                 @(context.Files.Count > 1 ? $"({context.Files.Count - 1} more)" : string.Empty)

@@ -74,8 +74,6 @@ public class Scanner(
         if (!config.Value.ExcludedFileExtensions.Contains(file.Extension))
             return false;
 
-        index.IsExcluded = true;
-        index.ExclusionReason = ScannerRejections.FileExtensionExcluded;
         index.Actions.Log(ScannerActions.ExcludedByFileExtension);
         return true;
     }

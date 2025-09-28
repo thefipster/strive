@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
+using MudBlazor;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Web.Services;
 
-namespace TheFipster.ActivityAggregator.Web.Components.Import;
+namespace TheFipster.ActivityAggregator.Web.Components.Import.Scan;
 
 public partial class ImportScan : ComponentBase
 {
     private IEnumerable<ImporterIndex> indexes = [];
-    private Dictionary<string, int> indexProgress = new();
-    private Dictionary<string, bool> indexLocked = new();
+    private readonly Dictionary<string, int> indexScans = new();
+    private readonly Dictionary<string, int> indexDistinct = new();
+    private readonly Dictionary<string, bool> indexLocked = new();
     private HubConnection? hubConnection;
     private bool indexLoading = true;
 
@@ -19,6 +20,9 @@ public partial class ImportScan : ComponentBase
 
     [Inject]
     public ApiService? Api { get; set; }
+
+    [Parameter]
+    public EventCallback<string> HashSelected { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -33,6 +37,18 @@ public partial class ImportScan : ComponentBase
         await UpdateUploadsAsync();
     }
 
+    private async Task OnScanClicked(string indexHash)
+    {
+        indexLocked[indexHash] = true;
+        if (Api != null)
+            await Api.Scan(indexHash);
+    }
+
+    private async Task OnScanRowClicked(TableRowClickEventArgs<ImporterIndex> obj)
+    {
+        await HashSelected.InvokeAsync(obj.Item?.Hash);
+    }
+
     private async Task UpdateUploadsAsync()
     {
         if (Api != null)
@@ -40,8 +56,11 @@ public partial class ImportScan : ComponentBase
             indexes = (await Api.GetImporterIndexesAsync()).OrderByDescending(x => x.IndexedAt);
             foreach (var index in indexes)
             {
-                indexProgress.Add(index.Hash, 0);
-                indexLocked.Add(index.Hash, false);
+                var count = await Api.GetScannerIndexCountAsync(index.Hash);
+
+                indexDistinct[index.Hash] = count[0];
+                indexScans[index.Hash] = count[1];
+                indexLocked[index.Hash] = false;
             }
 
             indexLoading = false;
@@ -65,7 +84,7 @@ public partial class ImportScan : ComponentBase
             {
                 var index = indexes.FirstOrDefault(x => x.Hash == hash);
                 if (index != null)
-                    indexProgress[hash] = index.Count;
+                    indexScans[hash] = index.Count;
 
                 indexLocked[hash] = false;
 
@@ -78,18 +97,11 @@ public partial class ImportScan : ComponentBase
             (hash, procCount) =>
             {
                 indexLocked[hash] = true;
-                indexProgress[hash] = procCount;
+                indexScans[hash] = procCount;
                 InvokeAsync(StateHasChanged);
             }
         );
 
         await hubConnection.StartAsync();
-    }
-
-    private async Task OnScanClicked(string indexHash)
-    {
-        indexLocked[indexHash] = true;
-        if (Api != null)
-            await Api.Scan(indexHash);
     }
 }

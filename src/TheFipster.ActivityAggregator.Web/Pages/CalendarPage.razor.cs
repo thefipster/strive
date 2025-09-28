@@ -16,7 +16,7 @@ namespace TheFipster.ActivityAggregator.Web.Pages
             if (!string.IsNullOrWhiteSpace(Year) && int.TryParse(Year, out int yearValue))
                 year = yearValue;
 
-            inventory = await Api.GetInvetoryAsync(year);
+            // inventory = await Api.GetInvetoryAsync(year);
 
             await base.OnParametersSetAsync();
         }

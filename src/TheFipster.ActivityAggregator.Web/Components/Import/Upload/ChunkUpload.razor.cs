@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using MudBlazor;
 
-namespace TheFipster.ActivityAggregator.Web.Components.Import;
+namespace TheFipster.ActivityAggregator.Web.Components.Import.Upload;
 
 public partial class ChunkUpload : ComponentBase
 {

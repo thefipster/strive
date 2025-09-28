@@ -1,3 +1,5 @@
-<MudContainer Class="ma-10 pa-10 d-flex gap-5 flex-grow-1" Fixed="true">
-    <ImportScan />
+@using TheFipster.ActivityAggregator.Web.Components.Import.Scan
+<MudContainer Class="ma-10 pa-10 d-flex flex-column gap-5" Fixed="true">
+    <ImportScan HashSelected="@OnHashSelected" />
+    <ScannedFiles Hash="@hash" />
 </MudContainer>

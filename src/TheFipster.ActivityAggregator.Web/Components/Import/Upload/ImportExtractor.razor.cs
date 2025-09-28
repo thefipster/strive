@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Web.Services;
 
-namespace TheFipster.ActivityAggregator.Web.Components.Import;
+namespace TheFipster.ActivityAggregator.Web.Components.Import.Upload;
 
 public partial class ImportExtractor : ComponentBase
 {

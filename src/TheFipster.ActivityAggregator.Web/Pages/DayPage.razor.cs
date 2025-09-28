@@ -23,8 +23,8 @@ namespace TheFipster.ActivityAggregator.Web.Pages
             if (!string.IsNullOrWhiteSpace(DateValue))
             {
                 Date = DateTime.Parse(DateValue);
-                MasterIndexes = await Api.GetDayIndexAsync(Date.Value);
-                DayRecords = await Api.GetDayActivityAsync(Date.Value);
+                // MasterIndexes = await Api.GetDayIndexAsync(Date.Value);
+                // DayRecords = await Api.GetDayActivityAsync(Date.Value);
             }
         }
 

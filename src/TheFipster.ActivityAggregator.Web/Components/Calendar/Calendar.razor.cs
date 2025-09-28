@@ -19,7 +19,7 @@ namespace TheFipster.ActivityAggregator.Web.Components.Calendar
                 : DateTime.Parse(DateValue);
 
             CalendarModel.SetMonth(date);
-            Data = await Api.GetMonthIndexAsync(date);
+            // Data = await Api.GetMonthIndexAsync(date);
 
             await base.OnInitializedAsync();
         }
