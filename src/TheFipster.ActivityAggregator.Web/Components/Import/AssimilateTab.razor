@@ -1,5 +1,6 @@
 @using TheFipster.ActivityAggregator.Web.Components.Import.Assimilate
 
 <MudContainer Class="ma-10 pa-10 d-flex flex-column gap-5" Fixed="true">
-    <ImportList HashSelected="@OnHashSelected"></ImportList>
+    <ImportAssimilation HashSelected="@OnHashSelected"></ImportAssimilation>
+    <AssimilatedFiles Hash="@hash" />
 </MudContainer>

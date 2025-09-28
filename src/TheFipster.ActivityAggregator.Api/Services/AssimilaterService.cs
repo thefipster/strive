@@ -31,13 +31,16 @@ public class AssimilaterService : IAssimilaterService
         );
 
         var procCount = 0;
+        var outCount = 0;
         var watch = new Stopwatch();
         watch.Start();
 
         foreach (var index in indexes)
         {
-            assimilater.Standardize(index);
+            var assimilation = assimilater.Standardize(index);
+
             procCount++;
+            outCount += assimilation.Count;
 
             if (watch.ElapsedMilliseconds > 1000)
             {
@@ -45,6 +48,7 @@ public class AssimilaterService : IAssimilaterService
                     "Progress",
                     import.Hash,
                     procCount,
+                    outCount,
                     cancellationToken: ct
                 );
                 watch.Restart();

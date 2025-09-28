@@ -12,7 +12,8 @@ namespace TheFipster.ActivityAggregator.Api.Controllers;
 public class IndexController(
     IIndexer<ImporterIndex> importIndexer,
     IIndexer<ScannerIndex> scanIndex,
-    IIndexer<AssimilaterIndex> assimilateIndex
+    IIndexer<AssimilaterIndex> assimilateIndex,
+    IInventoryIndexer inventory
 ) : ControllerBase
 {
     [HttpGet("importer/all")]
@@ -21,7 +22,7 @@ public class IndexController(
     [HttpGet("scanner/count/{hash}")]
     public int[] GetScannerIndexCount(string hash)
     {
-        var indexes = GetScannerIndexes(hash).ToArray();
+        var indexes = scanIndex.GetFiltered(x => x.OriginHash == hash).ToArray();
         return
         [
             indexes.Length,
@@ -35,7 +36,7 @@ public class IndexController(
     public IEnumerable<ScannerIndex> GetScannerIndexes(string hash) =>
         scanIndex.GetFiltered(x => x.OriginHash == hash);
 
-    [HttpGet("assimilator/all/{hash}")]
+    [HttpGet("assimilater/all/{hash}")]
     public IEnumerable<AssimilaterIndex> GetAssimilatorIndexes(string hash) =>
         assimilateIndex.GetFiltered(x => x.OriginHash == hash);
 
@@ -45,4 +46,10 @@ public class IndexController(
         var indexes = GetAssimilatorIndexes(hash).ToArray();
         return [indexes.Length, indexes.Sum(x => x.Count)];
     }
+
+    [HttpGet("inventory/yearly")]
+    public Dictionary<int, int[]> GetYearlyInventory() => inventory.GetYearly();
+
+    [HttpGet("inventory/year/{year}")]
+    public IEnumerable<InventoryIndex> GetInventoryByYear(int year) => inventory.GetByYear(year);
 }

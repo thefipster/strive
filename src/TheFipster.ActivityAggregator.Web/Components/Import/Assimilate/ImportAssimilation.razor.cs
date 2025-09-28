@@ -6,10 +6,13 @@ using TheFipster.ActivityAggregator.Web.Services;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import.Assimilate;
 
-public partial class ImportList : ComponentBase
+public partial class ImportAssimilation : ComponentBase
 {
     private IEnumerable<ImporterIndex> indexes = [];
     private readonly Dictionary<string, int> indexClassified = new();
+    private readonly Dictionary<string, int> indexUnclassified = new();
+    private readonly Dictionary<string, int> indexConverged = new();
+    private readonly Dictionary<string, int> indexOutput = new();
     private readonly Dictionary<string, int> indexHashes = new();
     private readonly Dictionary<string, bool> indexLocked = new();
     private HubConnection? hubConnection;
@@ -56,10 +59,15 @@ public partial class ImportList : ComponentBase
             indexes = (await Api.GetImporterIndexesAsync()).OrderByDescending(x => x.IndexedAt);
             foreach (var index in indexes)
             {
-                var count = await Api.GetScannerIndexCountAsync(index.Hash);
+                var scanCount = await Api.GetScannerIndexCountAsync(index.Hash);
+                var assimilateCount = await Api.GetAssimilateIndexCountAsync(index.Hash);
 
-                indexHashes[index.Hash] = count[0];
-                indexClassified[index.Hash] = count[2];
+                indexHashes[index.Hash] = scanCount[0];
+                indexClassified[index.Hash] = scanCount[2];
+                indexUnclassified[index.Hash] = scanCount[3];
+                indexConverged[index.Hash] = assimilateCount[0];
+                indexOutput[index.Hash] = assimilateCount[1];
+                indexLocked[index.Hash] = false;
                 indexLocked[index.Hash] = false;
             }
 
@@ -92,12 +100,13 @@ public partial class ImportList : ComponentBase
             }
         );
 
-        hubConnection.On<string, int>(
+        hubConnection.On<string, int, int>(
             "OnProgress",
-            (hash, procCount) =>
+            (hash, procCount, outCount) =>
             {
                 indexLocked[hash] = true;
-                indexClassified[hash] = procCount;
+                indexConverged[hash] = procCount;
+                indexOutput[hash] = outCount;
                 InvokeAsync(StateHasChanged);
             }
         );

@@ -34,6 +34,30 @@ namespace TheFipster.ActivityAggregator.Web.Services
             return await GetSingleAsync<int[]>(query);
         }
 
+        public async Task<IEnumerable<AssimilaterIndex>> GetAssimilateIndexes(string hash)
+        {
+            var query = $"/api/index/assimilater/all/{hash}";
+            return await GetCollectionAsync<AssimilaterIndex>(query);
+        }
+
+        public async Task<int[]> GetAssimilateIndexCountAsync(string hash)
+        {
+            var query = $"/api/index/assimilater/count/{hash}";
+            return await GetSingleAsync<int[]>(query);
+        }
+
+        public async Task<Dictionary<int, int[]>> GetYearlyInventoryAsync()
+        {
+            var query = "/api/index/inventory/yearly";
+            return await GetSingleAsync<Dictionary<int, int[]>>(query);
+        }
+
+        public async Task<IEnumerable<InventoryIndex>> GetInventoryByYearAsync(int year)
+        {
+            var query = $"/api/index/inventory/year/{year}";
+            return await GetCollectionAsync<InventoryIndex>(query);
+        }
+
         public async Task Scan(string hash)
         {
             var query = $"/api/processing/scan/{hash}";

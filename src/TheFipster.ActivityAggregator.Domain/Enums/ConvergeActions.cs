@@ -1,8 +1,7 @@
 namespace TheFipster.ActivityAggregator.Domain.Enums;
 
-public enum ImporterActions
+public enum ConvergeActions
 {
     None,
-    NoOperation,
-    Extracted,
+    Converged,
 }

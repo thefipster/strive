@@ -51,6 +51,8 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
                 mapper.Entity<ImporterIndex>().Id(x => x.Hash);
                 mapper.Entity<ScannerIndex>().Id(x => x.Hash);
                 mapper.Entity<AssimilaterIndex>().Id(x => x.FileHash);
+                mapper.Entity<ConvergeIndex>().Id(x => x.Hash);
+                mapper.Entity<InventoryIndex>().Id(x => x.Timestamp);
 
                 return mapper;
             }

@@ -3,7 +3,7 @@
 <MudCard Class="flex-1">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">Uploads</MudText>
+            <MudText Typo="Typo.h6">Assimilation</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
             <MudIconButton Color="Color.Primary" OnClick="OnSyncClickedAsync"
@@ -20,13 +20,17 @@
                     <MudTh>Upload</MudTh>
                     <MudTh>Hashes</MudTh>
                     <MudTh>Classified</MudTh>
+                    <MudTh>Unclassified</MudTh>
                     <MudTh>Action</MudTh>
+                    <MudTh>Converged</MudTh>
+                    <MudTh>Extracted</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Index time">@context.IndexedAt.ToString(DateHelper.UiSecondFormat)</MudTd>
                     <MudTd DataLabel="Upload">@context.Files.First()</MudTd>
                     <MudTd DataLabel="Hashes">@indexHashes[context.Hash]</MudTd>
                     <MudTd DataLabel="Classified">@indexClassified[context.Hash]</MudTd>
+                    <MudTd DataLabel="Unclassified">@indexUnclassified[context.Hash]</MudTd>
                     <MudTd DataLabel="Action">
                         @if (indexLocked[context.Hash])
                         {
@@ -37,6 +41,8 @@
                             <MudButton Class="pa-n1 ma-n1" @onclick="() => OnScanClicked(context.Hash)" Variant="Variant.Text" Size="Size.Small">Assimilate</MudButton>
                         }
                     </MudTd>
+                    <MudTd DataLabel="Converged">@indexConverged[context.Hash]</MudTd>
+                    <MudTd DataLabel="Extracted">@indexOutput[context.Hash]</MudTd>
                 </RowTemplate>
                 <PagerContent>
                     <MudTablePager PageSizeOptions="new[] { 15 }"

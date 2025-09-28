@@ -38,8 +38,11 @@ public static class Setup
         services.AddTransient<IScannerService, ScannerService>();
 
         services.AddTransient<IIndexer<AssimilaterIndex>, BaseIndexer<AssimilaterIndex>>();
+        services.AddTransient<IIndexer<ConvergeIndex>, BaseIndexer<ConvergeIndex>>();
         services.AddTransient<IAssimilater, Assimilater>();
         services.AddTransient<IAssimilaterService, AssimilaterService>();
+
+        services.AddTransient<IInventoryIndexer, InventoryIndexer>();
 
         return services;
     }

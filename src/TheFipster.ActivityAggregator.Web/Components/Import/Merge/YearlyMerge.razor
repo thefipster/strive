@@ -1,0 +1,22 @@
+<MudGrid>
+    
+    @if (inventory.Any())
+    {
+        @foreach (var item in inventory)
+        {
+            <MudItem xs="2">
+                <MudPaper Class="d-flex align-center justify-center mud-width-full py-8" @onclick="() => OnYearClick(item.Key)">
+                    <MudStack>
+                        <MudText Typo="Typo.subtitle2">@item.Key</MudText>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1">@item.Value[0] days</MudText>
+                            <MudText Typo="Typo.body1">@item.Value[1] sessions</MudText>
+                        </MudStack>
+                    </MudStack>
+
+                </MudPaper>
+            </MudItem>
+        }
+    }
+
+</MudGrid>

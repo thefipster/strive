@@ -2,6 +2,7 @@ using System.Data;
 using System.Data.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
@@ -16,7 +17,9 @@ namespace TheFipster.ActivityAggregator.Services.Worker;
 
 public class Assimilater(
     IIndexer<AssimilaterIndex> indexer,
+    IIndexer<ConvergeIndex> convergeIndexer,
     IImporterRegistry registry,
+    IInventoryIndexer inventory,
     IOptions<ApiConfig> config,
     ILogger<Assimilater> logger
 ) : IAssimilater
@@ -69,7 +72,25 @@ public class Assimilater(
             var hash = extractions.Select(x => x.ToHash()).ToUnorderedCollectionHash();
 
             foreach (var extraction in extractions)
+            {
                 extraction.Write(config.Value.ConvergeDirectoryPath);
+
+                var convergeIndex = new ConvergeIndex
+                {
+                    FileHash = assimilation.FileHash,
+                    OriginHash = assimilation.OriginHash,
+                    Source = source,
+                    Hash = extraction.ToHashString(),
+                    Kind = extraction.Range == DateRanges.Time ? DataKind.Session : DataKind.Day,
+                    Timestamp = extraction.Timestamp,
+                };
+                convergeIndex.Actions.Log(ConvergeActions.Converged);
+
+                var inventoryIndex = InventoryIndex.Parse(convergeIndex);
+                inventory.EnsureIndex(inventoryIndex);
+
+                convergeIndexer.Set(convergeIndex);
+            }
 
             assimilation.ValueHash = hash;
             assimilation.ExtractorVersion = reader.ExtractorVersion;
