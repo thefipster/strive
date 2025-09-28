@@ -1,3 +1,4 @@
+using LiteDB;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Context;
@@ -8,16 +9,49 @@ public class InventoryIndexer(IndexerContext context)
     : BaseIndexer<InventoryIndex>(context),
         IInventoryIndexer
 {
-    public void EnsureIndex(InventoryIndex index) => Collection.Upsert(index);
+    public void EnsureIndex(InventoryIndex index)
+    {
+        var storedIndex = Collection.FindById(new BsonValue(index.Timestamp));
+        if (storedIndex == null)
+        {
+            Collection.Insert(index);
+            return;
+        }
+
+        storedIndex.Count++;
+        Collection.Update(storedIndex);
+    }
 
     public Dictionary<int, int[]> GetYearly()
     {
-        var all = Collection.FindAll();
-
-        var result = all.GroupBy(e => e.Timestamp.Year)
+        var result = Collection
+            .FindAll()
+            .GroupBy(e => e.Timestamp.Year)
             .ToDictionary(
                 g => g.Key,
-                g => new int[] { g.Count(e => e.IsDay), g.Count(e => !e.IsDay) }
+                g =>
+                {
+                    int dayCount = 0;
+                    int sessionCount = 0;
+                    int daySum = 0;
+                    int sessionSum = 0;
+
+                    foreach (var x in g)
+                    {
+                        if (x.IsDay)
+                        {
+                            dayCount++;
+                            daySum += x.Count;
+                        }
+                        else
+                        {
+                            sessionCount++;
+                            sessionSum += x.Count;
+                        }
+                    }
+
+                    return new[] { dayCount, sessionCount, daySum, sessionSum };
+                }
             );
 
         return result;

@@ -13,6 +13,7 @@ public class IndexController(
     IIndexer<ImporterIndex> importIndexer,
     IIndexer<ScannerIndex> scanIndex,
     IIndexer<AssimilaterIndex> assimilateIndex,
+    IIndexer<ConvergeIndex> convergeIndex,
     IInventoryIndexer inventory
 ) : ControllerBase
 {
