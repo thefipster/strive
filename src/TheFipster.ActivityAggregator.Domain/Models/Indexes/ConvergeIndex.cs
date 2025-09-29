@@ -4,10 +4,11 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 public class ConvergeIndex
 {
-    public required string OriginHash { get; set; }
+    public required string ImportHash { get; set; }
+    public required string SourceHash { get; set; }
+    public required string ValueHash { get; set; }
     public required string FileHash { get; set; }
-    public string? ValueHash { get; set; }
-    public string? Hash { get; set; }
+    public required string Filepath { get; set; }
     public DataSources Source { get; set; }
     public DateTime Timestamp { get; set; }
     public DataKind Kind { get; set; }

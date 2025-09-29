@@ -1,5 +1,5 @@
 @using TheFipster.ActivityAggregator.Web.Components.Import.Upload
-<MudContainer Class="ma-10 pa-10 d-flex gap-5 flex-grow-1" Fixed="true">
-    <ChunkUpload Title="Upload Takeout" Filter=".zip" UploadFinished="@OnUploadFinished" @key="@uploadKey" />
-    <ImportExtractor />
+<MudContainer Class="ma-10 pa-10 d-flex flex-column gap-5 flex-grow-1" Fixed="true">
+    <ChunkUpload Title="Upload" Filter=".zip" UploadFinished="@OnUploadFinished" @key="@uploadKey" />
+    <ZipList Zips="@zips" IsLoading="@isLoading"></ZipList>
 </MudContainer>

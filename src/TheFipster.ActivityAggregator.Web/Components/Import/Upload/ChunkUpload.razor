@@ -1,25 +1,21 @@
 <MudCard>
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">@Title</MudText>
+            <MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h6">@Title</MudText>
+                    <MudText>@fileName</MudText>
+                    <MudFileUpload T="IBrowserFile" Accept="@Filter" FilesChanged="OnFilesChanged">
+                        <ActivatorContent>
+                            <MudIconButton Color="Color.Primary"
+                                           Disabled="@uploadDisabled"
+                                           Icon="@Icon">
+                            </MudIconButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                </MudStack>
+                <MudProgressLinear Color="Color.Primary" Value="@progress"/>
+            </MudStack>
         </CardHeaderContent>
-        <CardHeaderActions>
-            <MudFileUpload T="IBrowserFile" Accept="@Filter" FilesChanged="OnFilesChanged">
-                <ActivatorContent>
-                    <MudIconButton Color="Color.Primary"
-                                   Disabled="@uploadDisabled"
-                                   Icon="@Icon">
-                    </MudIconButton>
-                </ActivatorContent>
-            </MudFileUpload>
-        </CardHeaderActions>
     </MudCardHeader>
-    <MudCardContent Class="d-flex flex-column align-center">
-        @if (fileName != null)
-        {
-            <MudText Typo="Typo.body1">@fileName</MudText>
-            <MudProgressLinear Class="my-5" Color="Color.Primary" Value="@progress"/>
-            <MudText Typo="Typo.subtitle2">@progress</MudText>
-        }
-    </MudCardContent>
 </MudCard>

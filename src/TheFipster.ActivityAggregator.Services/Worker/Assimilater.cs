@@ -24,7 +24,7 @@ public class Assimilater(
     ILogger<Assimilater> logger
 ) : IAssimilater
 {
-    public AssimilaterIndex Standardize(ScannerIndex index)
+    public async Task<AssimilaterIndex> StandardizeAsync(ScannerIndex index, CancellationToken ct)
     {
         if (index.Files.Count == 0)
             throw new ArgumentException($"Index {index.Hash} has no files.", nameof(index));
@@ -73,23 +73,15 @@ public class Assimilater(
 
             foreach (var extraction in extractions)
             {
-                extraction.Write(config.Value.ConvergeDirectoryPath);
+                string filepath = extraction.Write(config.Value.ConvergeDirectoryPath);
+                var convergeIndex = await CreateConvergenceIndex(
+                    ct,
+                    filepath,
+                    assimilation,
+                    extraction
+                );
 
-                var convergeIndex = new ConvergeIndex
-                {
-                    FileHash = assimilation.FileHash,
-                    OriginHash = assimilation.OriginHash,
-                    Source = source,
-                    Hash = extraction.ToHashString(),
-                    Kind = extraction.Range == DateRanges.Time ? DataKind.Session : DataKind.Day,
-                    Timestamp = extraction.Timestamp,
-                };
-                convergeIndex.Actions.Log(ConvergeActions.Converged);
-
-                var inventoryIndex = InventoryIndex.Parse(convergeIndex);
-                inventory.EnsureIndex(inventoryIndex);
-
-                convergeIndexer.Set(convergeIndex);
+                EnsureInventory(convergeIndex);
             }
 
             assimilation.ValueHash = hash;
@@ -110,6 +102,38 @@ public class Assimilater(
         }
 
         return Updated(assimilation);
+    }
+
+    private void EnsureInventory(ConvergeIndex convergeIndex)
+    {
+        var inventoryIndex = InventoryIndex.Parse(convergeIndex);
+        inventory.EnsureIndex(inventoryIndex);
+    }
+
+    private async Task<ConvergeIndex> CreateConvergenceIndex(
+        CancellationToken ct,
+        string filepath,
+        AssimilaterIndex assimilation,
+        FileExtraction extraction
+    )
+    {
+        var fileHash = await new FileInfo(filepath).HashXx3Async(ct);
+        var convergeIndex = new ConvergeIndex
+        {
+            SourceHash = assimilation.FileHash,
+            ImportHash = assimilation.OriginHash,
+            ValueHash = extraction.ToHashString(),
+            Filepath = filepath,
+            FileHash = fileHash,
+            Source = assimilation.Source,
+            Kind = extraction.Range == DateRanges.Time ? DataKind.Session : DataKind.Day,
+            Timestamp = extraction.Timestamp,
+        };
+
+        convergeIndex.Actions.Log(ConvergeActions.Converged);
+        convergeIndexer.Set(convergeIndex);
+
+        return convergeIndex;
     }
 
     private AssimilaterIndex Updated(AssimilaterIndex assimilation)

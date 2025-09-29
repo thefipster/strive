@@ -13,7 +13,7 @@ public class UploadController(
     IUploader uploader,
     IOptions<ApiConfig> config,
     IBackgroundTaskQueue tasks,
-    IExtractor importer
+    IUnzipService unzipper
 ) : ControllerBase
 {
     [HttpPost("chunk")]
@@ -23,9 +23,14 @@ public class UploadController(
         try
         {
             var uploadFilepath = await uploader.EnsureChunk(request, config.Value);
-            if (!string.IsNullOrWhiteSpace(uploadFilepath))
+            var destinationDirectory = config.Value.UnzipDirectoryPath;
+
+            if (
+                !string.IsNullOrWhiteSpace(uploadFilepath)
+                && !string.IsNullOrWhiteSpace(destinationDirectory)
+            )
                 tasks.QueueBackgroundWorkItem(async ct =>
-                    await importer.ReadAsync(uploadFilepath, config.Value.UnzipDirectoryPath, ct)
+                    await unzipper.ExtractAsync(uploadFilepath, destinationDirectory, ct)
                 );
         }
         catch (ArgumentException e)

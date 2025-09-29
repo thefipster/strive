@@ -28,8 +28,11 @@ public static class Setup
         services.AddTransient<IUploader, Uploader>();
 
         services.AddTransient<IIndexer<ImporterIndex>, BaseIndexer<ImporterIndex>>();
-        services.AddTransient<IUnzipper, Unzipper>();
         services.AddTransient<IExtractor, Extractor>();
+
+        services.AddTransient<IUnzipper, Unzipper>();
+        services.AddTransient<IIndexer<ZipIndex>, BaseIndexer<ZipIndex>>();
+        services.AddTransient<IUnzipService, UnzipService>();
 
         services.AddTransient<IIndexer<ScannerIndex>, BaseIndexer<ScannerIndex>>();
         services.AddSingleton<IImporterRegistry, Registry>();

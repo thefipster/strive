@@ -9,6 +9,7 @@ var config = builder.Configuration;
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<ApiService>();
+builder.Services.AddSingleton<UploadService>();
 
 builder.Services.AddSignalR(e =>
 {
@@ -32,5 +33,6 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapHub<EventHub>("/eventhub");
 app.MapHub<ScanHub>("/scanhub");
 app.MapHub<AssimilateHub>("/hubs/assimilate");
+app.MapHub<IngestHub>("/hubs/ingest");
 
 app.Run();

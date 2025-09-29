@@ -34,15 +34,15 @@ public partial class MainLayout
             return;
 
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/eventhub"))
+            .WithUrl(Navigation.ToAbsoluteUri("/hubs/ingest"))
             .Build();
 
         hubConnection.On<string>(
-            "ReceiveEvent",
+            "OnWorkerStart",
             (msg) =>
             {
                 if (Snackbar != null)
-                    Snackbar.Add(msg, Severity.Success);
+                    Snackbar.Add(msg, Severity.Info);
 
                 InvokeAsync(StateHasChanged);
             }

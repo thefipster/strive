@@ -4,5 +4,5 @@ namespace TheFipster.ActivityAggregator.Services.Abstractions;
 
 public interface IAssimilater
 {
-    AssimilaterIndex Standardize(ScannerIndex index);
+    Task<AssimilaterIndex> StandardizeAsync(ScannerIndex index, CancellationToken ct);
 }

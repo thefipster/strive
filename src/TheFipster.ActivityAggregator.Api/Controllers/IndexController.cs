@@ -13,7 +13,7 @@ public class IndexController(
     IIndexer<ImporterIndex> importIndexer,
     IIndexer<ScannerIndex> scanIndex,
     IIndexer<AssimilaterIndex> assimilateIndex,
-    IIndexer<ConvergeIndex> convergeIndex,
+    IIndexer<ZipIndex> zipIndex,
     IInventoryIndexer inventory
 ) : ControllerBase
 {
@@ -53,4 +53,7 @@ public class IndexController(
 
     [HttpGet("inventory/year/{year}")]
     public IEnumerable<InventoryIndex> GetInventoryByYear(int year) => inventory.GetByYear(year);
+
+    [HttpGet("zip/all")]
+    public IEnumerable<ZipIndex> GetZipInventory() => zipIndex.GetAll();
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace TheFipster.ActivityAggregator.Web.Components;
 
@@ -10,6 +11,10 @@ public partial class FipFileSize : ComponentBase
 
     [Parameter]
     public long Size { get; set; }
+
+    [Parameter]
+    [Category(CategoryTypes.Text.Appearance)]
+    public Typo Typo { get; set; } = Typo.body1;
 
     private string sizeText = string.Empty;
 

@@ -37,7 +37,7 @@ public class AssimilaterService : IAssimilaterService
 
         foreach (var index in indexes)
         {
-            var assimilation = assimilater.Standardize(index);
+            var assimilation = await assimilater.StandardizeAsync(index, ct);
 
             procCount++;
             outCount += assimilation.Count;
