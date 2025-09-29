@@ -14,9 +14,11 @@ public abstract class BaseApi
         http.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
     }
 
+    protected async Task ExecuteAction(string query) => await GetBodyAsync(query);
+
     protected async Task<TResult> GetSingleAsync<TResult>(string query)
     {
-        var json = await GetJsonBodyAsync(query);
+        var json = await GetBodyAsync(query);
         var item = JsonSerializer.Deserialize<TResult>(json, JsonStandards.Options);
 
         if (item == null)
@@ -27,7 +29,7 @@ public abstract class BaseApi
 
     protected async Task<IEnumerable<TResult>> GetCollectionAsync<TResult>(string query)
     {
-        var json = await GetJsonBodyAsync(query);
+        var json = await GetBodyAsync(query);
         var collection = JsonSerializer
             .Deserialize<IEnumerable<TResult>>(json, JsonStandards.Options)
             ?.ToList();
@@ -40,7 +42,7 @@ public abstract class BaseApi
 
     protected async Task<PagedResult<TResult>> GetPagedAsync<TResult>(string query)
     {
-        var json = await GetJsonBodyAsync(query);
+        var json = await GetBodyAsync(query);
         var page = JsonSerializer.Deserialize<PagedResult<TResult>>(json, JsonStandards.Options);
 
         if (page == null)
@@ -49,7 +51,7 @@ public abstract class BaseApi
         return page;
     }
 
-    protected async Task<string> GetJsonBodyAsync(string query)
+    protected async Task<string> GetBodyAsync(string query)
     {
         var response = await http.GetAsync(query);
         if (!response.IsSuccessStatusCode)

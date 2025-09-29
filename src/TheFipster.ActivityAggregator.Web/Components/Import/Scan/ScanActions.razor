@@ -1,0 +1,17 @@
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h6">@Title</MudText>
+                    <MudIconButton Color="Color.Primary"
+                                   OnClick="@OnScanClicked"
+                                   Disabled="@ActionDisabled"
+                                   Icon="@Icon">
+                    </MudIconButton>
+                </MudStack>
+                <MudProgressLinear Color="Color.Primary" Indeterminate="@ActionDisabled" />
+            </MudStack>
+        </CardHeaderContent>
+    </MudCardHeader>
+</MudCard>

@@ -1,4 +1,5 @@
 using MudBlazor.Services;
+using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Web;
 using TheFipster.ActivityAggregator.Web.Hubs;
 using TheFipster.ActivityAggregator.Web.Services;
@@ -10,6 +11,7 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<ApiService>();
 builder.Services.AddSingleton<UploadService>();
+builder.Services.AddSingleton<ScanService>();
 
 builder.Services.AddSignalR(e =>
 {
@@ -33,6 +35,6 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapHub<EventHub>("/eventhub");
 app.MapHub<ScanHub>("/scanhub");
 app.MapHub<AssimilateHub>("/hubs/assimilate");
-app.MapHub<IngestHub>("/hubs/ingest");
+app.MapHub<IngestHub>(Const.Hubs.Ingester.Url);
 
 app.Run();

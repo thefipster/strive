@@ -30,15 +30,9 @@ public static class Setup
         services.AddTransient<IIndexer<ImporterIndex>, BaseIndexer<ImporterIndex>>();
         services.AddTransient<IExtractor, Extractor>();
 
-        services.AddTransient<IUnzipper, Unzipper>();
-        services.AddTransient<IIndexer<ZipIndex>, BaseIndexer<ZipIndex>>();
-        services.AddTransient<IUnzipService, UnzipService>();
-
         services.AddTransient<IIndexer<ScannerIndex>, BaseIndexer<ScannerIndex>>();
         services.AddSingleton<IImporterRegistry, Registry>();
-        services.AddTransient<IClassifier, Classifier>();
         services.AddTransient<IScanner, Scanner>();
-        services.AddTransient<IScannerService, ScannerService>();
 
         services.AddTransient<IIndexer<AssimilaterIndex>, BaseIndexer<AssimilaterIndex>>();
         services.AddTransient<IIndexer<ConvergeIndex>, BaseIndexer<ConvergeIndex>>();
@@ -46,6 +40,14 @@ public static class Setup
         services.AddTransient<IAssimilaterService, AssimilaterService>();
 
         services.AddTransient<IInventoryIndexer, InventoryIndexer>();
+
+        services.AddTransient<IUnzipper, Unzipper>();
+        services.AddTransient<IIndexer<ZipIndex>, BaseIndexer<ZipIndex>>();
+        services.AddTransient<IUnzipService, UnzipService>();
+
+        services.AddTransient<IClassifier, Classifier>();
+        services.AddTransient<IIndexer<FileIndex>, BaseIndexer<FileIndex>>();
+        services.AddTransient<IScannerService, ScannerService>();
 
         return services;
     }

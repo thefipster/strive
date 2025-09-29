@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Services.Abstractions;
@@ -33,7 +34,7 @@ public class UnzipService : IUnzipService
         var file = new FileInfo(zipFilepath);
 
         await connection.InvokeAsync(
-            "WorkerStart",
+            Const.Hubs.Ingester.WorkerInfoMethod,
             $"Unzipping {file.Name}.",
             cancellationToken: ct
         );
@@ -52,7 +53,7 @@ public class UnzipService : IUnzipService
             indexer.Set(index);
 
             await connection.InvokeAsync(
-                "UnzipFinished",
+                Const.Hubs.Ingester.UnzipFinishedMethod,
                 file.Name,
                 "File is already indexed.",
                 cancellationToken: ct
@@ -75,7 +76,7 @@ public class UnzipService : IUnzipService
         indexer.Set(index);
 
         await connection.InvokeAsync(
-            "UnzipFinished",
+            Const.Hubs.Ingester.UnzipFinishedMethod,
             file.Name,
             "Indexing complete.",
             cancellationToken: ct
