@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import.Scan;
 

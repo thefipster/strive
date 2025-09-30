@@ -14,6 +14,7 @@ public class IndexController(
     IIndexer<ScannerIndex> scanIndex,
     IIndexer<AssimilaterIndex> assimilateIndex,
     IIndexer<ZipIndex> zipIndex,
+    IPagedIndexer<FileIndex> fileIndex,
     IInventoryIndexer inventory
 ) : ControllerBase
 {
@@ -56,4 +57,8 @@ public class IndexController(
 
     [HttpGet("zip/all")]
     public IEnumerable<ZipIndex> GetZipInventory() => zipIndex.GetAll();
+
+    [HttpGet("files/paged")]
+    public PagedResult<FileIndex> GetFilePage(int page = 0, int size = 10) =>
+        fileIndex.GetPaged(page, size);
 }

@@ -15,6 +15,11 @@ public class IngestHub : Hub
         await Clients.All.SendAsync(Const.Hubs.Ingester.FileScanFinished, result);
     }
 
+    public async Task OnFileScanProgress(int scanCount)
+    {
+        await Clients.All.SendAsync(Const.Hubs.Ingester.FileScanProgress, scanCount);
+    }
+
     public async Task OnWorkerStart(string message)
     {
         await Clients.All.SendAsync(Const.Hubs.Ingester.WorkerInfoMethod, message);

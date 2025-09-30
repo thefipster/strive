@@ -1,6 +1,57 @@
 @using TheFipster.ActivityAggregator.Web.Components.Import.Scan
-<MudContainer Class="ma-10 pa-10 d-flex flex-column gap-5" Fixed="true">
-    <ScanActions ActionDisabled="@actionDisabled" ScanClicked="@OnScanClicked"></ScanActions>
-    @* <ImportScan HashSelected="@OnHashSelected" /> *@
-    @* <ScannedFiles Hash="@hash" /> *@
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.h6">Scan uploaded files</MudText>
+                        <MudIconButton Color="Color.Primary"
+                                       OnClick="@OnScanClicked"
+                                       Disabled="@isScanActive"
+                                       Icon="@Icons.Material.Outlined.Radar">
+                        </MudIconButton>
+                    </MudStack>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="@isScanActive" />
+        <MudCardContent>
+            <MudTable @ref="@fileTable" T="FileIndex" ServerData="@LoadServerData"
+                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Files</MudText>
+                    <MudSpacer />
+                    <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
+                    <MudSpacer />
+                    <MudToggleGroup T="string" Size="Size.Small" Value="@("All")">
+                        <MudToggleItem Value="@("All")" />
+                        <MudToggleItem Value="@("Classified")" />
+                        <MudToggleItem Value="@("Unclassified")" />
+                        <MudToggleItem Value="@("Errors")" />
+                    </MudToggleGroup>
+                    
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="width:160px;">Zip Hash</MudTh>
+                    <MudTh Style="width:160px;">Hash</MudTh>
+                    <MudTh>Filename</MudTh> <!-- this one grows -->
+                    <MudTh Style="width:100px;">Size</MudTh>
+                    <MudTh Style="width:160px;">Indexed</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.ZipHash</MudTd>
+                    <MudTd>@context.Hash</MudTd>
+                    <MudTd>@context.Path</MudTd>
+                    <MudTd>
+                        <FipFileSize Typo="Typo.body1" Size="@context.Size"></FipFileSize>
+                    </MudTd>
+                    <MudTd>@context.IndexedAt.ToLocalTime().ToString("g")</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager/>
+                </PagerContent>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
 </MudContainer>

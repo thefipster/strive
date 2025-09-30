@@ -81,6 +81,12 @@ public class UnzipService : IUnzipService
             "Indexing complete.",
             cancellationToken: ct
         );
+
+        await connection.InvokeAsync(
+            Const.Hubs.Ingester.WorkerInfoMethod,
+            "Indexing complete.",
+            cancellationToken: ct
+        );
         return index;
     }
 }

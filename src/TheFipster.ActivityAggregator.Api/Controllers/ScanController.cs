@@ -15,7 +15,7 @@ public class ScanController(
 {
     [HttpGet]
     [DisableRequestSizeLimit]
-    public async Task<IActionResult> Scan()
+    public IActionResult Scan()
     {
         try
         {

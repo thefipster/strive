@@ -47,6 +47,7 @@ public static class Setup
 
         services.AddTransient<IClassifier, Classifier>();
         services.AddTransient<IIndexer<FileIndex>, BaseIndexer<FileIndex>>();
+        services.AddTransient<IPagedIndexer<FileIndex>, PagedIndexer<FileIndex>>();
         services.AddTransient<IScannerService, ScannerService>();
 
         return services;

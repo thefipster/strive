@@ -9,6 +9,7 @@ public static class Const
             public const string UnzipFinishedMethod = "OnUnzipFinished";
             public const string WorkerInfoMethod = "OnWorkerStart";
             public const string FileScanFinished = "OnFileScanFinished";
+            public const string FileScanProgress = "OnFileScanProgress";
             public const string Url = "/hubs/ingest";
         }
     }

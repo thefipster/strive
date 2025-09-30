@@ -54,6 +54,10 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
                 mapper.Entity<ConvergeIndex>().Id(x => x.FileHash);
                 mapper.Entity<InventoryIndex>().Id(x => x.Timestamp);
 
+                // totatlly new school
+                mapper.Entity<ZipIndex>().Id(x => x.Hash);
+                mapper.Entity<FileIndex>().Id(x => x.Hash);
+
                 return mapper;
             }
         }

@@ -13,6 +13,6 @@ public class PagedRequest
     public int Page { get; set; } = 0;
     public int Size { get; set; } = 10;
 
-    public PagedResult<TItem> ToResult<TItem>(IEnumerable<TItem> items) =>
-        new PagedResult<TItem>(items, Page, Size);
+    public PagedResult<TItem> ToResult<TItem>(IEnumerable<TItem> items, int total) =>
+        new PagedResult<TItem>(items, Page, Size, total);
 }

@@ -42,14 +42,12 @@ public class ScannerService : IScannerService
             .EnumerateFiles(import.Output, "*", SearchOption.AllDirectories)
             .ToArray();
 
-        var procCount = 0;
         var watch = new Stopwatch();
         watch.Start();
 
         foreach (var file in files)
         {
             await scanner.CheckAsync(file, import.Hash, ct);
-            procCount++;
 
             if (watch.ElapsedMilliseconds > 1000)
             {
@@ -62,6 +60,7 @@ public class ScannerService : IScannerService
     public async Task CheckDirectoryAsync(string destinationDirectory, CancellationToken ct)
     {
         var zips = zipInventory.GetAll().ToArray();
+        var scanCounter = 0;
 
         foreach (var zip in zips)
         {
@@ -78,6 +77,13 @@ public class ScannerService : IScannerService
 
             foreach (var filepath in files)
             {
+                if (scanCounter % 10 == 0)
+                    await connection.InvokeAsync(
+                        Const.Hubs.Ingester.FileScanProgress,
+                        scanCounter,
+                        cancellationToken: ct
+                    );
+
                 var file = new FileInfo(filepath);
                 var hash = await file.HashXx3Async(ct);
 
@@ -110,26 +116,27 @@ public class ScannerService : IScannerService
                     continue;
                 }
 
-                if (results.Count != 1)
+                if (results.Count(x => x.Classification != null) != 1)
                     continue;
 
-                var result = results.First();
-                index.Source = result.Classification.Source;
-                index.Timestamp = result.Classification.Datetime;
-                index.Range = result.Classification.Range;
+                var result = results.First(x => x.Classification != null);
+                index.Source = result.Classification?.Source;
+                index.Timestamp = result.Classification?.Datetime;
+                index.Range = result.Classification?.Range;
 
                 fileInventory.Set(index);
+                scanCounter++;
             }
         }
 
         await connection.InvokeAsync(
-            Const.Hubs.Ingester.WorkerInfoMethod,
+            Const.Hubs.Ingester.FileScanFinished,
             "File scan finished.",
             cancellationToken: ct
         );
 
         await connection.InvokeAsync(
-            Const.Hubs.Ingester.FileScanFinished,
+            Const.Hubs.Ingester.WorkerInfoMethod,
             "File scan finished.",
             cancellationToken: ct
         );
