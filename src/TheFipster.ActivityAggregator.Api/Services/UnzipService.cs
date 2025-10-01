@@ -34,7 +34,7 @@ public class UnzipService : IUnzipService
         var file = new FileInfo(zipFilepath);
 
         await connection.InvokeAsync(
-            Const.Hubs.Ingester.WorkerInfoMethod,
+            Const.Hubs.Ingester.WorkerInfo,
             $"Unzipping {file.Name}.",
             cancellationToken: ct
         );
@@ -53,7 +53,7 @@ public class UnzipService : IUnzipService
             indexer.Set(index);
 
             await connection.InvokeAsync(
-                Const.Hubs.Ingester.UnzipFinishedMethod,
+                Const.Hubs.Ingester.UnzipFinished,
                 file.Name,
                 "File is already indexed.",
                 cancellationToken: ct
@@ -76,14 +76,14 @@ public class UnzipService : IUnzipService
         indexer.Set(index);
 
         await connection.InvokeAsync(
-            Const.Hubs.Ingester.UnzipFinishedMethod,
+            Const.Hubs.Ingester.UnzipFinished,
             file.Name,
             "Indexing complete.",
             cancellationToken: ct
         );
 
         await connection.InvokeAsync(
-            Const.Hubs.Ingester.WorkerInfoMethod,
+            Const.Hubs.Ingester.WorkerInfo,
             "Indexing complete.",
             cancellationToken: ct
         );

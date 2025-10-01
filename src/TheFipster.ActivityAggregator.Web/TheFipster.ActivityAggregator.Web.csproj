@@ -15,4 +15,14 @@
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Lite\TheFipster.ActivityAggregator.Storage.Lite.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Import\Upload\ChunkUpload.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Upload\ImportExtractor.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Upload\MultiUpload.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Upload\ZipList.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Scan\FileList.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Scan\ImportScan.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Scan\ScanActions.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Scan\ScannedFiles.razor" />
+  </ItemGroup>
 </Project>

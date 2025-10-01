@@ -60,13 +60,15 @@ public class ScannerService : IScannerService
     public async Task CheckDirectoryAsync(string destinationDirectory, CancellationToken ct)
     {
         var zips = zipInventory.GetAll().ToArray();
-        var scanCounter = 0;
 
+        var scanCounter = 0;
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
         foreach (var zip in zips)
         {
             var dir = new DirectoryInfo(zip.OutputPath);
             await connection.InvokeAsync(
-                Const.Hubs.Ingester.WorkerInfoMethod,
+                Const.Hubs.Ingester.WorkerInfo,
                 $"Starting file scan on {dir.Name}.",
                 cancellationToken: ct
             );
@@ -77,13 +79,6 @@ public class ScannerService : IScannerService
 
             foreach (var filepath in files)
             {
-                if (scanCounter % 10 == 0)
-                    await connection.InvokeAsync(
-                        Const.Hubs.Ingester.FileScanProgress,
-                        scanCounter,
-                        cancellationToken: ct
-                    );
-
                 var file = new FileInfo(filepath);
                 var hash = await file.HashXx3Async(ct);
 
@@ -125,9 +120,12 @@ public class ScannerService : IScannerService
                 index.Range = result.Classification?.Range;
 
                 fileInventory.Set(index);
+
                 scanCounter++;
+                await ReportProgressAsync(stopwatch, scanCounter, ct);
             }
         }
+        stopwatch.Stop();
 
         await connection.InvokeAsync(
             Const.Hubs.Ingester.FileScanFinished,
@@ -136,9 +134,27 @@ public class ScannerService : IScannerService
         );
 
         await connection.InvokeAsync(
-            Const.Hubs.Ingester.WorkerInfoMethod,
+            Const.Hubs.Ingester.WorkerInfo,
             "File scan finished.",
             cancellationToken: ct
         );
+    }
+
+    private async Task ReportProgressAsync(
+        Stopwatch stopwatch,
+        int scanCounter,
+        CancellationToken ct
+    )
+    {
+        if (stopwatch.ElapsedMilliseconds < 5000)
+            return;
+
+        await connection.InvokeAsync(
+            Const.Hubs.Ingester.FileScanProgress,
+            scanCounter,
+            cancellationToken: ct
+        );
+
+        stopwatch.Restart();
     }
 }

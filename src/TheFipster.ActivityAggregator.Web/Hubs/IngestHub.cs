@@ -5,9 +5,14 @@ namespace TheFipster.ActivityAggregator.Web.Hubs;
 
 public class IngestHub : Hub
 {
+    public async Task OnWorkerStart(string message)
+    {
+        await Clients.All.SendAsync(Const.Hubs.Ingester.WorkerInfo, message);
+    }
+
     public async Task OnUnzipFinished(string file, string result)
     {
-        await Clients.All.SendAsync(Const.Hubs.Ingester.UnzipFinishedMethod, file, result);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.UnzipFinished, file, result);
     }
 
     public async Task OnFileScanFinished(string result)
@@ -15,13 +20,18 @@ public class IngestHub : Hub
         await Clients.All.SendAsync(Const.Hubs.Ingester.FileScanFinished, result);
     }
 
-    public async Task OnFileScanProgress(int scanCount)
+    public async Task OnFileScanProgress(int count)
     {
-        await Clients.All.SendAsync(Const.Hubs.Ingester.FileScanProgress, scanCount);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.FileScanProgress, count);
     }
 
-    public async Task OnWorkerStart(string message)
+    public async Task OnAssimilationFinished(string result)
     {
-        await Clients.All.SendAsync(Const.Hubs.Ingester.WorkerInfoMethod, message);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.AssimilationFinished, result);
+    }
+
+    public async Task OnAssimilationProgress(int count)
+    {
+        await Clients.All.SendAsync(Const.Hubs.Ingester.AssimilationProgress, count);
     }
 }

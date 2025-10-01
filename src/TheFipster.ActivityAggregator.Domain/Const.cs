@@ -6,11 +6,14 @@ public static class Const
     {
         public static class Ingester
         {
-            public const string UnzipFinishedMethod = "OnUnzipFinished";
-            public const string WorkerInfoMethod = "OnWorkerStart";
+            public const string Url = "/hubs/ingest";
+
+            public const string UnzipFinished = "OnUnzipFinished";
+            public const string WorkerInfo = "OnWorkerStart";
             public const string FileScanFinished = "OnFileScanFinished";
             public const string FileScanProgress = "OnFileScanProgress";
-            public const string Url = "/hubs/ingest";
+            public const string AssimilationFinished = "OnAssimilationFinished";
+            public const string AssimilationProgress = "OnAssimilationProgress";
         }
     }
 }

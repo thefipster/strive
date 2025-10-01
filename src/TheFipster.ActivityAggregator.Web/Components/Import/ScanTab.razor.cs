@@ -4,7 +4,6 @@ using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Web.Components.Import.Scan;
 using TheFipster.ActivityAggregator.Web.Services;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
@@ -13,8 +12,7 @@ public partial class ScanTab : ComponentBase
 {
     private bool isScanActive;
     private HubConnection? hubConnection;
-    private ScanActions scanActions;
-    private MudTable<FileIndex> fileTable;
+    private MudTable<FileIndex>? fileTable;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -48,12 +46,12 @@ public partial class ScanTab : ComponentBase
 
         hubConnection.On<string>(
             Const.Hubs.Ingester.FileScanFinished,
-            async (result) =>
+            async (_) =>
             {
                 await InvokeAsync(() =>
                 {
                     isScanActive = false;
-                    fileTable.ReloadServerData();
+                    fileTable?.ReloadServerData();
                     StateHasChanged();
                 });
             }
@@ -61,11 +59,11 @@ public partial class ScanTab : ComponentBase
 
         hubConnection.On<int>(
             Const.Hubs.Ingester.FileScanProgress,
-            async (count) =>
+            async _ =>
             {
                 await InvokeAsync(() =>
                 {
-                    fileTable.ReloadServerData();
+                    fileTable?.ReloadServerData();
                     StateHasChanged();
                 });
             }
@@ -76,9 +74,6 @@ public partial class ScanTab : ComponentBase
 
     private async Task<TableData<FileIndex>> LoadServerData(TableState state, CancellationToken ct)
     {
-        var sortBy = state.SortLabel;
-        var descending = state.SortDirection == SortDirection.Descending;
-
         if (Scanner == null)
             return new TableData<FileIndex> { TotalItems = 0, Items = [] };
 
