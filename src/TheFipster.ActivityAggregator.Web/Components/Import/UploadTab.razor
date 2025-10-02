@@ -2,9 +2,8 @@
     <MudCard>
         <MudCardHeader>
             <CardHeaderContent>
-                <MudStack>
                     <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                        <MudText Typo="Typo.h6">Upload zip file</MudText>
+                        <MudText Typo="Typo.h4">Upload zip file</MudText>
                         <MudText>@fileName</MudText>
                         <MudFileUpload @key="uploadKey" T="IBrowserFile" Accept="@Filter"
                                        FilesChanged="@OnFilesChanged">
@@ -16,7 +15,6 @@
                             </ActivatorContent>
                         </MudFileUpload>
                     </MudStack>
-                </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
         
@@ -33,19 +31,19 @@
                                   Class="mt-0"></MudTextField>
                 </ToolBarContent>
                 <HeaderContent>
-                    <MudTh>
+                    <MudTh Style="width:160px;">
                         <MudText Typo="Typo.subtitle2">Upload date</MudText>
                     </MudTh>
                     <MudTh>
                         <MudText Typo="Typo.subtitle2">File</MudText>
                     </MudTh>
-                    <MudTh>
+                    <MudTh Style="width:100px;">
                         <MudText Typo="Typo.subtitle2">Zip size</MudText>
                     </MudTh>
-                    <MudTh>
+                    <MudTh Style="width:100px;">
                         <MudText Typo="Typo.subtitle2">File count</MudText>
                     </MudTh>
-                    <MudTh>
+                    <MudTh Style="width:140px;">
                         <MudText Typo="Typo.subtitle2">Total File size</MudText>
                     </MudTh>
                 </HeaderContent>

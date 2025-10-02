@@ -10,8 +10,9 @@ var config = builder.Configuration;
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<ApiService>();
-builder.Services.AddSingleton<UploadService>();
-builder.Services.AddSingleton<ScanService>();
+builder.Services.AddSingleton<UploadApi>();
+builder.Services.AddSingleton<ScanApi>();
+builder.Services.AddSingleton<AssimilateApi>();
 
 builder.Services.AddSignalR(e =>
 {

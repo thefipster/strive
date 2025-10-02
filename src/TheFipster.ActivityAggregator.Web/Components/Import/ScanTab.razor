@@ -2,22 +2,20 @@
     <MudCard>
         <MudCardHeader>
             <CardHeaderContent>
-                <MudStack>
                     <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                        <MudText Typo="Typo.h6">Scan uploaded files</MudText>
+                        <MudText Typo="Typo.h4">Scan uploaded files</MudText>
                         <MudIconButton Color="Color.Primary"
                                        OnClick="@OnScanClicked"
                                        Disabled="@isScanActive"
                                        Icon="@Icons.Material.Outlined.Radar">
                         </MudIconButton>
                     </MudStack>
-                </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
         <MudProgressLinear Color="Color.Primary" Indeterminate="@isScanActive" />
         <MudCardContent>
             <MudTable @ref="@fileTable" T="FileIndex" ServerData="@LoadServerData"
-                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0">
+                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Files</MudText>
                     <MudSpacer />
@@ -32,16 +30,16 @@
                     
                 </ToolBarContent>
                 <HeaderContent>
-                    <MudTh Style="width:160px;">Zip Hash</MudTh>
-                    <MudTh Style="width:160px;">Hash</MudTh>
-                    <MudTh>Filename</MudTh> <!-- this one grows -->
+                    <MudTh Style="width:190px;">Timestamp</MudTh>
+                    <MudTh Style="width:300px;">Source</MudTh>
+                    <MudTh>File</MudTh> <!-- this one grows -->
                     <MudTh Style="width:100px;">Size</MudTh>
                     <MudTh Style="width:160px;">Indexed</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd>@context.ZipHash</MudTd>
-                    <MudTd>@context.Hash</MudTd>
-                    <MudTd>@context.Path</MudTd>
+                    <MudTd>@context.Timestamp</MudTd>
+                    <MudTd>@context.Source</MudTd>
+                    <MudTd>@(new FileInfo(context.Path).Name)</MudTd>
                     <MudTd>
                         <FipFileSize Typo="Typo.body1" Size="@context.Size"></FipFileSize>
                     </MudTd>

@@ -9,20 +9,20 @@ using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 namespace TheFipster.ActivityAggregator.Api.Controllers;
 
 [ApiController]
-[Route("api/scan")]
-public class ScanController(
-    IScannerService scanner,
-    IPagedIndexer<FileIndex> fileIndex,
+[Route("api/assimilate")]
+public class AssimilateController(
     IOptions<ApiConfig> config,
+    IPagedIndexer<ExtractorIndex> extractIndex,
+    IAssimilaterService assimilater,
     IBackgroundTaskQueue tasks
 ) : ControllerBase
 {
-    [HttpGet("files")]
-    public PagedResult<FileIndex> GetFilePage(int page = 0, int size = 10) =>
-        fileIndex.GetPaged(page, size);
+    [HttpGet("extracts")]
+    public PagedResult<ExtractorIndex> GetFilePage(int page = 0, int size = 10) =>
+        extractIndex.GetPaged(page, size);
 
     [HttpGet]
-    public IActionResult Scan()
+    public IActionResult Assimilate()
     {
         try
         {
@@ -30,7 +30,7 @@ public class ScanController(
             if (!string.IsNullOrWhiteSpace(destinationDirectory))
             {
                 tasks.QueueBackgroundWorkItem(async ct =>
-                    await scanner.CheckDirectoryAsync(destinationDirectory, ct)
+                    await assimilater.ExtractFilesAsync(destinationDirectory, ct)
                 );
             }
         }

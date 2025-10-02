@@ -14,4 +14,5 @@ public class ExtractorIndex
     public DateTime? Timestamp { get; set; }
     public DateRanges? Range { get; set; }
     public Dictionary<string, string> ExtractedFiles { get; set; } = new();
+    public List<string> Metrics { get; set; } = [];
 }

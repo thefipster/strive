@@ -57,6 +57,7 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
                 // totatlly new school
                 mapper.Entity<ZipIndex>().Id(x => x.Hash);
                 mapper.Entity<FileIndex>().Id(x => x.Hash);
+                mapper.Entity<ExtractorIndex>().Id(x => x.FileHash);
 
                 return mapper;
             }

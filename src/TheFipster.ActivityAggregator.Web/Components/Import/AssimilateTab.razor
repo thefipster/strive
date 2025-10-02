@@ -1,6 +1,52 @@
-@using TheFipster.ActivityAggregator.Web.Components.Import.Assimilate
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h4">Assimilation</MudText>
+                    <MudIconButton Color="Color.Primary" OnClick="@OnAssimilateClicked" Disabled="@isAssimilationActive"
+                                   Icon="@Icons.Material.Outlined.Grain">
+                    </MudIconButton>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
 
-<MudContainer Class="ma-10 pa-10 d-flex flex-column gap-5" Fixed="true">
-    <ImportAssimilation HashSelected="@OnHashSelected"></ImportAssimilation>
-    <AssimilatedFiles Hash="@hash" />
+        <MudProgressLinear Color="Color.Primary" Indeterminate="@isAssimilationActive"/>
+
+        <MudCardContent Class="d-flex align-center">
+            <MudTable @ref="@fileTable" T="ExtractorIndex" Context="item" ServerData="@LoadServerData"
+                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Extractions</MudText>
+                    <MudSpacer/>
+                    <MudToggleGroup T="string" Size="Size.Small" Value="@("List")">
+                        <MudToggleItem Value="@("List")"/>
+                        <MudToggleItem Value="@("Yearly")"/>
+                    </MudToggleGroup>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="width:190px;">Index time</MudTh>
+                    <MudTh Style="width:300px;">Source</MudTh>
+                    <MudTh>Metrics</MudTh>
+                    <MudTh Style="width:100px;">Count</MudTh>
+                    <MudTh Style="width:100px;">Size</MudTh>
+                    <MudTh Style="width:190px;">Timestamp</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Index time"><MudText>@item.IndexedAt</MudText></MudTd>
+                    <MudTd DataLabel="Source"><MudText>@item.Source</MudText></MudTd>
+                    <MudTd DataLabel="Metrics"><MudText>
+                        @string.Join(", ", item.Metrics.OrderBy(x => x))
+                    </MudText></MudTd>
+                    <MudTd DataLabel="Count"><MudText>@item.ExtractedFiles.Count</MudText></MudTd>
+                    <MudTd DataLabel="Size"><FipFileSize Typo="Typo.body1" Size="@item.Size"></FipFileSize></MudTd>
+                    <MudTd DataLabel="Timestamp"><MudText>@item.Timestamp</MudText></MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] { 15 }"
+                                   HideRowsPerPage="true"/>
+                </PagerContent>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
 </MudContainer>

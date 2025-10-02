@@ -18,7 +18,7 @@ public partial class ScanTab : ComponentBase
     public NavigationManager? Navigation { get; set; }
 
     [Inject]
-    public ScanService? Scanner { get; set; }
+    public ScanApi? Scanner { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {

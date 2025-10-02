@@ -27,7 +27,7 @@ public partial class UploadTab : ComponentBase
     public NavigationManager? Navigation { get; set; }
 
     [Inject]
-    public UploadService? UploadService { get; set; }
+    public UploadApi? UploadService { get; set; }
 
     [Parameter]
     public string? Filter { get; set; }

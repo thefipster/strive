@@ -10,45 +10,12 @@ namespace TheFipster.ActivityAggregator.Api.Controllers;
 [ApiController]
 [Route("api/index")]
 public class IndexController(
-    IIndexer<ImporterIndex> importIndexer,
-    IIndexer<ScannerIndex> scanIndex,
-    IIndexer<AssimilaterIndex> assimilateIndex,
     IIndexer<ZipIndex> zipIndex,
     IPagedIndexer<FileIndex> fileIndex,
+    IPagedIndexer<ExtractorIndex> extractIndex,
     IInventoryIndexer inventory
 ) : ControllerBase
 {
-    [HttpGet("importer/all")]
-    public IEnumerable<ImporterIndex> GetImporterIndexes() => importIndexer.GetAll();
-
-    [HttpGet("scanner/count/{hash}")]
-    public int[] GetScannerIndexCount(string hash)
-    {
-        var indexes = scanIndex.GetFiltered(x => x.OriginHash == hash).ToArray();
-        return
-        [
-            indexes.Length,
-            indexes.Sum(x => x.Files.Count),
-            indexes.Count(x => x.Classification != null),
-            indexes.Count(x => x.Classification == null),
-        ];
-    }
-
-    [HttpGet("scanner/all/{hash}")]
-    public IEnumerable<ScannerIndex> GetScannerIndexes(string hash) =>
-        scanIndex.GetFiltered(x => x.OriginHash == hash);
-
-    [HttpGet("assimilater/all/{hash}")]
-    public IEnumerable<AssimilaterIndex> GetAssimilatorIndexes(string hash) =>
-        assimilateIndex.GetFiltered(x => x.OriginHash == hash);
-
-    [HttpGet("assimilater/count/{hash}")]
-    public int[] GetAssimilatorIndexCount(string hash)
-    {
-        var indexes = GetAssimilatorIndexes(hash).ToArray();
-        return [indexes.Length, indexes.Sum(x => x.Count)];
-    }
-
     [HttpGet("inventory/yearly")]
     public Dictionary<int, int[]> GetYearlyInventory() => inventory.GetYearly();
 
@@ -61,4 +28,8 @@ public class IndexController(
     [HttpGet("files/paged")]
     public PagedResult<FileIndex> GetFilePage(int page = 0, int size = 10) =>
         fileIndex.GetPaged(page, size);
+
+    [HttpGet("extracts/paged")]
+    public PagedResult<ExtractorIndex> GetExtractPage(int page = 0, int size = 10) =>
+        extractIndex.GetPaged(page, size);
 }

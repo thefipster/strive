@@ -50,6 +50,9 @@ public static class Setup
         services.AddTransient<IPagedIndexer<FileIndex>, PagedIndexer<FileIndex>>();
         services.AddTransient<IScannerService, ScannerService>();
 
+        services.AddTransient<IIndexer<ExtractorIndex>, BaseIndexer<ExtractorIndex>>();
+        services.AddTransient<IPagedIndexer<ExtractorIndex>, PagedIndexer<ExtractorIndex>>();
+
         return services;
     }
 

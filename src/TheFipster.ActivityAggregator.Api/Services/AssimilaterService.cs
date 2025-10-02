@@ -73,6 +73,10 @@ public class AssimilaterService : IAssimilaterService
                 if (ct.IsCancellationRequested)
                     return;
 
+                var extractionIndex = extractInventory.GetById(file.Hash);
+                if (extractionIndex != null)
+                    continue;
+
                 var extractor = registry
                     .LoadExtractors()
                     .FirstOrDefault(x => x.Source == file.Source);
@@ -94,6 +98,7 @@ public class AssimilaterService : IAssimilaterService
                     var valueHashes = result.Select(x => x.ToHash());
                     var valueHash = valueHashes.ToUnorderedCollectionHash();
                     var extracts = new Dictionary<string, string>();
+                    var metrics = new List<string>();
                     long size = 0;
                     foreach (var extract in result)
                     {
@@ -101,13 +106,18 @@ public class AssimilaterService : IAssimilaterService
                         var extractFile = new FileInfo(extractFilepath);
                         var hash = await extractFile.HashXx3Async(ct);
                         size += extractFile.Length;
+
                         extracts.Add(hash, extractFilepath);
+
+                        metrics.AddRange(extract.Attributes.Keys.Select(x => x.ToString()));
+                        metrics.AddRange(extract.Series.Keys.Select(x => x.ToString()));
+                        metrics.AddRange(extract.Events.Select(x => x.Type.ToString()));
 
                         var entry = new InventoryIndex(extract.Timestamp, extract.Range);
                         inventory.EnsureIndex(entry);
                     }
 
-                    var extractionIndex = new ExtractorIndex
+                    extractionIndex = new ExtractorIndex
                     {
                         Path = file.Path,
                         FileHash = file.Hash,
@@ -117,6 +127,7 @@ public class AssimilaterService : IAssimilaterService
                         Range = file.Range,
                         Timestamp = file.Timestamp,
                         ExtractedFiles = extracts,
+                        Metrics = metrics.Distinct().ToList(),
                         Size = size,
                     };
 
@@ -134,6 +145,12 @@ public class AssimilaterService : IAssimilaterService
 
         await connection.InvokeAsync(
             Const.Hubs.Ingester.AssimilationFinished,
+            "Assimilation finished.",
+            cancellationToken: ct
+        );
+
+        await connection.InvokeAsync(
+            Const.Hubs.Ingester.WorkerInfo,
             "Assimilation finished.",
             cancellationToken: ct
         );
