@@ -152,7 +152,7 @@ public class BatchService : IBatchService
             Tracks = tracks,
             Pulses = pulses,
             Metrics = metricsMerge,
-            Extractions = indexes.ToDictionary(x => x.Hash, y => y.Path),
+            Extractions = indexes.DistinctBy(x => x.Hash).ToDictionary(x => x.Hash, y => y.Path),
         };
 
         var filepath = mergeFile.Write(config.MergeDirectoryPath);

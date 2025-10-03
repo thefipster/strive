@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
-using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Web.Services;
 
@@ -11,38 +9,55 @@ namespace TheFipster.ActivityAggregator.Web.Components.Import;
 public partial class BatchTab : ComponentBase
 {
     private HubConnection? hubConnection;
-    private Dictionary<int, int[]> inventory = new();
     private bool isMergeActive;
-    private MudTable<BatchIndex>? fileTable;
+    private int selectedYear = DateTime.Now.Year;
+    private Dictionary<int, int[]> index = new();
+    private IEnumerable<InventoryIndex> inventory = [];
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
 
     [Inject]
-    public ApiService? Api { get; set; }
+    public InventoryApi? Inventory { get; set; }
 
     [Inject]
-    public BatchApi? BatchApi { get; set; }
+    public BatchApi? Batch { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Api != null)
-            inventory = (await Api.GetYearlyInventoryAsync())
-                .OrderByDescending(x => x.Key)
-                .ToDictionary(x => x.Key, x => x.Value);
-
+        await LoadIndex();
         await ConnectHubs();
-
+        await OnYearChange(selectedYear);
         await base.OnParametersSetAsync();
     }
 
     private async Task OnMergeClicked()
     {
-        if (BatchApi == null)
+        if (Batch == null)
             return;
 
         isMergeActive = true;
-        await BatchApi.ExecuteMerge();
+        await Batch.ExecuteMerge();
+    }
+
+    private async Task OnYearChange(int year) => await LoadCalendar(year);
+
+    private async Task LoadCalendar(int year)
+    {
+        selectedYear = year;
+        if (Inventory is null)
+            return;
+
+        inventory = await Inventory.GetInventoryByYearAsync(year);
+        StateHasChanged();
+    }
+
+    private async Task LoadIndex()
+    {
+        if (Inventory != null)
+            index = (await Inventory.GetInventoryAsync())
+                .OrderByDescending(x => x.Key)
+                .ToDictionary(x => x.Key, x => x.Value);
     }
 
     private async Task ConnectHubs()
@@ -56,32 +71,29 @@ public partial class BatchTab : ComponentBase
 
         hubConnection.On<string>(
             Const.Hubs.Ingester.BatchFinished,
-            result =>
+            _ =>
             {
                 isMergeActive = false;
-                InvokeAsync(StateHasChanged);
+                InvokeAsync(async () =>
+                {
+                    await LoadIndex();
+                    StateHasChanged();
+                });
             }
         );
 
         hubConnection.On<int>(
             Const.Hubs.Ingester.BatchProgress,
-            result =>
+            _ =>
             {
-                InvokeAsync(StateHasChanged);
+                InvokeAsync(async () =>
+                {
+                    await LoadIndex();
+                    StateHasChanged();
+                });
             }
         );
 
         await hubConnection.StartAsync();
-    }
-
-    private async Task<TableData<BatchIndex>> LoadServerData(TableState state, CancellationToken ct)
-    {
-        if (BatchApi == null)
-            return new TableData<BatchIndex> { TotalItems = 0, Items = [] };
-
-        var paged = new PagedRequest(state.Page, state.PageSize);
-        var result = await BatchApi.GetFilesAsync(paged);
-
-        return new TableData<BatchIndex> { TotalItems = result.Total, Items = result.Items };
     }
 }
