@@ -7,7 +7,6 @@ using TheFipster.ActivityAggregator.Importer;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 using TheFipster.ActivityAggregator.Services.Abstractions;
 using TheFipster.ActivityAggregator.Services.Components;
-using TheFipster.ActivityAggregator.Services.Worker;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
@@ -27,16 +26,8 @@ public static class Setup
 
         services.AddTransient<IUploader, Uploader>();
 
-        services.AddTransient<IIndexer<ImporterIndex>, BaseIndexer<ImporterIndex>>();
-        services.AddTransient<IExtractor, Extractor>();
-
-        services.AddTransient<IIndexer<ScannerIndex>, BaseIndexer<ScannerIndex>>();
         services.AddSingleton<IImporterRegistry, Registry>();
-        services.AddTransient<IScanner, Scanner>();
 
-        services.AddTransient<IIndexer<AssimilaterIndex>, BaseIndexer<AssimilaterIndex>>();
-        services.AddTransient<IIndexer<ConvergeIndex>, BaseIndexer<ConvergeIndex>>();
-        services.AddTransient<IAssimilater, Assimilater>();
         services.AddTransient<IAssimilaterService, AssimilaterService>();
 
         services.AddTransient<IInventoryIndexer, InventoryIndexer>();

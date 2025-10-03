@@ -1,28 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
-using TheFipster.ActivityAggregator.Domain.Models;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Activity;
+using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class InventoryController(ILiteDbReader<Inventory, int> reader) : ControllerBase
+[Route("api/inventory")]
+public class InventoryController(IInventoryIndexer inventory) : ControllerBase
 {
-    [HttpGet]
-    public IEnumerable<Inventory> Get(int year, int? month, int? day)
-    {
-        if (month.HasValue && day.HasValue)
-        {
-            var entry = reader.GetById(year * 10000 + month.Value * 100 + day.Value);
-            if (entry != null)
-                return [entry];
+    [HttpGet("yearly")]
+    public Dictionary<int, int[]> GetYearlyInventory() => inventory.GetYearly();
 
-            return [];
-        }
-
-        if (month.HasValue)
-            return reader.GetFiltered(x => x.Year == year && x.Month == month.Value);
-
-        return reader.GetFiltered(x => x.Year == year);
-    }
+    [HttpGet("year/{year}")]
+    public IEnumerable<InventoryIndex> GetInventoryByYear(int year) => inventory.GetByYear(year);
 }

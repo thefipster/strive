@@ -16,9 +16,7 @@ namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class AssimilaterService : IAssimilaterService
 {
-    private readonly IAssimilater assimilater;
     private readonly IPagedIndexer<FileIndex> fileInventory;
-    private readonly IIndexer<ScannerIndex> indexer;
     private readonly IIndexer<ExtractorIndex> extractInventory;
     private readonly HubConnection connection;
     private readonly IImporterRegistry registry;
@@ -27,18 +25,14 @@ public class AssimilaterService : IAssimilaterService
 
     public AssimilaterService(
         IOptions<ApiConfig> config,
-        IAssimilater assimilater,
         IPagedIndexer<FileIndex> fileInventory,
-        IIndexer<ScannerIndex> indexer,
         IIndexer<ExtractorIndex> extractInventory,
         IInventoryIndexer inventory,
         IImporterRegistry registry
     )
     {
-        this.assimilater = assimilater;
         this.fileInventory = fileInventory;
         this.extractInventory = extractInventory;
-        this.indexer = indexer;
         this.registry = registry;
         this.config = config;
         this.inventory = inventory;
@@ -162,40 +156,6 @@ public class AssimilaterService : IAssimilaterService
             "Assimilation finished.",
             cancellationToken: ct
         );
-    }
-
-    public async Task ConvergeImportAsync(ImporterIndex import, CancellationToken ct)
-    {
-        var indexes = indexer.GetFiltered(x =>
-            x.OriginHash == import.Hash && x.Classification != null
-        );
-
-        var procCount = 0;
-        var outCount = 0;
-        var watch = new Stopwatch();
-        watch.Start();
-
-        foreach (var index in indexes)
-        {
-            var assimilation = await assimilater.StandardizeAsync(index, ct);
-
-            procCount++;
-            outCount += assimilation.Count;
-
-            if (watch.ElapsedMilliseconds > 1000)
-            {
-                await connection.InvokeAsync(
-                    "Progress",
-                    import.Hash,
-                    procCount,
-                    outCount,
-                    cancellationToken: ct
-                );
-                watch.Restart();
-            }
-        }
-        watch.Stop();
-        await connection.InvokeAsync("Finished", import.Hash, cancellationToken: ct);
     }
 
     private async Task ReportProgressAsync(Stopwatch stopwatch, int counter, CancellationToken ct)

@@ -19,14 +19,4 @@ public class InventoryIndex
     public DateTime Timestamp { get; set; }
     public bool IsDay { get; set; }
     public int Count { get; set; }
-
-    public static InventoryIndex Parse(ConvergeIndex index)
-    {
-        return new InventoryIndex
-        {
-            Timestamp = index.Kind == DataKind.Day ? index.Timestamp.Date : index.Timestamp,
-            IsDay = index.Kind == DataKind.Day,
-            Count = 1,
-        };
-    }
 }

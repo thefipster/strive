@@ -14,18 +14,15 @@ public class ScannerService : IScannerService
 {
     private readonly HubConnection connection;
     private readonly IClassifier classifier;
-    private readonly IScanner scanner;
     private readonly IIndexer<ZipIndex> zipInventory;
     private readonly IIndexer<FileIndex> fileInventory;
 
     public ScannerService(
-        IScanner scanner,
         IClassifier classifier,
         IIndexer<ZipIndex> zipInventory,
         IIndexer<FileIndex> fileInventory
     )
     {
-        this.scanner = scanner;
         this.classifier = classifier;
         this.zipInventory = zipInventory;
         this.fileInventory = fileInventory;
@@ -34,27 +31,6 @@ public class ScannerService : IScannerService
             .WithUrl("https://localhost:7260/hubs/ingest")
             .Build();
         connection.StartAsync().Wait();
-    }
-
-    public async Task CheckImportAsync(ImporterIndex import, CancellationToken ct)
-    {
-        var files = Directory
-            .EnumerateFiles(import.Output, "*", SearchOption.AllDirectories)
-            .ToArray();
-
-        var watch = new Stopwatch();
-        watch.Start();
-
-        foreach (var file in files)
-        {
-            await scanner.CheckAsync(file, import.Hash, ct);
-
-            if (watch.ElapsedMilliseconds > 1000)
-            {
-                watch.Restart();
-            }
-        }
-        watch.Stop();
     }
 
     public async Task CheckDirectoryAsync(string destinationDirectory, CancellationToken ct)

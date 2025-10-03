@@ -9,7 +9,6 @@ var config = builder.Configuration;
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();
-builder.Services.AddSingleton<ApiService>();
 builder.Services.AddSingleton<UploadApi>();
 builder.Services.AddSingleton<ScanApi>();
 builder.Services.AddSingleton<AssimilateApi>();
@@ -35,9 +34,6 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
-app.MapHub<EventHub>("/eventhub");
-app.MapHub<ScanHub>("/scanhub");
-app.MapHub<AssimilateHub>("/hubs/assimilate");
 app.MapHub<IngestHub>(Const.Hubs.Ingester.Url);
 
 app.Run();
