@@ -89,6 +89,9 @@ public class ScannerService : IScannerService
                         index.AlternateFiles.Add(filepath);
 
                     fileInventory.Set(index);
+
+                    if (index.Source.HasValue)
+                        continue;
                 }
 
                 index = new FileIndex

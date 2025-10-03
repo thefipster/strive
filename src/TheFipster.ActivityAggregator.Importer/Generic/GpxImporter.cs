@@ -30,10 +30,14 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
             if (!props.Contains("gpx"))
                 throw new ClassificationException(probe.Filepath, Source, "Couldn't find gpx tag.");
 
+            var directory = new FileInfo(probe.Filepath).Directory;
+            var date = DateHelper.GetDateFromMyCollectionDirectory(directory);
+
             return new ImportClassification
             {
                 Filepath = probe.Filepath,
                 Source = Source,
+                Datetime = date,
                 Datetype = DateRanges.Day,
             };
         }
