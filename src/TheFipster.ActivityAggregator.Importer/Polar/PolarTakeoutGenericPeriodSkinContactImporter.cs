@@ -1,9 +1,7 @@
-﻿using System.Globalization;
-using System.Text.Json;
-using TheFipster.ActivityAggregator.Domain;
+﻿using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -84,7 +82,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 );
 
             if (
-                tempData.Data.SkinContactChanges == null
+                tempData.Data?.SkinContactChanges == null
                 || tempData.Data.SkinContactChanges.Count == 0
             )
                 throw new ExtractionException(
@@ -99,7 +97,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             foreach (var sample in tempData.Data.SkinContactChanges)
             {
                 var temperature = sample.SkinContact.GetValueOrDefault().ToString();
-                var deltaMs = long.Parse(sample.RecordingTimeDeltaMilliseconds);
+                var deltaMs = long.Parse(sample.RecordingTimeDeltaMilliseconds ?? "-1");
                 var timestamp = file.Date.AddMilliseconds(deltaMs).ToString("s");
 
                 result.Series[Parameters.Timestamp].Add(timestamp);

@@ -1,9 +1,8 @@
 using System.Globalization;
 using System.Text.Json;
-using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -54,6 +53,9 @@ public class PolarTakeoutCalendarItemsImporter : IFileImporter
             ?? throw new ArgumentException("Couldn't parse polar takeout sleep score.");
 
         var result = new List<FileExtraction>();
+
+        if (calendarItems.Weights == null)
+            return result;
 
         foreach (
             var item in calendarItems

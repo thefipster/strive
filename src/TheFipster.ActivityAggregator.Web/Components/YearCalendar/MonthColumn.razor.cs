@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 namespace TheFipster.ActivityAggregator.Web.Components.YearCalendar;
 
@@ -9,14 +9,14 @@ public partial class MonthColumn : ComponentBase
     public DateTime Month { get; set; } = new(DateTime.Now.Year, DateTime.Now.Month, 1);
 
     [Parameter]
-    public List<Inventory> Inventory { get; set; } = [];
+    public List<InventoryIndex> Inventory { get; set; } = [];
 
-    private Dictionary<int, List<Inventory>> dailyInventory = new();
+    private Dictionary<int, List<InventoryIndex>> dailyInventory = new();
 
     protected override Task OnParametersSetAsync()
     {
         var groupedInvetory = Inventory
-            .GroupBy(x => x.Day)
+            .GroupBy(x => x.Timestamp.Day)
             .ToDictionary(x => x.Key, y => y.ToList());
 
         for (int i = 1; i <= DateTime.DaysInMonth(Month.Year, Month.Month); i++)

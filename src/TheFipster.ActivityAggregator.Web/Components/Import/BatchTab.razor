@@ -1,0 +1,32 @@
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h4">Batches</MudText>
+                    <MudIconButton Color="Color.Primary" OnClick="@OnMergeClicked" Disabled="@isMergeActive"
+                                   Icon="@Icons.Material.Outlined.Merge">
+                    </MudIconButton>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="@isMergeActive"/>
+        <MudCardContent Class="d-flex justify-center align-center">
+            <MudToggleGroup T="int" Value="@selectedYear" ValueChanged="@OnYearChange" Outlined="true" Delimiters="true">
+                @if (index.Any())
+                {
+                    @foreach (var item in index)
+                    {
+                        <MudToggleItem Value="@item.Key" Style="width: 75px;">@item.Key</MudToggleItem>
+                    }
+                }
+            </MudToggleGroup>
+        </MudCardContent>
+    </MudCard>
+
+    <MudCard>
+        <MudCardContent Class="d-flex align-center">
+            <YearCalendar Year="@selectedYear" Inventory="@inventory"></YearCalendar>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>

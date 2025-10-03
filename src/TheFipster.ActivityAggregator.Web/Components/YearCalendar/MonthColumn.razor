@@ -1,21 +1,40 @@
-<MudPaper Class="d-flex flex-column align-center gap-4 flex-grow-1">
-    <MudText Typo="Typo.body1">@Month.ToString("MMMM")</MudText>
+<MudPaper Class="ma-0 pa-0 d-flex flex-column align-center gap-4 flex-grow-1" Elevation="0">
     @if (dailyInventory.Any())
     {
-        <MudSimpleTable Elevation="0" Dense="true" Bordered="false">
+        <MudSimpleTable Elevation="0" Dense="true" Bordered="false" Style="width: 100%;">
+            <thead>
+            <tr>
+                <th>
+                    <MudText Typo="Typo.h6">@Month.ToString("MMMM")</MudText>
+                </th>
+            </tr>
+            </thead>
             <tbody>
+
             @foreach (var day in dailyInventory.OrderBy(x => x.Key))
             {
                 <tr>
-                    <td class="align-right">@day.Key</td>
-                    <td>
-                        @if (day.Value.Any())
+                    <td class="d-flex gap-4 align-center">
+                        <MudAvatar Size="Size.Small" Variant="Variant.Outlined">@day.Key</MudAvatar>
+                        @if (day.Value.Any(x => x.IsDay))
                         {
-                            <MudIcon Class="ma-n1" Icon="@Icons.Material.Outlined.Check" Size="Size.Small" Color="Color.Info"/>
+                            <MudBadge Content="@day.Value.Count(x => x.IsDay)" Color="Color.Info" Overlap="true" Class="my-1">
+                                <MudIcon Icon="@Icons.Material.Filled.Today" Color="Color.Info" Size="Size.Small"/>
+                            </MudBadge>
                         }
-                        else
+
+                        @if (day.Value.Any(x => !x.IsDay))
                         {
-                            <MudIcon Class="ma-n1" Icon="@Icons.Material.Outlined.Close" Size="Size.Small" Color="Color.Default"/>
+                            <MudBadge Content="@day.Value.Count(x => !x.IsDay)" Color="Color.Primary" Overlap="true" Class="my-1">
+                                <MudIcon Icon="@Icons.Material.Filled.PlayLesson" Color="Color.Primary" Size="Size.Small"/>
+                            </MudBadge>
+                        }
+
+                        @if (day.Value.Count == 0)
+                        {
+                            <MudBadge Content="0" Overlap="true" Class="my-1" Color="Color.Default">
+                                <MudIcon Icon="@Icons.Material.Filled.Today" Color="Color.Default" Size="Size.Small"/>
+                            </MudBadge>
                         }
                     </td>
                 </tr>

@@ -1,7 +1,6 @@
 ﻿using TheFipster.ActivityAggregator.Domain.Models.Scanner;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Abstractions
+namespace TheFipster.ActivityAggregator.Importer.Abstractions
 {
     public interface ISourceLoader
     {

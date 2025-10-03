@@ -1,4 +1,91 @@
-<MudContainer Class="ma-10 pa-10 d-flex gap-5 flex-grow-1" Fixed="true">
-    <ChunkUpload Title="Upload Takeout" Filter=".zip" />
-    <ImportExtractor />
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5 flex-grow-1" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.h4">Upload zip file</MudText>
+                        <MudText>@fileName</MudText>
+                        <MudFileUpload @key="uploadKey" T="IBrowserFile" Accept="@Filter"
+                                       FilesChanged="@OnFilesChanged">
+                            <ActivatorContent>
+                                <MudIconButton Color="Color.Primary"
+                                               Disabled="@uploadDisabled"
+                                               Icon="@Icons.Material.Outlined.Upload">
+                                </MudIconButton>
+                            </ActivatorContent>
+                        </MudFileUpload>
+                    </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        
+        <MudProgressLinear Class="" Color="Color.Primary" Value="@progress"/>
+
+        <MudCardContent Class="d-flex align-center">
+            <MudTable Context="item" Loading="@isLoading" Items="@zips.OrderByDescending(x => x.IndexedAt)"
+                      Elevation="0" Style="width: 100%">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Zips</MudText>
+                    <MudSpacer/>
+                    <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small"
+                                  Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="width:160px;">
+                        <MudText Typo="Typo.subtitle2">Upload date</MudText>
+                    </MudTh>
+                    <MudTh>
+                        <MudText Typo="Typo.subtitle2">File</MudText>
+                    </MudTh>
+                    <MudTh Style="width:100px;">
+                        <MudText Typo="Typo.subtitle2">Zip size</MudText>
+                    </MudTh>
+                    <MudTh Style="width:100px;">
+                        <MudText Typo="Typo.subtitle2">File count</MudText>
+                    </MudTh>
+                    <MudTh Style="width:140px;">
+                        <MudText Typo="Typo.subtitle2">Total File size</MudText>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Upload date">
+                        <MudText Typo="Typo.body1">@item.IndexedAt.ToString(DateHelper.UiMinuteFormat)</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="File">
+                        <MudText Typo="Typo.body1">@(new FileInfo(item.ZipPath).Name)</MudText>
+                        @if (item.AlternateFiles.Any())
+                        {
+                            <MudTooltip Placement="Placement.Top" Arrow="true">
+                                <ChildContent>
+                                    @(item.AlternateFiles.Count > 1 ? $"({item.AlternateFiles.Count - 1} more)" : string.Empty)
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.subtitle2">All referenced files</MudText>
+                                    @foreach (var file in item.AlternateFiles)
+                                    {
+                                        <MudText Typo="Typo.body2">@file</MudText>
+                                    }
+                                </TooltipContent>
+                            </MudTooltip>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Zip size">
+                        <FipFileSize Typo="Typo.body1" Size="@item.PackedSize"></FipFileSize>
+                    </MudTd>
+                    <MudTd DataLabel="File count">
+                        <MudText Typo="Typo.body1">
+                            @item.FileCount
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="File size">
+                        <FipFileSize Typo="Typo.body1" Size="@item.UnpackedSize"></FipFileSize>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] { 50 }"
+                                   HideRowsPerPage="true"/>
+                </PagerContent>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
 </MudContainer>

@@ -1,16 +1,9 @@
-﻿@using MudBlazor.Utilities
-<MudNavMenu>
+﻿<MudNavMenu>
     <MudNavLink Class="py-1" OnClick="OnMenuToggleClick" Icon="@Icons.Material.Outlined.Menu" IconColor="Color.Default">
     </MudNavLink>
     <MudDivider/>
     <MudNavLink Class="pt-5" Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Home" IconColor="Color.Default">
         <MudText Typo="Typo.body1"  Style="color:white">Home</MudText>
-    </MudNavLink>
-    <MudNavLink Href="/calendar/year" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.CalendarMonth" IconColor="Color.Default">
-        <MudText Typo="Typo.body1"  Style="color:white">Calendar</MudText>
-    </MudNavLink>
-    <MudNavLink Href="/conflicts" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.FmdBad" IconColor="Color.Default">
-        <MudText Typo="Typo.body1"  Style="color:white">Conflicts</MudText>
     </MudNavLink>
     <MudNavLink Href="/import" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.UploadFile" IconColor="Color.Default">
         <MudText Typo="Typo.body1" Style="color:white">Import</MudText>

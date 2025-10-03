@@ -1,6 +1,3 @@
-using LiteDB;
-using TheFipster.ActivityAggregator.Domain.Models;
-
 namespace TheFipster.ActivityAggregator.Storage.Lite;
 
 public class LiteDbConfig

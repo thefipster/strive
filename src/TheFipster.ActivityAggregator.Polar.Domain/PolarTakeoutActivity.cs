@@ -64,7 +64,7 @@
         public double SleepQuality { get; set; }
 
         [JsonPropertyName("sleepDuration")]
-        public string SleepDuration { get; set; }
+        public string? SleepDuration { get; set; }
 
         [JsonPropertyName("inactivityAlertCount")]
         public long InactivityAlertCount { get; set; }
@@ -73,15 +73,15 @@
         public double DailyMetMinutes { get; set; }
 
         [JsonPropertyName("activityLevels")]
-        public List<ActivityLevel> ActivityLevels { get; set; }
+        public List<ActivityLevel>? ActivityLevels { get; set; }
     }
 
     public class ActivityLevel
     {
         [JsonPropertyName("level")]
-        public string Level { get; set; }
+        public string? Level { get; set; }
 
         [JsonPropertyName("duration")]
-        public string Duration { get; set; }
+        public string? Duration { get; set; }
     }
 }

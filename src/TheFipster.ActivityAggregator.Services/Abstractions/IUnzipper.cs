@@ -1,6 +1,8 @@
+using TheFipster.ActivityAggregator.Domain.Models.Components;
+
 namespace TheFipster.ActivityAggregator.Services.Abstractions;
 
 public interface IUnzipper
 {
-    void Extract(string zipFilePath, string destinationDirectory, bool overwrite = false);
+    DirectoryStats Extract(string zipFilePath, string destinationDirectory, bool overwrite = false);
 }

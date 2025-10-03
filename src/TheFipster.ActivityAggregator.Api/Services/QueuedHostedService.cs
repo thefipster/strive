@@ -1,9 +1,11 @@
-using TheFipster.ActivityAggregator.Api.Abtraction;
+using TheFipster.ActivityAggregator.Api.Abstraction;
 
 namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class QueuedHostedService : BackgroundService
 {
+    private const int MaxDegreeOfParallelism = 4;
+
     private readonly IBackgroundTaskQueue taskQueue;
     private readonly ILogger<QueuedHostedService> logger;
 
@@ -13,22 +15,54 @@ public class QueuedHostedService : BackgroundService
         this.logger = logger;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var workers = Enumerable
+            .Range(0, MaxDegreeOfParallelism)
+            .Select(workerId => Task.Run(() => WorkerLoop(workerId, stoppingToken), stoppingToken))
+            .ToArray();
+
+        return Task.WhenAll(workers);
+    }
+
+    private async Task WorkerLoop(int workerId, CancellationToken stoppingToken)
+    {
+        logger.LogInformation("Worker {WorkerId} starting.", workerId);
+
         while (!stoppingToken.IsCancellationRequested)
         {
-            var workItem = await taskQueue.DequeueAsync(stoppingToken);
-
             try
             {
-                await workItem(stoppingToken);
+                var workItem = await taskQueue.DequeueAsync(stoppingToken);
+
+                try
+                {
+                    await workItem(stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(
+                        ex,
+                        "Error occurred executing background job on worker {WorkerId}.",
+                        workerId
+                    );
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Graceful shutdown
+                break;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred executing background job.");
+                logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
             }
-
-            await Task.Delay(1000, stoppingToken);
+            finally
+            {
+                await Task.Delay(1000, stoppingToken);
+            }
         }
+
+        logger.LogInformation("Worker {WorkerId} stopping.", workerId);
     }
 }

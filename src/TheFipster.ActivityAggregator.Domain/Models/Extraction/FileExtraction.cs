@@ -4,8 +4,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
+using TheFipster.ActivityAggregator.Domain.Models.Unified;
 
-namespace TheFipster.ActivityAggregator.Domain.Models
+namespace TheFipster.ActivityAggregator.Domain.Models.Extraction
 {
     public class FileExtraction
     {
@@ -107,7 +108,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models
             return FromJson(json);
         }
 
-        public string GetValueHash()
+        public byte[] ToHash()
         {
             var metrics = string.Join(
                 ",",
@@ -123,15 +124,19 @@ namespace TheFipster.ActivityAggregator.Domain.Models
 
             var combined = metrics + "|" + series;
             using var sha = SHA256.Create();
-            var hashBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(combined));
+            return sha.ComputeHash(Encoding.UTF8.GetBytes(combined));
+        }
 
-            Hash = Convert.ToHexString(hashBytes);
+        public string ToHashString()
+        {
+            var bytes = ToHash();
+            Hash = Convert.ToHexString(bytes);
             return Hash;
         }
 
         public string Write(string rootDir)
         {
-            Hash = GetValueHash();
+            Hash = ToHashString();
             var filename = $"{Timestamp.ToRangeString(Range)}-{Source}-{Hash}.json";
             var path = Path.Combine(rootDir, Range.GetPath(Timestamp));
             var newFile = Path.Combine(path, filename);

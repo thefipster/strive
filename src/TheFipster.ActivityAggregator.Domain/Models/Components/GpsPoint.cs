@@ -1,4 +1,4 @@
-﻿namespace TheFipster.ActivityAggregator.Domain
+﻿namespace TheFipster.ActivityAggregator.Domain.Models.Components
 {
     public class GpsPoint
     {
@@ -14,6 +14,15 @@
             : this(lat, lon)
         {
             Altitude = alt;
+        }
+
+        public GpsPoint(string lat, string lon, string? alt)
+        {
+            Latitude = double.Parse(lat);
+            Longitude = double.Parse(lon);
+
+            if (alt != null)
+                Altitude = double.Parse(alt);
         }
 
         public double Latitude { get; set; }

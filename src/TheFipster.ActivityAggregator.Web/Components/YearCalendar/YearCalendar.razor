@@ -1,5 +1,4 @@
-
-    <MudContainer Class="d-flex justify-space-between flex-grow-1" Fixed="true">
+    <MudContainer Class="d-flex justify-space-evenly flex-grow-1" Fixed="true">
         @if (monthlyInventory.Any())
         {
             @foreach (var month in monthlyInventory.OrderBy(x => x.Key))

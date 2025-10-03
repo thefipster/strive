@@ -5,8 +5,6 @@ VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregator.Importer", "src\TheFipster.ActivityAggregator.Importer\TheFipster.ActivityAggregator.Importer.csproj", "{1AEE86B0-C65C-4EEA-A6FE-361A3003AAFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.TrackMe.Cli", "src\TheFipster.TrackMe.Cli\TheFipster.TrackMe.Cli.csproj", "{7D738D24-190E-4D5C-8621-53B9BCDE3A49}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregator.Domain", "src\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj", "{AD4FF157-8353-440F-BE8A-D09E11B98119}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregator.Polar.Domain", "src\TheFipster.ActivityAggregator.Polar.Domain\TheFipster.ActivityAggregator.Polar.Domain.csproj", "{964257E9-076C-4A37-A174-6F89EB301236}"
@@ -18,10 +16,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregator.Api", "src\TheFipster.ActivityAggregator.Api\TheFipster.ActivityAggregator.Api.csproj", "{CC2BA09E-B864-4700-ADDA-3353AE7DF1F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregator.Storage.Lite", "src\TheFipster.ActivityAggregator.Storage.Lite\TheFipster.ActivityAggregator.Storage.Lite.csproj", "{93A57BB0-817A-4D27-884F-1CE0684572D8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Pipeline", "src\TheFipster.ActivityAggregator.Pipeline\TheFipster.ActivityAggregator.Pipeline.csproj", "{4543EDEA-D4EE-474E-A426-35B2881706CD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Cli", "src\TheFipster.ActivityAggregator.Cli\TheFipster.ActivityAggregator.Cli.csproj", "{0E3641BD-91A9-4F4B-9BB3-9128F049FE41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Storage.Abstractions", "src\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj", "{A25B06DA-C568-44E6-BD07-89236D129E10}"
 EndProject
@@ -49,6 +43,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Services.UnitTests", "test\TheFipster.ActivityAggregator.Services.UnitTests\TheFipster.ActivityAggregator.Services.UnitTests.csproj", "{EC69F5CC-48A6-4284-9D27-BCAFB200135B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{E89A0F4C-55ED-44CD-BA97-CEA14DE02C5C}"
+	ProjectSection(SolutionItems) = preProject
+		docs\import-flow.drawio = docs\import-flow.drawio
+		docs\pipeline.md = docs\pipeline.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.AppHost", "src\TheFipster.ActivityAggregator.AppHost\TheFipster.ActivityAggregator.AppHost.csproj", "{9CDD772E-ACD2-4AAA-809E-9410A75482E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,10 +61,6 @@ Global
 		{1AEE86B0-C65C-4EEA-A6FE-361A3003AAFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AEE86B0-C65C-4EEA-A6FE-361A3003AAFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AEE86B0-C65C-4EEA-A6FE-361A3003AAFB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D738D24-190E-4D5C-8621-53B9BCDE3A49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D738D24-190E-4D5C-8621-53B9BCDE3A49}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D738D24-190E-4D5C-8621-53B9BCDE3A49}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D738D24-190E-4D5C-8621-53B9BCDE3A49}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AD4FF157-8353-440F-BE8A-D09E11B98119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AD4FF157-8353-440F-BE8A-D09E11B98119}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD4FF157-8353-440F-BE8A-D09E11B98119}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -83,14 +81,6 @@ Global
 		{93A57BB0-817A-4D27-884F-1CE0684572D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93A57BB0-817A-4D27-884F-1CE0684572D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93A57BB0-817A-4D27-884F-1CE0684572D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4543EDEA-D4EE-474E-A426-35B2881706CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4543EDEA-D4EE-474E-A426-35B2881706CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4543EDEA-D4EE-474E-A426-35B2881706CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4543EDEA-D4EE-474E-A426-35B2881706CD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E3641BD-91A9-4F4B-9BB3-9128F049FE41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E3641BD-91A9-4F4B-9BB3-9128F049FE41}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E3641BD-91A9-4F4B-9BB3-9128F049FE41}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E3641BD-91A9-4F4B-9BB3-9128F049FE41}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A25B06DA-C568-44E6-BD07-89236D129E10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A25B06DA-C568-44E6-BD07-89236D129E10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A25B06DA-C568-44E6-BD07-89236D129E10}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -115,15 +105,17 @@ Global
 		{EC69F5CC-48A6-4284-9D27-BCAFB200135B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC69F5CC-48A6-4284-9D27-BCAFB200135B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC69F5CC-48A6-4284-9D27-BCAFB200135B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CDD772E-ACD2-4AAA-809E-9410A75482E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CDD772E-ACD2-4AAA-809E-9410A75482E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CDD772E-ACD2-4AAA-809E-9410A75482E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CDD772E-ACD2-4AAA-809E-9410A75482E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{7D738D24-190E-4D5C-8621-53B9BCDE3A49} = {D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}
 		{97CA6F22-C4FD-4E62-ABBD-62C543E2C6A2} = {D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}
 		{CC2BA09E-B864-4700-ADDA-3353AE7DF1F2} = {D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}
-		{0E3641BD-91A9-4F4B-9BB3-9128F049FE41} = {D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}
 		{5550AA19-44E5-4014-9976-8CE416252B4E} = {D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}
 		{453B9F68-42C3-4D92-8E7F-C7D87413AD34} = {8834090C-C6EA-4DFC-B599-E9B5BCA5189A}
 		{A25B06DA-C568-44E6-BD07-89236D129E10} = {83BF5B28-20E2-4DBF-AE0A-887301DE597C}
@@ -131,7 +123,6 @@ Global
 		{AD4FF157-8353-440F-BE8A-D09E11B98119} = {D7AAB5D5-B865-4268-99A1-1284F82DB6DE}
 		{964257E9-076C-4A37-A174-6F89EB301236} = {D7AAB5D5-B865-4268-99A1-1284F82DB6DE}
 		{9BC9A21E-3341-4E82-A262-AE57DE78C9C1} = {8834090C-C6EA-4DFC-B599-E9B5BCA5189A}
-		{4543EDEA-D4EE-474E-A426-35B2881706CD} = {AA9B4205-5C3C-4398-8D7A-ED5C2E4FF2C2}
 		{1AEE86B0-C65C-4EEA-A6FE-361A3003AAFB} = {AA9B4205-5C3C-4398-8D7A-ED5C2E4FF2C2}
 		{269A33C9-9423-4A5B-9CC5-330B148F2AB3} = {AA9B4205-5C3C-4398-8D7A-ED5C2E4FF2C2}
 		{EC69F5CC-48A6-4284-9D27-BCAFB200135B} = {8834090C-C6EA-4DFC-B599-E9B5BCA5189A}

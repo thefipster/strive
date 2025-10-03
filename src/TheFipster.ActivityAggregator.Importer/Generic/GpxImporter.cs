@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
-using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Formats;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Components;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -30,10 +30,14 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
             if (!props.Contains("gpx"))
                 throw new ClassificationException(probe.Filepath, Source, "Couldn't find gpx tag.");
 
+            var directory = new FileInfo(probe.Filepath).Directory;
+            var date = DateHelper.GetDateFromMyCollectionDirectory(directory);
+
             return new ImportClassification
             {
                 Filepath = probe.Filepath,
                 Source = Source,
+                Datetime = date,
                 Datetype = DateRanges.Day,
             };
         }

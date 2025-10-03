@@ -10,16 +10,16 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public DateTimeOffset Date { get; set; }
 
         [JsonPropertyName("devicePpiSamplesList")]
-        public List<DevicePpiSamplesList> DevicePpiSamplesList { get; set; }
+        public List<DevicePpiSamplesList> DevicePpiSamplesList { get; set; } = [];
     }
 
     public class DevicePpiSamplesList
     {
         [JsonPropertyName("deviceId")]
-        public string DeviceId { get; set; }
+        public string? DeviceId { get; set; }
 
         [JsonPropertyName("ppiSamples")]
-        public List<PpiSample> PpiSamples { get; set; }
+        public List<PpiSample> PpiSamples { get; set; } = [];
     }
 
     public class PpiSample

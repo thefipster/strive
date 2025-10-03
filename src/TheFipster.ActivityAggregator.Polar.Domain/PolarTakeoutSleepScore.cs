@@ -2,8 +2,6 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.Text.Json;
     using System.Text.Json.Serialization;
 
     public class PolarTakeoutSleepScore
@@ -12,9 +10,9 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public DateTimeOffset Night { get; set; }
 
         [JsonPropertyName("sleepScoreResult")]
-        public Dictionary<string, double> SleepScoreResult { get; set; }
+        public Dictionary<string, double> SleepScoreResult { get; set; } = new();
 
         [JsonPropertyName("sleepScoreBaselines")]
-        public Dictionary<string, double> SleepScoreBaselines { get; set; }
+        public Dictionary<string, double> SleepScoreBaselines { get; set; } = new();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 
-namespace TheFipster.ActivityAggregator.Importer.Modules.Abstractions
+namespace TheFipster.ActivityAggregator.Importer.Abstractions
 {
     public interface IFileExtractor
     {

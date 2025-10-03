@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
 
-namespace TheFipster.ActivityAggregator.Domain.Models;
+namespace TheFipster.ActivityAggregator.Domain.Models.Unified;
 
 public class UnifiedEvent
 {

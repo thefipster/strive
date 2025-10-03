@@ -1,14 +1,14 @@
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
+using TheFipster.ActivityAggregator.Domain.Extensions;
 
 namespace TheFipster.ActivityAggregator.Domain.Tools;
 
 public class FileProbe
 {
-    private readonly Encoding encoding = Encoding.UTF8;
+    private readonly Encoding encoding = new UTF8Encoding(false);
 
     private readonly FileInfo file;
     private readonly byte[] buffer;
@@ -73,7 +73,6 @@ public class FileProbe
             yield return line;
     }
 
-    /// Collect a dictionary of property -> first encountered value (as string)
     private Dictionary<string, string?>? TryGetJsonValues()
     {
         try
@@ -86,7 +85,7 @@ public class FileProbe
         }
     }
 
-    private Dictionary<string, string?>? GetJsonValues()
+    private Dictionary<string, string?> GetJsonValues()
     {
         var props = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
         var reader = new Utf8JsonReader(buffer, isFinalBlock: false, state: default);
@@ -100,7 +99,6 @@ public class FileProbe
             }
             else if (lastProp != null)
             {
-                // Record first value we see for this property
                 if (!props.ContainsKey(lastProp))
                 {
                     string? value = reader.TokenType switch
@@ -143,6 +141,28 @@ public class FileProbe
     private void GetXmlTags(HashSet<string> elements, HashSet<string> attributes)
     {
         var text = GetText();
+        text = text.RemoveDoubleLineBreaks();
+        text = text.ConsolidateLineBreaks();
+
+        try
+        {
+            ScanTextForXmlTags(elements, attributes, text);
+            return;
+        }
+        catch (Exception)
+        {
+            text = text.RemoveBom();
+        }
+
+        ScanTextForXmlTags(elements, attributes, text);
+    }
+
+    private static void ScanTextForXmlTags(
+        HashSet<string> elements,
+        HashSet<string> attributes,
+        string text
+    )
+    {
         using var reader = XmlReader.Create(
             new StringReader(text),
             new XmlReaderSettings

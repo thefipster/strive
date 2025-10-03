@@ -6,18 +6,19 @@
 @using Microsoft.AspNetCore.Components.Web
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.SignalR.Client;
 @using Microsoft.JSInterop
 @using MudBlazor
 @using MudBlazor.State
+@using TheFipster.ActivityAggregator.Domain.Enums
 @using TheFipster.ActivityAggregator.Domain.Models
 @using TheFipster.ActivityAggregator.Web
 @using TheFipster.ActivityAggregator.Web.Components
-@using TheFipster.ActivityAggregator.Web.Components.Calendar
 @using TheFipster.ActivityAggregator.Web.Components.Import
 @using TheFipster.ActivityAggregator.Web.Layout
 @using TheFipster.ActivityAggregator.Web.Pages
 @using TheFipster.ActivityAggregator.Web.Services
-@using TheFipster.ActivityAggregator.Web.Views
 @using TheFipster.ActivityAggregator.Domain.Models.Indexes
+@using TheFipster.ActivityAggregator.Domain.Tools
 @using TheFipster.ActivityAggregator.Web.Components.YearCalendar
 @using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer
