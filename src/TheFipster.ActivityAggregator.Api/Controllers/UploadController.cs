@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Services.Abstractions;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Controllers;
 
@@ -12,10 +14,14 @@ namespace TheFipster.ActivityAggregator.Api.Controllers;
 public class UploadController(
     IUploader uploader,
     IOptions<ApiConfig> config,
+    IIndexer<ZipIndex> zipIndex,
     IBackgroundTaskQueue tasks,
     IUnzipService unzipper
 ) : ControllerBase
 {
+    [HttpGet("zips")]
+    public IEnumerable<ZipIndex> GetZipInventory() => zipIndex.GetAll();
+
     [HttpPost("chunk")]
     [DisableRequestSizeLimit]
     public async Task<IActionResult> UploadChunk([FromForm] UploadChunkRequest request)

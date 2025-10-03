@@ -1,3 +1,4 @@
+using System.Globalization;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Domain.Models.Unified;
@@ -69,8 +70,8 @@ public class SeriesMerger : ISeriesMerger
         var valueKeys = series.Keys.Where(x => x != Parameters.Timestamp).ToList();
         foreach (var valueKey in valueKeys)
         {
-            var valueseries = series[valueKey];
-            var values = valueseries.Select(double.Parse).ToList();
+            var valueSeries = series[valueKey];
+            var values = ParseIntoDoubleSeries(valueSeries);
             valuelines.Add(valueKey, values);
         }
 
@@ -81,5 +82,22 @@ public class SeriesMerger : ISeriesMerger
         samples.End = timeline.Max();
 
         result.Samples = samples;
+    }
+
+    private static List<double> ParseIntoDoubleSeries(List<string> valueSeries)
+    {
+        var values = valueSeries
+            .Select(s =>
+            {
+                if (string.Equals(s, "ECG_QUALITY_HIGH", StringComparison.OrdinalIgnoreCase))
+                    return 1.0;
+
+                if (bool.TryParse(s, out var b))
+                    return b ? 1.0 : 0.0;
+
+                return double.Parse(s, CultureInfo.InvariantCulture);
+            })
+            .ToList();
+        return values;
     }
 }

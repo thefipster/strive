@@ -6,7 +6,7 @@ public class UploadApi() : BaseApi("https://localhost:7098/")
 {
     public async Task<IEnumerable<ZipIndex>> GetZipsAsync()
     {
-        var query = "/api/index/zip/all";
+        var query = "/api/upload/zips";
         return await GetCollectionAsync<ZipIndex>(query);
     }
 }
