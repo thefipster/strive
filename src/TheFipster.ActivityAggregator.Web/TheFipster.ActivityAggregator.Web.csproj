@@ -24,5 +24,7 @@
     <_ContentIncludedByDefault Remove="Components\Import\Scan\ImportScan.razor" />
     <_ContentIncludedByDefault Remove="Components\Import\Scan\ScanActions.razor" />
     <_ContentIncludedByDefault Remove="Components\Import\Scan\ScannedFiles.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Merge\MergeActions.razor" />
+    <_ContentIncludedByDefault Remove="Components\Import\Merge\YearlyMerge.razor" />
   </ItemGroup>
 </Project>

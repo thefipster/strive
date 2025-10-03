@@ -49,6 +49,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Services.UnitTests", "test\TheFipster.ActivityAggregator.Services.UnitTests\TheFipster.ActivityAggregator.Services.UnitTests.csproj", "{EC69F5CC-48A6-4284-9D27-BCAFB200135B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{E89A0F4C-55ED-44CD-BA97-CEA14DE02C5C}"
+	ProjectSection(SolutionItems) = preProject
+		docs\import-flow.drawio = docs\import-flow.drawio
+		docs\pipeline.md = docs\pipeline.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

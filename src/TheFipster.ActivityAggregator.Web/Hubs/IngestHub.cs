@@ -34,4 +34,14 @@ public class IngestHub : Hub
     {
         await Clients.All.SendAsync(Const.Hubs.Ingester.AssimilationProgress, count);
     }
+
+    public async Task OnBatchFinished(string result)
+    {
+        await Clients.All.SendAsync(Const.Hubs.Ingester.BatchFinished, result);
+    }
+
+    public async Task OnBatchProgress(int count)
+    {
+        await Clients.All.SendAsync(Const.Hubs.Ingester.BatchProgress, count);
+    }
 }

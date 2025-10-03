@@ -1,42 +1,11 @@
 using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models;
-using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Services.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Services.Components;
 
-public class Merger : IMerger
+public class MetricsMerger : IMetricsMerger
 {
-    public MergedRecord Combine(BundleIndex bundle)
-    {
-        var extractions = bundle.Extractions.Select(FileExtraction.FromFile).ToList();
-
-        var result = new MergedRecord();
-
-        var allMetrics = extractions.Select(x => x.Attributes).ToArray();
-        var mergedMetrics = Merge(allMetrics);
-        result.Metrics = mergedMetrics.Resolved;
-        result.Conflicts = mergedMetrics.Conflicts;
-
-        var allSeries = extractions.Select(x => x.Series).ToArray();
-        var normalizedSeries = Normalize(allSeries);
-
-        return result;
-    }
-
-    private Dictionary<SampleTypes, List<NormalizedSample>> Normalize(
-        params Dictionary<Parameters, List<string>>[] allSeries
-    )
-    {
-        var result = new Dictionary<SampleTypes, List<NormalizedSample>>();
-
-        foreach (var series in allSeries) { }
-
-        return result;
-    }
-
     public MetricMergeResult Merge(params Dictionary<Parameters, string>[] metrics)
     {
         var valueMap = CollectValues(metrics);

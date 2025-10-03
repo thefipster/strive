@@ -64,6 +64,7 @@ public static class DateHelper
         );
     }
 
+    public static string FsMillisecondFormat => "yyyy-MM-ddTHH-mm-ss-fff";
     public static string MillisecondFormat => "yyyy-MM-ddTHH:mm:ss.fff";
     public static string SecondFormat => "s";
     public static string UiDayFormat => "dd.MM.yyyy";

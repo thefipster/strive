@@ -13,6 +13,7 @@ builder.Services.AddSingleton<ApiService>();
 builder.Services.AddSingleton<UploadApi>();
 builder.Services.AddSingleton<ScanApi>();
 builder.Services.AddSingleton<AssimilateApi>();
+builder.Services.AddSingleton<BatchApi>();
 
 builder.Services.AddSignalR(e =>
 {

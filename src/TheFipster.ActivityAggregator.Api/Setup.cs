@@ -53,6 +53,13 @@ public static class Setup
         services.AddTransient<IIndexer<ExtractorIndex>, BaseIndexer<ExtractorIndex>>();
         services.AddTransient<IPagedIndexer<ExtractorIndex>, PagedIndexer<ExtractorIndex>>();
 
+        services.AddTransient<IIndexer<BatchIndex>, BaseIndexer<BatchIndex>>();
+        services.AddTransient<IPagedIndexer<BatchIndex>, PagedIndexer<BatchIndex>>();
+        services.AddTransient<IMetricsMerger, MetricsMerger>();
+        services.AddTransient<IEventsMerger, EventsMerger>();
+        services.AddTransient<ISeriesMerger, SeriesMerger>();
+        services.AddTransient<IBatchService, BatchService>();
+
         return services;
     }
 

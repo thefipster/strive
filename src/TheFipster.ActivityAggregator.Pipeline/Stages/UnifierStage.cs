@@ -20,7 +20,7 @@ public class UnifierStage(
     IIndexer<UnifyIndex> indexer,
     ILiteDbWriter<MergedRecord> records,
     IInventoryService inventory,
-    IMerger merger,
+    ISeriesMerger merger,
     ILogger<UnifierStage> logger
 ) : Stage<BundleIndex, UnifyIndex>, IUnifierStage
 {
@@ -73,38 +73,6 @@ public class UnifierStage(
 
     private Task ProcessInput(BundleIndex bundle)
     {
-        var mergeSet = merger.Combine(bundle);
-
         throw new NotImplementedException();
-        // foreach (var file in bundle.Extractions)
-        // {
-        //     var extraction = FileExtraction.FromFile(file);
-        //     mergeSet.Extractions.Add(extraction);
-        // }
-        //
-        // var allMetrics = extractions.Select(x => x.Attributes).ToArray();
-        // var mergedMetrics = merger.Merge(allMetrics);
-        //
-        // var unifiedRecord = new MergedRecord(
-        //     bundle.Timestamp,
-        //     bundle.Kind,
-        //     mergedMetrics.Resolved,
-        //     mergedMetrics.Conflicts
-        // );
-        //
-        // records.Set(unifiedRecord);
-        // inventory.Update(unifiedRecord);
-        //
-        // var unifiedIndex = new UnifyIndex(
-        //     Version,
-        //     bundle.Timestamp,
-        //     bundle.Kind,
-        //     unifiedRecord.Conflicts.Any()
-        // );
-        // indexer.Set(unifiedIndex);
-        //
-        // ReportResult?.Invoke(this, new(unifiedIndex));
-        // Counters.Out.Increment();
-        // return Task.CompletedTask;
     }
 }

@@ -26,6 +26,7 @@ public class InventoryIndexer(IndexerContext context)
     {
         var result = Collection
             .FindAll()
+            .OrderBy(x => x.Timestamp)
             .GroupBy(e => e.Timestamp.Year)
             .ToDictionary(
                 g => g.Key,
@@ -61,6 +62,12 @@ public class InventoryIndexer(IndexerContext context)
     {
         var start = new DateTime(year, 1, 1);
         var end = start.AddYears(1);
-        return Collection.Find(x => x.Timestamp >= start && x.Timestamp < end).ToList();
+        return Collection
+            .Find(x => x.Timestamp >= start && x.Timestamp < end)
+            .OrderByDescending(x => x.Timestamp)
+            .ToList();
     }
+
+    public int GetMinYear() =>
+        Collection.FindAll().OrderBy(x => x.Timestamp).First().Timestamp.Year;
 }

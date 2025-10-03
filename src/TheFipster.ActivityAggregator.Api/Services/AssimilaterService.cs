@@ -6,6 +6,7 @@ using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Components;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 using TheFipster.ActivityAggregator.Services.Abstractions;
@@ -97,7 +98,7 @@ public class AssimilaterService : IAssimilaterService
                     var result = extractor.Extract(archive);
                     var valueHashes = result.Select(x => x.ToHash());
                     var valueHash = valueHashes.ToUnorderedCollectionHash();
-                    var extracts = new Dictionary<string, string>();
+                    var extracts = new List<ExtractionSnippet>();
                     var metrics = new List<string>();
                     long size = 0;
                     foreach (var extract in result)
@@ -107,7 +108,14 @@ public class AssimilaterService : IAssimilaterService
                         var hash = await extractFile.HashXx3Async(ct);
                         size += extractFile.Length;
 
-                        extracts.Add(hash, extractFilepath);
+                        var snippet = new ExtractionSnippet
+                        {
+                            Timestamp = extract.Timestamp,
+                            Path = extractFilepath,
+                            Range = extract.Range,
+                            Hash = hash,
+                        };
+                        extracts.Add(snippet);
 
                         metrics.AddRange(extract.Attributes.Keys.Select(x => x.ToString()));
                         metrics.AddRange(extract.Series.Keys.Select(x => x.ToString()));

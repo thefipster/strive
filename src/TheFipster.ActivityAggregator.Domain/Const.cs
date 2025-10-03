@@ -14,6 +14,8 @@ public static class Const
             public const string FileScanProgress = "OnFileScanProgress";
             public const string AssimilationFinished = "OnAssimilationFinished";
             public const string AssimilationProgress = "OnAssimilationProgress";
+            public const string BatchFinished = "OnBatchFinished";
+            public const string BatchProgress = "OnBatchProgress";
         }
     }
 }

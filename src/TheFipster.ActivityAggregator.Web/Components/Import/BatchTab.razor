@@ -1,0 +1,70 @@
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h4">Batches</MudText>
+                    <MudIconButton Color="Color.Primary" OnClick="@OnMergeClicked" Disabled="@isMergeActive"
+                                   Icon="@Icons.Material.Outlined.Merge">
+                    </MudIconButton>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="@isMergeActive"/>
+        <MudCardContent Class="d-flex align-center">
+            <MudGrid>
+
+                @if (inventory.Any())
+                {
+                    @foreach (var item in inventory)
+                    {
+                        <MudItem Style="width: 200px;">
+                            <MudText Typo="Typo.subtitle1">@item.Key (@(item.Value[2] + item.Value[3]) items)</MudText>
+                        </MudItem>
+                    }
+                }
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+
+    <MudCard>
+        <MudCardContent Class="d-flex align-center">
+            <MudTable @ref="@fileTable" T="BatchIndex" Context="item" ServerData="@LoadServerData"
+                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h4">Extractions</MudText>
+                    <MudSpacer/>
+                    <MudToggleGroup T="string" Size="Size.Small" Value="@("All")">
+                        <MudToggleItem Value="@("All")"/>
+                        <MudToggleItem Value="@("Days")"/>
+                        <MudToggleItem Value="@("Sessions")"/>
+                    </MudToggleGroup>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="width:190px;">Timestamp</MudTh>
+                    <MudTh Style="width:300px;">Kind</MudTh>
+                    <MudTh>Parameters</MudTh>
+                    <MudTh Style="width:190px;">Index time</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Timestamp">
+                        <MudText>@item.Timestamp</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Kind">
+                        <MudText>@item.Kind</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Parameters">
+                        <MudText>@string.Join(", ", item.Parameters.OrderBy(x => x))</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Index time">
+                        <MudText>@item.IndexedAt</MudText>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] { 15 }"
+                                   HideRowsPerPage="true"/>
+                </PagerContent>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
