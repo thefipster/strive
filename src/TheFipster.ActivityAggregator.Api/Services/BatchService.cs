@@ -24,8 +24,7 @@ public class BatchService : IBatchService
     private readonly IInventoryIndexer dateInventory;
 
     private readonly HubConnection connection;
-    private readonly ILogger<BatchService> logger;
-    private Stopwatch stopwatch;
+    private Stopwatch stopwatch = new();
 
     private readonly IMetricsMerger metricsMerger;
     private readonly IEventsMerger eventsMerger;
@@ -38,8 +37,7 @@ public class BatchService : IBatchService
         IInventoryIndexer dateInventory,
         IMetricsMerger metricsMerger,
         ISeriesMerger seriesMerger,
-        IEventsMerger eventsMerger,
-        ILogger<BatchService> logger
+        IEventsMerger eventsMerger
     )
     {
         this.config = config.Value;
@@ -49,7 +47,6 @@ public class BatchService : IBatchService
         this.metricsMerger = metricsMerger;
         this.seriesMerger = seriesMerger;
         this.eventsMerger = eventsMerger;
-        this.logger = logger;
 
         connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
@@ -176,10 +173,10 @@ public class BatchService : IBatchService
 
         batchInventory.Set(batchIndex);
 
-        await ReportProgressAsync(stopwatch, 0, ct);
+        await ReportProgressAsync(0, ct);
     }
 
-    private async Task ReportProgressAsync(Stopwatch stopwatch, int counter, CancellationToken ct)
+    private async Task ReportProgressAsync(int counter, CancellationToken ct)
     {
         if (stopwatch.ElapsedMilliseconds < 5000)
             return;

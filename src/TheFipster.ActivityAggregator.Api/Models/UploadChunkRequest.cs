@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Requests;
+namespace TheFipster.ActivityAggregator.Api.Models;
 
 public class UploadChunkRequest
 {

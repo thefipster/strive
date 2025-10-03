@@ -1,16 +1,16 @@
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
+using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Api.Models;
 using TheFipster.ActivityAggregator.Domain.Configs;
-using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Services.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Services.Components;
+namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class Uploader : IUploader
 {
     private static readonly ConcurrentDictionary<string, object> UploadLocks = new();
 
-    public async Task<string> EnsureChunk(UploadChunkRequest request, ApiConfig config)
+    public async Task<string?> EnsureChunk(UploadChunkRequest request, ApiConfig config)
     {
         try
         {
