@@ -1,4 +1,6 @@
 using MudBlazor.Services;
+using Serilog;
+using SerilogTracing;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Web;
 using TheFipster.ActivityAggregator.Web.Hubs;
@@ -6,6 +8,7 @@ using TheFipster.ActivityAggregator.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSerilog(c => c.ReadFrom.Configuration(builder.Configuration));
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<UploadApi>();
@@ -20,6 +23,11 @@ builder.Services.AddSignalR(e =>
     e.MaximumReceiveMessageSize = 102400000;
 });
 
+using var listener = new ActivityListenerConfiguration()
+    .Instrument.WithDefaultInstrumentation(false)
+    .Instrument.HttpClientRequests(opts => opts.MessageTemplate = "blazor")
+    .TraceToSharedLogger();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -32,7 +40,5 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-
 app.MapHub<IngestHub>(Const.Hubs.Ingester.Url);
-
 app.Run();

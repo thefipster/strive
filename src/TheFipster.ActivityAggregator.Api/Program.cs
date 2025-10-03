@@ -1,15 +1,19 @@
+using Serilog;
 using TheFipster.ActivityAggregator.Api;
 using TheFipster.ActivityAggregator.Storage.Lite;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
+
+builder.Services.AddSerilog(c => c.ReadFrom.Configuration(builder.Configuration));
+
+builder.Services.AddMetrics(builder.Configuration, builder.Environment);
 
 builder.Services.AddCorsPolicies();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddLiteDbStorage(config);
-builder.Services.AddCustom(config);
+builder.Services.AddLiteDbStorage(builder.Configuration);
+builder.Services.AddCustom(builder.Configuration);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -24,9 +28,6 @@ else
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

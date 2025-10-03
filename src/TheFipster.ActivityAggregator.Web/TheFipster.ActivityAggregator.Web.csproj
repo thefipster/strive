@@ -8,6 +8,11 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.9" />
     <PackageReference Include="MudBlazor" Version="8.13.0" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
+    <PackageReference Include="SerilogTracing" Version="2.3.1" />
+    <PackageReference Include="SerilogTracing.Expressions" Version="2.3.1" />
+    <PackageReference Include="Serilog.AspNetCore" Version="7.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj" />

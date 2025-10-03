@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.SignalR.Client;
+using Serilog;
+using Serilog.Events;
+using SerilogTracing;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Extensions;
@@ -16,16 +19,19 @@ public class ScannerService : IScannerService
     private readonly IClassifier classifier;
     private readonly IIndexer<ZipIndex> zipInventory;
     private readonly IIndexer<FileIndex> fileInventory;
+    private readonly ILogger<ScannerService> logger;
 
     public ScannerService(
         IClassifier classifier,
         IIndexer<ZipIndex> zipInventory,
-        IIndexer<FileIndex> fileInventory
+        IIndexer<FileIndex> fileInventory,
+        ILogger<ScannerService> logger
     )
     {
         this.classifier = classifier;
         this.zipInventory = zipInventory;
         this.fileInventory = fileInventory;
+        this.logger = logger;
 
         connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
@@ -35,9 +41,10 @@ public class ScannerService : IScannerService
 
     public async Task CheckDirectoryAsync(string destinationDirectory, CancellationToken ct)
     {
+        logger.LogInformation("Scanning directory {DestinationDirectory}", destinationDirectory);
+        var scanActivity = Log.Logger.StartActivity("Scanning");
         var zips = zipInventory.GetAll().ToArray();
 
-        var scanCounter = 0;
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         foreach (var zip in zips)
@@ -55,53 +62,16 @@ public class ScannerService : IScannerService
 
             foreach (var filepath in files)
             {
-                var file = new FileInfo(filepath);
-                var hash = await file.HashXx3Async(ct);
-
-                var index = fileInventory.GetById(hash);
-                if (index != null)
-                {
-                    if (!index.AlternateFiles.Contains(filepath))
-                        index.AlternateFiles.Add(filepath);
-
-                    fileInventory.Set(index);
-
-                    if (index.Source.HasValue)
-                        continue;
-                }
-
-                index = new FileIndex
-                {
-                    Hash = hash,
-                    ZipHash = zip.Hash,
-                    Size = file.Length,
-                    Path = filepath,
-                };
-
-                fileInventory.Set(index);
-
-                List<ClassificationResult> results;
+                using var activity = Log.Logger.StartActivity("Scan {File}", filepath);
                 try
                 {
-                    results = classifier.Classify(file, ct);
+                    await HandleFile(ct, filepath, zip, stopwatch);
+                    activity.Complete();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    continue;
+                    activity.Complete(LogEventLevel.Fatal, e);
                 }
-
-                if (results.Count(x => x.Classification != null) != 1)
-                    continue;
-
-                var result = results.First(x => x.Classification != null);
-                index.Source = result.Classification?.Source;
-                index.Timestamp = result.Classification?.Datetime;
-                index.Range = result.Classification?.Range;
-
-                fileInventory.Set(index);
-
-                scanCounter++;
-                await ReportProgressAsync(stopwatch, scanCounter, ct);
             }
         }
         stopwatch.Stop();
@@ -117,20 +87,78 @@ public class ScannerService : IScannerService
             "File scan finished.",
             cancellationToken: ct
         );
+
+        logger.LogInformation(
+            "Scanning finished for directory {DestinationDirectory}",
+            destinationDirectory
+        );
+
+        scanActivity.Complete();
     }
 
-    private async Task ReportProgressAsync(
-        Stopwatch stopwatch,
-        int scanCounter,
-        CancellationToken ct
+    private async Task HandleFile(
+        CancellationToken ct,
+        string filepath,
+        ZipIndex zip,
+        Stopwatch stopwatch
     )
+    {
+        var file = new FileInfo(filepath);
+        var hash = await file.HashXx3Async(ct);
+
+        var index = fileInventory.GetById(hash);
+        if (index != null)
+        {
+            if (!index.AlternateFiles.Contains(filepath))
+                index.AlternateFiles.Add(filepath);
+
+            fileInventory.Set(index);
+
+            if (index.Source.HasValue)
+                return;
+        }
+
+        index = new FileIndex
+        {
+            Hash = hash,
+            ZipHash = zip.Hash,
+            Size = file.Length,
+            Path = filepath,
+        };
+
+        fileInventory.Set(index);
+
+        List<ClassificationResult> results;
+        try
+        {
+            results = classifier.Classify(file, ct);
+        }
+        catch (Exception)
+        {
+            return;
+        }
+
+        if (results.Count(x => x.Classification != null) != 1)
+            return;
+
+        var result = results.First(x => x.Classification != null);
+        index.Source = result.Classification?.Source;
+        index.Timestamp = result.Classification?.Datetime;
+        index.Range = result.Classification?.Range;
+
+        fileInventory.Set(index);
+
+        await ReportProgressAsync(stopwatch, ct);
+    }
+
+    private async Task ReportProgressAsync(Stopwatch stopwatch, CancellationToken ct)
     {
         if (stopwatch.ElapsedMilliseconds < 5000)
             return;
 
         await connection.InvokeAsync(
             Const.Hubs.Ingester.FileScanProgress,
-            scanCounter,
+            0,
             cancellationToken: ct
         );
 
