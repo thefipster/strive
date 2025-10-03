@@ -5,10 +5,10 @@ namespace TheFipster.ActivityAggregator.Polar.Domain;
 public class PolarTakeoutGenericPeriodTemperature
 {
     [JsonPropertyName("meta")]
-    public Meta Meta { get; set; }
+    public Meta? Meta { get; set; }
 
     [JsonPropertyName("data")]
-    public TemperatureData Data { get; set; }
+    public TemperatureData? Data { get; set; }
 }
 
 public class TemperatureData
@@ -29,7 +29,7 @@ public class TemperatureData
 public class TemperatureMeasurementSample
 {
     [JsonPropertyName("recordingTimeDeltaMilliseconds")]
-    public string RecordingTimeDeltaMilliseconds { get; set; }
+    public string? RecordingTimeDeltaMilliseconds { get; set; }
 
     [JsonPropertyName("temperatureCelsius")]
     public double TemperatureCelsius { get; set; }

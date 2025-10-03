@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -86,7 +85,7 @@ public class FileProbe
         }
     }
 
-    private Dictionary<string, string?>? GetJsonValues()
+    private Dictionary<string, string?> GetJsonValues()
     {
         var props = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
         var reader = new Utf8JsonReader(buffer, isFinalBlock: false, state: default);

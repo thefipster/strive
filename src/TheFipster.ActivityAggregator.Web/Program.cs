@@ -5,7 +5,6 @@ using TheFipster.ActivityAggregator.Web.Hubs;
 using TheFipster.ActivityAggregator.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddMudServices();

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 namespace TheFipster.ActivityAggregator.Web.Components.YearCalendar;

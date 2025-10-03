@@ -1,8 +1,7 @@
-﻿using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Domain.Enums;
+﻿using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Formats;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -78,8 +77,6 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
             var headingSeries = new List<string>();
             var altitudeSeries = new List<string>();
             var distanceSeries = new List<string>();
-
-            var date = DateTime.Parse(start[9]);
 
             foreach (var position in positions)
             {

@@ -1,4 +1,4 @@
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 

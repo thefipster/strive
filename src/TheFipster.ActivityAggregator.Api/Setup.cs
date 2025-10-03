@@ -4,7 +4,7 @@ using TheFipster.ActivityAggregator.Api.Services;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Importer;
-using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Services.Abstractions;
 using TheFipster.ActivityAggregator.Services.Components;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;

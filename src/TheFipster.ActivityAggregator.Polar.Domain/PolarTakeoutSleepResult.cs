@@ -10,22 +10,22 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public DateTimeOffset Night { get; set; }
 
         [JsonPropertyName("evaluation")]
-        public Evaluation Evaluation { get; set; }
+        public Evaluation? Evaluation { get; set; }
 
         [JsonPropertyName("sleepResult")]
-        public SleepResult SleepResult { get; set; }
+        public SleepResult? SleepResult { get; set; }
     }
 
     public class Evaluation
     {
         [JsonPropertyName("sleepType")]
-        public string SleepType { get; set; }
+        public string? SleepType { get; set; }
 
         [JsonPropertyName("sleepSpan")]
-        public string SleepSpan { get; set; }
+        public string? SleepSpan { get; set; }
 
         [JsonPropertyName("asleepDuration")]
-        public string AsleepDuration { get; set; }
+        public string? AsleepDuration { get; set; }
 
         [JsonPropertyName("age")]
         public double Age { get; set; }
@@ -34,7 +34,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public Analysis Analysis { get; set; }
 
         [JsonPropertyName("interruptions")]
-        public Interruptions Interruptions { get; set; }
+        public Interruptions? Interruptions { get; set; }
     }
 
     public class Analysis
@@ -55,19 +55,19 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
     public class Interruptions
     {
         [JsonPropertyName("totalDuration")]
-        public string TotalDuration { get; set; }
+        public string? TotalDuration { get; set; }
 
         [JsonPropertyName("totalCount")]
         public long TotalCount { get; set; }
 
         [JsonPropertyName("shortDuration")]
-        public string ShortDuration { get; set; }
+        public string? ShortDuration { get; set; }
 
         [JsonPropertyName("shortCount")]
         public long ShortCount { get; set; }
 
         [JsonPropertyName("longDuration")]
-        public string LongDuration { get; set; }
+        public string? LongDuration { get; set; }
 
         [JsonPropertyName("longCount")]
         public long LongCount { get; set; }
@@ -76,7 +76,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
     public class SleepResult
     {
         [JsonPropertyName("hypnogram")]
-        public Hypnogram Hypnogram { get; set; }
+        public Hypnogram? Hypnogram { get; set; }
     }
 
     public class Hypnogram
@@ -88,10 +88,10 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public DateTimeOffset SleepEnd { get; set; }
 
         [JsonPropertyName("alarmSnoozeTimes")]
-        public List<object> AlarmSnoozeTimes { get; set; }
+        public List<object> AlarmSnoozeTimes { get; set; } = [];
 
         [JsonPropertyName("sleepStateChanges")]
-        public List<SleepStateChange> SleepStateChanges { get; set; }
+        public List<SleepStateChange> SleepStateChanges { get; set; } = [];
 
         [JsonPropertyName("sleepStartOffset")]
         public long SleepStartOffset { get; set; }
@@ -106,10 +106,10 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public DateTimeOffset Birthday { get; set; }
 
         [JsonPropertyName("sleepGoal")]
-        public string SleepGoal { get; set; }
+        public string? SleepGoal { get; set; }
 
         [JsonPropertyName("deviceId")]
-        public string DeviceId { get; set; }
+        public string? DeviceId { get; set; }
 
         [JsonPropertyName("batteryRanOut")]
         public bool BatteryRanOut { get; set; }
@@ -118,9 +118,9 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
     public class SleepStateChange
     {
         [JsonPropertyName("offsetFromStart")]
-        public string OffsetFromStart { get; set; }
+        public string? OffsetFromStart { get; set; }
 
         [JsonPropertyName("state")]
-        public string State { get; set; }
+        public string? State { get; set; }
     }
 }

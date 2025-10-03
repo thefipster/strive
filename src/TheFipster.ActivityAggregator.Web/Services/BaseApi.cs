@@ -1,5 +1,6 @@
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Standards;
 
 namespace TheFipster.ActivityAggregator.Web.Services;

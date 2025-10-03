@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using System.Text.Json;
-using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
+using TheFipster.ActivityAggregator.Domain.Models.Unified;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
@@ -83,7 +83,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                     "Couldn't parse polar takeout generic period ecg test file."
                 );
 
-            if (ecgTest.Data.Samples == null || ecgTest.Data.Samples.Count == 0)
+            if (ecgTest.Data?.Samples == null || ecgTest.Data.Samples.Count == 0)
                 throw new ExtractionException(file.Filepath, "Couldn't find any ecg samples.");
 
             var result = new FileExtraction(Source, file.Filepath, file.Date, DateRanges.Day);
@@ -108,7 +108,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
             var qualitySeries = new List<string>();
 
-            foreach (var sample in ecgTest.Data.Samples)
+            foreach (var sample in ecgTest.Data?.Samples ?? [])
             {
                 var amplitude = sample.AmplitudeMv.ToString(CultureInfo.InvariantCulture);
                 var timestamp = date.AddMilliseconds(sample.RecordingTimeDeltaMs)

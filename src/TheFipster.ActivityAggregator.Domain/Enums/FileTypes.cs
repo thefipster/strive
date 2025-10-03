@@ -1,4 +1,4 @@
-﻿namespace TheFipster.ActivityAggregator.Domain
+﻿namespace TheFipster.ActivityAggregator.Domain.Enums
 {
     public enum FileTypes
     {

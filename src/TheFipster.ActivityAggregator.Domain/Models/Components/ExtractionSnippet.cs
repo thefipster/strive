@@ -1,9 +1,11 @@
+using TheFipster.ActivityAggregator.Domain.Enums;
+
 namespace TheFipster.ActivityAggregator.Domain.Models.Components;
 
 public class ExtractionSnippet
 {
-    public string Hash { get; set; }
+    public required string Hash { get; set; }
+    public required string Path { get; set; }
     public DateTime Timestamp { get; set; }
     public DateRanges Range { get; set; }
-    public string Path { get; set; }
 }

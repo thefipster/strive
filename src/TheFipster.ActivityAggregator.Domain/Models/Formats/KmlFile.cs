@@ -1,7 +1,8 @@
 ﻿using System.Globalization;
 using System.Xml.Linq;
+using TheFipster.ActivityAggregator.Domain.Models.Components;
 
-namespace TheFipster.ActivityAggregator.Domain.Formats
+namespace TheFipster.ActivityAggregator.Domain.Models.Formats
 {
     public class KmlFile
     {

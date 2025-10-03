@@ -1,9 +1,8 @@
 ﻿using System.Globalization;
 using System.Text.Json;
-using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
@@ -194,8 +193,6 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var latitudeSeries = new List<string>();
             var longitudeSeries = new List<string>();
 
-            var start = samples.First().DateTime;
-
             foreach (var point in samples)
             {
                 timestampSeries.Add(point.DateTime.ToString(DateHelper.SecondFormat));
@@ -225,7 +222,6 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             )
                 return null;
 
-            var start = samples.First().DateTime;
             var basicSeries = samples
                 .Where(x => x.Value.HasValue)
                 .Select(x => (x.Value ?? double.NaN).ToString(CultureInfo.InvariantCulture))

@@ -1,4 +1,6 @@
-namespace TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Enums;
+
+namespace TheFipster.ActivityAggregator.Domain.Models.Merging;
 
 public record MetricMergeResult(
     Dictionary<Parameters, string> Resolved,

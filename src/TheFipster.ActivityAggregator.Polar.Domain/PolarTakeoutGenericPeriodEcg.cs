@@ -5,19 +5,19 @@ namespace TheFipster.ActivityAggregator.Polar.Domain;
 public class PolarTakeoutGenericPeriodEcg
 {
     [JsonPropertyName("meta")]
-    public Meta Meta { get; set; }
+    public Meta? Meta { get; set; }
 
     [JsonPropertyName("data")]
-    public EcgData Data { get; set; }
+    public EcgData? Data { get; set; }
 }
 
 public class EcgData
 {
     [JsonPropertyName("sourceDeviceId")]
-    public string SourceDeviceId { get; set; }
+    public string? SourceDeviceId { get; set; }
 
     [JsonPropertyName("testTime")]
-    public string TestTime { get; set; }
+    public string? TestTime { get; set; }
 
     [JsonPropertyName("timeZoneOffset")]
     public int TimeZoneOffset { get; set; }
@@ -29,7 +29,7 @@ public class EcgData
     public double HeartRateVariabilityMs { get; set; }
 
     [JsonPropertyName("heartRateVariabilityLevel")]
-    public string HeartRateVariabilityLevel { get; set; }
+    public string? HeartRateVariabilityLevel { get; set; }
 
     [JsonPropertyName("rriMs")]
     public double RriMs { get; set; }
@@ -44,10 +44,11 @@ public class EcgData
     public double PulseTransitTimeQualityIndex { get; set; }
 
     [JsonPropertyName("samples")]
-    public List<EcgSample> Samples { get; set; }
+    public List<EcgSample> Samples { get; set; } = [];
 
     [JsonPropertyName("qualityMeasurements")]
-    public List<QualityMeasurement> QualityMeasurements { get; set; }
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public List<QualityMeasurement> QualityMeasurements { get; set; } = [];
 }
 
 public class QualityMeasurement
@@ -56,7 +57,7 @@ public class QualityMeasurement
     public long RecordingTimeDeltaMs { get; set; }
 
     [JsonPropertyName("qualityLevel")]
-    public string QualityLevel { get; set; }
+    public string? QualityLevel { get; set; }
 }
 
 public class EcgSample
@@ -71,13 +72,13 @@ public class EcgSample
 public class Meta
 {
     [JsonPropertyName("id")]
-    public Id Id { get; set; }
+    public Id? Id { get; set; }
 
     [JsonPropertyName("type")]
     public int Type { get; set; }
 
     [JsonPropertyName("ownerId")]
-    public string OwnerId { get; set; }
+    public string? OwnerId { get; set; }
 
     [JsonPropertyName("created")]
     public DateTimeOffset Created { get; set; }
@@ -92,8 +93,8 @@ public class Meta
 public class Id
 {
     [JsonPropertyName("startTimeSeconds")]
-    public string StartTimeSeconds { get; set; }
+    public string? StartTimeSeconds { get; set; }
 
     [JsonPropertyName("restOfBytes")]
-    public string RestOfBytes { get; set; }
+    public string? RestOfBytes { get; set; }
 }

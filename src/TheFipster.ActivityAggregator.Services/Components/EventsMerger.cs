@@ -1,4 +1,5 @@
-using TheFipster.ActivityAggregator.Domain.Models;
+using TheFipster.ActivityAggregator.Domain.Models.Merging;
+using TheFipster.ActivityAggregator.Domain.Models.Unified;
 using TheFipster.ActivityAggregator.Services.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Services.Components;

@@ -1,4 +1,6 @@
-﻿namespace TheFipster.ActivityAggregator.Domain.Extensions
+﻿using TheFipster.ActivityAggregator.Domain.Enums;
+
+namespace TheFipster.ActivityAggregator.Domain.Extensions
 {
     public static class DateExtensions
     {

@@ -1,5 +1,3 @@
-using TheFipster.ActivityAggregator.Domain.Enums;
-
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 public class ZipIndex

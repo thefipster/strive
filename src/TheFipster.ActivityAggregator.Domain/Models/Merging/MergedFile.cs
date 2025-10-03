@@ -1,6 +1,5 @@
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Unified;
 using TheFipster.ActivityAggregator.Domain.Tools;
 

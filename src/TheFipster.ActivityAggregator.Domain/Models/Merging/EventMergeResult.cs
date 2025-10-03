@@ -1,5 +1,5 @@
-using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Domain.Models.Unified;
 
-namespace TheFipster.ActivityAggregator.Domain.Models;
+namespace TheFipster.ActivityAggregator.Domain.Models.Merging;
 
 public record EventMergeResult(List<UnifiedEvent> Resolved);

@@ -1,4 +1,4 @@
-﻿namespace TheFipster.ActivityAggregator.Domain.Formats
+﻿namespace TheFipster.ActivityAggregator.Domain.Models.Formats
 {
     public class CsvFile
     {

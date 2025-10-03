@@ -1,5 +1,4 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Scanner;

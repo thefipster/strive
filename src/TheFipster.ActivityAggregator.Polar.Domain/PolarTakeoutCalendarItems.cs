@@ -2,38 +2,36 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.Text.Json;
     using System.Text.Json.Serialization;
 
     public class PolarTakeoutCalendarItems
     {
         [JsonPropertyName("exportVersion")]
-        public string ExportVersion { get; set; }
+        public string? ExportVersion { get; set; }
 
         [JsonPropertyName("perceivedRecovery")]
-        public List<object> PerceivedRecovery { get; set; }
+        public List<object>? PerceivedRecovery { get; set; }
 
         [JsonPropertyName("physicalInformations")]
-        public List<PhysicalInformation> PhysicalInformations { get; set; }
+        public List<PhysicalInformation>? PhysicalInformations { get; set; }
 
         [JsonPropertyName("notes")]
-        public List<Note> Notes { get; set; }
+        public List<Note>? Notes { get; set; }
 
         [JsonPropertyName("feelings")]
-        public List<Feeling> Feelings { get; set; }
+        public List<Feeling>? Feelings { get; set; }
 
         [JsonPropertyName("weights")]
-        public List<Weight> Weights { get; set; }
+        public List<Weight>? Weights { get; set; }
 
         [JsonPropertyName("feedbacks")]
-        public List<object> Feedbacks { get; set; }
+        public List<object>? Feedbacks { get; set; }
     }
 
     public class Feeling
     {
         [JsonPropertyName("value")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
 
         [JsonPropertyName("date")]
         public DateTimeOffset Date { get; set; }
@@ -42,7 +40,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
     public class Note
     {
         [JsonPropertyName("note")]
-        public string NoteNote { get; set; }
+        public string? NoteNote { get; set; }
 
         [JsonPropertyName("date")]
         public DateTimeOffset Date { get; set; }

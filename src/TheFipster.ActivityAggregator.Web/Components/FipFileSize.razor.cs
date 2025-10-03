@@ -20,7 +20,7 @@ public partial class FipFileSize : ComponentBase
 
     protected override void OnParametersSet()
     {
-        var size = 0.0;
+        double size;
         var unit = "b";
 
         if (Size > Gb)

@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Domain.Models;
+namespace TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 public class PagedRequest
 {
@@ -10,7 +10,7 @@ public class PagedRequest
         Size = size;
     }
 
-    public int Page { get; set; } = 0;
+    public int Page { get; set; }
     public int Size { get; set; } = 10;
 
     public PagedResult<TItem> ToResult<TItem>(IEnumerable<TItem> items, int total) =>

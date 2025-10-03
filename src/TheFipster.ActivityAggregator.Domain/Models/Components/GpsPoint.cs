@@ -1,4 +1,4 @@
-﻿namespace TheFipster.ActivityAggregator.Domain
+﻿namespace TheFipster.ActivityAggregator.Domain.Models.Components
 {
     public class GpsPoint
     {

@@ -4,6 +4,7 @@ using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
@@ -46,7 +47,7 @@ public partial class AssimilateTab : ComponentBase
 
         hubConnection.On<string>(
             Const.Hubs.Ingester.AssimilationFinished,
-            result =>
+            _ =>
             {
                 isAssimilationActive = false;
                 fileTable?.ReloadServerData();
@@ -56,7 +57,7 @@ public partial class AssimilateTab : ComponentBase
 
         hubConnection.On<int>(
             Const.Hubs.Ingester.AssimilationProgress,
-            result =>
+            _ =>
             {
                 fileTable?.ReloadServerData();
                 InvokeAsync(StateHasChanged);

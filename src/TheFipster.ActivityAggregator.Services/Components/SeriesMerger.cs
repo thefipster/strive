@@ -1,5 +1,6 @@
 using System.Globalization;
-using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Domain.Models.Components;
 using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Domain.Models.Unified;
 using TheFipster.ActivityAggregator.Services.Abstractions;
