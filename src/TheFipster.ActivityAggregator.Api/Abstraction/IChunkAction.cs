@@ -1,10 +1,9 @@
 using TheFipster.ActivityAggregator.Api.Models;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
-using TheFipster.ActivityAggregator.Domain.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Abstraction;
 
-public interface IUploader
+public interface IChunkAction
 {
-    Task<string?> EnsureChunk(UploadChunkRequest request, ApiConfig config);
+    Task TryUploadChunkAsync(UploadChunkRequest request);
 }

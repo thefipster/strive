@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Api.Models;
+using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Services;

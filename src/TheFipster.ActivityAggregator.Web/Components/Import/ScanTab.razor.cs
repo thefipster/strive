@@ -16,7 +16,7 @@ public partial class ScanTab : ComponentBase
     private MudTable<FileIndex>? _fileTable;
     private string _selectedClassifiedFilter = "All";
     private string _selectedRangeFilter = "All";
-    private string _searchString = string.Empty;
+    private string _searchFilter = string.Empty;
     private string[]? _classifiers;
     private readonly string[] _ranges = Enum.GetNames(typeof(DateRanges));
 
@@ -93,7 +93,7 @@ public partial class ScanTab : ComponentBase
             new PagedRequest(state.Page, state.PageSize),
             _selectedRangeFilter,
             _selectedClassifiedFilter,
-            _searchString
+            _searchFilter
         );
 
         return new TableData<FileIndex> { TotalItems = page.Total, Items = page.Items };
@@ -101,25 +101,19 @@ public partial class ScanTab : ComponentBase
 
     private void OnSearch(string text)
     {
-        _searchString = text;
-
-        if (_fileTable != null)
-            _fileTable.ReloadServerData();
+        _searchFilter = text;
+        _fileTable?.ReloadServerData();
     }
 
     private void OnClassificationFilterChanged(string classification)
     {
         _selectedClassifiedFilter = classification;
-
-        if (_fileTable != null)
-            _fileTable.ReloadServerData();
+        _fileTable?.ReloadServerData();
     }
 
     private void OnRangeFilterChanged(string range)
     {
         _selectedRangeFilter = range;
-
-        if (_fileTable != null)
-            _fileTable.ReloadServerData();
+        _fileTable?.ReloadServerData();
     }
 }
