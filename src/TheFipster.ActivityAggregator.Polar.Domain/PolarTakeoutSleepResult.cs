@@ -31,7 +31,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public double Age { get; set; }
 
         [JsonPropertyName("analysis")]
-        public Analysis Analysis { get; set; }
+        public Analysis? Analysis { get; set; }
 
         [JsonPropertyName("interruptions")]
         public Interruptions? Interruptions { get; set; }
@@ -100,7 +100,7 @@ namespace TheFipster.ActivityAggregator.Polar.Domain
         public long SleepEndOffset { get; set; }
 
         [JsonPropertyName("rating")]
-        public string Rating { get; set; }
+        public string? Rating { get; set; }
 
         [JsonPropertyName("birthday")]
         public DateTimeOffset Birthday { get; set; }

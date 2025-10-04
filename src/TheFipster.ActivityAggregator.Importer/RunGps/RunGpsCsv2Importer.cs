@@ -4,7 +4,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.RunGps
 {
@@ -14,7 +14,7 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 
-        private readonly List<string> header =
+        private readonly List<string> _header =
         [
             "type;latitude;longitude;speed;heading;altitude;slope;ascentRate;distance;timestamp;heartRate;gpsDilution;temperature;cadence;",
         ];
@@ -37,7 +37,7 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
                     "Couldn't get two lines."
                 );
 
-            if (header.All(x => x != lines.First()))
+            if (_header.All(x => x != lines.First()))
                 throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
             var data = lines.Last().Split(";", StringSplitOptions.RemoveEmptyEntries);

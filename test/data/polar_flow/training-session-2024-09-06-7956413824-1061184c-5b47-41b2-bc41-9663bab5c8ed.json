@@ -1,0 +1,51 @@
+{
+  "exportVersion": "2.6",
+  "startTime": "2024-09-06T18:30:00.000",
+  "stopTime": "2024-09-06T22:30:00.000",
+  "duration": "PT14400S",
+  "physicalInformationSnapshot": {
+    "dateTime": "2024-09-07T00:05:37.000",
+    "sex": "MALE",
+    "birthday": "1985-07-10",
+    "height, cm": 189.0,
+    "weight, kg": 77.0,
+    "vo2Max": 43,
+    "maximumHeartRate": 184,
+    "restingHeartRate": 55,
+    "aerobicThreshold": 138,
+    "anaerobicThreshold": 166,
+    "sleepGoal": "PT25200S",
+    "functionalThresholdPower": 285
+  },
+  "exercises": [
+    {
+      "startTime": "2024-09-06T18:30:00.000",
+      "stopTime": "2024-09-06T22:30:00.000",
+      "duration": "PT14400S",
+      "sport": "TABLE_TENNIS",
+      "heartRate": {},
+      "zones": {},
+      "samples": {},
+      "loadInformation": {
+        "cardioLoad": 0.0,
+        "muscleLoad": -1.0,
+        "cardioLoadInterpretation": "NOT_AVAILABLE",
+        "muscleLoadInterpretation": "NOT_AVAILABLE",
+        "calculationTime": "2024-09-06T18:30:00.000",
+        "sessionRpe": "UNKNOWN",
+        "perceivedLoad": 0.0,
+        "perceivedLoadInterpretation": "NOT_AVAILABLE"
+      }
+    }
+  ],
+  "loadInformation": {
+    "cardioLoad": 0.0,
+    "muscleLoad": -1.0,
+    "cardioLoadInterpretation": "NOT_AVAILABLE",
+    "muscleLoadInterpretation": "NOT_AVAILABLE",
+    "calculationTime": "2024-09-06T18:30:00.000",
+    "sessionRpe": "UNKNOWN",
+    "perceivedLoad": 0.0,
+    "perceivedLoadInterpretation": "NOT_AVAILABLE"
+  }
+}

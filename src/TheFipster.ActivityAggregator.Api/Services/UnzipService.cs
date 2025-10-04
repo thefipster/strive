@@ -3,26 +3,25 @@ using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Services.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class UnzipService : IUnzipService
 {
-    private readonly HubConnection connection;
-    private readonly IUnzipper unzip;
-    private readonly IIndexer<ZipIndex> indexer;
+    private readonly HubConnection _connection;
+    private readonly IUnzipper _unzip;
+    private readonly IIndexer<ZipIndex> _indexer;
 
     public UnzipService(IUnzipper unzip, IIndexer<ZipIndex> indexer)
     {
-        this.unzip = unzip;
-        this.indexer = indexer;
+        _unzip = unzip;
+        _indexer = indexer;
 
-        connection = new HubConnectionBuilder()
+        _connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
             .Build();
-        connection.StartAsync().Wait();
+        _connection.StartAsync().Wait();
     }
 
     public async Task<ZipIndex> ExtractAsync(
@@ -33,7 +32,7 @@ public class UnzipService : IUnzipService
     {
         var file = new FileInfo(zipFilepath);
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.WorkerInfo,
             $"Unzipping {file.Name}.",
             cancellationToken: ct
@@ -44,15 +43,15 @@ public class UnzipService : IUnzipService
         var outputName = file.Name.Replace(file.Extension, string.Empty);
         var outputPath = Path.Combine(outputDirectory, outputName);
 
-        var index = indexer.GetById(hash);
+        var index = _indexer.GetById(hash);
         if (index != null)
         {
             if (zipFilepath != index.ZipPath)
                 index.AlternateFiles.Add(zipFilepath);
 
-            indexer.Set(index);
+            _indexer.Set(index);
 
-            await connection.InvokeAsync(
+            await _connection.InvokeAsync(
                 Const.Hubs.Ingester.UnzipFinished,
                 file.Name,
                 "File is already indexed.",
@@ -61,7 +60,7 @@ public class UnzipService : IUnzipService
             return index;
         }
 
-        var stats = unzip.Extract(zipFilepath, outputPath, true);
+        var stats = _unzip.Extract(zipFilepath, outputPath, true);
 
         index = new ZipIndex
         {
@@ -73,16 +72,16 @@ public class UnzipService : IUnzipService
             UnpackedSize = stats.Size,
         };
 
-        indexer.Set(index);
+        _indexer.Set(index);
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.UnzipFinished,
             file.Name,
             "Indexing complete.",
             cancellationToken: ct
         );
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.WorkerInfo,
             "Indexing complete.",
             cancellationToken: ct

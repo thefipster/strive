@@ -22,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Importer\TheFipster.ActivityAggregator.Importer.csproj" />
-    <ProjectReference Include="..\TheFipster.ActivityAggregator.Services\TheFipster.ActivityAggregator.Services.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Lite\TheFipster.ActivityAggregator.Storage.Lite.csproj" />
   </ItemGroup>
 </Project>

@@ -1,21 +1,20 @@
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer;
 
 public class Registry : IImporterRegistry
 {
-    private IReadOnlyList<IFileImporter>? importers;
-    private IReadOnlyList<IFileClassifier>? classifiers;
-    private IReadOnlyList<IFileExtractor>? extractors;
+    private IReadOnlyList<IFileImporter>? _importers;
+    private IReadOnlyList<IFileClassifier>? _classifiers;
+    private IReadOnlyList<IFileExtractor>? _extractors;
 
     public IEnumerable<IFileClassifier> LoadClassifiers()
     {
-        if (classifiers == null)
+        if (_classifiers == null)
         {
             var assembly = typeof(Registry).Assembly;
 
-            classifiers = assembly
+            _classifiers = assembly
                 .GetTypes()
                 .Where(t =>
                     !t.IsAbstract && !t.IsInterface && typeof(IFileClassifier).IsAssignableFrom(t)
@@ -24,16 +23,16 @@ public class Registry : IImporterRegistry
                 .ToList();
         }
 
-        return classifiers;
+        return _classifiers;
     }
 
     public IEnumerable<IFileExtractor> LoadExtractors()
     {
-        if (extractors == null)
+        if (_extractors == null)
         {
             var assembly = typeof(Registry).Assembly;
 
-            extractors = assembly
+            _extractors = assembly
                 .GetTypes()
                 .Where(t =>
                     !t.IsAbstract && !t.IsInterface && typeof(IFileExtractor).IsAssignableFrom(t)
@@ -42,16 +41,16 @@ public class Registry : IImporterRegistry
                 .ToList();
         }
 
-        return extractors;
+        return _extractors;
     }
 
     public IEnumerable<IFileImporter> LoadImporters()
     {
-        if (importers == null)
+        if (_importers == null)
         {
             var assembly = typeof(Registry).Assembly;
 
-            importers = assembly
+            _importers = assembly
                 .GetTypes()
                 .Where(t =>
                     !t.IsAbstract && !t.IsInterface && typeof(IFileImporter).IsAssignableFrom(t)
@@ -60,6 +59,6 @@ public class Registry : IImporterRegistry
                 .ToList();
         }
 
-        return importers;
+        return _importers;
     }
 }

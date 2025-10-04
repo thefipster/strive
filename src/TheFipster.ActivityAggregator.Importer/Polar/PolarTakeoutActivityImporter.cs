@@ -5,7 +5,7 @@ using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
@@ -16,8 +16,8 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 
-        private readonly HashSet<string> required = ["exportVersion", "date"];
-        private readonly string[] found = ["samples", "summary"];
+        private readonly HashSet<string> _required = ["exportVersion", "date"];
+        private readonly string[] _found = ["samples", "summary"];
 
         public ImportClassification Classify(FileProbe probe)
         {
@@ -30,14 +30,14 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                     "Couldn't find valid json."
                 );
 
-            if (!required.IsSubsetOf(values.Keys))
+            if (!_required.IsSubsetOf(values.Keys))
                 throw new ClassificationException(
                     probe.Filepath,
                     Source,
                     "Couldn't find required properties."
                 );
 
-            if (!values.Keys.Contains(found[0]) && !values.Keys.Contains(found[1]))
+            if (!values.Keys.Contains(_found[0]) && !values.Keys.Contains(_found[1]))
                 throw new ClassificationException(
                     probe.Filepath,
                     Source,

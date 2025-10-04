@@ -8,18 +8,17 @@ using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
-using TheFipster.ActivityAggregator.Services.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class ScannerService : IScannerService
 {
-    private readonly HubConnection connection;
-    private readonly IClassifier classifier;
-    private readonly IIndexer<ZipIndex> zipInventory;
-    private readonly IIndexer<FileIndex> fileInventory;
-    private readonly ILogger<ScannerService> logger;
+    private readonly HubConnection _connection;
+    private readonly IClassifier _classifier;
+    private readonly IIndexer<ZipIndex> _zipInventory;
+    private readonly IIndexer<FileIndex> _fileInventory;
+    private readonly ILogger<ScannerService> _logger;
 
     public ScannerService(
         IClassifier classifier,
@@ -28,29 +27,29 @@ public class ScannerService : IScannerService
         ILogger<ScannerService> logger
     )
     {
-        this.classifier = classifier;
-        this.zipInventory = zipInventory;
-        this.fileInventory = fileInventory;
-        this.logger = logger;
+        _classifier = classifier;
+        _zipInventory = zipInventory;
+        _fileInventory = fileInventory;
+        _logger = logger;
 
-        connection = new HubConnectionBuilder()
+        _connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
             .Build();
-        connection.StartAsync().Wait();
+        _connection.StartAsync().Wait();
     }
 
     public async Task CheckDirectoryAsync(string destinationDirectory, CancellationToken ct)
     {
-        logger.LogInformation("Scanning directory {DestinationDirectory}", destinationDirectory);
+        _logger.LogInformation("Scanning directory {DestinationDirectory}", destinationDirectory);
         var scanActivity = Log.Logger.StartActivity("Scanning");
-        var zips = zipInventory.GetAll().ToArray();
+        var zips = _zipInventory.GetAll().ToArray();
 
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         foreach (var zip in zips)
         {
             var dir = new DirectoryInfo(zip.OutputPath);
-            await connection.InvokeAsync(
+            await _connection.InvokeAsync(
                 Const.Hubs.Ingester.WorkerInfo,
                 $"Starting file scan on {dir.Name}.",
                 cancellationToken: ct
@@ -76,19 +75,19 @@ public class ScannerService : IScannerService
         }
         stopwatch.Stop();
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.FileScanFinished,
             "File scan finished.",
             cancellationToken: ct
         );
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.WorkerInfo,
             "File scan finished.",
             cancellationToken: ct
         );
 
-        logger.LogInformation(
+        _logger.LogInformation(
             "Scanning finished for directory {DestinationDirectory}",
             destinationDirectory
         );
@@ -106,13 +105,13 @@ public class ScannerService : IScannerService
         var file = new FileInfo(filepath);
         var hash = await file.HashXx3Async(ct);
 
-        var index = fileInventory.GetById(hash);
+        var index = _fileInventory.GetById(hash);
         if (index != null)
         {
             if (!index.AlternateFiles.Contains(filepath))
                 index.AlternateFiles.Add(filepath);
 
-            fileInventory.Set(index);
+            _fileInventory.Set(index);
 
             if (index.Source.HasValue)
                 return;
@@ -126,12 +125,12 @@ public class ScannerService : IScannerService
             Path = filepath,
         };
 
-        fileInventory.Set(index);
+        _fileInventory.Set(index);
 
         List<ClassificationResult> results;
         try
         {
-            results = classifier.Classify(file, ct);
+            results = _classifier.Classify(file, ct);
         }
         catch (Exception)
         {
@@ -146,7 +145,7 @@ public class ScannerService : IScannerService
         index.Timestamp = result.Classification?.Datetime;
         index.Range = result.Classification?.Range;
 
-        fileInventory.Set(index);
+        _fileInventory.Set(index);
 
         await ReportProgressAsync(stopwatch, ct);
     }
@@ -156,7 +155,7 @@ public class ScannerService : IScannerService
         if (stopwatch.ElapsedMilliseconds < 5000)
             return;
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.FileScanProgress,
             0,
             cancellationToken: ct
