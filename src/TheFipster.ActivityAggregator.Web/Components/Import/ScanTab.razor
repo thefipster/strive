@@ -19,31 +19,32 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Files</MudText>
                     <MudSpacer />
-                    <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
+                    <MudTextField T="string" Placeholder="Search" ValueChanged="@(s=>OnSearch(s))" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
                     <MudSpacer />
-                    <MudToggleGroup T="string" Size="Size.Small" Value="@("All")">
+                    <MudToggleGroup T="string" Size="Size.Small" Value="@_selectedClassifiedFilter" ValueChanged="@OnClassifiedFilterChange">
                         <MudToggleItem Value="@("All")" />
                         <MudToggleItem Value="@("Classified")" />
                         <MudToggleItem Value="@("Unclassified")" />
-                        <MudToggleItem Value="@("Errors")" />
                     </MudToggleGroup>
                     
                 </ToolBarContent>
                 <HeaderContent>
-                    <MudTh Style="width:190px;">Timestamp</MudTh>
-                    <MudTh Style="width:300px;">Source</MudTh>
-                    <MudTh>File</MudTh> <!-- this one grows -->
-                    <MudTh Style="width:100px;">Size</MudTh>
                     <MudTh Style="width:160px;">Indexed</MudTh>
+                    <MudTh>File</MudTh> <!-- this one grows -->
+                    <MudTh Style="width:300px;">Source</MudTh>
+                    <MudTh Style="width:100px;">Range</MudTh>
+                    <MudTh Style="width:160px;">Timestamp</MudTh>
+                    <MudTh Style="width:100px;">Size</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd>@context.Timestamp</MudTd>
-                    <MudTd>@context.Source</MudTd>
+                    <MudTd>@context.IndexedAt.ToLocalTime().ToString("g")</MudTd>
                     <MudTd>@(new FileInfo(context.Path).Name)</MudTd>
+                    <MudTd>@context.Source</MudTd>
+                    <MudTd>@context.Range</MudTd>
+                    <MudTd>@(context.Timestamp.HasValue ? context.Timestamp.Value.ToString("g") : string.Empty)</MudTd>
                     <MudTd>
                         <FipFileSize Typo="Typo.body1" Size="@context.Size"></FipFileSize>
                     </MudTd>
-                    <MudTd>@context.IndexedAt.ToLocalTime().ToString("g")</MudTd>
                 </RowTemplate>
                 <PagerContent>
                     <MudTablePager/>

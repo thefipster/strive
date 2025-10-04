@@ -18,8 +18,42 @@ public class ScanController(
 ) : ControllerBase
 {
     [HttpGet("files")]
-    public PagedResult<FileIndex> GetFilePage(int page = 0, int size = 10) =>
-        fileIndex.GetPaged(page, size);
+    public PagedResult<FileIndex> GetFilePage(
+        int page = 0,
+        int size = 10,
+        bool? classified = null,
+        string? search = null
+    )
+    {
+        if (classified == null && string.IsNullOrWhiteSpace(search))
+            return fileIndex.GetPaged(page, size, null, sort => sort.Timestamp!);
+
+        if (classified.HasValue && !string.IsNullOrWhiteSpace(search))
+            return fileIndex.GetPaged(
+                page,
+                size,
+                filter => filter.Source.HasValue == classified.Value,
+                sort => sort.Timestamp!,
+                descending: true,
+                s => s.Path.Contains(search)
+            );
+
+        if (classified.HasValue)
+            return fileIndex.GetPaged(
+                page,
+                size,
+                filter => filter.Source.HasValue == classified.Value
+            );
+
+        return fileIndex.GetPaged(
+            page,
+            size,
+            null,
+            sort => sort.Timestamp!,
+            true,
+            s => s.Path.Contains(search!)
+        );
+    }
 
     [HttpGet]
     public IActionResult Scan()

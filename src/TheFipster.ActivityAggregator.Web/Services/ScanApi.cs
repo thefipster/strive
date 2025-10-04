@@ -5,15 +5,26 @@ namespace TheFipster.ActivityAggregator.Web.Services;
 
 public class ScanApi() : BaseApi("https://localhost:7098/")
 {
-    public async Task ExecuteFileScan()
-    {
-        var query = "/api/scan";
-        await ExecuteAction(query);
-    }
+    private const string BasePath = "api/scan";
 
-    public async Task<PagedResult<FileIndex>> GetFilesAsync(PagedRequest pagedRequest)
+    public async Task ExecuteFileScan() => await ExecuteAction(BasePath);
+
+    public async Task<PagedResult<FileIndex>> GetFilesAsync(
+        PagedRequest pagedRequest,
+        bool? classified = null,
+        string? search = null
+    )
     {
-        var query = $"api/scan/files?page={pagedRequest.Page}&size={pagedRequest.Size}";
+        var query = $"{BasePath}/files";
+        query += $"?page={pagedRequest.Page}";
+        query += $"&size={pagedRequest.Size}";
+
+        if (classified.HasValue)
+            query += $"&classified={classified.Value}";
+
+        if (!string.IsNullOrWhiteSpace(search))
+            query += $"&search={search}";
+
         return await GetPagedAsync<FileIndex>(query);
     }
 }
