@@ -38,7 +38,7 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
                 Filepath = probe.Filepath,
                 Source = Source,
                 Datetime = date,
-                Datetype = DateRanges.Day,
+                Datetype = DateRanges.Time,
             };
         }
 

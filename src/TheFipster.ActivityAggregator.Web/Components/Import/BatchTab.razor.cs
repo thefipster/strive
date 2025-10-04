@@ -13,6 +13,7 @@ public partial class BatchTab : ComponentBase
     private int selectedYear = DateTime.Now.Year;
     private Dictionary<int, int[]> index = new();
     private IEnumerable<InventoryIndex> inventory = [];
+    private bool _isRendered;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -23,12 +24,25 @@ public partial class BatchTab : ComponentBase
     [Inject]
     public BatchApi? Batch { get; set; }
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Year { get; set; }
+
     protected override async Task OnParametersSetAsync()
     {
         await LoadIndex();
         await ConnectHubs();
         await OnYearChange(selectedYear);
         await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Year.HasValue)
+            await OnYearChange(Year.Value);
+
+        await base.OnAfterRenderAsync(firstRender);
+        _isRendered = true;
     }
 
     private async Task OnMergeClicked()

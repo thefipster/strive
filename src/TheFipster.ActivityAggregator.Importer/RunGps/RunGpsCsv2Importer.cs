@@ -48,7 +48,7 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
                 Filepath = probe.Filepath,
                 Source = Source,
                 Datetime = date,
-                Datetype = DateRanges.Day,
+                Datetype = DateRanges.Time,
             };
         }
 

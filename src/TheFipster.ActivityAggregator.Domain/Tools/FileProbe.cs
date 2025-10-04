@@ -8,21 +8,21 @@ namespace TheFipster.ActivityAggregator.Domain.Tools;
 
 public class FileProbe
 {
-    private readonly Encoding encoding = new UTF8Encoding(false);
+    private readonly Encoding _encoding = new UTF8Encoding(false);
 
-    private readonly FileInfo file;
-    private readonly byte[] buffer;
+    private readonly FileInfo _file;
+    private readonly byte[] _buffer;
 
     public FileProbe(string filePath, int maxBytes = 4096, Encoding? customEncoding = null)
     {
         if (customEncoding != null)
-            encoding = customEncoding;
+            _encoding = customEncoding;
 
-        file = new FileInfo(filePath);
+        _file = new FileInfo(filePath);
         using var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         var length = Math.Min(maxBytes, (int)fs.Length);
-        buffer = new byte[length];
-        fs.ReadExactly(buffer, 0, length);
+        _buffer = new byte[length];
+        fs.ReadExactly(_buffer, 0, length);
 
         IsText = CheckIfTextFile();
         if (!IsText)
@@ -37,8 +37,8 @@ public class FileProbe
         XmlTags = TryGetXmlTags().ToHashSet();
     }
 
-    public string Filepath => file.FullName;
-    public ReadOnlyMemory<byte> Bytes => buffer;
+    public string Filepath => _file.FullName;
+    public ReadOnlyMemory<byte> Bytes => _buffer;
     public bool IsText { get; }
     public string? Text { get; }
     public List<string>? Lines { get; }
@@ -48,22 +48,22 @@ public class FileProbe
 
     private bool CheckIfTextFile()
     {
-        if (buffer.Length == 0)
+        if (_buffer.Length == 0)
             return false;
 
         int printable = 0;
-        foreach (var b in buffer)
+        foreach (var b in _buffer)
         {
             if (b == 0)
                 return false; // null byte → binary
             if ((b >= 0x20 && b <= 0x7E) || b == 0x09 || b == 0x0A || b == 0x0D)
                 printable++;
         }
-        double ratio = (double)printable / buffer.Length;
+        double ratio = (double)printable / _buffer.Length;
         return ratio > 0.9;
     }
 
-    private string GetText() => encoding.GetString(buffer);
+    private string GetText() => _encoding.GetString(_buffer);
 
     private IEnumerable<string> GetLines()
     {
@@ -88,7 +88,7 @@ public class FileProbe
     private Dictionary<string, string?> GetJsonValues()
     {
         var props = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
-        var reader = new Utf8JsonReader(buffer, isFinalBlock: false, state: default);
+        var reader = new Utf8JsonReader(_buffer, isFinalBlock: false, state: default);
         string? lastProp = null;
 
         while (reader.Read())

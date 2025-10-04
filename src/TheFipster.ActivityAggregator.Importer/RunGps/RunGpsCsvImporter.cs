@@ -41,7 +41,7 @@ public class RunGpsCsvImporter : IFileImporter
             Filepath = probe.Filepath,
             Source = Source,
             Datetime = date,
-            Datetype = DateRanges.Day,
+            Datetype = DateRanges.Time,
         };
     }
 

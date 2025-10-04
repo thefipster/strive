@@ -35,12 +35,15 @@ namespace TheFipster.ActivityAggregator.Importer.Gpsies
             if (header.All(x => x != lines.First()))
                 throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
+            var directory = new FileInfo(probe.Filepath).Directory;
+            var date = DateHelper.GetDateFromMyCollectionDirectory(directory);
+
             return new ImportClassification
             {
                 Filepath = probe.Filepath,
                 Source = Source,
-                Datetime = DateTime.MaxValue,
-                Datetype = DateRanges.Day,
+                Datetime = date,
+                Datetype = DateRanges.Time,
             };
         }
     }

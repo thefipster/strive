@@ -11,6 +11,7 @@ public class ClassificationTests(TestFileFixture fixture) : IClassFixture<TestFi
     [Theory]
     [MemberData(nameof(GetPolarFlowCases))]
     [MemberData(nameof(GetGoogleFitbitCases))]
+    [MemberData(nameof(GetMyCollectionCases))]
     public void ClassifyFile_OfCorrectType_ReturnsClassification(FileClassificationCase test)
     {
         // Arrange
@@ -33,4 +34,7 @@ public class ClassificationTests(TestFileFixture fixture) : IClassFixture<TestFi
 
     public static IEnumerable<object[]> GetGoogleFitbitCases() =>
         FitbitTakeoutClassificationDefinitions.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetMyCollectionCases() =>
+        MyCollectionClassificationDefinitions.GetClassificationCases();
 }
