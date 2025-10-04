@@ -20,7 +20,4 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\TheFipster.ActivityAggregator.Services\TheFipster.ActivityAggregator.Services.csproj" />
-  </ItemGroup>
 </Project>

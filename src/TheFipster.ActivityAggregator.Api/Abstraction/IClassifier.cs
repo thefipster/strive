@@ -2,7 +2,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Services.Abstractions;
+namespace TheFipster.ActivityAggregator.Api.Abstraction;
 
 public interface IClassifier
 {

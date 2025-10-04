@@ -1,9 +1,9 @@
 using System.IO.Compression;
+using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Components;
-using TheFipster.ActivityAggregator.Services.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Services.Components;
+namespace TheFipster.ActivityAggregator.Api.Components;
 
 public class Unzipper : IUnzipper
 {

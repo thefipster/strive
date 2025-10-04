@@ -10,25 +10,24 @@ using TheFipster.ActivityAggregator.Domain.Models.Components;
 using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Merging;
-using TheFipster.ActivityAggregator.Services.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class BatchService : IBatchService
 {
-    private readonly ApiConfig config;
+    private readonly ApiConfig _config;
 
-    private readonly IPagedIndexer<ExtractorIndex> extractInventory;
-    private readonly IPagedIndexer<BatchIndex> batchInventory;
-    private readonly IInventoryIndexer dateInventory;
+    private readonly IPagedIndexer<ExtractorIndex> _extractInventory;
+    private readonly IPagedIndexer<BatchIndex> _batchInventory;
+    private readonly IInventoryIndexer _dateInventory;
 
-    private readonly HubConnection connection;
-    private Stopwatch stopwatch = new();
+    private readonly HubConnection _connection;
+    private Stopwatch _stopwatch = new();
 
-    private readonly IMetricsMerger metricsMerger;
-    private readonly IEventsMerger eventsMerger;
-    private readonly ISeriesMerger seriesMerger;
+    private readonly IMetricsMerger _metricsMerger;
+    private readonly IEventsMerger _eventsMerger;
+    private readonly ISeriesMerger _seriesMerger;
 
     public BatchService(
         IOptions<ApiConfig> config,
@@ -40,37 +39,37 @@ public class BatchService : IBatchService
         IEventsMerger eventsMerger
     )
     {
-        this.config = config.Value;
-        this.extractInventory = extractInventory;
-        this.batchInventory = batchInventory;
-        this.dateInventory = dateInventory;
-        this.metricsMerger = metricsMerger;
-        this.seriesMerger = seriesMerger;
-        this.eventsMerger = eventsMerger;
+        this._config = config.Value;
+        this._extractInventory = extractInventory;
+        this._batchInventory = batchInventory;
+        this._dateInventory = dateInventory;
+        this._metricsMerger = metricsMerger;
+        this._seriesMerger = seriesMerger;
+        this._eventsMerger = eventsMerger;
 
-        connection = new HubConnectionBuilder()
+        _connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
             .Build();
-        connection.StartAsync().Wait();
+        _connection.StartAsync().Wait();
     }
 
     public async Task CombineFilesAsync(string convergancePath, CancellationToken ct)
     {
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.WorkerInfo,
             "Starting batch.",
             cancellationToken: ct
         );
 
-        var minYear = dateInventory.GetMinYear();
+        var minYear = _dateInventory.GetMinYear();
         var curYear = DateTime.UtcNow.Year;
         var runYear = minYear;
 
-        stopwatch = new Stopwatch();
+        _stopwatch = new Stopwatch();
         while (runYear <= curYear && !ct.IsCancellationRequested)
         {
             var year = runYear;
-            var items = extractInventory
+            var items = _extractInventory
                 .GetFiltered(x => x.Timestamp.HasValue && x.Timestamp.Value.Year == year)
                 .ToArray();
 
@@ -93,13 +92,13 @@ public class BatchService : IBatchService
             runYear++;
         }
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.WorkerInfo,
             "Finished batch.",
             cancellationToken: ct
         );
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.BatchFinished,
             "Finished batch.",
             cancellationToken: ct
@@ -121,17 +120,17 @@ public class BatchService : IBatchService
         var parameters = new List<string>();
 
         var metrics = extracts.Select(x => x.Attributes).ToArray();
-        var metricsMerge = metricsMerger.Merge(metrics);
+        var metricsMerge = _metricsMerger.Merge(metrics);
         var metricsParameters = metrics.SelectMany(x => x.Keys.Select(y => y.ToString()));
         parameters.AddRange(metricsParameters);
 
         var series = extracts.Select(x => x.Series).ToArray();
-        var seriesMerge = series.Select(seriesMerger.Normalize).ToArray();
+        var seriesMerge = series.Select(_seriesMerger.Normalize).ToArray();
         var seriesParameters = series.SelectMany(x => x.Keys.Select(y => y.ToString()));
         parameters.AddRange(seriesParameters);
 
         var events = extracts.Select(x => x.Events.ToArray()).ToArray();
-        var eventMerge = eventsMerger.Merge(events);
+        var eventMerge = _eventsMerger.Merge(events);
         var eventParameters = events.SelectMany(x => x.Select(y => y.Type.ToString()));
         parameters.AddRange(eventParameters);
 
@@ -152,7 +151,7 @@ public class BatchService : IBatchService
             Extractions = indexes.DistinctBy(x => x.Hash).ToDictionary(x => x.Hash, y => y.Path),
         };
 
-        var filepath = mergeFile.Write(config.MergeDirectoryPath);
+        var filepath = mergeFile.Write(_config.MergeDirectoryPath);
         var file = new FileInfo(filepath);
         var hash = await file.HashXx3Async(ct);
 
@@ -171,22 +170,22 @@ public class BatchService : IBatchService
             Hash = hash,
         };
 
-        batchInventory.Set(batchIndex);
+        _batchInventory.Set(batchIndex);
 
         await ReportProgressAsync(0, ct);
     }
 
     private async Task ReportProgressAsync(int counter, CancellationToken ct)
     {
-        if (stopwatch.ElapsedMilliseconds < 5000)
+        if (_stopwatch.ElapsedMilliseconds < 5000)
             return;
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.BatchProgress,
             counter,
             cancellationToken: ct
         );
 
-        stopwatch.Restart();
+        _stopwatch.Restart();
     }
 }

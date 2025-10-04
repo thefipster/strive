@@ -16,7 +16,7 @@ public class PolarTakeoutSleepScoreImporter : IFileImporter
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 
-    private readonly HashSet<string> required =
+    private readonly HashSet<string> _required =
     [
         "night",
         "sleepScoreResult",
@@ -32,7 +32,7 @@ public class PolarTakeoutSleepScoreImporter : IFileImporter
         if (values == null)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't find valid json.");
 
-        if (!required.IsSubsetOf(values.Keys))
+        if (!_required.IsSubsetOf(values.Keys))
             throw new ClassificationException(
                 probe.Filepath,
                 Source,

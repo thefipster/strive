@@ -6,13 +6,13 @@ public class QueuedHostedService : BackgroundService
 {
     private const int MaxDegreeOfParallelism = 4;
 
-    private readonly IBackgroundTaskQueue taskQueue;
-    private readonly ILogger<QueuedHostedService> logger;
+    private readonly IBackgroundTaskQueue _taskQueue;
+    private readonly ILogger<QueuedHostedService> _logger;
 
     public QueuedHostedService(IBackgroundTaskQueue taskQueue, ILogger<QueuedHostedService> logger)
     {
-        this.taskQueue = taskQueue;
-        this.logger = logger;
+        this._taskQueue = taskQueue;
+        this._logger = logger;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,13 +27,13 @@ public class QueuedHostedService : BackgroundService
 
     private async Task WorkerLoop(int workerId, CancellationToken stoppingToken)
     {
-        logger.LogInformation("Worker {WorkerId} starting.", workerId);
+        _logger.LogInformation("Worker {WorkerId} starting.", workerId);
 
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                var workItem = await taskQueue.DequeueAsync(stoppingToken);
+                var workItem = await _taskQueue.DequeueAsync(stoppingToken);
 
                 try
                 {
@@ -41,7 +41,7 @@ public class QueuedHostedService : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(
+                    _logger.LogError(
                         ex,
                         "Error occurred executing background job on worker {WorkerId}.",
                         workerId
@@ -55,7 +55,7 @@ public class QueuedHostedService : BackgroundService
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
+                _logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
             }
             finally
             {
@@ -63,6 +63,6 @@ public class QueuedHostedService : BackgroundService
             }
         }
 
-        logger.LogInformation("Worker {WorkerId} stopping.", workerId);
+        _logger.LogInformation("Worker {WorkerId} stopping.", workerId);
     }
 }

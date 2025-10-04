@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Models.Components;
 
-namespace TheFipster.ActivityAggregator.Services.Abstractions;
+namespace TheFipster.ActivityAggregator.Api.Abstraction;
 
 public interface IUnzipper
 {
