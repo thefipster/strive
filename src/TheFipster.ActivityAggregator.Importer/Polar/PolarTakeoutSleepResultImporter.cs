@@ -6,7 +6,7 @@ using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Extraction;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
-using TheFipster.ActivityAggregator.Importer.Modules.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar;
@@ -17,7 +17,7 @@ public class PolarTakeoutSleepResultImporter : IFileImporter
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 
-    private readonly HashSet<string> required =
+    private readonly HashSet<string> _required =
     [
         "night",
         "evaluation",
@@ -33,7 +33,7 @@ public class PolarTakeoutSleepResultImporter : IFileImporter
         if (values == null)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't find valid json.");
 
-        if (!required.IsSubsetOf(values.Keys))
+        if (!_required.IsSubsetOf(values.Keys))
             throw new ClassificationException(
                 probe.Filepath,
                 Source,

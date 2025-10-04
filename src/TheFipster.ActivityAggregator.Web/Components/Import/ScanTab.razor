@@ -6,15 +6,15 @@
                         <MudText Typo="Typo.h4">Scan uploaded files</MudText>
                         <MudIconButton Color="Color.Primary"
                                        OnClick="@OnScanClicked"
-                                       Disabled="@isScanActive"
+                                       Disabled="@_isScanActive"
                                        Icon="@Icons.Material.Outlined.Radar">
                         </MudIconButton>
                     </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Indeterminate="@isScanActive" />
+        <MudProgressLinear Color="Color.Primary" Indeterminate="@_isScanActive" />
         <MudCardContent>
-            <MudTable T="FileIndex" @ref="fileTable" ServerData="@LoadServerData"
+            <MudTable T="FileIndex" @ref="_fileTable" ServerData="@LoadServerData"
                       RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Files</MudText>

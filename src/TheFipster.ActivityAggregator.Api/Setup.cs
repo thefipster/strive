@@ -102,7 +102,7 @@ public static class Setup
         services
             .AddMetrics()
             .AddOpenTelemetry()
-            .ConfigureResource(c => c.AddService(nameof(TheFipster.ActivityAggregator.Api)))
+            .ConfigureResource(c => c.AddService(nameof(Api)))
             .WithMetrics(provider =>
             {
                 provider

@@ -199,7 +199,7 @@
     public class Samples
     {
         [JsonPropertyName("rr")]
-        public List<RrSample> Rr { get; set; }
+        public List<RrSample> Rr { get; set; } = [];
 
         [JsonPropertyName("altitude")]
         public List<DoubleSample> Altitude { get; set; } = [];

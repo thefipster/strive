@@ -15,12 +15,12 @@ namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class AssimilaterService : IAssimilaterService
 {
-    private readonly IPagedIndexer<FileIndex> fileInventory;
-    private readonly IIndexer<ExtractorIndex> extractInventory;
-    private readonly HubConnection connection;
-    private readonly IImporterRegistry registry;
-    private readonly IOptions<ApiConfig> config;
-    private readonly IInventoryIndexer inventory;
+    private readonly IPagedIndexer<FileIndex> _fileInventory;
+    private readonly IIndexer<ExtractorIndex> _extractInventory;
+    private readonly HubConnection _connection;
+    private readonly IImporterRegistry _registry;
+    private readonly IOptions<ApiConfig> _config;
+    private readonly IInventoryIndexer _inventory;
 
     public AssimilaterService(
         IOptions<ApiConfig> config,
@@ -30,21 +30,21 @@ public class AssimilaterService : IAssimilaterService
         IImporterRegistry registry
     )
     {
-        this.fileInventory = fileInventory;
-        this.extractInventory = extractInventory;
-        this.registry = registry;
-        this.config = config;
-        this.inventory = inventory;
+        this._fileInventory = fileInventory;
+        this._extractInventory = extractInventory;
+        this._registry = registry;
+        this._config = config;
+        this._inventory = inventory;
 
-        connection = new HubConnectionBuilder()
+        _connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
             .Build();
-        connection.StartAsync().Wait();
+        _connection.StartAsync().Wait();
     }
 
     public async Task ExtractFilesAsync(string destinationDirectory, CancellationToken ct)
     {
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.WorkerInfo,
             "Starting assimilation.",
             cancellationToken: ct
@@ -58,7 +58,7 @@ public class AssimilaterService : IAssimilaterService
         stopwatch.Start();
         while (!ct.IsCancellationRequested && currentPageSize > 0)
         {
-            var page = fileInventory.GetPaged(pageNo, 100);
+            var page = _fileInventory.GetPaged(pageNo, 100);
             currentPageSize = page.Items.Count();
             pageNo++;
 
@@ -67,11 +67,11 @@ public class AssimilaterService : IAssimilaterService
                 if (ct.IsCancellationRequested)
                     return;
 
-                var extractionIndex = extractInventory.GetById(file.Hash);
+                var extractionIndex = _extractInventory.GetById(file.Hash);
                 if (extractionIndex != null)
                     continue;
 
-                var extractor = registry
+                var extractor = _registry
                     .LoadExtractors()
                     .FirstOrDefault(x => x.Source == file.Source);
                 if (extractor == null)
@@ -96,7 +96,7 @@ public class AssimilaterService : IAssimilaterService
                     long size = 0;
                     foreach (var extract in result)
                     {
-                        var extractFilepath = extract.Write(config.Value.ConvergeDirectoryPath);
+                        var extractFilepath = extract.Write(_config.Value.ConvergeDirectoryPath);
                         var extractFile = new FileInfo(extractFilepath);
                         var hash = await extractFile.HashXx3Async(ct);
                         size += extractFile.Length;
@@ -115,7 +115,7 @@ public class AssimilaterService : IAssimilaterService
                         metrics.AddRange(extract.Events.Select(x => x.Type.ToString()));
 
                         var entry = new InventoryIndex(extract.Timestamp, extract.Range);
-                        inventory.EnsureIndex(entry);
+                        _inventory.EnsureIndex(entry);
                     }
 
                     extractionIndex = new ExtractorIndex
@@ -132,7 +132,7 @@ public class AssimilaterService : IAssimilaterService
                         Size = size,
                     };
 
-                    extractInventory.Set(extractionIndex);
+                    _extractInventory.Set(extractionIndex);
                 }
                 catch (Exception)
                 {
@@ -144,13 +144,13 @@ public class AssimilaterService : IAssimilaterService
             }
         }
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.AssimilationFinished,
             "Assimilation finished.",
             cancellationToken: ct
         );
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.WorkerInfo,
             "Assimilation finished.",
             cancellationToken: ct
@@ -162,7 +162,7 @@ public class AssimilaterService : IAssimilaterService
         if (stopwatch.ElapsedMilliseconds < 5000)
             return;
 
-        await connection.InvokeAsync(
+        await _connection.InvokeAsync(
             Const.Hubs.Ingester.AssimilationProgress,
             counter,
             cancellationToken: ct

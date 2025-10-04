@@ -6,10 +6,10 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
 {
     public class GpxFile
     {
-        private readonly XDocument doc;
-        private readonly XNamespace xmlns;
+        private readonly XDocument _doc;
+        private readonly XNamespace _xmlns;
 
-        private readonly string[] supportedNs =
+        private readonly string[] _supportedNs =
         {
             "http://www.topografix.com/GPX/1/0",
             "http://www.topografix.com/GPX/1/1",
@@ -21,38 +21,38 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
                 throw new ArgumentException($"File {filepath} doesn't exist.");
 
             var text = File.ReadAllText(filepath);
-            doc = XDocument.Parse(text);
+            _doc = XDocument.Parse(text);
 
-            if (doc.Root == null || doc.Root.Name.LocalName != "gpx")
+            if (_doc.Root == null || _doc.Root.Name.LocalName != "gpx")
                 throw new ArgumentException("File is not gpx");
 
-            xmlns = doc.Root.Name.Namespace;
-            if (!supportedNs.Contains(xmlns.NamespaceName))
-                throw new NotSupportedException($"File version not supported: {xmlns}");
+            _xmlns = _doc.Root.Name.Namespace;
+            if (!_supportedNs.Contains(_xmlns.NamespaceName))
+                throw new NotSupportedException($"File version not supported: {_xmlns}");
         }
 
         public IEnumerable<GpxPoint> GetPoints()
         {
-            var points = doc.Descendants(xmlns + "trkpt")
+            var points = _doc.Descendants(_xmlns + "trkpt")
                 .Select(pt => new GpxPoint(
                     double.Parse(pt.Attribute("lat")?.Value, CultureInfo.InvariantCulture),
                     double.Parse(pt.Attribute("lon").Value, CultureInfo.InvariantCulture),
-                    pt.Element(xmlns + "ele") != null
+                    pt.Element(_xmlns + "ele") != null
                         ? double.Parse(
-                            pt.Element(xmlns + "ele").Value,
+                            pt.Element(_xmlns + "ele").Value,
                             CultureInfo.InvariantCulture
                         )
                         : null,
-                    pt.Element(xmlns + "time") != null
+                    pt.Element(_xmlns + "time") != null
                         ? DateTime.Parse(
-                            pt.Element(xmlns + "time").Value,
+                            pt.Element(_xmlns + "time").Value,
                             null,
                             DateTimeStyles.AdjustToUniversal
                         )
                         : null,
-                    pt.Element(xmlns + "speed") != null
+                    pt.Element(_xmlns + "speed") != null
                         ? double.Parse(
-                            pt.Element(xmlns + "speed").Value,
+                            pt.Element(_xmlns + "speed").Value,
                             CultureInfo.InvariantCulture
                         )
                         : null

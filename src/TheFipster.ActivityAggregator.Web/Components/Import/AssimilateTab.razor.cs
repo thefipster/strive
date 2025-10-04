@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
@@ -11,9 +10,9 @@ namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
 public partial class AssimilateTab : ComponentBase
 {
-    private HubConnection? hubConnection;
-    private bool isAssimilationActive;
-    private MudTable<ExtractorIndex>? fileTable;
+    private HubConnection? _hubConnection;
+    private bool _isAssimilationActive;
+    private MudTable<ExtractorIndex>? _fileTable;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -32,7 +31,7 @@ public partial class AssimilateTab : ComponentBase
         if (Api == null)
             return;
 
-        isAssimilationActive = true;
+        _isAssimilationActive = true;
         await Api.ExecuteAssimilation();
     }
 
@@ -41,30 +40,30 @@ public partial class AssimilateTab : ComponentBase
         if (Navigation is null)
             return;
 
-        hubConnection = new HubConnectionBuilder()
+        _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri(Const.Hubs.Ingester.Url))
             .Build();
 
-        hubConnection.On<string>(
+        _hubConnection.On<string>(
             Const.Hubs.Ingester.AssimilationFinished,
             _ =>
             {
-                isAssimilationActive = false;
-                fileTable?.ReloadServerData();
+                _isAssimilationActive = false;
+                _fileTable?.ReloadServerData();
                 InvokeAsync(StateHasChanged);
             }
         );
 
-        hubConnection.On<int>(
+        _hubConnection.On<int>(
             Const.Hubs.Ingester.AssimilationProgress,
             _ =>
             {
-                fileTable?.ReloadServerData();
+                _fileTable?.ReloadServerData();
                 InvokeAsync(StateHasChanged);
             }
         );
 
-        await hubConnection.StartAsync();
+        await _hubConnection.StartAsync();
     }
 
     private async Task<TableData<ExtractorIndex>> LoadServerData(

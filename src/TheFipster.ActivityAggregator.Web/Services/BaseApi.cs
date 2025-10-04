@@ -1,5 +1,4 @@
 using System.Text.Json;
-using TheFipster.ActivityAggregator.Domain.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Standards;
 
@@ -7,12 +6,12 @@ namespace TheFipster.ActivityAggregator.Web.Services;
 
 public abstract class BaseApi
 {
-    private readonly HttpClient http;
+    private readonly HttpClient _http;
 
     public BaseApi(string baseUrl)
     {
-        http = new HttpClient();
-        http.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
+        _http = new HttpClient();
+        _http.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
     }
 
     protected async Task ExecuteAction(string query) => await GetBodyAsync(query);
@@ -54,7 +53,7 @@ public abstract class BaseApi
 
     protected async Task<string> GetBodyAsync(string query)
     {
-        var response = await http.GetAsync(query);
+        var response = await _http.GetAsync(query);
         if (!response.IsSuccessStatusCode)
         {
             var body = await response.Content.ReadAsStringAsync();

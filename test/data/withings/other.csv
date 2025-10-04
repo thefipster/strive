@@ -1,0 +1,136 @@
+type,date,value
+"Atrial fibrillation result","2025-10-04 07:59:09",0
+"Valvular heart disease result","2025-10-04 07:59:09",0
+"QRS interval duration","2025-10-04 07:59:09",86
+"PR interval duration","2025-10-04 07:59:09",144
+"QT interval duration","2025-10-04 07:59:09",362
+"Corrected QT interval duration","2025-10-04 07:59:09",358
+"Atrial fibrillation result","2025-10-03 23:58:49",0
+"Valvular heart disease result","2025-10-03 23:58:49",2
+"QRS interval duration","2025-10-03 23:58:49",74
+"PR interval duration","2025-10-03 23:58:49",138
+"QT interval duration","2025-10-03 23:58:49",324
+"Corrected QT interval duration","2025-10-03 23:58:49",344
+"Atrial fibrillation result","2025-10-03 06:46:23",0
+"Valvular heart disease result","2025-10-03 06:46:23",0
+"QRS interval duration","2025-10-03 06:46:23",98
+"PR interval duration","2025-10-03 06:46:23",156
+"QT interval duration","2025-10-03 06:46:23",360
+"Corrected QT interval duration","2025-10-03 06:46:23",353
+"Atrial fibrillation result","2025-10-02 23:27:22",0
+"Valvular heart disease result","2025-10-02 23:27:22",0
+"QRS interval duration","2025-10-02 23:27:22",82
+"PR interval duration","2025-10-02 23:27:22",160
+"QT interval duration","2025-10-02 23:27:22",324
+"Corrected QT interval duration","2025-10-02 23:27:22",352
+"Atrial fibrillation result","2025-10-01 06:09:47",0
+"Valvular heart disease result","2025-10-01 06:09:47",0
+"QRS interval duration","2025-10-01 06:09:47",92
+"PR interval duration","2025-10-01 06:09:47",142
+"QT interval duration","2025-10-01 06:09:47",342
+"Corrected QT interval duration","2025-10-01 06:09:47",344
+"Atrial fibrillation result","2025-09-30 22:52:58",0
+"Valvular heart disease result","2025-09-30 22:52:58",2
+"QRS interval duration","2025-09-30 22:52:58",84
+"PR interval duration","2025-09-30 22:52:58",124
+"QT interval duration","2025-09-30 22:52:58",326
+"Corrected QT interval duration","2025-09-30 22:52:58",344
+"Atrial fibrillation result","2025-09-30 06:25:03",0
+"Valvular heart disease result","2025-09-30 06:25:03",0
+"QRS interval duration","2025-09-30 06:25:03",82
+"PR interval duration","2025-09-30 06:25:03",152
+"QT interval duration","2025-09-30 06:25:03",344
+"Corrected QT interval duration","2025-09-30 06:25:03",338
+"Atrial fibrillation result","2025-09-29 22:55:24",0
+"Valvular heart disease result","2025-09-29 22:55:24",0
+"QRS interval duration","2025-09-29 22:55:24",60
+"PR interval duration","2025-09-29 22:55:24",126
+"QT interval duration","2025-09-29 22:55:24",330
+"Corrected QT interval duration","2025-09-29 22:55:24",348
+"Atrial fibrillation result","2025-09-29 06:24:34",0
+"Valvular heart disease result","2025-09-29 06:24:34",0
+"QRS interval duration","2025-09-29 06:24:34",82
+"PR interval duration","2025-09-29 06:24:34",162
+"QT interval duration","2025-09-29 06:24:34",372
+"Corrected QT interval duration","2025-09-29 06:24:34",356
+"Atrial fibrillation result","2025-09-28 22:39:15",0
+"Valvular heart disease result","2025-09-28 22:39:15",-2
+"QRS interval duration","2025-09-28 22:39:15",88
+"PR interval duration","2025-09-28 22:39:15",174
+"QT interval duration","2025-09-28 22:39:15",0
+"Corrected QT interval duration","2025-09-28 22:39:15",0
+"Atrial fibrillation result","2025-09-28 07:32:04",0
+"Valvular heart disease result","2025-09-28 07:32:04",2
+"QRS interval duration","2025-09-28 07:32:04",92
+"PR interval duration","2025-09-28 07:32:04",140
+"QT interval duration","2025-09-28 07:32:04",358
+"Corrected QT interval duration","2025-09-28 07:32:04",358
+"Atrial fibrillation result","2025-09-27 23:27:18",0
+"Valvular heart disease result","2025-09-27 23:27:18",2
+"QRS interval duration","2025-09-27 23:27:18",112
+"PR interval duration","2025-09-27 23:27:18",154
+"QT interval duration","2025-09-27 23:27:18",366
+"Corrected QT interval duration","2025-09-27 23:27:18",403
+"Atrial fibrillation result","2025-09-26 22:02:04",0
+"Valvular heart disease result","2025-09-26 22:02:04",-3
+"QRS interval duration","2025-09-26 22:02:04",86
+"PR interval duration","2025-09-26 22:02:04",152
+"QT interval duration","2025-09-26 22:02:04",318
+"Corrected QT interval duration","2025-09-26 22:02:04",355
+"Atrial fibrillation result","2025-09-26 16:15:44",0
+"Valvular heart disease result","2025-09-26 16:15:44",-4
+"QRS interval duration","2025-09-26 16:15:44",90
+"PR interval duration","2025-09-26 16:15:44",136
+"QT interval duration","2025-09-26 16:15:44",358
+"Corrected QT interval duration","2025-09-26 16:15:44",333
+"Atrial fibrillation result","2025-09-25 21:53:20",0
+"Valvular heart disease result","2025-09-25 21:53:20",2
+"QRS interval duration","2025-09-25 21:53:20",68
+"PR interval duration","2025-09-25 21:53:20",128
+"QT interval duration","2025-09-25 21:53:20",320
+"Corrected QT interval duration","2025-09-25 21:53:20",360
+"Atrial fibrillation result","2025-09-25 19:01:16",0
+"Valvular heart disease result","2025-09-25 19:01:16",2
+"QRS interval duration","2025-09-25 19:01:16",82
+"PR interval duration","2025-09-25 19:01:16",174
+"QT interval duration","2025-09-25 19:01:16",330
+"Corrected QT interval duration","2025-09-25 19:01:16",356
+"Atrial fibrillation result","2025-09-25 07:17:40",0
+"Valvular heart disease result","2025-09-25 07:17:40",2
+"QRS interval duration","2025-09-25 07:17:40",86
+"PR interval duration","2025-09-25 07:17:40",132
+"QT interval duration","2025-09-25 07:17:40",342
+"Corrected QT interval duration","2025-09-25 07:17:40",364
+"Atrial fibrillation result","2025-09-24 22:55:34",0
+"Valvular heart disease result","2025-09-24 22:55:34",-5
+"QRS interval duration","2025-09-24 22:55:34",80
+"PR interval duration","2025-09-24 22:55:34",146
+"QT interval duration","2025-09-24 22:55:34",318
+"Corrected QT interval duration","2025-09-24 22:55:34",338
+"Atrial fibrillation result","2025-09-24 19:23:03",0
+"Valvular heart disease result","2025-09-24 19:23:03",2
+"QRS interval duration","2025-09-24 19:23:03",72
+"PR interval duration","2025-09-24 19:23:03",138
+"QT interval duration","2025-09-24 19:23:03",342
+"Corrected QT interval duration","2025-09-24 19:23:03",389
+"Atrial fibrillation result","2025-09-24 06:44:52",0
+"Valvular heart disease result","2025-09-24 06:44:52",2
+"QRS interval duration","2025-09-24 06:44:52",96
+"PR interval duration","2025-09-24 06:44:52",120
+"QT interval duration","2025-09-24 06:44:52",342
+"Corrected QT interval duration","2025-09-24 06:44:52",355
+FAT_PERCENT,"2014-06-29 11:13:54",9
+FAT_FREE_MASS,"2014-06-29 11:13:54",68
+"Fat Free Percent","2014-06-29 11:13:54",91
+FAT_PERCENT,"2014-06-28 11:42:52",8
+FAT_FREE_MASS,"2014-06-28 11:42:52",69
+"Fat Free Percent","2014-06-28 11:42:52",92
+FAT_PERCENT,"2014-06-26 09:49:01",8
+FAT_FREE_MASS,"2014-06-26 09:49:01",70
+"Fat Free Percent","2014-06-26 09:49:01",92
+FAT_PERCENT,"2014-06-22 10:39:22",9
+FAT_FREE_MASS,"2014-06-22 10:39:22",69
+"Fat Free Percent","2014-06-22 10:39:22",91
+FAT_PERCENT,"2014-06-20 09:27:11",10
+FAT_FREE_MASS,"2014-06-20 09:27:11",67
+"Fat Free Percent","2014-06-20 09:27:11",90
