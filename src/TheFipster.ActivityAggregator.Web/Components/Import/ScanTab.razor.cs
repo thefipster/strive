@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
@@ -14,7 +15,10 @@ public partial class ScanTab : ComponentBase
     private HubConnection? _hubConnection;
     private MudTable<FileIndex>? _fileTable;
     private string _selectedClassifiedFilter = "All";
+    private string _selectedRangeFilter = "All";
     private string _searchString = string.Empty;
+    private string[]? _classifiers;
+    private readonly string[] _ranges = Enum.GetNames(typeof(DateRanges));
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -24,6 +28,12 @@ public partial class ScanTab : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
+        if (Scanner != null)
+            _classifiers = (await Scanner.GetClassifiers())
+                .Select(x => x.Key.ToString())
+                .OrderBy(x => x)
+                .ToArray();
+
         await ConnectHubs();
         await base.OnParametersSetAsync();
     }
@@ -39,7 +49,7 @@ public partial class ScanTab : ComponentBase
 
     private async Task ConnectHubs()
     {
-        if (Navigation is null)
+        if (Navigation == null)
             return;
 
         _hubConnection = new HubConnectionBuilder()
@@ -79,47 +89,35 @@ public partial class ScanTab : ComponentBase
         if (Scanner == null)
             return new TableData<FileIndex> { TotalItems = 0, Items = [] };
 
-        var classified = GetClassifiedFilter();
-        var search = string.IsNullOrWhiteSpace(_searchString) ? null : _searchString;
-        var paged = new PagedRequest(state.Page, state.PageSize);
-        var result = await Scanner.GetFilesAsync(paged, classified, search);
+        var page = await Scanner.GetFilesPageAsync(
+            new PagedRequest(state.Page, state.PageSize),
+            _selectedRangeFilter,
+            _selectedClassifiedFilter,
+            _searchString
+        );
 
-        return new TableData<FileIndex> { TotalItems = result.Total, Items = result.Items };
-    }
-
-    private bool? GetClassifiedFilter()
-    {
-        switch (_selectedClassifiedFilter)
-        {
-            case "All":
-                return null;
-            case "Classified":
-                return true;
-            case "Unclassified":
-                return false;
-            default:
-                throw new ArgumentOutOfRangeException(
-                    nameof(_selectedClassifiedFilter),
-                    _selectedClassifiedFilter,
-                    "Should be All, Classified or Unclassified"
-                );
-        }
-    }
-
-    private async Task OnClassifiedFilterChange(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            return;
-
-        _selectedClassifiedFilter = value;
-
-        if (_fileTable != null)
-            await _fileTable.ReloadServerData();
+        return new TableData<FileIndex> { TotalItems = page.Total, Items = page.Items };
     }
 
     private void OnSearch(string text)
     {
         _searchString = text;
+
+        if (_fileTable != null)
+            _fileTable.ReloadServerData();
+    }
+
+    private void OnClassificationFilterChanged(string classification)
+    {
+        _selectedClassifiedFilter = classification;
+
+        if (_fileTable != null)
+            _fileTable.ReloadServerData();
+    }
+
+    private void OnRangeFilterChanged(string range)
+    {
+        _selectedRangeFilter = range;
 
         if (_fileTable != null)
             _fileTable.ReloadServerData();

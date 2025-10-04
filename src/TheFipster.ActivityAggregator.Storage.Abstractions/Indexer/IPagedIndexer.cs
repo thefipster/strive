@@ -23,4 +23,6 @@ public interface IPagedIndexer<TIndex> : IIndexer<TIndex>
         bool descending,
         Expression<Func<TIndex, bool>> search
     );
+
+    PagedResult<TIndex> GetPaged(PageSpecificationRequest<TIndex> specifications);
 }

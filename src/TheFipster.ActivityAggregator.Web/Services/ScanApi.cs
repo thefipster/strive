@@ -1,3 +1,4 @@
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
@@ -9,9 +10,16 @@ public class ScanApi() : BaseApi("https://localhost:7098/")
 
     public async Task ExecuteFileScan() => await ExecuteAction(BasePath);
 
-    public async Task<PagedResult<FileIndex>> GetFilesAsync(
+    public async Task<Dictionary<DataSources, int>> GetClassifiers()
+    {
+        var query = $"{BasePath}/classifiers";
+        return await GetDictionaryAsync<DataSources, int>(query);
+    }
+
+    public async Task<PagedResult<FileIndex>> GetFilesPageAsync(
         PagedRequest pagedRequest,
-        bool? classified = null,
+        string? range = null,
+        string? classified = null,
         string? search = null
     )
     {
@@ -19,8 +27,11 @@ public class ScanApi() : BaseApi("https://localhost:7098/")
         query += $"?page={pagedRequest.Page}";
         query += $"&size={pagedRequest.Size}";
 
-        if (classified.HasValue)
-            query += $"&classified={classified.Value}";
+        if (!string.IsNullOrWhiteSpace(classified))
+            query += $"&classified={classified}";
+
+        if (!string.IsNullOrWhiteSpace(range))
+            query += $"&range={range}";
 
         if (!string.IsNullOrWhiteSpace(search))
             query += $"&search={search}";

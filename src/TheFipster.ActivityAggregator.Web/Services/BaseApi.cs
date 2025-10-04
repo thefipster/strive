@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Standards;
 
@@ -33,6 +34,21 @@ public abstract class BaseApi
         var collection = JsonSerializer
             .Deserialize<IEnumerable<TResult>>(json, JsonStandards.Options)
             ?.ToList();
+
+        if (collection == null)
+            throw new InvalidDataException("Result couldn't be parsed.");
+
+        return collection;
+    }
+
+    protected async Task<Dictionary<TKey, TValue>> GetDictionaryAsync<TKey, TValue>(string query)
+        where TKey : notnull
+    {
+        var json = await GetBodyAsync(query);
+        var collection = JsonSerializer.Deserialize<Dictionary<TKey, TValue>>(
+            json,
+            JsonStandards.Options
+        );
 
         if (collection == null)
             throw new InvalidDataException("Result couldn't be parsed.");

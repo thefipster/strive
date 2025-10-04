@@ -76,4 +76,26 @@ public class PagedIndexer<TItem>(IndexerContext context)
 
         return new PagedResult<TItem>(items, page, size, count);
     }
+
+    public PagedResult<TItem> GetPaged(PageSpecificationRequest<TItem> specifications)
+    {
+        var query = Collection.Query();
+
+        foreach (var filter in specifications.Filters)
+            query = query.Where(filter);
+
+        if (specifications.Sort != null)
+            if (specifications.IsDescending)
+                query = query.OrderByDescending(specifications.Sort);
+            else
+                query = query.OrderBy(specifications.Sort);
+
+        var count = query.Count();
+        var items = query
+            .Skip(specifications.Page * specifications.Size)
+            .Limit(specifications.Size)
+            .ToList();
+
+        return new PagedResult<TItem>(items, specifications.Page, specifications.Size, count);
+    }
 }

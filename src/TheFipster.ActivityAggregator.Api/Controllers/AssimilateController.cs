@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Controllers;
@@ -13,6 +15,7 @@ namespace TheFipster.ActivityAggregator.Api.Controllers;
 public class AssimilateController(
     IOptions<ApiConfig> config,
     IPagedIndexer<ExtractorIndex> extractIndex,
+    IImporterRegistry registry,
     IAssimilaterService assimilater,
     IBackgroundTaskQueue tasks
 ) : ControllerBase
@@ -20,6 +23,10 @@ public class AssimilateController(
     [HttpGet("extracts")]
     public PagedResult<ExtractorIndex> GetFilePage(int page = 0, int size = 10) =>
         extractIndex.GetPaged(page, size);
+
+    [HttpGet("extractors")]
+    public Dictionary<DataSources, int> GetExtractors() =>
+        registry.LoadExtractors().ToDictionary(x => x.Source, y => y.ExtractorVersion);
 
     [HttpGet]
     public IActionResult Assimilate()
