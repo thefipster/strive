@@ -1,9 +1,13 @@
-    <MudContainer Class="d-flex justify-space-evenly flex-grow-1" Fixed="true">
+    <MudContainer Fixed="true">
+        <MudGrid Justify="Justify.SpaceEvenly">
         @if (_monthlyInventory.Any())
         {
             @foreach (var month in _monthlyInventory.OrderBy(x => x.Key))
             {
-                <MonthColumn Month="@month.Key" Inventory="@month.Value" Batches="@_monthyBatches[month.Key]"/>
+                <MudItem>
+                    <MonthColumn Month="@month.Key" Inventory="@month.Value" Batches="@_monthyBatches[month.Key]"/>
+                </MudItem>
             }
         }
+        </MudGrid>
     </MudContainer>

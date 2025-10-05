@@ -34,7 +34,7 @@ public class BatchApi() : BaseApi("https://localhost:7098/")
 
     public async Task<MergedFile> GetFileAsync(DateTime date)
     {
-        var query = $"{BaseUrl}/merge/{date:yyyy-MM-dd}/file";
+        var query = $"{BaseUrl}/merge/{date:yyyy-MM-ddTHH:mm:ss.fff}/file";
         return await GetSingleAsync<MergedFile>(query);
     }
 }

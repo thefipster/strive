@@ -1,4 +1,5 @@
 @page "/batch"
+@using TheFipster.ActivityAggregator.Web.Components.Batch
 @using System.Text.Json
 
 
@@ -9,30 +10,19 @@
     {
         @foreach (var batch in _batches)
         {
-            <MudTabPanel Text="@(batch.Kind == DataKind.Day ? "Day" : batch.Timestamp.ToString("HH:mm:ss"))">
-                <MudContainer Class="ma-5 pa-5 ml-12 mt-20 d-flex flex-column gap-5" Fixed="true">
-                    <MudCard>
-                        <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                                    <MudText Typo="Typo.h4">Batch
-                                        <smaller>@($"{batch.Timestamp:dd.MM.yyyy HH:mm:ss}")</smaller>
-                                    </MudText>
-                                    <MudIconButton Color="Color.Primary" OnClick="@OnBackClicked"
-                                                   Icon="@Icons.Material.Outlined.ArrowBack">
-                                    </MudIconButton>
-                                </MudStack>
-                            </CardHeaderContent>
-                        </MudCardHeader>
-                        <MudProgressLinear></MudProgressLinear>
-                        <MudCardContent>
-                            <pre>
-                                @(JsonSerializer.Serialize(batch, new JsonSerializerOptions() { WriteIndented = true }))
-                            </pre>
-                        </MudCardContent>
-                    </MudCard>
-                </MudContainer>
-            </MudTabPanel>
+            @if (batch.Kind == DataKind.Day)
+            {
+                <MudTabPanel Text="Day">
+                    <DayTab Batch="@batch"></DayTab>
+                </MudTabPanel>
+            }
+            else
+            {
+                <MudTabPanel Text="@(batch.Timestamp.ToString("HH:mm:ss"))">
+                    <SessionTab Batch="@batch"></SessionTab>
+                </MudTabPanel>
+            }
+            
         }
     }
 </MudTabs>

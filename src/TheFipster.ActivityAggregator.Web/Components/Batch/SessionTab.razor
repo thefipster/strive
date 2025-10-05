@@ -1,0 +1,51 @@
+@using System.Text.Json
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
+    @if (Batch != null)
+    {
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.h4">Batch
+                            <smaller>@($"{Batch.Timestamp:dd.MM.yyyy HH:mm:ss}")</smaller>
+                        </MudText>
+                        <MudIconButton Color="Color.Primary" OnClick="@OnBackClicked"
+                                       Icon="@Icons.Material.Outlined.ArrowBack">
+                        </MudIconButton>
+                    </MudStack>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudProgressLinear></MudProgressLinear>
+            <MudCardContent>
+                <MudText Class="mb-4" Typo="Typo.h6">Import History</MudText>
+                <MudTable Hover="true"
+                          Items="@_indexes"
+                          GroupBy="@_groupDefinition"
+                          Dense="true">
+                    <HeaderContent>
+                        <MudTh Style="width:180px;">Hash</MudTh>
+                        <MudTh>Path</MudTh>
+                        <MudTh Style="width:180px;">Timestamp</MudTh>
+                        <MudTh Style="width:160px;">Type</MudTh>
+                        <MudTh Style="width:180px;">Indexed</MudTh>
+                    </HeaderContent>
+                    <GroupHeaderTemplate>
+                        <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.GroupName}: {context.Key}")</MudTh>
+                    </GroupHeaderTemplate>
+                    <RowTemplate>
+                        <MudTd DataLabel="Hash">@context.Hash</MudTd>
+                        <MudTd DataLabel="Path">@(new FileInfo(context.Path).Name)</MudTd>
+                        <MudTd DataLabel="Timestamp">@context.Timestamp</MudTd>
+                        <MudTd DataLabel="Type">@context.TimeType</MudTd>
+                        <MudTd DataLabel="Indexed">@context.IndexedAt</MudTd>
+                    </RowTemplate>
+                </MudTable>
+                
+                <MudText Class="mt-8 mb-4" Typo="Typo.h6">Merged File</MudText>
+                <pre>
+                    @(JsonSerializer.Serialize(_mergedFile, new JsonSerializerOptions { WriteIndented = true }))
+                </pre>
+            </MudCardContent>
+        </MudCard>
+    }
+</MudContainer>
