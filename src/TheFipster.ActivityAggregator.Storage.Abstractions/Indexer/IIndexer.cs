@@ -11,4 +11,6 @@ public interface IIndexer<TIndex>
     IEnumerable<TIndex> GetFiltered(Expression<Func<TIndex, bool>> filter);
 
     IEnumerable<TIndex> GetAll();
+
+    bool Exists(Expression<Func<TIndex, bool>> filter);
 }

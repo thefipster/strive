@@ -11,7 +11,12 @@ public partial class YearCalendar : ComponentBase
     [Parameter]
     public IEnumerable<InventoryIndex> Inventory { get; set; } = [];
 
-    private Dictionary<DateTime, List<InventoryIndex>> monthlyInventory = new();
+    [Parameter]
+    public IEnumerable<DateTime> Batches { get; set; } = [];
+
+    private Dictionary<DateTime, List<InventoryIndex>> _monthlyInventory = new();
+
+    private Dictionary<DateTime, List<DateTime>> _monthyBatches = new();
 
     protected override Task OnParametersSetAsync()
     {
@@ -24,9 +29,12 @@ public partial class YearCalendar : ComponentBase
             var month = new DateTime(Year, i, 1);
             if (!groupedInvetory.ContainsKey(month))
                 groupedInvetory.Add(month, []);
+
+            var batches = Batches.Where(x => x.Month == i).ToList();
+            _monthyBatches[month] = batches;
         }
 
-        monthlyInventory = groupedInvetory;
+        _monthlyInventory = groupedInvetory;
 
         return base.OnParametersSetAsync();
     }

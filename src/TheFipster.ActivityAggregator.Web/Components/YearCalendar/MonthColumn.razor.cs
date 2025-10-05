@@ -14,7 +14,10 @@ public partial class MonthColumn : ComponentBase
     [Parameter]
     public List<InventoryIndex> Inventory { get; set; } = [];
 
-    private Dictionary<int, List<InventoryIndex>> dailyInventory = new();
+    [Parameter]
+    public List<DateTime> Batches { get; set; } = [];
+
+    private Dictionary<int, List<InventoryIndex>> _dailyInventory = new();
 
     protected override Task OnParametersSetAsync()
     {
@@ -28,7 +31,7 @@ public partial class MonthColumn : ComponentBase
                 groupedInvetory.Add(i, []);
         }
 
-        dailyInventory = groupedInvetory;
+        _dailyInventory = groupedInvetory;
 
         return base.OnParametersSetAsync();
     }

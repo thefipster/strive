@@ -8,12 +8,13 @@ namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
 public partial class BatchTab : ComponentBase
 {
-    private HubConnection? hubConnection;
-    private bool isMergeActive;
-    private int selectedYear = DateTime.Now.Year;
-    private Dictionary<int, int[]> index = new();
-    private IEnumerable<InventoryIndex> inventory = [];
+    private HubConnection? _hubConnection;
+    private bool _isMergeActive;
+    private int _selectedYear = DateTime.Now.Year;
+    private Dictionary<int, int[]> _index = new();
+    private IEnumerable<InventoryIndex> _inventory = [];
     private bool _isRendered;
+    private IEnumerable<DateTime>? _batchDates;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -32,7 +33,7 @@ public partial class BatchTab : ComponentBase
     {
         await LoadIndex();
         await ConnectHubs();
-        await OnYearChange(selectedYear);
+        await OnYearChange(_selectedYear);
         await base.OnParametersSetAsync();
     }
 
@@ -50,7 +51,7 @@ public partial class BatchTab : ComponentBase
         if (Batch == null)
             return;
 
-        isMergeActive = true;
+        _isMergeActive = true;
         await Batch.ExecuteMerge();
     }
 
@@ -58,18 +59,20 @@ public partial class BatchTab : ComponentBase
 
     private async Task LoadCalendar(int year)
     {
-        selectedYear = year;
-        if (Inventory is null)
-            return;
+        _selectedYear = year;
+        if (Inventory != null)
+            _inventory = await Inventory.GetInventoryByYearAsync(year);
 
-        inventory = await Inventory.GetInventoryByYearAsync(year);
+        if (Batch != null)
+            _batchDates = await Batch.GetExistsByYear(_selectedYear);
+
         StateHasChanged();
     }
 
     private async Task LoadIndex()
     {
         if (Inventory != null)
-            index = (await Inventory.GetInventoryAsync())
+            _index = (await Inventory.GetInventoryAsync())
                 .OrderByDescending(x => x.Key)
                 .ToDictionary(x => x.Key, x => x.Value);
     }
@@ -79,15 +82,15 @@ public partial class BatchTab : ComponentBase
         if (Navigation is null)
             return;
 
-        hubConnection = new HubConnectionBuilder()
+        _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri(Const.Hubs.Ingester.Url))
             .Build();
 
-        hubConnection.On<string>(
+        _hubConnection.On<string>(
             Const.Hubs.Ingester.BatchFinished,
             _ =>
             {
-                isMergeActive = false;
+                _isMergeActive = false;
                 InvokeAsync(async () =>
                 {
                     await LoadIndex();
@@ -96,7 +99,7 @@ public partial class BatchTab : ComponentBase
             }
         );
 
-        hubConnection.On<int>(
+        _hubConnection.On<int>(
             Const.Hubs.Ingester.BatchProgress,
             _ =>
             {
@@ -108,6 +111,6 @@ public partial class BatchTab : ComponentBase
             }
         );
 
-        await hubConnection.StartAsync();
+        await _hubConnection.StartAsync();
     }
 }

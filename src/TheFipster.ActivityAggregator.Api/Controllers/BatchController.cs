@@ -19,6 +19,37 @@ public class BatchController(
     IBackgroundTaskQueue tasks
 ) : ControllerBase
 {
+    [HttpGet]
+    public IActionResult Batch()
+    {
+        try
+        {
+            var convergencePath = config.Value.ConvergeDirectoryPath;
+            if (!string.IsNullOrWhiteSpace(convergencePath))
+            {
+                tasks.QueueBackgroundWorkItem(async ct =>
+                    await batcher.CombineFilesAsync(convergencePath, ct)
+                );
+            }
+            return Ok();
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("exists/{year}")]
+    public IEnumerable<DateTime> GetExists(int year)
+    {
+        return batchIndex
+            .GetFiltered(x => x.Timestamp.Year == year)
+            .Select(x => x.Timestamp.Date)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+    }
+
     [HttpGet("merge")]
     public PagedResult<BatchIndex> GetPage([FromQuery] PagedRequest request)
     {
@@ -61,25 +92,5 @@ public class BatchController(
 
         var file = MergedFile.FromFile(batch.Filepath);
         return Ok(file);
-    }
-
-    [HttpGet]
-    public IActionResult Batch()
-    {
-        try
-        {
-            var convergencePath = config.Value.ConvergeDirectoryPath;
-            if (!string.IsNullOrWhiteSpace(convergencePath))
-            {
-                tasks.QueueBackgroundWorkItem(async ct =>
-                    await batcher.CombineFilesAsync(convergencePath, ct)
-                );
-            }
-            return Ok();
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
     }
 }

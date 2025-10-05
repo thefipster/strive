@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Web.Services;
 
@@ -8,8 +9,8 @@ public partial class BatchPage : ComponentBase
 {
     private int _year = DateTime.Now.Year;
     private DateTime? _date;
-    private IEnumerable<BatchIndex>? _batch;
-    private HistoryIndex? _history;
+    private IEnumerable<BatchIndex>? _batches;
+    private MudTabs? _tabs;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -36,10 +37,7 @@ public partial class BatchPage : ComponentBase
         }
 
         if (Batcher != null && _date.HasValue)
-            _batch = await Batcher.GetDayAsync(_date.Value);
-
-        if (History != null && _date.HasValue)
-            _history = await History.GetImportHistory(_date.Value);
+            _batches = await Batcher.GetDayAsync(_date.Value);
 
         await base.OnParametersSetAsync();
     }
