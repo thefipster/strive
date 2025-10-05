@@ -1,0 +1,32 @@
+@page "/batch"
+@using System.Text.Json
+
+<MudContainer Class="ma-5 pa-5 ml-12 mt-20 d-flex flex-column gap-5" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h4">Batch <smaller>@($"{_date:dd.MM.yyyy}")</smaller></MudText>
+                    <MudIconButton Color="Color.Primary" OnClick="@OnBackClicked"
+                                   Icon="@Icons.Material.Outlined.ArrowBack">
+                    </MudIconButton>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudProgressLinear></MudProgressLinear>
+        <MudCardContent>
+            @if (_batch != null && _batch.Any())
+            {
+                    <MudText>@JsonSerializer.Serialize(_batch)</MudText>
+            }
+            
+            &nbsp;
+            &nbsp;
+            
+            @if (_history != null)
+            {
+                <MudText>@JsonSerializer.Serialize(_history)</MudText>
+            }
+        </MudCardContent>
+    </MudCard>
+</MudContainer>

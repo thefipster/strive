@@ -8,4 +8,5 @@ public class ExtractionSnippet
     public required string Path { get; set; }
     public DateTime Timestamp { get; set; }
     public DateRanges Range { get; set; }
+    public long Size { get; set; }
 }

@@ -6,9 +6,7 @@ using TheFipster.ActivityAggregator.Storage.Lite;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSerilog(c => c.ReadFrom.Configuration(builder.Configuration));
-
 builder.Services.AddMetrics(builder.Configuration, builder.Environment);
-
 builder.Services.AddCorsPolicies();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();

@@ -11,7 +11,7 @@ public class MergedFile
     public required DataKind Kind { get; set; }
     public MetricMergeResult? Metrics { get; set; }
     public EventMergeResult? Events { get; set; }
-    public Dictionary<string, string> Extractions { get; set; } = new();
+    public Dictionary<string, string> Assimilations { get; set; } = new();
     public List<DataSources> Sources { get; set; } = [];
     public List<UnifiedSamples?> Series { get; set; } = [];
     public List<UnifiedTrack?> Tracks { get; set; } = [];
@@ -31,5 +31,23 @@ public class MergedFile
             File.WriteAllText(newFile, json);
 
         return newFile;
+    }
+
+    public static MergedFile FromJson(string json)
+    {
+        var extract = JsonSerializer.Deserialize<MergedFile>(json);
+        if (extract == null)
+            throw new ArgumentException("Invalid json", nameof(json));
+
+        return extract;
+    }
+
+    public static MergedFile FromFile(string filepath)
+    {
+        if (!File.Exists(filepath))
+            throw new ArgumentException("File doesn't exist.", nameof(filepath));
+
+        var json = File.ReadAllText(filepath);
+        return FromJson(json);
     }
 }

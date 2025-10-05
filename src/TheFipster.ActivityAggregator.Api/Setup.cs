@@ -59,6 +59,11 @@ public static class Setup
         services.AddTransient<IChunkAction, ChunkAction>();
         services.AddTransient<IZipsAction, ZipsAction>();
 
+        services.AddTransient<IHistoryIndexer, HistoryIndexer>();
+
+        services.AddTransient<IIndexer<AssimilateIndex>, BaseIndexer<AssimilateIndex>>();
+        services.AddTransient<IPagedIndexer<AssimilateIndex>, PagedIndexer<AssimilateIndex>>();
+
         return services;
     }
 
@@ -98,7 +103,7 @@ public static class Setup
         var resourceBuilder = ResourceBuilder
             .CreateDefault()
             .AddService(
-                Assembly.GetEntryAssembly()?.GetName().Name ?? "Api",
+                "api",
                 serviceVersion: Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
             );
 
@@ -116,8 +121,7 @@ public static class Setup
                 provider.AddMeter(
                     "Microsoft.AspNetCore.Hosting",
                     "Microsoft.AspNetCore.Server.Kestrel",
-                    "System.Net.Http",
-                    "Api"
+                    "System.Net.Http"
                 );
             })
             .WithTracing(options =>

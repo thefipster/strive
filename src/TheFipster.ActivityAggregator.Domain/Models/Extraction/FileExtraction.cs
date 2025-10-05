@@ -99,15 +99,6 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Extraction
 
         public static Dictionary<Parameters, List<string>> EmptySeries => new();
 
-        public static FileExtraction FromFile(string filepath)
-        {
-            if (!File.Exists(filepath))
-                throw new ArgumentException("File doesn't exist.", nameof(filepath));
-
-            var json = File.ReadAllText(filepath);
-            return FromJson(json);
-        }
-
         public byte[] ToHash()
         {
             var metrics = string.Join(
@@ -158,6 +149,15 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Extraction
                 throw new ArgumentException("Invalid json", nameof(json));
 
             return extract;
+        }
+
+        public static FileExtraction FromFile(string filepath)
+        {
+            if (!File.Exists(filepath))
+                throw new ArgumentException("File doesn't exist.", nameof(filepath));
+
+            var json = File.ReadAllText(filepath);
+            return FromJson(json);
         }
     }
 }

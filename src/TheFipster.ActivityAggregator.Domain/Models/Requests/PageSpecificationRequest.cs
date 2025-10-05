@@ -4,8 +4,16 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 public class PageSpecificationRequest<TItem>
 {
+    public PageSpecificationRequest() { }
+
+    public PageSpecificationRequest(PagedRequest paging)
+    {
+        Page = paging.Page;
+        Size = paging.Size;
+    }
+
     public int Page { get; set; }
-    public int Size { get; set; }
+    public int Size { get; set; } = 10;
 
     public Expression<Func<TItem, object>>? Sort { get; set; }
 

@@ -1,4 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Web.Services;
@@ -15,5 +16,17 @@ public class BatchApi() : BaseApi("https://localhost:7098/")
     {
         var query = $"api/batch/merge?page={pagedRequest.Page}&size={pagedRequest.Size}";
         return await GetPagedAsync<BatchIndex>(query);
+    }
+
+    public async Task<IEnumerable<BatchIndex>> GetDayAsync(DateTime date)
+    {
+        var query = $"api/batch/merge/{date:yyyy-MM-dd}";
+        return await GetCollectionAsync<BatchIndex>(query);
+    }
+
+    public async Task<MergedFile> GetFileAsync(DateTime date)
+    {
+        var query = $"api/batch/merge/{date:yyyy-MM-dd}/file";
+        return await GetSingleAsync<MergedFile>(query);
     }
 }

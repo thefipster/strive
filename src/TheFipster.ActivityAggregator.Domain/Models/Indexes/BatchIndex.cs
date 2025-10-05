@@ -10,10 +10,12 @@ public class BatchIndex
     public required string Filepath { get; set; }
     public required string Hash { get; set; }
     public List<DataSources> Sources { get; set; } = [];
+
     public DateTime IndexedAt { get; set; } = DateTime.UtcNow;
     public int Metrics { get; set; }
     public int Series { get; set; }
     public int Tracks { get; set; }
     public int Pulses { get; set; }
     public int Events { get; set; }
+    public Dictionary<string, string> Assimilations { get; set; }
 }

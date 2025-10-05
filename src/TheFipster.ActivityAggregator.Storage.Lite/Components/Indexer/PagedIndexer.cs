@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using LiteDB;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Context;
@@ -9,86 +10,21 @@ public class PagedIndexer<TItem>(IndexerContext context)
     : BaseIndexer<TItem>(context),
         IPagedIndexer<TItem>
 {
-    public PagedResult<TItem> GetPaged(int page, int size)
+    public PagedResult<TItem> GetPaged(int page, int size) =>
+        GetPaged(new PagedRequest(page, size));
+
+    public PagedResult<TItem> GetPaged(PagedRequest paging)
     {
-        var query = Collection.Query();
-        var count = query.Count();
-        var items = query.Skip(page * size).Limit(size).ToList();
-
-        return new PagedResult<TItem>(items, page, size, count);
-    }
-
-    public PagedResult<TItem> GetPaged(int page, int size, Expression<Func<TItem, bool>> filter)
-    {
-        var query = Collection.Query().Where(filter);
-        var count = query.Count();
-        var items = query.Skip(page * size).Limit(size).ToList();
-
-        return new PagedResult<TItem>(items, page, size, count);
-    }
-
-    public PagedResult<TItem> GetPaged(
-        int page,
-        int size,
-        Expression<Func<TItem, bool>>? filter,
-        Expression<Func<TItem, object>> sort,
-        bool descending = false
-    )
-    {
-        var query = Collection.Query();
-
-        if (filter != null)
-            query = query.Where(filter);
-
-        if (descending)
-            query = query.OrderByDescending(sort);
-        else
-            query = query.OrderBy(sort);
-
-        var count = query.Count();
-        var items = query.Skip(page * size).Limit(size).ToList();
-
-        return new PagedResult<TItem>(items, page, size, count);
-    }
-
-    public PagedResult<TItem> GetPaged(
-        int page,
-        int size,
-        Expression<Func<TItem, bool>>? filter,
-        Expression<Func<TItem, object>> sort,
-        bool descending,
-        Expression<Func<TItem, bool>> search
-    )
-    {
-        var query = Collection.Query();
-        query = query.Where(search);
-
-        if (filter != null)
-            query = query.Where(filter);
-
-        if (descending)
-            query = query.OrderByDescending(sort);
-        else
-            query = query.OrderBy(sort);
-
-        var count = query.Count();
-        var items = query.Skip(page * size).Limit(size).ToList();
-
-        return new PagedResult<TItem>(items, page, size, count);
+        var specifications = new PageSpecificationRequest<TItem>(paging);
+        return GetPaged(specifications);
     }
 
     public PagedResult<TItem> GetPaged(PageSpecificationRequest<TItem> specifications)
     {
         var query = Collection.Query();
 
-        foreach (var filter in specifications.Filters)
-            query = query.Where(filter);
-
-        if (specifications.Sort != null)
-            if (specifications.IsDescending)
-                query = query.OrderByDescending(specifications.Sort);
-            else
-                query = query.OrderBy(specifications.Sort);
+        query = AppendFilters(query, specifications);
+        query = AppendSorting(query, specifications);
 
         var count = query.Count();
         var items = query
@@ -97,5 +33,28 @@ public class PagedIndexer<TItem>(IndexerContext context)
             .ToList();
 
         return new PagedResult<TItem>(items, specifications.Page, specifications.Size, count);
+    }
+
+    private ILiteQueryable<TItem> AppendFilters(
+        ILiteQueryable<TItem> query,
+        PageSpecificationRequest<TItem> specifications
+    )
+    {
+        foreach (var filter in specifications.Filters)
+            query = query.Where(filter);
+        return query;
+    }
+
+    private ILiteQueryable<TItem> AppendSorting(
+        ILiteQueryable<TItem> query,
+        PageSpecificationRequest<TItem> specifications
+    )
+    {
+        if (specifications.Sort != null)
+            if (specifications.IsDescending)
+                query = query.OrderByDescending(specifications.Sort);
+            else
+                query = query.OrderBy(specifications.Sort);
+        return query;
     }
 }

@@ -5,6 +5,9 @@ namespace TheFipster.ActivityAggregator.Web.Components.YearCalendar;
 
 public partial class MonthColumn : ComponentBase
 {
+    [Inject]
+    public NavigationManager? Navigation { get; set; }
+
     [Parameter]
     public DateTime Month { get; set; } = new(DateTime.Now.Year, DateTime.Now.Month, 1);
 
@@ -28,5 +31,14 @@ public partial class MonthColumn : ComponentBase
         dailyInventory = groupedInvetory;
 
         return base.OnParametersSetAsync();
+    }
+
+    private void OnDayAvatarClicked(int day)
+    {
+        if (Navigation == null)
+            return;
+
+        var date = new DateTime(Month.Year, Month.Month, day);
+        Navigation.NavigateTo($"batch?date={date:yyyy-MM-dd}");
     }
 }

@@ -43,7 +43,8 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
                 mapper.Entity<ZipIndex>().Id(x => x.Hash);
                 mapper.Entity<FileIndex>().Id(x => x.Hash);
                 mapper.Entity<ExtractorIndex>().Id(x => x.FileHash);
-                mapper.Entity<BatchIndex>().Id(x => x.Filepath);
+                mapper.Entity<AssimilateIndex>().Id(x => x.Hash);
+                mapper.Entity<BatchIndex>().Id(x => x.Timestamp);
 
                 return mapper;
             }
