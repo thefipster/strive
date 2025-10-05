@@ -4,7 +4,7 @@ using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
 namespace TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
 
-public static class PolarTakeoutClassificationDefinitions
+public static class PolarFlowClassificationDefinitions
 {
     public static IEnumerable<object[]> GetClassificationCases()
     {
@@ -125,6 +125,54 @@ public static class PolarTakeoutClassificationDefinitions
                 "2019-08-29",
                 DateRanges.AllTime,
                 DataSources.PolarTakeoutSleepScore
+            ),
+        ];
+
+        yield return
+        [
+            new FileClassificationCase(
+                typeof(PolarFlowOrthostaticTestImporter),
+                Vendors.PolarFlow,
+                "orthostatic-test-result-4476608-21635975-dec88666-b962-422c-a697-4e75bf3d31bb.json",
+                "2025-09-20 07:09:01",
+                DateRanges.Day,
+                DataSources.PolarFlowOrthostaticTest
+            ),
+        ];
+
+        yield return
+        [
+            new FileClassificationCase(
+                typeof(PolarFlowSleepWakeImporter),
+                Vendors.PolarFlow,
+                "sleep_wake_4476608-1545688c-38cb-4028-ad2f-a58a3c9db94e.json",
+                "0001-01-01",
+                DateRanges.AllTime,
+                DataSources.PolarFlowSleepWake
+            ),
+        ];
+
+        yield return
+        [
+            new FileClassificationCase(
+                typeof(PolarFlowNightlyRecoveryImporter),
+                Vendors.PolarFlow,
+                "nightly_recovery_4476608-ffde1ddc-5ce2-456c-ae49-5e878d7902d1.json",
+                "0001-01-01",
+                DateRanges.AllTime,
+                DataSources.PolarFlowNightlyRecovery
+            ),
+        ];
+
+        yield return
+        [
+            new FileClassificationCase(
+                typeof(PolarFlowNightlyRecoveryBlobImporter),
+                Vendors.PolarFlow,
+                "nightly_recovery_blob_4476608-152fe6a7-0805-4fba-b51a-188a5ee6a35a.json",
+                "0001-01-01",
+                DateRanges.AllTime,
+                DataSources.PolarFlowNightlyRecoveryBlob
             ),
         ];
     }

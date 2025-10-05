@@ -21,7 +21,9 @@ public static class DateHelper
     public static DateTime GetDateFromCsvLine(string line, string separator, int index)
     {
         var cells = line.Split(separator);
-        return DateTime.Parse(cells[index]);
+        var value = cells[index];
+        value = value.Replace("\"", string.Empty);
+        return DateTime.Parse(value);
     }
 
     public static DateTime GetDateFromExtraction(DirectoryInfo directory)

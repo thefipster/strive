@@ -2,20 +2,21 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Google;
+namespace TheFipster.ActivityAggregator.Importer.Parser;
 
-public class GoogleCsvParser(
+public abstract class CsvClassifier(
     DataSources source,
     DateRanges range,
     string header,
-    int classifierVersion = 1,
-    int extractorVersion = 1
-)
+    string delimiter = ",",
+    int? dateColumn = null,
+    int classifierVersion = 1
+) : IFileClassifier
 {
     public DataSources Source { get; } = source;
     public int ClassifierVersion => classifierVersion;
-    public int ExtractorVersion => extractorVersion;
 
     public ImportClassification Classify(FileProbe probe)
     {
@@ -30,7 +31,9 @@ public class GoogleCsvParser(
         if (header != lines.First())
             throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
-        var date = DateHelper.GetDateFromCsvLine(lines.Last(), ",", 0);
+        var date = DateTime.MinValue;
+        if (dateColumn.HasValue)
+            date = DateHelper.GetDateFromCsvLine(lines.Last(), delimiter, dateColumn.Value);
 
         return new ImportClassification
         {

@@ -1,22 +1,22 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Google;
+using TheFipster.ActivityAggregator.Importer.FipsterApp;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
 namespace TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
 
-public static class FitbitTakeoutClassificationDefinitions
+public class TheFipsterAppClassificationDefinition
 {
     public static IEnumerable<object[]> GetClassificationCases()
     {
         yield return
         [
             new FileClassificationCase(
-                typeof(GoogleStepsImporter),
-                Vendors.GoogleFitbit,
-                "steps_2023-09-01.csv",
-                "2023-09-01 05:28:00",
-                DateRanges.Month,
-                DataSources.FitbitTakeoutSteps
+                typeof(TheFipsterAppWeightImporter),
+                Vendors.TheFipsterApp,
+                "weights.json",
+                "0001-01-01 00:00:00",
+                DateRanges.AllTime,
+                DataSources.TheFipsterAppWeight
             ),
         ];
     }
