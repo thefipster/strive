@@ -60,6 +60,6 @@
         GarminUdsFile,
         GoogleTimeline,
         WithingsOther,
-        WightingsSignal,
+        WithingsSignal,
     }
 }

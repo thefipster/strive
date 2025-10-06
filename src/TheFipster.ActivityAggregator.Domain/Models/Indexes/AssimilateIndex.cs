@@ -1,5 +1,4 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 

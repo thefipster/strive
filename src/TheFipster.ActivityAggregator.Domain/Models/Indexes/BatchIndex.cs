@@ -17,5 +17,5 @@ public class BatchIndex
     public int Tracks { get; set; }
     public int Pulses { get; set; }
     public int Events { get; set; }
-    public Dictionary<string, string> Assimilations { get; set; }
+    public Dictionary<string, string> Assimilations { get; set; } = new();
 }

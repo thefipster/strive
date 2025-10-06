@@ -4,11 +4,12 @@ using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Google;
+namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleStepsImporter()
     : GoogleCsvParser(DataSources.FitbitTakeoutSteps, DateRanges.Month, "timestamp,steps"),
-        IFileImporter
+        IFileClassifier,
+        IFileExtractor
 {
     public List<FileExtraction> Extract(ArchiveIndex file)
     {

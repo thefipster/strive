@@ -9,7 +9,7 @@ using TheFipster.ActivityAggregator.Importer.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
-    public class PolarProTrainerHrmImporter : IFileImporter
+    public class PolarProTrainerHrmImporter : IFileClassifier, IFileExtractor
     {
         public DataSources Source => DataSources.PolarProTrainerHrm;
         public int ClassifierVersion => 1;

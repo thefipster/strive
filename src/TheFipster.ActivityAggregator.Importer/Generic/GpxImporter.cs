@@ -10,7 +10,7 @@ using TheFipster.ActivityAggregator.Importer.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Generic
 {
-    public class GpxImporter : IFileImporter
+    public class GpxImporter : IFileClassifier, IFileExtractor
     {
         public DataSources Source => DataSources.Gpx;
         public int ClassifierVersion => 1;

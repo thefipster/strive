@@ -9,7 +9,7 @@ using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
-    public class PolarTakeoutPpiImporter : IFileImporter
+    public class PolarTakeoutPpiImporter : IFileClassifier, IFileExtractor
     {
         public DataSources Source => DataSources.PolarTakeoutPpi;
         public int ClassifierVersion => 1;

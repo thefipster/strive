@@ -10,7 +10,7 @@ using TheFipster.ActivityAggregator.Importer.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.Generic
 {
-    public class KmlImporter : IFileImporter
+    public class KmlImporter : IFileClassifier, IFileExtractor
     {
         public DataSources Source => DataSources.Kml;
         public int ClassifierVersion => 1;

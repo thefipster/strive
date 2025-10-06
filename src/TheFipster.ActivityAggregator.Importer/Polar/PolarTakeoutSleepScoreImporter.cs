@@ -10,7 +10,7 @@ using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar;
 
-public class PolarTakeoutSleepScoreImporter : IFileImporter
+public class PolarTakeoutSleepScoreImporter : IFileClassifier, IFileExtractor
 {
     public DataSources Source => DataSources.PolarTakeoutSleepScore;
     public int ClassifierVersion => 1;

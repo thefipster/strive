@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Models;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Configs;
 

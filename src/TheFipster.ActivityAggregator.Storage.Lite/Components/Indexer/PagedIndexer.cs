@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using LiteDB;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;

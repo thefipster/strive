@@ -4,38 +4,32 @@ using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Google;
+namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
-public class GoogleHeartrateImporter : IFileClassifier
+public class GoogleUserSleepStagesImporter : IFileClassifier
 {
-    public DataSources Source => DataSources.FitbitTakeoutHeartrate;
+    public DataSources Source => DataSources.FitbitTakeoutUserSleepStages;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 
-    private readonly string header = "timestamp,beats per minute";
+    private readonly string _header =
+        "sleep_id,sleep_stage_id,sleep_stage_type,start_utc_offset,sleep_stage_start,end_utc_offset,sleep_stage_end,data_source,sleep_stage_created,sleep_stage_last_updated";
 
     public ImportClassification Classify(FileProbe probe)
     {
-        var lines = probe.Lines?.Take(2).ToArray();
+        var lines = probe.Lines?.Take(1).ToArray();
 
-        if (lines == null)
+        if (lines == null || lines.Length == 0)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
-        if (lines.Length != 2)
-            throw new ClassificationException(probe.Filepath, Source, "Couldn't get two lines.");
-
-        if (header != lines.First())
+        if (_header != lines.First())
             throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
-
-        var cells = lines.Last().Split(",");
-        var date = DateTime.Parse(cells[0]);
 
         return new ImportClassification
         {
             Filepath = probe.Filepath,
             Source = Source,
-            Datetime = date,
-            Datetype = probe.Filepath.Contains("daily") ? DateRanges.AllTime : DateRanges.Day,
+            Datetype = DateRanges.AllTime,
         };
     }
 }

@@ -9,7 +9,7 @@ using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
-    public class PolarTakeoutGenericPeriodSkinContactImporter : IFileImporter
+    public class PolarTakeoutGenericPeriodSkinContactImporter : IFileClassifier, IFileExtractor
     {
         private const string Type = "8";
         public DataSources Source => DataSources.PolarTakeoutGenericPeriodSkinContact;

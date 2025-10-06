@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Abstraction;
-using TheFipster.ActivityAggregator.Api.Models;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Exceptions;

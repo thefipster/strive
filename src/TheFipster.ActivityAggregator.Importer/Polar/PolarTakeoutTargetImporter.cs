@@ -12,7 +12,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 
-        private readonly HashSet<string> required = ["exportVersion", "done", "name", "startTime"];
+        private readonly HashSet<string> _required = ["exportVersion", "done", "name", "startTime"];
 
         public ImportClassification Classify(FileProbe probe)
         {
@@ -25,7 +25,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                     "Couldn't find valid json."
                 );
 
-            if (!required.IsSubsetOf(values.Keys))
+            if (!_required.IsSubsetOf(values.Keys))
                 throw new ClassificationException(
                     probe.Filepath,
                     Source,

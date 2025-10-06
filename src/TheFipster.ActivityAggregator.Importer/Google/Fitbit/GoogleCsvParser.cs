@@ -3,7 +3,7 @@ using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 
-namespace TheFipster.ActivityAggregator.Importer.Google;
+namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleCsvParser(
     DataSources source,

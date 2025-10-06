@@ -4,7 +4,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Google;
+namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleRunVo2MaxImporter : IFileClassifier
 {
@@ -12,7 +12,7 @@ public class GoogleRunVo2MaxImporter : IFileClassifier
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 
-    private readonly string header = "timestamp,run VO2 max";
+    private readonly string _header = "timestamp,run VO2 max";
 
     public ImportClassification Classify(FileProbe probe)
     {
@@ -21,7 +21,7 @@ public class GoogleRunVo2MaxImporter : IFileClassifier
         if (lines == null || lines.Length == 0)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
-        if (header != lines.First())
+        if (_header != lines.First())
             throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
         return new ImportClassification

@@ -7,7 +7,7 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
 {
     public class IndexerContext : IDisposable
     {
-        private readonly LiteDatabase database;
+        private readonly LiteDatabase _database;
 
         public IndexerContext(IOptions<LiteDbConfig> options)
         {
@@ -24,14 +24,14 @@ namespace TheFipster.ActivityAggregator.Storage.Lite.Context
             if (!Directory.Exists(file.Directory.FullName))
                 Directory.CreateDirectory(file.Directory.FullName);
 
-            database = new LiteDatabase(file.FullName, Mapper);
+            _database = new LiteDatabase(file.FullName, Mapper);
         }
 
-        public ILiteCollection<T> GetCollection<T>() => database.GetCollection<T>(typeof(T).Name);
+        public ILiteCollection<T> GetCollection<T>() => _database.GetCollection<T>(typeof(T).Name);
 
-        public ILiteCollection<T> GetCollection<T>(string name) => database.GetCollection<T>(name);
+        public ILiteCollection<T> GetCollection<T>(string name) => _database.GetCollection<T>(name);
 
-        public void Dispose() => database.Dispose();
+        public void Dispose() => _database.Dispose();
 
         private BsonMapper Mapper
         {

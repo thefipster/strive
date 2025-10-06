@@ -11,7 +11,7 @@ using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
-    public class PolarTakeoutGenericPeriodEcgImporter : IFileImporter
+    public class PolarTakeoutGenericPeriodEcgImporter : IFileClassifier, IFileExtractor
     {
         private const string Type = "10";
         public DataSources Source => DataSources.PolarTakeoutGenericPeriodEcg;

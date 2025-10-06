@@ -1,6 +1,4 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Google;
-using TheFipster.ActivityAggregator.Importer.Gpsies;
 using TheFipster.ActivityAggregator.Importer.Polar;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 

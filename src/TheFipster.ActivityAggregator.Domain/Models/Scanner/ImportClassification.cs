@@ -10,7 +10,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Scanner
             Datetime = DateTime.MinValue;
         }
 
-        public string? Filepath { get; set; }
+        public required string Filepath { get; set; }
         public DataSources Source { get; set; }
         public DateTime Datetime { get; set; }
         public DateRanges Datetype { get; set; }

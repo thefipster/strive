@@ -10,7 +10,7 @@ using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar;
 
-public class PolarTakeoutCalendarItemsImporter : IFileImporter
+public class PolarTakeoutCalendarItemsImporter : IFileClassifier, IFileExtractor
 {
     public DataSources Source => DataSources.PolarTakeoutCalendarItems;
     public int ClassifierVersion => 1;

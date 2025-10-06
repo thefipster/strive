@@ -4,30 +4,38 @@ using TheFipster.ActivityAggregator.Domain.Models.Scanner;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Importer.Google;
+namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
-public class GoogleDemographicVo2MaxImporter : IFileClassifier
+public class GoogleHeartrateImporter : IFileClassifier
 {
-    public DataSources Source => DataSources.FitbitTakeoutDemographicVo2Max;
+    public DataSources Source => DataSources.FitbitTakeoutHeartrate;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 
-    private readonly string header = "timestamp,demographic vo2max";
+    private readonly string _header = "timestamp,beats per minute";
 
     public ImportClassification Classify(FileProbe probe)
     {
-        var lines = probe.Lines?.Take(1).ToArray();
-        if (lines == null || lines.Length != 1)
+        var lines = probe.Lines?.Take(2).ToArray();
+
+        if (lines == null)
             throw new ClassificationException(probe.Filepath, Source, "Couldn't get any lines.");
 
-        if (header != lines.First())
+        if (lines.Length != 2)
+            throw new ClassificationException(probe.Filepath, Source, "Couldn't get two lines.");
+
+        if (_header != lines.First())
             throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
+
+        var cells = lines.Last().Split(",");
+        var date = DateTime.Parse(cells[0]);
 
         return new ImportClassification
         {
             Filepath = probe.Filepath,
             Source = Source,
-            Datetype = DateRanges.AllTime,
+            Datetime = date,
+            Datetype = probe.Filepath.Contains("daily") ? DateRanges.AllTime : DateRanges.Day,
         };
     }
 }

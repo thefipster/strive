@@ -12,7 +12,7 @@ namespace TheFipster.ActivityAggregator.Importer.Gpsies
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 
-        private readonly List<string> header = ["Latitude,Longitude,Elevation"];
+        private readonly List<string> _header = ["Latitude,Longitude,Elevation"];
 
         public ImportClassification Classify(FileProbe probe)
         {
@@ -32,7 +32,7 @@ namespace TheFipster.ActivityAggregator.Importer.Gpsies
                     "Couldn't get two lines."
                 );
 
-            if (header.All(x => x != lines.First()))
+            if (_header.All(x => x != lines.First()))
                 throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
 
             var directory = new FileInfo(probe.Filepath).Directory;

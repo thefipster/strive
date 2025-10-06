@@ -8,7 +8,7 @@ using TheFipster.ActivityAggregator.Importer.Abstractions;
 
 namespace TheFipster.ActivityAggregator.Importer.RunGps
 {
-    public class RunGpsCsv2Importer : IFileImporter
+    public class RunGpsCsv2Importer : IFileClassifier, IFileExtractor
     {
         public DataSources Source => DataSources.RunGpsCsvV2;
         public int ClassifierVersion => 1;

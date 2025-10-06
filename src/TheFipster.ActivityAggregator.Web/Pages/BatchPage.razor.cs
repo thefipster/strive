@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Web.Services;
 
@@ -7,10 +6,8 @@ namespace TheFipster.ActivityAggregator.Web.Pages;
 
 public partial class BatchPage : ComponentBase
 {
-    private int _year = DateTime.Now.Year;
     private DateTime? _date;
     private IEnumerable<BatchIndex>? _batches;
-    private MudTabs? _tabs;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -32,7 +29,6 @@ public partial class BatchPage : ComponentBase
             if (DateTime.TryParse(Date, out DateTime date))
             {
                 _date = date;
-                _year = date.Year;
             }
         }
 
@@ -40,13 +36,5 @@ public partial class BatchPage : ComponentBase
             _batches = await Batcher.GetDayAsync(_date.Value);
 
         await base.OnParametersSetAsync();
-    }
-
-    private void OnBackClicked()
-    {
-        if (Navigation == null)
-            return;
-
-        Navigation.NavigateTo("import?tab=batch&year=" + _year);
     }
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
@@ -28,7 +27,7 @@ public class ZipsAction(IPagedIndexer<ZipIndex> zipIndex, ILogger<ZipsAction> lo
         var specifications = new PageSpecificationRequest<ZipIndex>();
         specifications.Page = request.Page;
         specifications.Size = request.Size;
-        specifications.Sort = s => s.IndexedAt!;
+        specifications.Sort = s => s.IndexedAt;
         specifications.IsDescending = true;
 
         if (!string.IsNullOrWhiteSpace(request.Search))

@@ -10,7 +10,7 @@ using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
-    public class PolarTakeoutGenericPeriodTemperatureImporter : IFileImporter
+    public class PolarTakeoutGenericPeriodTemperatureImporter : IFileClassifier, IFileExtractor
     {
         private const string Type = "7";
         public DataSources Source => DataSources.PolarTakeoutGenericPeriodTemperature;

@@ -19,5 +19,29 @@ public class WithingsClassificationDefinitions
                 DataSources.WithingsBloodPressure
             ),
         ];
+
+        yield return
+        [
+            new FileClassificationCase(
+                typeof(WithingsSignalImporter),
+                Vendors.Withings,
+                "signal.csv",
+                "0001-01-01 00:00:00",
+                DateRanges.AllTime,
+                DataSources.WithingsSignal
+            ),
+        ];
+
+        yield return
+        [
+            new FileClassificationCase(
+                typeof(WithingsOtherImporter),
+                Vendors.Withings,
+                "other.csv",
+                "0001-01-01 00:00:00",
+                DateRanges.AllTime,
+                DataSources.WithingsOther
+            ),
+        ];
     }
 }
