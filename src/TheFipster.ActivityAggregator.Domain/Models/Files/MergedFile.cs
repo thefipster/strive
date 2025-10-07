@@ -1,9 +1,9 @@
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Unified;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Tools;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Merging;
+namespace TheFipster.ActivityAggregator.Domain.Models.Files;
 
 public class MergedFile
 {

@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
-using TheFipster.ActivityAggregator.Domain.Models.Scanner;
-using TheFipster.ActivityAggregator.Domain.Models.Unified;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
@@ -72,7 +72,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             };
         }
 
-        public List<FileExtraction> Extract(ArchiveIndex file)
+        public List<FileExtraction> Extract(ExtractionRequest file)
         {
             var json = File.ReadAllText(file.Filepath);
             var spo2Test =
@@ -97,16 +97,21 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             var testTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(
                 testTimeMs
             );
+
             var testEvent = new UnifiedEvent(
                 EventTypes.Spo2Measurement,
                 testTime,
-                spo2Test.Data.Spo2Class
+                spo2Test.Data?.Spo2Class
             );
 
-            testEvent.Values.Add(
-                Parameters.BloodOxygenPercent,
-                spo2Test.Data.BloodOxygenPercent.ToString()
-            );
+            if (spo2Test.Data != null)
+            {
+                testEvent.Values.Add(
+                    Parameters.BloodOxygenPercent,
+                    spo2Test.Data.BloodOxygenPercent.ToString()
+                );
+            }
+
             return testEvent;
         }
     }

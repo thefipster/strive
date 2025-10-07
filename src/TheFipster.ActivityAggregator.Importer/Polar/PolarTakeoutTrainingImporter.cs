@@ -2,8 +2,9 @@
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
-using TheFipster.ActivityAggregator.Domain.Models.Scanner;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
@@ -59,7 +60,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             };
         }
 
-        public List<FileExtraction> Extract(ArchiveIndex file)
+        public List<FileExtraction> Extract(ExtractionRequest file)
         {
             var json = File.ReadAllText(file.Filepath);
             var polarTraining =
@@ -67,6 +68,10 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 ?? throw new ArgumentException("Couldn't parse polar takeout training.");
 
             var start = polarTraining.StartTime;
+
+            if (polarTraining.Duration == null)
+                throw new ExtractionException(file.Filepath, "No duration found.");
+
             var duration = polarTraining
                 .Duration.Replace("PT", string.Empty)
                 .Replace("S", string.Empty);
@@ -93,7 +98,13 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             if (exercise == null)
                 return result;
 
+            if (exercise.Sport == null)
+                throw new ExtractionException(file.Filepath, "No sport found.");
+
             attributes.Add(Parameters.Sport, exercise.Sport);
+
+            if (exercise.Samples == null)
+                return result;
 
             var altitudeSeries = CreateSimpleSeries(exercise.Samples.Altitude, Parameters.Altitude);
             AppendSeries(result, start, attributes, altitudeSeries, file);
@@ -127,7 +138,6 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
             var rrSeries = CreateRrSeries(exercise.Samples.Rr);
             AppendSeries(result, start, attributes, rrSeries, file);
-
             return result;
         }
 
@@ -136,10 +146,11 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             DateTimeOffset start,
             Dictionary<Parameters, string> attributes,
             Dictionary<Parameters, List<string>>? series,
-            ArchiveIndex file
+            ExtractionRequest file
         )
         {
             if (series != null)
+            {
                 result.Add(
                     new FileExtraction(
                         Source,
@@ -150,6 +161,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                         series
                     )
                 );
+            }
         }
 
         private Dictionary<Parameters, List<string>>? CreateRrSeries(List<RrSample>? samples)
@@ -158,7 +170,8 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 return null;
 
             var rr = samples
-                .Select(x => x.Duration.Replace("PT", string.Empty).Replace("S", string.Empty))
+                .Where(x => x.Duration != null)
+                .Select(x => x.Duration!.Replace("PT", string.Empty).Replace("S", string.Empty))
                 .ToList();
 
             var series = FileExtraction.EmptySeries;

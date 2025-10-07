@@ -1,9 +1,8 @@
 using System.Globalization;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
-using TheFipster.ActivityAggregator.Domain.Models.Merging;
-using TheFipster.ActivityAggregator.Domain.Models.Unified;
+using TheFipster.ActivityAggregator.Domain.Models.Formats;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Api.Components;
 

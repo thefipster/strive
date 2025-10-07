@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Unified;
+namespace TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 public class UnifiedEvent
 {
@@ -12,7 +12,7 @@ public class UnifiedEvent
         Timestamp = timestamp;
     }
 
-    public UnifiedEvent(EventTypes type, DateTime timestamp, string message)
+    public UnifiedEvent(EventTypes type, DateTime timestamp, string? message)
         : this(type, timestamp)
     {
         Message = message;
@@ -21,5 +21,5 @@ public class UnifiedEvent
     public EventTypes Type { get; set; }
     public DateTime Timestamp { get; set; }
     public Dictionary<Parameters, string> Values { get; set; } = new();
-    public string Message { get; set; } = "";
+    public string? Message { get; set; }
 }

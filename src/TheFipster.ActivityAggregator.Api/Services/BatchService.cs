@@ -6,9 +6,8 @@ using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Services;
@@ -100,15 +99,15 @@ public class BatchService : IBatchService
         var metricsParameters = metrics.SelectMany(x => x.Keys.Select(y => y.ToString()));
         parameters.AddRange(metricsParameters);
 
-        var series = extracts.Select(x => x.Series).ToArray();
-        var seriesMerge = series.Select(_seriesMerger.Normalize).ToArray();
-        var seriesParameters = series.SelectMany(x => x.Keys.Select(y => y.ToString()));
-        parameters.AddRange(seriesParameters);
-
         var events = extracts.Select(x => x.Events.ToArray()).ToArray();
         var eventMerge = _eventsMerger.Merge(events);
         var eventParameters = events.SelectMany(x => x.Select(y => y.Type.ToString()));
         parameters.AddRange(eventParameters);
+
+        var series = extracts.Select(x => x.Series).ToArray();
+        var seriesMerge = series.Select(_seriesMerger.Normalize).ToArray();
+        var seriesParameters = series.SelectMany(x => x.Keys.Select(y => y.ToString()));
+        parameters.AddRange(seriesParameters);
 
         var timedSeries = seriesMerge.Where(x => x.Samples != null).Select(x => x.Samples).ToList();
         var tracks = seriesMerge.Where(x => x.Track != null).Select(x => x.Track).ToList();

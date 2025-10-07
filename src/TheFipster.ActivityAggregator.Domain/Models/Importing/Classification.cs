@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Extraction;
+namespace TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 public class Classification(DataSources source, DateTime datetime, DateRanges range)
 {

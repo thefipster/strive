@@ -1,8 +1,9 @@
 ﻿using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Formats;
-using TheFipster.ActivityAggregator.Domain.Models.Scanner;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
@@ -52,7 +53,7 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
             };
         }
 
-        public List<FileExtraction> Extract(ArchiveIndex file)
+        public List<FileExtraction> Extract(ExtractionRequest file)
         {
             var csv = new CsvFile(file.Filepath, ";");
             var lines = csv.ReadLines().ToArray();

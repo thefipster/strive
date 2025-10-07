@@ -1,4 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.Parser;
 
 namespace TheFipster.ActivityAggregator.Importer.FipsterApp;

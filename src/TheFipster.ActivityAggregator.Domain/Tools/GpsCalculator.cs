@@ -1,4 +1,4 @@
-﻿using TheFipster.ActivityAggregator.Domain.Models.Components;
+﻿using TheFipster.ActivityAggregator.Domain.Models.Formats;
 
 namespace TheFipster.ActivityAggregator.Domain.Tools
 {

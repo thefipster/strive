@@ -1,6 +1,4 @@
-using TheFipster.ActivityAggregator.Domain.Models.Unified;
-
-namespace TheFipster.ActivityAggregator.Domain.Models.Merging;
+namespace TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 public class NormalizedResult
 {

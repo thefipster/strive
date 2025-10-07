@@ -1,6 +1,7 @@
 ﻿using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Formats;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
@@ -11,7 +12,7 @@ public class GoogleStepsImporter()
         IFileClassifier,
         IFileExtractor
 {
-    public List<FileExtraction> Extract(ArchiveIndex file)
+    public List<FileExtraction> Extract(ExtractionRequest file)
     {
         var csv = new CsvFile(file.Filepath, ",");
         var data = csv.ReadLines().Skip(1).Select(x => (DateTime.Parse(x[0]), int.Parse(x[1])));

@@ -1,7 +1,7 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
+using TheFipster.ActivityAggregator.Domain.Models.Formats;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Unified;
+namespace TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 public class UnifiedTrack
 {

@@ -1,5 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Merging;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Api.Abstraction;
 

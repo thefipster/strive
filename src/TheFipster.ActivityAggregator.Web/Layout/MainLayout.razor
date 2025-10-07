@@ -10,19 +10,19 @@
         <MudIcon Class="ml-n2" Icon="@Icons.Material.Outlined.GpsFixed" Color="Color.Inherit"/>
         <MudText Typo="Typo.h5" Class="ml-7">Fipsters Activity Aggregator</MudText>
         <MudSpacer/>
-        @if (pageName == "yearlyCalendar")
+        @if (_pageName == "yearlyCalendar")
         {
-            <MudIconButton Href="@($"calendar/year/{year - 1}")" Icon="@Icons.Material.Outlined.ArrowBackIos"
+            <MudIconButton Href="@($"calendar/year/{_year - 1}")" Icon="@Icons.Material.Outlined.ArrowBackIos"
                            Color="Color.Primary"/>
             <MudButton Variant="Variant.Text">
-                <MudText Typo="Typo.h5">@year</MudText>
+                <MudText Typo="Typo.h5">@_year</MudText>
             </MudButton>
-            <MudIconButton Href="@($"calendar/year/{year + 1}")" Icon="@Icons.Material.Outlined.ArrowForwardIos"
+            <MudIconButton Href="@($"calendar/year/{_year + 1}")" Icon="@Icons.Material.Outlined.ArrowForwardIos"
                            Color="Color.Primary"/>
         }
         <MudSpacer/>
     </MudAppBar>
-    <MudDrawer Variant="@DrawerVariant.Mini" Open="drawerOpen" Color="Color.Primary" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer Variant="@DrawerVariant.Mini" Open="_drawerOpen" Color="Color.Primary" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu DrawerToggled="OnDrawerToggle" />
     </MudDrawer>
     <MudMainContent>

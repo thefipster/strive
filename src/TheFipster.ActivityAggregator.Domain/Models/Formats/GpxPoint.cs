@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Domain.Models.Components;
+namespace TheFipster.ActivityAggregator.Domain.Models.Formats;
 
 public class GpxPoint : GpsPoint
 {

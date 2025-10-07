@@ -1,10 +1,11 @@
 ﻿using System.Globalization;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
-using TheFipster.ActivityAggregator.Domain.Models.Scanner;
-using TheFipster.ActivityAggregator.Domain.Models.Unified;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
@@ -73,7 +74,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             };
         }
 
-        public List<FileExtraction> Extract(ArchiveIndex file)
+        public List<FileExtraction> Extract(ExtractionRequest file)
         {
             var json = File.ReadAllText(file.Filepath);
             var ecgTest =
@@ -117,11 +118,15 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 series[Parameters.Timestamp].Add(timestamp);
                 series[Parameters.EcgAmplitudeMv].Add(amplitude);
 
-                var quality = ecgTest.Data.QualityMeasurements.FirstOrDefault(x =>
-                    x.RecordingTimeDeltaMs == sample.RecordingTimeDeltaMs
-                );
-                if (quality != null)
-                    qualitySeries.Add(quality.QualityLevel);
+                var measurements = ecgTest.Data?.QualityMeasurements;
+                if (measurements != null && measurements.Any())
+                {
+                    var quality = measurements.First(x =>
+                        x.RecordingTimeDeltaMs == sample.RecordingTimeDeltaMs
+                    );
+                    if (!string.IsNullOrWhiteSpace(quality.QualityLevel))
+                        qualitySeries.Add(quality.QualityLevel);
+                }
             }
 
             if (qualitySeries.Count == series.First().Value.Count)
@@ -132,6 +137,9 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         private static UnifiedEvent CreateTestEvent(PolarTakeoutGenericPeriodEcg ecgTest)
         {
+            if (ecgTest.Data?.TestTime == null)
+                throw new ArgumentException("Ecg test has no start time.");
+
             var testTimeMs = long.Parse(ecgTest.Data.TestTime);
             var testTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(
                 testTimeMs
@@ -143,6 +151,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 Parameters.HeartrateVariability,
                 ecgTest.Data.HeartRateVariabilityMs.ToString(CultureInfo.InvariantCulture)
             );
+
             return testEvent;
         }
     }

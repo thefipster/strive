@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Formats;
-using TheFipster.ActivityAggregator.Domain.Models.Scanner;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
@@ -42,7 +42,7 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
             };
         }
 
-        public List<FileExtraction> Extract(ArchiveIndex file)
+        public List<FileExtraction> Extract(ExtractionRequest file)
         {
             var kml = new KmlFile(file.Filepath);
             var points = kml.GetPoints();

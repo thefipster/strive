@@ -6,11 +6,11 @@ namespace TheFipster.ActivityAggregator.Web.Layout;
 
 public partial class MainLayout
 {
-    private int year = DateTime.Now.Year;
-    private string pageName = "";
-    private bool drawerOpen;
+    private int _year = DateTime.Now.Year;
+    private string _pageName = "";
+    private bool _drawerOpen;
 
-    private HubConnection? hubConnection;
+    private HubConnection? _hubConnection;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -25,18 +25,18 @@ public partial class MainLayout
         await base.OnParametersSetAsync();
     }
 
-    private void OnDrawerToggle() => drawerOpen = !drawerOpen;
+    private void OnDrawerToggle() => _drawerOpen = !_drawerOpen;
 
     private async Task ConnectHubs()
     {
         if (Navigation is null)
             return;
 
-        hubConnection = new HubConnectionBuilder()
+        _hubConnection = new HubConnectionBuilder()
             .WithUrl(Navigation.ToAbsoluteUri("/hubs/ingest"))
             .Build();
 
-        hubConnection.On<string>(
+        _hubConnection.On<string>(
             "OnWorkerStart",
             (msg) =>
             {
@@ -47,22 +47,22 @@ public partial class MainLayout
             }
         );
 
-        await hubConnection.StartAsync();
+        await _hubConnection.StartAsync();
     }
 
     private void AppendCalendarNavigation()
     {
-        pageName = "";
+        _pageName = "";
         if (Navigation != null && Navigation.Uri.Contains("calendar/year"))
             ConfigureYearNavigation(Navigation);
     }
 
     private void ConfigureYearNavigation(NavigationManager nav)
     {
-        pageName = "yearlyCalendar";
+        _pageName = "yearlyCalendar";
         var url = nav.ToAbsoluteUri(nav.Uri);
         var yearValue = url.ToString().Split("/").Last();
         if (int.TryParse(yearValue, out int parsedYear))
-            year = parsedYear;
+            _year = parsedYear;
     }
 }

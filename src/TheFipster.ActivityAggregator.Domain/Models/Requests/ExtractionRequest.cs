@@ -1,14 +1,13 @@
 ﻿using System.Text.Json.Serialization;
 using TheFipster.ActivityAggregator.Domain.Enums;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Extraction
+namespace TheFipster.ActivityAggregator.Domain.Models.Requests
 {
-    public class ArchiveIndex
+    public class ExtractionRequest
     {
-        public ArchiveIndex()
+        public ExtractionRequest()
         {
             Filepath = string.Empty;
-            Md5Hash = string.Empty;
         }
 
         public string Filepath { get; set; }
@@ -20,7 +19,5 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Extraction
         public DateRanges Range { get; set; }
 
         public DateTime Date { get; set; }
-
-        public string Md5Hash { get; set; }
     }
 }

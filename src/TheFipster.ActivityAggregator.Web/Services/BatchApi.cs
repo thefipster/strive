@@ -1,5 +1,5 @@
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Web.Services;

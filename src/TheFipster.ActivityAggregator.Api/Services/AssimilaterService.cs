@@ -6,9 +6,9 @@ using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
@@ -81,13 +81,12 @@ public class AssimilaterService : IAssimilaterService
                 if (extractor == null)
                     continue;
 
-                var archive = new ArchiveIndex
+                var archive = new ExtractionRequest
                 {
                     Source = file.Source!.Value,
                     Date = file.Timestamp!.Value,
                     Filepath = file.Path,
                     Range = file.Range!.Value,
-                    Md5Hash = file.Hash,
                 };
 
                 try

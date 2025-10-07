@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Unified;
+namespace TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 public class UnifiedSamples
 {

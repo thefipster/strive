@@ -4,9 +4,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
-using TheFipster.ActivityAggregator.Domain.Models.Unified;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Extraction
+namespace TheFipster.ActivityAggregator.Domain.Models.Files
 {
     public class FileExtraction
     {

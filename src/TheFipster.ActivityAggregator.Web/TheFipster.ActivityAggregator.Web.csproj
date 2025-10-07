@@ -11,8 +11,8 @@
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
     <PackageReference Include="SerilogTracing" Version="2.3.1" />
     <PackageReference Include="SerilogTracing.Expressions" Version="2.3.1" />
-    <PackageReference Include="Serilog.AspNetCore" Version="7.1.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.2.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj" />
