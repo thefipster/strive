@@ -61,5 +61,6 @@
         GoogleTimeline,
         WithingsOther,
         WithingsSignal,
+        GoogleTimelineDevice,
     }
 }

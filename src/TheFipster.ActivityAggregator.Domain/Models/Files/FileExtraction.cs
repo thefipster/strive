@@ -95,6 +95,11 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Files
         [JsonPropertyName("events")]
         public List<UnifiedEvent> Events { get; set; } = new();
 
+        public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
+
+        public void AddAttribute(Parameters parameter, string value) =>
+            Attributes.Add(parameter, value);
+
         public static Dictionary<Parameters, string> EmptyAttributes => new();
 
         public static Dictionary<Parameters, List<string>> EmptySeries => new();

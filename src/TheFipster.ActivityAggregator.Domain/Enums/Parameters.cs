@@ -39,5 +39,7 @@
         HeartrateVariability,
         BloodOxygenPercent,
         MetabolicRate,
+        MinBodyweight,
+        MaxBodyweight,
     }
 }

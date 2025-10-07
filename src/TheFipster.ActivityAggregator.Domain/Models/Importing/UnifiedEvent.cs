@@ -18,6 +18,18 @@ public class UnifiedEvent
         Message = message;
     }
 
+    public UnifiedEvent(
+        EventTypes type,
+        DateTime timestamp,
+        string message,
+        Parameters parameter,
+        string value
+    )
+        : this(type, timestamp, message)
+    {
+        Values.Add(parameter, value);
+    }
+
     public EventTypes Type { get; set; }
     public DateTime Timestamp { get; set; }
     public Dictionary<Parameters, string> Values { get; set; } = new();
