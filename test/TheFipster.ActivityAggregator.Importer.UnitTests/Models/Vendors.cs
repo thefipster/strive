@@ -11,4 +11,5 @@ public static class Vendors
     public const string PolarProTrainer = "polar_protrainer";
     public const string Strava = "strava";
     public const string Garmin = "garmin";
+    public const string GoogleTimeline = "google_timeline";
 }

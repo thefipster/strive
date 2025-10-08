@@ -11,6 +11,7 @@ public class ClassificationTests(TestFileFixture fixture) : IClassFixture<TestFi
     [Theory]
     [MemberData(nameof(GetPolarFlowCases))]
     [MemberData(nameof(GetGoogleFitbitCases))]
+    [MemberData(nameof(GetGoogleTimelineCases))]
     [MemberData(nameof(GetWithingsCases))]
     [MemberData(nameof(GetGarminCases))]
     [MemberData(nameof(GetStravaCases))]
@@ -38,6 +39,9 @@ public class ClassificationTests(TestFileFixture fixture) : IClassFixture<TestFi
 
     public static IEnumerable<object[]> GetGoogleFitbitCases() =>
         GoogleFitbitClassificationDefinitions.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetGoogleTimelineCases() =>
+        GoogleTimelineClassificationDefinitions.GetClassificationCases();
 
     public static IEnumerable<object[]> GetWithingsCases() =>
         WithingsClassificationDefinitions.GetClassificationCases();
