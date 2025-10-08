@@ -1,3 +1,6 @@
+using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
+
 namespace TheFipster.ActivityAggregator.Api.Models.Requests;
 
 public class UploadFilePageRequest
@@ -6,4 +9,22 @@ public class UploadFilePageRequest
     public int Size { get; set; } = 10;
 
     public string? Search { get; set; }
+
+    public bool IsValid => Page >= 0 && Size > 0;
+
+    public PageSpecificationRequest<ZipIndex> ToSpecification()
+    {
+        var specifications = new PageSpecificationRequest<ZipIndex>
+        {
+            Page = Page,
+            Size = Size,
+            Sort = s => s.IndexedAt,
+            IsDescending = true,
+        };
+
+        if (!string.IsNullOrWhiteSpace(Search))
+            specifications.AddFilter(f => f.ZipPath.Contains(Search));
+
+        return specifications;
+    }
 }

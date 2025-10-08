@@ -44,9 +44,6 @@ public class Uploader : IUploader
 
     private static void ValidateRequest(UploadChunkRequest request, ApiConfig config)
     {
-        if (!request.IsValid)
-            throw new ArgumentException("Invalid request.", nameof(request));
-
         var ext = Path.GetExtension(request.FileName);
         if (
             !string.Equals(

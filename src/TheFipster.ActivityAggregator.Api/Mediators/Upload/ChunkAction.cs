@@ -4,7 +4,6 @@ using TheFipster.ActivityAggregator.Api.Mediators.Upload.Contracts;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Api.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Configs;
-using TheFipster.ActivityAggregator.Domain.Exceptions;
 
 namespace TheFipster.ActivityAggregator.Api.Mediators.Upload;
 
@@ -15,35 +14,29 @@ public class ChunkAction(
     IUnzipService unzipper
 ) : IChunkAction
 {
-    public async Task TryUploadChunkAsync(UploadChunkRequest request)
+    public async Task UploadChunkAsync(UploadChunkRequest request)
     {
-        try
-        {
-            await HandleChunk(request);
-        }
-        catch (ArgumentException e)
-        {
-            throw new HttpResponseException(400, "Invalid arguments.", e.Message);
-        }
-        catch (Exception e)
-        {
-            throw new HttpResponseException(500, "Unexpected error occured.", e.Message);
-        }
+        if (!request.IsValid)
+            throw new ArgumentException("Arguments are missing.");
+
+        // only returns filepath if upload is complete
+        var uploadFilepathWhenCompleted = await uploader.EnsureChunk(request, config.Value);
+
+        if (uploadFilepathWhenCompleted == null)
+            return;
+
+        EnqueueUnzippingJob(uploadFilepathWhenCompleted);
     }
 
-    private async Task HandleChunk(UploadChunkRequest request)
+    private void EnqueueUnzippingJob(string uploadFilepath)
     {
-        var uploadFilepath = await uploader.EnsureChunk(request, config.Value);
         var destinationDirectory = config.Value.UnzipDirectoryPath;
 
-        if (
-            !string.IsNullOrWhiteSpace(uploadFilepath)
-            && !string.IsNullOrWhiteSpace(destinationDirectory)
-        )
-        {
-            tasks.QueueBackgroundWorkItem(async ct =>
-                await unzipper.ExtractAsync(uploadFilepath, destinationDirectory, ct)
-            );
-        }
+        if (string.IsNullOrWhiteSpace(destinationDirectory))
+            throw new ArgumentException("Unzip directory is not configured.");
+
+        tasks.QueueBackgroundWorkItem(async ct =>
+            await unzipper.ExtractAsync(uploadFilepath, destinationDirectory, ct)
+        );
     }
 }

@@ -10,10 +10,10 @@ public class UploadController(IZipsAction zipsAction, IChunkAction chunkAction) 
 {
     [HttpGet("zips")]
     public IActionResult GetZipFilePage([FromQuery] UploadFilePageRequest request) =>
-        Ok(zipsAction.TryGetZipFilePage(request));
+        Ok(zipsAction.GetZipFilePage(request));
 
     [HttpPost("chunk")]
     [DisableRequestSizeLimit]
     public async Task UploadChunk([FromForm] UploadChunkRequest request) =>
-        await chunkAction.TryUploadChunkAsync(request);
+        await chunkAction.UploadChunkAsync(request);
 }

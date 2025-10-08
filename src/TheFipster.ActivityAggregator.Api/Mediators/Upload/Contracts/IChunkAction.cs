@@ -4,5 +4,5 @@ namespace TheFipster.ActivityAggregator.Api.Mediators.Upload.Contracts;
 
 public interface IChunkAction
 {
-    Task TryUploadChunkAsync(UploadChunkRequest request);
+    Task UploadChunkAsync(UploadChunkRequest request);
 }
