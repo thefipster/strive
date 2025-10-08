@@ -1,4 +1,4 @@
-using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Api.Mediators.Upload.Contracts;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;

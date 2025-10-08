@@ -1,7 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Api.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Enums;
@@ -10,7 +11,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services;
+namespace TheFipster.ActivityAggregator.Api.Services.Logic;
 
 public class BatchService : IBatchService
 {

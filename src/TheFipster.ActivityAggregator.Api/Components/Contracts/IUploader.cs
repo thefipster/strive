@@ -1,7 +1,7 @@
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Configs;
 
-namespace TheFipster.ActivityAggregator.Api.Abstraction;
+namespace TheFipster.ActivityAggregator.Api.Components.Contracts;
 
 public interface IUploader
 {

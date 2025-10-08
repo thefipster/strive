@@ -24,4 +24,8 @@
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Importer\TheFipster.ActivityAggregator.Importer.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Lite\TheFipster.ActivityAggregator.Storage.Lite.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\Decoration\" />
+    <Folder Include="Services\Decoration\" />
+  </ItemGroup>
 </Project>

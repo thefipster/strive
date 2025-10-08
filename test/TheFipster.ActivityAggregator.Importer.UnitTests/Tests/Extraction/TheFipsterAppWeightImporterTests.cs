@@ -3,7 +3,6 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Importer.FipsterApp;
-using TheFipster.ActivityAggregator.Importer.Generic;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 

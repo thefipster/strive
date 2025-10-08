@@ -1,6 +1,6 @@
 using Serilog;
 using TheFipster.ActivityAggregator.Api;
-using TheFipster.ActivityAggregator.Api.Components;
+using TheFipster.ActivityAggregator.Api.Middleware;
 using TheFipster.ActivityAggregator.Storage.Lite;
 
 var builder = WebApplication.CreateBuilder(args);

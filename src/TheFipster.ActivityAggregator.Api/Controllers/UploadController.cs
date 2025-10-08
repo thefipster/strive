@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Api.Mediators.Upload.Contracts;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Api.Controllers;

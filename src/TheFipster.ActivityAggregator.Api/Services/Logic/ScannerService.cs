@@ -3,14 +3,15 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Serilog;
 using Serilog.Events;
 using SerilogTracing;
-using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Api.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services;
+namespace TheFipster.ActivityAggregator.Api.Services.Logic;
 
 public class ScannerService : IScannerService
 {

@@ -1,10 +1,10 @@
 using System.Globalization;
-using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Api.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
-namespace TheFipster.ActivityAggregator.Api.Components;
+namespace TheFipster.ActivityAggregator.Api.Components.Logic;
 
 public class SeriesMerger : ISeriesMerger
 {

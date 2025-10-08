@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 
-namespace TheFipster.ActivityAggregator.Api.Components;
+namespace TheFipster.ActivityAggregator.Api.Middleware;
 
 internal sealed class GlobalExceptionHandler : IExceptionHandler
 {

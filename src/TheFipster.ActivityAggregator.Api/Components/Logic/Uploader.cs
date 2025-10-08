@@ -1,10 +1,10 @@
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
-using TheFipster.ActivityAggregator.Api.Abstraction;
+using TheFipster.ActivityAggregator.Api.Components.Contracts;
 using TheFipster.ActivityAggregator.Api.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Configs;
 
-namespace TheFipster.ActivityAggregator.Api.Services;
+namespace TheFipster.ActivityAggregator.Api.Components.Logic;
 
 public class Uploader : IUploader
 {
