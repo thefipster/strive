@@ -16,6 +16,7 @@ builder.Services.AddSingleton<ScanApi>();
 builder.Services.AddSingleton<AssimilateApi>();
 builder.Services.AddSingleton<BatchApi>();
 builder.Services.AddSingleton<InventoryApi>();
+builder.Services.AddSingleton<HistoryApi>();
 
 builder.Services.AddSignalR(e =>
 {

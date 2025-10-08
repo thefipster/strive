@@ -1,5 +1,5 @@
-<MudPaper Class="ma-0 pa-0 d-flex flex-column align-center gap-4 flex-grow-1" Elevation="0">
-    @if (dailyInventory.Any())
+<MudPaper Class="d-flex align-center justify-center mud-width-full" Elevation="0">
+    @if (_dailyInventory.Any())
     {
         <MudSimpleTable Elevation="0" Dense="true" Bordered="false" Style="width: 100%;">
             <thead>
@@ -11,22 +11,34 @@
             </thead>
             <tbody>
 
-            @foreach (var day in dailyInventory.OrderBy(x => x.Key))
+            @foreach (var day in _dailyInventory.OrderBy(x => x.Key))
             {
                 <tr>
                     <td class="d-flex gap-4 align-center">
-                        <MudAvatar Size="Size.Small" Variant="Variant.Outlined">@day.Key</MudAvatar>
+                        @if (Batches.Contains(new DateTime(Month.Year, Month.Month, day.Key)))
+                        {
+                            <MudAvatar Size="Size.Small" Variant="@(Variant.Filled)"
+                                       @onclick="@(() => OnDayAvatarClicked(day.Key))">@day.Key</MudAvatar>
+                        }
+                        else
+                        {
+                            <MudAvatar Size="Size.Small" Variant="@(Variant.Outlined)">@day.Key</MudAvatar>
+                        }
+
                         @if (day.Value.Any(x => x.IsDay))
                         {
-                            <MudBadge Content="@day.Value.Count(x => x.IsDay)" Color="Color.Info" Overlap="true" Class="my-1">
+                            <MudBadge Content="@day.Value.Where(x => x.IsDay).Sum(x => x.Count)" Color="Color.Info"
+                                      Overlap="true" Class="my-1">
                                 <MudIcon Icon="@Icons.Material.Filled.Today" Color="Color.Info" Size="Size.Small"/>
                             </MudBadge>
                         }
 
                         @if (day.Value.Any(x => !x.IsDay))
                         {
-                            <MudBadge Content="@day.Value.Count(x => !x.IsDay)" Color="Color.Primary" Overlap="true" Class="my-1">
-                                <MudIcon Icon="@Icons.Material.Filled.PlayLesson" Color="Color.Primary" Size="Size.Small"/>
+                            <MudBadge Content="@day.Value.Where(x => !x.IsDay).Sum(x => x.Count)" Color="Color.Primary"
+                                      Overlap="true" Class="my-1">
+                                <MudIcon Icon="@Icons.Material.Filled.PlayLesson" Color="Color.Primary"
+                                         Size="Size.Small"/>
                             </MudBadge>
                         }
 

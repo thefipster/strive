@@ -5,6 +5,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Api.Components;
+using TheFipster.ActivityAggregator.Api.Mediators.Upload;
 using TheFipster.ActivityAggregator.Api.Services;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
@@ -37,6 +38,7 @@ public static class Setup
 
         services.AddTransient<IUnzipper, Unzipper>();
         services.AddTransient<IIndexer<ZipIndex>, BaseIndexer<ZipIndex>>();
+        services.AddTransient<IPagedIndexer<ZipIndex>, PagedIndexer<ZipIndex>>();
         services.AddTransient<IUnzipService, UnzipService>();
 
         services.AddTransient<IClassifier, Classifier>();
@@ -53,6 +55,14 @@ public static class Setup
         services.AddTransient<IEventsMerger, EventsMerger>();
         services.AddTransient<ISeriesMerger, SeriesMerger>();
         services.AddTransient<IBatchService, BatchService>();
+
+        services.AddTransient<IChunkAction, ChunkAction>();
+        services.AddTransient<IZipsAction, ZipsAction>();
+
+        services.AddTransient<IHistoryIndexer, HistoryIndexer>();
+
+        services.AddTransient<IIndexer<AssimilateIndex>, BaseIndexer<AssimilateIndex>>();
+        services.AddTransient<IPagedIndexer<AssimilateIndex>, PagedIndexer<AssimilateIndex>>();
 
         return services;
     }
@@ -93,7 +103,7 @@ public static class Setup
         var resourceBuilder = ResourceBuilder
             .CreateDefault()
             .AddService(
-                Assembly.GetEntryAssembly()?.GetName().Name ?? "Api",
+                "api",
                 serviceVersion: Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
             );
 
@@ -111,8 +121,7 @@ public static class Setup
                 provider.AddMeter(
                     "Microsoft.AspNetCore.Hosting",
                     "Microsoft.AspNetCore.Server.Kestrel",
-                    "System.Net.Http",
-                    "Api"
+                    "System.Net.Http"
                 );
             })
             .WithTracing(options =>

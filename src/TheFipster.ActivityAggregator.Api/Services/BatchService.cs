@@ -6,10 +6,8 @@ using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Merging;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Services;
@@ -18,9 +16,9 @@ public class BatchService : IBatchService
 {
     private readonly ApiConfig _config;
 
-    private readonly IPagedIndexer<ExtractorIndex> _extractInventory;
     private readonly IPagedIndexer<BatchIndex> _batchInventory;
     private readonly IInventoryIndexer _dateInventory;
+    private readonly IPagedIndexer<AssimilateIndex> _assimilateInventory;
 
     private readonly HubConnection _connection;
     private Stopwatch _stopwatch = new();
@@ -31,21 +29,21 @@ public class BatchService : IBatchService
 
     public BatchService(
         IOptions<ApiConfig> config,
-        IPagedIndexer<ExtractorIndex> extractInventory,
         IPagedIndexer<BatchIndex> batchInventory,
+        IPagedIndexer<AssimilateIndex> assimilateInventory,
         IInventoryIndexer dateInventory,
         IMetricsMerger metricsMerger,
         ISeriesMerger seriesMerger,
         IEventsMerger eventsMerger
     )
     {
-        this._config = config.Value;
-        this._extractInventory = extractInventory;
-        this._batchInventory = batchInventory;
-        this._dateInventory = dateInventory;
-        this._metricsMerger = metricsMerger;
-        this._seriesMerger = seriesMerger;
-        this._eventsMerger = eventsMerger;
+        _config = config.Value;
+        _batchInventory = batchInventory;
+        _assimilateInventory = assimilateInventory;
+        _dateInventory = dateInventory;
+        _metricsMerger = metricsMerger;
+        _seriesMerger = seriesMerger;
+        _eventsMerger = eventsMerger;
 
         _connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
@@ -55,67 +53,44 @@ public class BatchService : IBatchService
 
     public async Task CombineFilesAsync(string convergancePath, CancellationToken ct)
     {
-        await _connection.InvokeAsync(
-            Const.Hubs.Ingester.WorkerInfo,
-            "Starting batch.",
-            cancellationToken: ct
-        );
+        await ReportStarting(ct);
 
-        var minYear = _dateInventory.GetMinYear();
-        var curYear = DateTime.UtcNow.Year;
-        var runYear = minYear;
+        var pageCount = int.MaxValue;
+        var pageNo = 0;
 
         _stopwatch = new Stopwatch();
-        while (runYear <= curYear && !ct.IsCancellationRequested)
+        while (pageCount > 0 && !ct.IsCancellationRequested)
         {
-            var year = runYear;
-            var items = _extractInventory
-                .GetFiltered(x => x.Timestamp.HasValue && x.Timestamp.Value.Year == year)
-                .ToArray();
+            var page = _dateInventory.GetDaysPaged(pageNo);
+            pageNo++;
+            pageCount = page.Items.Count();
 
-            var dayCol = items
-                .SelectMany(x => x.ExtractedFiles)
-                .Where(x => x.Range == DateRanges.Day)
-                .ToArray();
-            var dayGroup = dayCol.GroupBy(x => x.Timestamp.Date);
-            foreach (var group in dayGroup)
-                await HandleExtractionGroup(ct, group, DataKind.Day);
-
-            var sessionCol = items
-                .SelectMany(x => x.ExtractedFiles)
-                .Where(x => x.Range == DateRanges.Time)
-                .ToArray();
-            var sessionGroup = sessionCol.GroupBy(x => x.Timestamp);
-            foreach (var group in sessionGroup)
-                await HandleExtractionGroup(ct, group, DataKind.Session);
-
-            runYear++;
+            foreach (var item in page.Items)
+                await HandleAssimilation(ct, item, item.IsDay ? DataKind.Day : DataKind.Session);
         }
 
-        await _connection.InvokeAsync(
-            Const.Hubs.Ingester.WorkerInfo,
-            "Finished batch.",
-            cancellationToken: ct
-        );
+        await ReportFinished(ct);
+    }
 
-        await _connection.InvokeAsync(
-            Const.Hubs.Ingester.BatchFinished,
-            "Finished batch.",
-            cancellationToken: ct
-        );
+    private async Task HandleAssimilation(CancellationToken ct, InventoryIndex item, DataKind kind)
+    {
+        var assimilations = _assimilateInventory
+            .GetFiltered(x => x.Kind == kind && x.Timestamp == item.Timestamp)
+            .ToList();
+
+        await HandleExtractionGroup(ct, item.Timestamp, assimilations, kind);
     }
 
     private async Task HandleExtractionGroup(
         CancellationToken ct,
-        IGrouping<DateTime, ExtractionSnippet> group,
+        DateTime timestamp,
+        List<AssimilateIndex> assimilations,
         DataKind kind
     )
     {
         ct.ThrowIfCancellationRequested();
 
-        var timestamp = group.Key;
-        var indexes = group.ToArray();
-        var files = indexes.Select(x => x.Path).ToArray();
+        var files = assimilations.Select(x => x.Path).ToArray();
         var extracts = files.Select(FileExtraction.FromFile).ToArray();
         var parameters = new List<string>();
 
@@ -124,15 +99,15 @@ public class BatchService : IBatchService
         var metricsParameters = metrics.SelectMany(x => x.Keys.Select(y => y.ToString()));
         parameters.AddRange(metricsParameters);
 
-        var series = extracts.Select(x => x.Series).ToArray();
-        var seriesMerge = series.Select(_seriesMerger.Normalize).ToArray();
-        var seriesParameters = series.SelectMany(x => x.Keys.Select(y => y.ToString()));
-        parameters.AddRange(seriesParameters);
-
         var events = extracts.Select(x => x.Events.ToArray()).ToArray();
         var eventMerge = _eventsMerger.Merge(events);
         var eventParameters = events.SelectMany(x => x.Select(y => y.Type.ToString()));
         parameters.AddRange(eventParameters);
+
+        var series = extracts.Select(x => x.Series).ToArray();
+        var seriesMerge = series.Select(_seriesMerger.Normalize).ToArray();
+        var seriesParameters = series.SelectMany(x => x.Keys.Select(y => y.ToString()));
+        parameters.AddRange(seriesParameters);
 
         var timedSeries = seriesMerge.Where(x => x.Samples != null).Select(x => x.Samples).ToList();
         var tracks = seriesMerge.Where(x => x.Track != null).Select(x => x.Track).ToList();
@@ -148,7 +123,9 @@ public class BatchService : IBatchService
             Tracks = tracks,
             Pulses = pulses,
             Metrics = metricsMerge,
-            Extractions = indexes.DistinctBy(x => x.Hash).ToDictionary(x => x.Hash, y => y.Path),
+            Assimilations = assimilations
+                .DistinctBy(x => x.Hash)
+                .ToDictionary(x => x.Hash, y => y.Path),
         };
 
         var filepath = mergeFile.Write(_config.MergeDirectoryPath);
@@ -166,6 +143,9 @@ public class BatchService : IBatchService
             Pulses = mergeFile.Pulses.Count,
             Events = mergeFile.Events.Resolved.Count,
             Parameters = parameters.Distinct().ToList(),
+            Assimilations = assimilations
+                .DistinctBy(x => x.Hash)
+                .ToDictionary(x => x.Hash, y => y.Path),
             Filepath = filepath,
             Hash = hash,
         };
@@ -173,6 +153,15 @@ public class BatchService : IBatchService
         _batchInventory.Set(batchIndex);
 
         await ReportProgressAsync(0, ct);
+    }
+
+    private async Task ReportStarting(CancellationToken ct)
+    {
+        await _connection.InvokeAsync(
+            Const.Hubs.Ingester.WorkerInfo,
+            "Starting batch.",
+            cancellationToken: ct
+        );
     }
 
     private async Task ReportProgressAsync(int counter, CancellationToken ct)
@@ -187,5 +176,20 @@ public class BatchService : IBatchService
         );
 
         _stopwatch.Restart();
+    }
+
+    private async Task ReportFinished(CancellationToken ct)
+    {
+        await _connection.InvokeAsync(
+            Const.Hubs.Ingester.WorkerInfo,
+            "Finished batch.",
+            cancellationToken: ct
+        );
+
+        await _connection.InvokeAsync(
+            Const.Hubs.Ingester.BatchFinished,
+            "Finished batch.",
+            cancellationToken: ct
+        );
     }
 }

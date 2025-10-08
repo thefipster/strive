@@ -49,5 +49,18 @@
         PolarTakeoutGenericPeriodSpo2,
         PolarTakeoutGenericPeriodSkinContact,
         PolarTakeoutGenericPeriodEcg,
+        TheFipsterAppWeight,
+        WithingsBloodPressure,
+        PolarFlowOrthostaticTest,
+        PolarFlowSleepWake,
+        PolarFlowNightlyRecovery,
+        PolarFlowNightlyRecoveryBlob,
+        StravaActivities,
+        GarminSleepData,
+        GarminUdsFile,
+        GoogleTimeline,
+        WithingsOther,
+        WithingsSignal,
+        GoogleTimelineDevice,
     }
 }

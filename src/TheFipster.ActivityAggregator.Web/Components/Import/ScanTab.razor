@@ -2,48 +2,66 @@
     <MudCard>
         <MudCardHeader>
             <CardHeaderContent>
-                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                        <MudText Typo="Typo.h4">Scan uploaded files</MudText>
-                        <MudIconButton Color="Color.Primary"
-                                       OnClick="@OnScanClicked"
-                                       Disabled="@_isScanActive"
-                                       Icon="@Icons.Material.Outlined.Radar">
-                        </MudIconButton>
-                    </MudStack>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h4">Scan uploaded files</MudText>
+                    <MudIconButton Color="Color.Primary"
+                                   OnClick="@OnScanClicked"
+                                   Disabled="@_isScanActive"
+                                   Icon="@Icons.Material.Outlined.Radar">
+                    </MudIconButton>
+                </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Indeterminate="@_isScanActive" />
+        <MudProgressLinear Color="Color.Primary" Indeterminate="@_isScanActive"/>
         <MudCardContent>
             <MudTable T="FileIndex" @ref="_fileTable" ServerData="@LoadServerData"
                       RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
                 <ToolBarContent>
-                    <MudText Typo="Typo.h6">Files</MudText>
-                    <MudSpacer />
-                    <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
-                    <MudSpacer />
-                    <MudToggleGroup T="string" Size="Size.Small" Value="@("All")">
-                        <MudToggleItem Value="@("All")" />
-                        <MudToggleItem Value="@("Classified")" />
-                        <MudToggleItem Value="@("Unclassified")" />
-                        <MudToggleItem Value="@("Errors")" />
-                    </MudToggleGroup>
-                    
+                    <MudTextField T="string" Label="Filename" Placeholder="Search" ValueChanged="@(s => OnSearch(s))"
+                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Small" Class="mt-0"></MudTextField>
+                    <MudSpacer/>
+                    <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
+                        <MudSelectItem Value="@("All")">All Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("General")">General</MudSelectItem>
+                        <MudSelectItem Value="@("Classified")">Classified Files</MudSelectItem>
+                        <MudSelectItem Value="@("Unclassified")">Unclassified Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("Special")">Special</MudSelectItem>
+                        @if (_classifiers != null)
+                        {
+                            @foreach (var classifier in _classifiers)
+                            {
+                                <MudSelectItem Value="@classifier">@classifier</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                    <MudSpacer/>
+                    <MudSelect T="string" Label="Range" ValueChanged="@OnRangeFilterChanged">
+                        <MudSelectItem Value="@("All")">All Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("Special")">Special</MudSelectItem>
+                        @foreach (var range in _ranges)
+                        {
+                            <MudSelectItem Value="@range">@range</MudSelectItem>
+                        }
+                    </MudSelect>
                 </ToolBarContent>
                 <HeaderContent>
-                    <MudTh Style="width:190px;">Timestamp</MudTh>
-                    <MudTh Style="width:300px;">Source</MudTh>
-                    <MudTh>File</MudTh> <!-- this one grows -->
-                    <MudTh Style="width:100px;">Size</MudTh>
                     <MudTh Style="width:160px;">Indexed</MudTh>
+                    <MudTh>File</MudTh> <!-- this one grows -->
+                    <MudTh Style="width:300px;">Classification</MudTh>
+                    <MudTh Style="width:100px;">Range</MudTh>
+                    <MudTh Style="width:160px;">Timestamp</MudTh>
+                    <MudTh Style="width:100px;">Size</MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd>@context.Timestamp</MudTd>
-                    <MudTd>@context.Source</MudTd>
+                    <MudTd>@context.IndexedAt.ToLocalTime().ToString("g")</MudTd>
                     <MudTd>@(new FileInfo(context.Path).Name)</MudTd>
+                    <MudTd>@context.Source</MudTd>
+                    <MudTd>@context.Range</MudTd>
+                    <MudTd>@(context.Timestamp.HasValue ? context.Timestamp.Value.ToString("g") : string.Empty)</MudTd>
                     <MudTd>
                         <FipFileSize Typo="Typo.body1" Size="@context.Size"></FipFileSize>
                     </MudTd>
-                    <MudTd>@context.IndexedAt.ToLocalTime().ToString("g")</MudTd>
                 </RowTemplate>
                 <PagerContent>
                     <MudTablePager/>

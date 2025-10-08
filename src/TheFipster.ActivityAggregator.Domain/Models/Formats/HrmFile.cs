@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
 {
     public class HrmFile
     {
-        private readonly string filepath;
+        private readonly string _filepath;
 
         public HrmFile(string filepath)
         {
@@ -16,7 +16,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
             if (header == null || !header.Any() || header.First() != "[Params]")
                 throw new ArgumentException($"File {filepath} is not a hrm file.");
 
-            this.filepath = filepath;
+            this._filepath = filepath;
         }
 
         public Dictionary<string, string> GetParams()
@@ -25,7 +25,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
             const int bufferSize = 128;
             string section = string.Empty;
 
-            using var fileStream = File.OpenRead(filepath);
+            using var fileStream = File.OpenRead(_filepath);
             using var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, bufferSize);
 
             while (streamReader.ReadLine() is { } line)
@@ -57,7 +57,7 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
             const int bufferSize = 128;
             string section = string.Empty;
 
-            using var fileStream = File.OpenRead(filepath);
+            using var fileStream = File.OpenRead(_filepath);
             using var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, bufferSize);
 
             while (streamReader.ReadLine() is { } line)

@@ -1,12 +1,11 @@
 ﻿using System.Globalization;
 using System.Xml.Linq;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Formats
 {
     public class KmlFile
     {
-        private readonly XDocument doc;
+        private readonly XDocument _doc;
 
         public KmlFile(string filepath)
         {
@@ -14,9 +13,9 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
                 throw new ArgumentException($"File {filepath} doesn't exist.");
 
             var text = File.ReadAllText(filepath);
-            doc = XDocument.Parse(text);
+            _doc = XDocument.Parse(text);
 
-            if (doc.Root == null || doc.Root.Name.LocalName != "kml")
+            if (_doc.Root == null || _doc.Root.Name.LocalName != "kml")
                 throw new ArgumentException("File is not kml");
         }
 
@@ -25,13 +24,13 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Formats
             XNamespace ns1 = "http://earth.google.com/kml/2.1";
             XNamespace ns2 = "http://www.opengis.net/kml/2.2";
 
-            var linesString = doc.Descendants(ns1 + "LineString")
+            var linesString = _doc.Descendants(ns1 + "LineString")
                 .Elements(ns1 + "coordinates")
                 .ToArray();
 
             if (linesString.Length == 0)
             {
-                linesString = doc.Descendants(ns2 + "LineString")
+                linesString = _doc.Descendants(ns2 + "LineString")
                     .Elements(ns2 + "coordinates")
                     .ToArray();
             }

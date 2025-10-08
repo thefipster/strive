@@ -4,7 +4,6 @@ namespace TheFipster.ActivityAggregator.Importer;
 
 public class Registry : IImporterRegistry
 {
-    private IReadOnlyList<IFileImporter>? _importers;
     private IReadOnlyList<IFileClassifier>? _classifiers;
     private IReadOnlyList<IFileExtractor>? _extractors;
 
@@ -42,23 +41,5 @@ public class Registry : IImporterRegistry
         }
 
         return _extractors;
-    }
-
-    public IEnumerable<IFileImporter> LoadImporters()
-    {
-        if (_importers == null)
-        {
-            var assembly = typeof(Registry).Assembly;
-
-            _importers = assembly
-                .GetTypes()
-                .Where(t =>
-                    !t.IsAbstract && !t.IsInterface && typeof(IFileImporter).IsAssignableFrom(t)
-                )
-                .Select(t => (IFileImporter)Activator.CreateInstance(t)!)
-                .ToList();
-        }
-
-        return _importers;
     }
 }

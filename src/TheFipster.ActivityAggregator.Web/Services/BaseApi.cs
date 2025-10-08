@@ -40,6 +40,21 @@ public abstract class BaseApi
         return collection;
     }
 
+    protected async Task<Dictionary<TKey, TValue>> GetDictionaryAsync<TKey, TValue>(string query)
+        where TKey : notnull
+    {
+        var json = await GetBodyAsync(query);
+        var collection = JsonSerializer.Deserialize<Dictionary<TKey, TValue>>(
+            json,
+            JsonStandards.Options
+        );
+
+        if (collection == null)
+            throw new InvalidDataException("Result couldn't be parsed.");
+
+        return collection;
+    }
+
     protected async Task<PagedResult<TResult>> GetPagedAsync<TResult>(string query)
     {
         var json = await GetBodyAsync(query);

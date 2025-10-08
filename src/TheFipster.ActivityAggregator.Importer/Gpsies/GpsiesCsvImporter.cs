@@ -1,6 +1,6 @@
 ﻿using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models.Scanner;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
@@ -12,7 +12,7 @@ namespace TheFipster.ActivityAggregator.Importer.Gpsies
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 
-        private readonly List<string> header = ["Latitude,Longitude,Elevation"];
+        private readonly List<string> _header = ["Latitude,Longitude,Elevation"];
 
         public ImportClassification Classify(FileProbe probe)
         {
@@ -32,15 +32,18 @@ namespace TheFipster.ActivityAggregator.Importer.Gpsies
                     "Couldn't get two lines."
                 );
 
-            if (header.All(x => x != lines.First()))
+            if (_header.All(x => x != lines.First()))
                 throw new ClassificationException(probe.Filepath, Source, "Couldn't match header.");
+
+            var directory = new FileInfo(probe.Filepath).Directory;
+            var date = DateHelper.GetDateFromMyCollectionDirectory(directory);
 
             return new ImportClassification
             {
                 Filepath = probe.Filepath,
                 Source = Source,
-                Datetime = DateTime.MaxValue,
-                Datetype = DateRanges.Day,
+                Datetime = date,
+                Datetype = DateRanges.Time,
             };
         }
     }

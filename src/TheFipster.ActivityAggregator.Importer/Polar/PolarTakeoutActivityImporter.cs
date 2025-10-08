@@ -2,15 +2,16 @@
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
-using TheFipster.ActivityAggregator.Domain.Models.Scanner;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
-    public class PolarTakeoutActivityImporter : IFileImporter
+    public class PolarTakeoutActivityImporter : IFileClassifier, IFileExtractor
     {
         public DataSources Source => DataSources.PolarTakeoutActivity;
         public int ClassifierVersion => 1;
@@ -62,7 +63,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             };
         }
 
-        public List<FileExtraction> Extract(ArchiveIndex file)
+        public List<FileExtraction> Extract(ExtractionRequest file)
         {
             var json = File.ReadAllText(file.Filepath);
             var activity =
@@ -84,7 +85,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         private List<FileExtraction> AppendMetsSeries(
             List<FileExtraction> results,
-            ArchiveIndex file,
+            ExtractionRequest file,
             PolarTakeoutActivity activity
         )
         {
@@ -123,7 +124,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         private List<FileExtraction> AppendStepsSeries(
             List<FileExtraction> results,
-            ArchiveIndex file,
+            ExtractionRequest file,
             PolarTakeoutActivity activity
         )
         {
@@ -162,7 +163,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
         private List<FileExtraction> AppendSummaryAttributes(
             List<FileExtraction> results,
-            ArchiveIndex file,
+            ExtractionRequest file,
             PolarTakeoutActivity activity
         )
         {

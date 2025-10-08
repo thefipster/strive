@@ -4,10 +4,11 @@ using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Extensions;
-using TheFipster.ActivityAggregator.Domain.Models.Components;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
@@ -21,20 +22,23 @@ public class AssimilaterService : IAssimilaterService
     private readonly IImporterRegistry _registry;
     private readonly IOptions<ApiConfig> _config;
     private readonly IInventoryIndexer _inventory;
+    private readonly IIndexer<AssimilateIndex> _assimilateInventory;
 
     public AssimilaterService(
         IOptions<ApiConfig> config,
         IPagedIndexer<FileIndex> fileInventory,
         IIndexer<ExtractorIndex> extractInventory,
+        IIndexer<AssimilateIndex> assimilateInventory,
         IInventoryIndexer inventory,
         IImporterRegistry registry
     )
     {
-        this._fileInventory = fileInventory;
-        this._extractInventory = extractInventory;
-        this._registry = registry;
-        this._config = config;
-        this._inventory = inventory;
+        _fileInventory = fileInventory;
+        _extractInventory = extractInventory;
+        _assimilateInventory = assimilateInventory;
+        _registry = registry;
+        _config = config;
+        _inventory = inventory;
 
         _connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
@@ -77,13 +81,12 @@ public class AssimilaterService : IAssimilaterService
                 if (extractor == null)
                     continue;
 
-                var archive = new ArchiveIndex
+                var archive = new ExtractionRequest
                 {
                     Source = file.Source!.Value,
                     Date = file.Timestamp!.Value,
                     Filepath = file.Path,
                     Range = file.Range!.Value,
-                    Md5Hash = file.Hash,
                 };
 
                 try
@@ -107,6 +110,7 @@ public class AssimilaterService : IAssimilaterService
                             Path = extractFilepath,
                             Range = extract.Range,
                             Hash = hash,
+                            Size = size,
                         };
                         extracts.Add(snippet);
 
@@ -133,6 +137,23 @@ public class AssimilaterService : IAssimilaterService
                     };
 
                     _extractInventory.Set(extractionIndex);
+
+                    foreach (var extract in extracts)
+                    {
+                        var assimilation = new AssimilateIndex
+                        {
+                            Hash = extract.Hash,
+                            FileHash = extractionIndex.FileHash,
+                            Path = extract.Path,
+                            Timestamp = extract.Timestamp,
+                            Size = extract.Size,
+                            Kind =
+                                extract.Range == DateRanges.Time ? DataKind.Session : DataKind.Day,
+                            Source = extractionIndex.Source.Value,
+                        };
+
+                        _assimilateInventory.Set(assimilation);
+                    }
                 }
                 catch (Exception)
                 {

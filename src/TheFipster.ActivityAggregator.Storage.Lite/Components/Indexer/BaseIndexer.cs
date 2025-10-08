@@ -14,7 +14,9 @@ public class BaseIndexer<TIndex>(IndexerContext context) : IIndexer<TIndex>
 
     public void Set(TIndex index) => Collection.Upsert(index);
 
-    public TIndex? GetById(string id) => Collection.FindById(new BsonValue(id));
+    public TIndex? GetById(object id) => Collection.FindById(new BsonValue(id));
 
     public IEnumerable<TIndex> GetAll() => Collection.FindAll();
+
+    public bool Exists(Expression<Func<TIndex, bool>> filter) => Collection.Exists(filter);
 }

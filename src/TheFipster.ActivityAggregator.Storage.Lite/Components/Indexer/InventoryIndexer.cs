@@ -1,5 +1,6 @@
 using LiteDB;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Context;
 
@@ -66,6 +67,25 @@ public class InventoryIndexer(IndexerContext context)
             .Find(x => x.Timestamp >= start && x.Timestamp < end)
             .OrderByDescending(x => x.Timestamp)
             .ToList();
+    }
+
+    public PagedResult<InventoryIndex> GetDaysPaged(
+        int page,
+        int size = 10,
+        bool descending = false
+    )
+    {
+        var query = Collection.Query();
+
+        if (descending)
+            query.OrderByDescending(x => x.Timestamp);
+        else
+            query.OrderBy(x => x.Timestamp);
+
+        var count = query.Count();
+        var items = query.Skip(page * size).Limit(size);
+
+        return new PagedResult<InventoryIndex>(items.ToList(), page, size, count);
     }
 
     public int GetMinYear() =>

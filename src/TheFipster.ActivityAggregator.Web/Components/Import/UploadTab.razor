@@ -4,12 +4,12 @@
             <CardHeaderContent>
                     <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                         <MudText Typo="Typo.h4">Upload zip file</MudText>
-                        <MudText>@fileName</MudText>
-                        <MudFileUpload @key="uploadKey" T="IBrowserFile" Accept="@Filter"
+                        <MudText>@_fileName</MudText>
+                        <MudFileUpload @key="_uploadKey" T="IBrowserFile" Accept="@Filter"
                                        FilesChanged="@OnFilesChanged">
                             <ActivatorContent>
                                 <MudIconButton Color="Color.Primary"
-                                               Disabled="@uploadDisabled"
+                                               Disabled="@_uploadDisabled"
                                                Icon="@Icons.Material.Outlined.Upload">
                                 </MudIconButton>
                             </ActivatorContent>
@@ -18,16 +18,14 @@
             </CardHeaderContent>
         </MudCardHeader>
         
-        <MudProgressLinear Class="" Color="Color.Primary" Value="@progress"/>
+        <MudProgressLinear Class="" Color="Color.Primary" Value="@_progress"/>
 
         <MudCardContent Class="d-flex align-center">
-            <MudTable Context="item" Loading="@isLoading" Items="@zips.OrderByDescending(x => x.IndexedAt)"
+            <MudTable @ref="_fileTable" Context="item" ServerData="@LoadServerData"
                       Elevation="0" Style="width: 100%">
                 <ToolBarContent>
-                    <MudText Typo="Typo.h6">Zips</MudText>
-                    <MudSpacer/>
                     <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="@OnSearchFilterChanged" IconSize="Size.Small"
                                   Class="mt-0"></MudTextField>
                 </ToolBarContent>
                 <HeaderContent>

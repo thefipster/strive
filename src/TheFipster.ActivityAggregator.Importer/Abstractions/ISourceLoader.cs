@@ -1,4 +1,4 @@
-﻿using TheFipster.ActivityAggregator.Domain.Models.Scanner;
+﻿using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Importer.Abstractions
 {

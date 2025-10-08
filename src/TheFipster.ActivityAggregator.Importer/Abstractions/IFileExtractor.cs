@@ -1,5 +1,6 @@
 ﻿using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Extraction;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Importer.Abstractions
 {
@@ -9,6 +10,6 @@ namespace TheFipster.ActivityAggregator.Importer.Abstractions
 
         DataSources Source { get; }
 
-        List<FileExtraction> Extract(ArchiveIndex file);
+        List<FileExtraction> Extract(ExtractionRequest file);
     }
 }

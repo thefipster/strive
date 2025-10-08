@@ -11,6 +11,12 @@ public class ClassificationTests(TestFileFixture fixture) : IClassFixture<TestFi
     [Theory]
     [MemberData(nameof(GetPolarFlowCases))]
     [MemberData(nameof(GetGoogleFitbitCases))]
+    [MemberData(nameof(GetGoogleTimelineCases))]
+    [MemberData(nameof(GetWithingsCases))]
+    [MemberData(nameof(GetGarminCases))]
+    [MemberData(nameof(GetStravaCases))]
+    [MemberData(nameof(GetTheFipsterAppCases))]
+    [MemberData(nameof(GetMyCollectionCases))]
     public void ClassifyFile_OfCorrectType_ReturnsClassification(FileClassificationCase test)
     {
         // Arrange
@@ -29,8 +35,26 @@ public class ClassificationTests(TestFileFixture fixture) : IClassFixture<TestFi
     }
 
     public static IEnumerable<object[]> GetPolarFlowCases() =>
-        PolarTakeoutClassificationDefinitions.GetClassificationCases();
+        PolarFlowClassificationDefinitions.GetClassificationCases();
 
     public static IEnumerable<object[]> GetGoogleFitbitCases() =>
-        FitbitTakeoutClassificationDefinitions.GetClassificationCases();
+        GoogleFitbitClassificationDefinitions.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetGoogleTimelineCases() =>
+        GoogleTimelineClassificationDefinitions.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetWithingsCases() =>
+        WithingsClassificationDefinitions.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetGarminCases() =>
+        GarminClassificationDefinition.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetStravaCases() =>
+        StravaClassificationDefinition.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetTheFipsterAppCases() =>
+        TheFipsterAppClassificationDefinition.GetClassificationCases();
+
+    public static IEnumerable<object[]> GetMyCollectionCases() =>
+        MyCollectionClassificationDefinitions.GetClassificationCases();
 }

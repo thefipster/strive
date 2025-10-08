@@ -1,58 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Abstraction;
-using TheFipster.ActivityAggregator.Api.Models;
-using TheFipster.ActivityAggregator.Domain.Configs;
-using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Api.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Api.Controllers;
 
 [ApiController]
 [Route("api/upload")]
-public class UploadController(
-    IUploader uploader,
-    IOptions<ApiConfig> config,
-    IIndexer<ZipIndex> zipIndex,
-    IBackgroundTaskQueue tasks,
-    IUnzipService unzipper
-) : ControllerBase
+public class UploadController(IZipsAction zipsAction, IChunkAction chunkAction) : ControllerBase
 {
     [HttpGet("zips")]
-    public IEnumerable<ZipIndex> GetZipInventory() => zipIndex.GetAll();
+    public IActionResult GetZipFilePage([FromQuery] UploadFilePageRequest request) =>
+        Ok(zipsAction.TryGetZipFilePage(request));
 
     [HttpPost("chunk")]
     [DisableRequestSizeLimit]
-    public async Task<IActionResult> UploadChunk([FromForm] UploadChunkRequest request)
-    {
-        try
-        {
-            var uploadFilepath = await uploader.EnsureChunk(request, config.Value);
-            var destinationDirectory = config.Value.UnzipDirectoryPath;
-
-            if (
-                !string.IsNullOrWhiteSpace(uploadFilepath)
-                && !string.IsNullOrWhiteSpace(destinationDirectory)
-            )
-            {
-                tasks.QueueBackgroundWorkItem(async ct =>
-                    await unzipper.ExtractAsync(uploadFilepath, destinationDirectory, ct)
-                );
-            }
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-        catch (DataMisalignedException)
-        {
-            return StatusCode(500);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
-
-        return Ok();
-    }
+    public async Task UploadChunk([FromForm] UploadChunkRequest request) =>
+        await chunkAction.TryUploadChunkAsync(request);
 }

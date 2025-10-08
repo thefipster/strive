@@ -4,18 +4,19 @@
             <CardHeaderContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.h4">Batches</MudText>
-                    <MudIconButton Color="Color.Primary" OnClick="@OnMergeClicked" Disabled="@isMergeActive"
+                    <MudIconButton Color="Color.Primary" OnClick="@OnMergeClicked" Disabled="@_isMergeActive"
                                    Icon="@Icons.Material.Outlined.Merge">
                     </MudIconButton>
                 </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Indeterminate="@isMergeActive"/>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="@_isMergeActive"/>
         <MudCardContent Class="d-flex justify-center align-center">
-            <MudToggleGroup T="int" Value="@selectedYear" ValueChanged="@OnYearChange" Outlined="true" Delimiters="true">
-                @if (index.Any())
+            <MudToggleGroup T="int" Value="@_selectedYear" ValueChanged="@OnYearChange" Outlined="true"
+                            Delimiters="true">
+                @if (_index.Any())
                 {
-                    @foreach (var item in index)
+                    @foreach (var item in _index)
                     {
                         <MudToggleItem Value="@item.Key" Style="width: 75px;">@item.Key</MudToggleItem>
                     }
@@ -26,7 +27,10 @@
 
     <MudCard>
         <MudCardContent Class="d-flex align-center">
-            <YearCalendar Year="@selectedYear" Inventory="@inventory"></YearCalendar>
+            @if (_isRendered)
+            {
+                <YearCalendar Year="@_selectedYear" Inventory="@_inventory" Batches="@_batchDates"></YearCalendar>
+            }
         </MudCardContent>
     </MudCard>
 </MudContainer>

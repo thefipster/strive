@@ -5,14 +5,14 @@ namespace TheFipster.ActivityAggregator.Api.Components;
 
 public class BackgroundTaskQueue : IBackgroundTaskQueue
 {
-    private readonly Channel<Func<CancellationToken, Task>> queue = Channel.CreateUnbounded<
+    private readonly Channel<Func<CancellationToken, Task>> _queue = Channel.CreateUnbounded<
         Func<CancellationToken, Task>
     >();
 
     public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem) =>
-        queue.Writer.TryWrite(workItem);
+        _queue.Writer.TryWrite(workItem);
 
     public async Task<Func<CancellationToken, Task>> DequeueAsync(
         CancellationToken cancellationToken
-    ) => await queue.Reader.ReadAsync(cancellationToken);
+    ) => await _queue.Reader.ReadAsync(cancellationToken);
 }

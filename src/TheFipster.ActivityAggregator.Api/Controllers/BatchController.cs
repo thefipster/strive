@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Abstraction;
 using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
@@ -17,36 +19,78 @@ public class BatchController(
     IBackgroundTaskQueue tasks
 ) : ControllerBase
 {
-    [HttpGet("merge")]
-    public PagedResult<BatchIndex> GetFilePage(int page = 0, int size = 10) =>
-        batchIndex.GetPaged(page, size);
-
     [HttpGet]
     public IActionResult Batch()
     {
         try
         {
-            var convergancePath = config.Value.ConvergeDirectoryPath;
-            if (!string.IsNullOrWhiteSpace(convergancePath))
+            var convergencePath = config.Value.ConvergeDirectoryPath;
+            if (!string.IsNullOrWhiteSpace(convergencePath))
             {
                 tasks.QueueBackgroundWorkItem(async ct =>
-                    await batcher.CombineFilesAsync(convergancePath, ct)
+                    await batcher.CombineFilesAsync(convergencePath, ct)
                 );
             }
+            return Ok();
         }
         catch (ArgumentException e)
         {
             return BadRequest(e.Message);
         }
-        catch (DataMisalignedException)
+    }
+
+    [HttpGet("exists/{year}")]
+    public IEnumerable<DateTime> GetExists(int year)
+    {
+        return batchIndex
+            .GetFiltered(x => x.Timestamp.Year == year)
+            .Select(x => x.Timestamp.Date)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+    }
+
+    [HttpGet("merge")]
+    public PagedResult<BatchIndex> GetPage([FromQuery] PagedRequest request)
+    {
+        return batchIndex.GetPaged(request);
+    }
+
+    [HttpGet("merge/{date}")]
+    public IActionResult GetBatchByDate(string date)
+    {
+        if (!DateTime.TryParse(date, out DateTime day))
         {
-            return StatusCode(500);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
+            throw new HttpResponseException(
+                400,
+                "Invalid date format, use yyyy-MM-dd or ISO-8601."
+            );
         }
 
-        return Ok();
+        var batch = batchIndex.GetFiltered(x => x.Timestamp.Date == day.Date);
+        if (!batch.Any())
+            throw new HttpResponseException(404, "Batch not found.");
+
+        return Ok(batch);
+    }
+
+    [HttpGet("merge/{date}/file")]
+    [DisableRequestSizeLimit]
+    public IActionResult GetMergedFileByDate(string date)
+    {
+        if (!DateTime.TryParse(date, out DateTime timestamp))
+        {
+            throw new HttpResponseException(
+                400,
+                "Invalid date format, use yyyy-MM-ddTHH:mm:ss.fff or ISO-8601."
+            );
+        }
+
+        var batch = batchIndex.GetById(timestamp);
+        if (batch == null)
+            throw new HttpResponseException(404, "Batch not found.");
+
+        var file = MergedFile.FromFile(batch.Filepath);
+        return Ok(file);
     }
 }

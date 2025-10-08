@@ -4,4 +4,5 @@ public enum EventTypes
 {
     Spo2Measurement,
     EcgTest,
+    Bodyweight,
 }

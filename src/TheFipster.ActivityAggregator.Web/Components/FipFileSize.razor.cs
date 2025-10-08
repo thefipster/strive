@@ -16,7 +16,7 @@ public partial class FipFileSize : ComponentBase
     [Category(CategoryTypes.Text.Appearance)]
     public Typo Typo { get; set; } = Typo.body1;
 
-    private string sizeText = string.Empty;
+    private string _sizeText = string.Empty;
 
     protected override void OnParametersSet()
     {
@@ -43,7 +43,7 @@ public partial class FipFileSize : ComponentBase
             size = Size;
         }
 
-        sizeText = $"{size:0.#} {unit}";
+        _sizeText = $"{size:0.#} {unit}";
 
         StateHasChanged();
 

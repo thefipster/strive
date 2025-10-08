@@ -1,0 +1,25 @@
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5 flex-grow-1" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.h4">Import Information</MudText>
+                    </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="d-flex align-center">
+            <MudTable Context="item" Items="_capabilities" Dense="true" Hover="true" Elevation="0" Style="width: 100%;">
+                <HeaderContent>
+                    <MudTh Style="width:160px;">Source File</MudTh>
+                    <MudTh Style="width:160px;">Classifier</MudTh>
+                    <MudTh Style="width:160px;">Extractor</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Upload date">@item.Source</MudTd>
+                    <MudTd DataLabel="Upload date">@(item.ClassifierVersion.HasValue ? $"V{item.ClassifierVersion}" : "")</MudTd>
+                    <MudTd DataLabel="Upload date">@(item.ExtractorVersion.HasValue ? $"V{item.ExtractorVersion}" : "")</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
