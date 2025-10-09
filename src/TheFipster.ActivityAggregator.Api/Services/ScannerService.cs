@@ -11,7 +11,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Logic;
+namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class ScannerService : IScannerService
 {

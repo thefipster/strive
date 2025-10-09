@@ -4,5 +4,5 @@ namespace TheFipster.ActivityAggregator.Api.Components.Contracts;
 
 public interface IUnzipper
 {
-    DirectoryStats Extract(string zipFilePath, string destinationDirectory, bool overwrite = false);
+    DirectoryStats Extract(string zipFilePath, bool overwrite = false);
 }

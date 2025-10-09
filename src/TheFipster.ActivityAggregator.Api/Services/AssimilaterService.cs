@@ -12,7 +12,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Logic;
+namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class AssimilaterService : IAssimilaterService
 {

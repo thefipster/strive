@@ -4,7 +4,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
-namespace TheFipster.ActivityAggregator.Api.Components.Logic;
+namespace TheFipster.ActivityAggregator.Api.Components;
 
 public class SeriesMerger : ISeriesMerger
 {

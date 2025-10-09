@@ -2,7 +2,7 @@ using TheFipster.ActivityAggregator.Api.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
-namespace TheFipster.ActivityAggregator.Api.Components.Logic;
+namespace TheFipster.ActivityAggregator.Api.Components;
 
 public class MetricsMerger : IMetricsMerger
 {

@@ -11,7 +11,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Logic;
+namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class BatchService : IBatchService
 {

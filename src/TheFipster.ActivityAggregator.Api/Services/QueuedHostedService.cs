@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Api.Components.Contracts;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Logic;
+namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class QueuedHostedService : BackgroundService
 {

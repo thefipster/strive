@@ -5,7 +5,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Api.Components.Logic;
+namespace TheFipster.ActivityAggregator.Api.Components;
 
 public class Classifier(IImporterRegistry registry, ILogger<Classifier> logger) : IClassifier
 {

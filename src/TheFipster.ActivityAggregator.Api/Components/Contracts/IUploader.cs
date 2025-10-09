@@ -1,9 +1,13 @@
 using TheFipster.ActivityAggregator.Api.Models.Requests;
-using TheFipster.ActivityAggregator.Domain.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Components.Contracts;
 
 public interface IUploader
 {
-    Task<string?> EnsureChunk(UploadChunkRequest request, ApiConfig config);
+    /// <summary>
+    /// Writes chunks to disc, if file is incomplete the return value will be null. After the last chunk the file will be finalized and the filepath will be returned.
+    /// </summary>
+    /// <param name="request">Request to upload a chunk</param>
+    /// <returns>Filepath of the final file when finished, until then null.</returns>
+    Task<string?> EnsureChunkAsync(UploadChunkRequest request);
 }

@@ -3,12 +3,14 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using TheFipster.ActivityAggregator.Api.Components;
 using TheFipster.ActivityAggregator.Api.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Components.Logic;
+using TheFipster.ActivityAggregator.Api.Components.Decoration;
 using TheFipster.ActivityAggregator.Api.Mediators.Upload;
 using TheFipster.ActivityAggregator.Api.Mediators.Upload.Contracts;
+using TheFipster.ActivityAggregator.Api.Mediators.Upload.Decorators;
+using TheFipster.ActivityAggregator.Api.Services;
 using TheFipster.ActivityAggregator.Api.Services.Contracts;
-using TheFipster.ActivityAggregator.Api.Services.Logic;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Importer;
@@ -39,6 +41,8 @@ public static class Setup
         services.AddTransient<IInventoryIndexer, InventoryIndexer>();
 
         services.AddTransient<IUnzipper, Unzipper>();
+        services.Decorate<IUnzipper, UnzipperValidator>();
+
         services.AddTransient<IIndexer<ZipIndex>, BaseIndexer<ZipIndex>>();
         services.AddTransient<IPagedIndexer<ZipIndex>, PagedIndexer<ZipIndex>>();
         services.AddTransient<IUnzipService, UnzipService>();
@@ -59,7 +63,10 @@ public static class Setup
         services.AddTransient<IBatchService, BatchService>();
 
         services.AddTransient<IChunkAction, ChunkAction>();
+        services.Decorate<IChunkAction, ChunkActionValidator>();
+
         services.AddTransient<IZipsAction, ZipsAction>();
+        services.Decorate<IZipsAction, ZipsActionValidator>();
 
         services.AddTransient<IHistoryIndexer, HistoryIndexer>();
 

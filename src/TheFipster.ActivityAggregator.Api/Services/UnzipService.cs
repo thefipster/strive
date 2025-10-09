@@ -1,23 +1,29 @@
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Components.Contracts;
 using TheFipster.ActivityAggregator.Api.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Logic;
+namespace TheFipster.ActivityAggregator.Api.Services;
 
 public class UnzipService : IUnzipService
 {
     private readonly HubConnection _connection;
     private readonly IUnzipper _unzip;
     private readonly IIndexer<ZipIndex> _indexer;
+    private readonly IOptions<ApiConfig> _config;
 
-    public UnzipService(IUnzipper unzip, IIndexer<ZipIndex> indexer)
+    private string UnzipPath => _config.Value.UnzipDirectoryPath;
+
+    public UnzipService(IUnzipper unzip, IIndexer<ZipIndex> indexer, IOptions<ApiConfig> config)
     {
         _unzip = unzip;
         _indexer = indexer;
+        _config = config;
 
         _connection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7260/hubs/ingest")
@@ -42,7 +48,7 @@ public class UnzipService : IUnzipService
         var zipSize = file.Length;
         var hash = await file.HashXx3Async(ct);
         var outputName = file.Name.Replace(file.Extension, string.Empty);
-        var outputPath = Path.Combine(outputDirectory, outputName);
+        var outputPath = Path.Combine(UnzipPath, outputName);
 
         var index = _indexer.GetById(hash);
         if (index != null)
@@ -61,7 +67,7 @@ public class UnzipService : IUnzipService
             return index;
         }
 
-        var stats = _unzip.Extract(zipFilepath, outputPath, true);
+        var stats = _unzip.Extract(zipFilepath, true);
 
         index = new ZipIndex
         {
