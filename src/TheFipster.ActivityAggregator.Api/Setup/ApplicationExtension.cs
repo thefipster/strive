@@ -2,17 +2,16 @@ using TheFipster.ActivityAggregator.Api.Components;
 using TheFipster.ActivityAggregator.Api.Components.Contracts;
 using TheFipster.ActivityAggregator.Api.Services;
 using TheFipster.ActivityAggregator.Api.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Setup.Application;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Importer;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Setup.Application;
+namespace TheFipster.ActivityAggregator.Api.Setup;
 
-public static class ServiceExtension
+public static class ApplicationExtension
 {
     public static void AddApplicationServices(
         this IServiceCollection services,
@@ -39,18 +38,6 @@ public static class ServiceExtension
     private static void AddConfig(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<ApiConfig>(configuration.GetSection(ApiConfig.ConfigSectionName));
-    }
-
-    private static void AddScannerFeature(this IServiceCollection services)
-    {
-        services.AddScoped<IIndexer<FileIndex>, BaseIndexer<FileIndex>>();
-        services.AddScoped<IPagedIndexer<FileIndex>, PagedIndexer<FileIndex>>();
-
-        services.AddSingleton<IImporterRegistry, Registry>();
-
-        services.AddScoped<IClassifier, Classifier>();
-
-        services.AddScoped<IScannerService, ScannerService>();
     }
 
     private static void AddAssimilateFeature(this IServiceCollection services)

@@ -1,3 +1,4 @@
+using TheFipster.ActivityAggregator.Api.Setup;
 using TheFipster.ActivityAggregator.Api.Setup.Application;
 using TheFipster.ActivityAggregator.Api.Setup.Infrastructure;
 
