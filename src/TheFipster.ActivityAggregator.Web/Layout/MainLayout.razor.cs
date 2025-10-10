@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
+using TheFipster.ActivityAggregator.Domain;
 
 namespace TheFipster.ActivityAggregator.Web.Layout;
 
@@ -33,16 +34,14 @@ public partial class MainLayout
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/hubs/ingest"))
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
             .Build();
 
-        _hubConnection.On<string>(
-            "OnWorkerStart",
-            (msg) =>
+        _hubConnection.On<string, bool>(
+            "ReportProcess",
+            (msg, _) =>
             {
-                if (Snackbar != null)
-                    Snackbar.Add(msg, Severity.Info);
-
+                Snackbar?.Add(msg, Severity.Info);
                 InvokeAsync(StateHasChanged);
             }
         );

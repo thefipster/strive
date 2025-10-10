@@ -101,15 +101,18 @@ public partial class UploadTab : ComponentBase
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri(Const.Hubs.Ingester.Url))
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
             .Build();
 
-        _hubConnection.On<string, string>(
-            Const.Hubs.Ingester.UnzipFinished,
-            (_, _) =>
+        _hubConnection.On<string, bool>(
+            "ReportProcess",
+            (_, update) =>
             {
-                _fileTable?.ReloadServerData();
-                InvokeAsync(StateHasChanged);
+                if (update)
+                {
+                    _fileTable?.ReloadServerData();
+                    InvokeAsync(StateHasChanged);
+                }
             }
         );
 

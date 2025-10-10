@@ -4,7 +4,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace TheFipster.ActivityAggregator.Api.Setup;
+namespace TheFipster.ActivityAggregator.Api.Setup.Infrastructure;
 
 public static class MetricsExtension
 {
@@ -21,8 +21,8 @@ public static class MetricsExtension
                 serviceVersion: Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
             );
 
+        services.AddMetrics();
         services
-            .AddMetrics()
             .AddOpenTelemetry()
             .ConfigureResource(c => c.AddService(nameof(Api)))
             .WithMetrics(provider =>
@@ -45,6 +45,7 @@ public static class MetricsExtension
                     options.SetSampler<AlwaysOnSampler>();
                 }
                 options.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation();
+                options.AddSource(nameof(Api));
             });
 
         if (!string.IsNullOrWhiteSpace(configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))

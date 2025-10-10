@@ -11,13 +11,12 @@ public class Unzipper(IOptions<ApiConfig> config) : IUnzipper
 {
     private string UnzipPath => config.Value.UnzipDirectoryPath;
 
-    /// <summary>
-    /// Extracts the contents of a zip file into the target directory.
-    /// </summary>
-    /// <param name="zipFilePath">The full path to the zip file.</param>
-    /// <param name="overwrite">If files in the output directory should be overwritten.</param>
     public DirectoryStats Extract(string zipFilePath, bool overwrite = false)
     {
+        var file = new FileInfo(zipFilePath);
+        var outputName = file.Name.Replace(file.Extension, string.Empty);
+        var outputPath = Path.Combine(UnzipPath, outputName);
+
         try
         {
             Directory.CreateDirectory(UnzipPath); // ensures target directory exists
@@ -31,7 +30,7 @@ public class Unzipper(IOptions<ApiConfig> config) : IUnzipper
             );
         }
 
-        ZipFile.ExtractToDirectory(zipFilePath, UnzipPath, overwrite);
-        return new DirectoryInfo(UnzipPath).GetFileCountAndSize();
+        ZipFile.ExtractToDirectory(zipFilePath, outputPath, overwrite);
+        return new DirectoryInfo(outputPath).GetFileCountAndSize();
     }
 }

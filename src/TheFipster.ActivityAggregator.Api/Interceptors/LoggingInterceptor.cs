@@ -2,7 +2,7 @@ using Castle.DynamicProxy;
 
 namespace TheFipster.ActivityAggregator.Api.Interceptors;
 
-public class VerboseInterceptor(ILogger<VerboseInterceptor> logger) : IInterceptor
+public class LoggingInterceptor(ILogger<LoggingInterceptor> logger) : IInterceptor
 {
     public void Intercept(IInvocation invocation)
     {
