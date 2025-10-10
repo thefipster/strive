@@ -1,35 +1,43 @@
+using Scalar.AspNetCore;
 using Serilog;
 using TheFipster.ActivityAggregator.Api;
+using TheFipster.ActivityAggregator.Api.Hubs;
 using TheFipster.ActivityAggregator.Api.Middleware;
+using TheFipster.ActivityAggregator.Api.Setup;
+using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Storage.Lite;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+var environment = builder.Environment;
 
-builder.Services.AddSerilog(c => c.ReadFrom.Configuration(builder.Configuration));
-builder.Services.AddMetrics(builder.Configuration, builder.Environment);
+builder.Services.AddLogging(configuration);
+builder.Services.AddMetrics(configuration, environment);
 builder.Services.AddCorsPolicies();
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddMiddleware();
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddLiteDbStorage(builder.Configuration);
-builder.Services.AddCustom(builder.Configuration);
+builder.Services.AddOpenApi();
+builder.Services.AddLiteDbStorage(configuration);
+builder.Services.AddApplicationServices(configuration);
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
-    app.UseCors("AllowAll");
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseCors(Const.Cors.AllowAll);
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 else
 {
-    app.UseCors("AllowOne");
+    app.UseCors(Const.Cors.AllowOne);
 }
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ImportHub>(Const.Hubs.Importer.Url);
 app.Run();

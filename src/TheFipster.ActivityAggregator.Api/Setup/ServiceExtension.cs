@@ -1,11 +1,8 @@
-using System.Reflection;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using TheFipster.ActivityAggregator.Api.Components;
 using TheFipster.ActivityAggregator.Api.Components.Contracts;
 using TheFipster.ActivityAggregator.Api.Components.Decoration;
+using TheFipster.ActivityAggregator.Api.Extensions;
+using TheFipster.ActivityAggregator.Api.Interceptors;
 using TheFipster.ActivityAggregator.Api.Mediators.Upload;
 using TheFipster.ActivityAggregator.Api.Mediators.Upload.Contracts;
 using TheFipster.ActivityAggregator.Api.Mediators.Upload.Decorators;
@@ -18,11 +15,11 @@ using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api;
+namespace TheFipster.ActivityAggregator.Api.Setup;
 
-public static class Setup
+public static class ServiceExtension
 {
-    public static IServiceCollection AddCustom(
+    public static void AddApplicationServices(
         this IServiceCollection services,
         IConfiguration configuration
     )
@@ -62,94 +59,18 @@ public static class Setup
         services.AddTransient<ISeriesMerger, SeriesMerger>();
         services.AddTransient<IBatchService, BatchService>();
 
-        services.AddTransient<IChunkAction, ChunkAction>();
+        services.AddInterceptedTransient<IChunkAction, ChunkAction>(typeof(VerboseInterceptor));
         services.Decorate<IChunkAction, ChunkActionValidator>();
 
-        services.AddTransient<IZipsAction, ZipsAction>();
+        services.AddInterceptedTransient<IZipsAction, ZipsAction>(
+            typeof(VerboseInterceptor),
+            typeof(Tracinginterceptor)
+        );
         services.Decorate<IZipsAction, ZipsActionValidator>();
 
         services.AddTransient<IHistoryIndexer, HistoryIndexer>();
 
         services.AddTransient<IIndexer<AssimilateIndex>, BaseIndexer<AssimilateIndex>>();
         services.AddTransient<IPagedIndexer<AssimilateIndex>, PagedIndexer<AssimilateIndex>>();
-
-        return services;
-    }
-
-    public static IServiceCollection AddCorsPolicies(this IServiceCollection services)
-    {
-        services.AddCors(options =>
-        {
-            options.AddPolicy(
-                "AllowAll",
-                policy =>
-                {
-                    policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-                }
-            );
-        });
-
-        services.AddCors(options =>
-        {
-            options.AddPolicy(
-                "AllowOne",
-                policy =>
-                {
-                    policy.WithOrigins("https://localhost:7260").AllowAnyMethod().AllowAnyHeader();
-                }
-            );
-        });
-
-        return services;
-    }
-
-    public static IServiceCollection AddMetrics(
-        this IServiceCollection services,
-        IConfiguration configuration,
-        IHostEnvironment environment
-    )
-    {
-        var resourceBuilder = ResourceBuilder
-            .CreateDefault()
-            .AddService(
-                "api",
-                serviceVersion: Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
-            );
-
-        services
-            .AddMetrics()
-            .AddOpenTelemetry()
-            .ConfigureResource(c => c.AddService(nameof(Api)))
-            .WithMetrics(provider =>
-            {
-                provider
-                    .SetResourceBuilder(resourceBuilder)
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation();
-                provider.AddMeter(
-                    "Microsoft.AspNetCore.Hosting",
-                    "Microsoft.AspNetCore.Server.Kestrel",
-                    "System.Net.Http"
-                );
-            })
-            .WithTracing(options =>
-            {
-                if (environment.IsDevelopment())
-                {
-                    options.SetSampler<AlwaysOnSampler>();
-                }
-                options.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation();
-            });
-
-        if (!string.IsNullOrWhiteSpace(configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]))
-        {
-            services
-                .Configure<OpenTelemetryLoggerOptions>(options => options.AddOtlpExporter())
-                .ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter())
-                .ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
-        }
-
-        return services;
     }
 }
