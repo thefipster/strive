@@ -5,7 +5,9 @@ using TheFipster.ActivityAggregator.Api.Features.Scan;
 using TheFipster.ActivityAggregator.Api.Features.Upload;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Importer;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite;
+using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Setup;
 
@@ -24,6 +26,8 @@ public static class ApplicationExtension
         services.AddScannerFeature();
         services.AddAssimilateFeature();
         services.AddBatchFeature();
+
+        services.AddScoped<IHistoryIndexer, HistoryIndexer>();
     }
 
     private static void AddConfig(this IServiceCollection services, IConfiguration configuration)

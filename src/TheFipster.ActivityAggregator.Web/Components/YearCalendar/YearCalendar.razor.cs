@@ -30,7 +30,7 @@ public partial class YearCalendar : ComponentBase
             if (!groupedInvetory.ContainsKey(month))
                 groupedInvetory.Add(month, []);
 
-            var batches = Batches.Where(x => x.Month == i).ToList();
+            var batches = (Batches ?? []).Where(x => x.Month == i).ToList();
             _monthyBatches[month] = batches;
         }
 
