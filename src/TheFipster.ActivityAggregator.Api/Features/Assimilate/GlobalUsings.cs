@@ -1,0 +1,9 @@
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Components;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Components.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Components.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Decorators;

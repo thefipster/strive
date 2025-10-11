@@ -1,5 +1,4 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 using TheFipster.ActivityAggregator.Importer.Google.Timeline;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 

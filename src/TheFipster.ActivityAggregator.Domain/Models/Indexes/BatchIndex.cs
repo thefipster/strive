@@ -1,4 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
@@ -18,4 +19,31 @@ public class BatchIndex
     public int Pulses { get; set; }
     public int Events { get; set; }
     public Dictionary<string, string> Assimilations { get; set; } = new();
+
+    public static BatchIndex New(
+        string filepath,
+        string hash,
+        MergedFile mergeFile,
+        List<string> parameters,
+        List<AssimilateIndex> assimilations
+    )
+    {
+        return new BatchIndex
+        {
+            Timestamp = mergeFile.Timestamp,
+            Kind = mergeFile.Kind,
+            Sources = mergeFile.Sources,
+            Metrics = mergeFile.Metrics?.Count ?? 0,
+            Series = mergeFile.Series.Count,
+            Tracks = mergeFile.Tracks.Count,
+            Pulses = mergeFile.Pulses.Count,
+            Events = mergeFile.Events?.Resolved.Count ?? 0,
+            Parameters = parameters.Distinct().ToList(),
+            Assimilations = assimilations
+                .DistinctBy(x => x.Hash)
+                .ToDictionary(x => x.Hash, y => y.Path),
+            Filepath = filepath,
+            Hash = hash,
+        };
+    }
 }

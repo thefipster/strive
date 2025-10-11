@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
+using TheFipster.ActivityAggregator.Domain;
 
 namespace TheFipster.ActivityAggregator.Web.Layout;
 
@@ -33,21 +34,32 @@ public partial class MainLayout
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/hubs/ingest"))
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<string>(
-            "OnWorkerStart",
-            (msg) =>
+        _hubConnection.On<string, bool>(
+            Const.Hubs.Importer.ReportAction,
+            (msg, _) =>
             {
-                if (Snackbar != null)
-                    Snackbar.Add(msg, Severity.Info);
-
+                Snackbar?.Add(msg, Severity.Info);
                 InvokeAsync(StateHasChanged);
             }
         );
 
         await _hubConnection.StartAsync();
+        await JoinGroups();
+        _hubConnection.Reconnected += async _ => await JoinGroups();
+    }
+
+    private async Task JoinGroups()
+    {
+        if (_hubConnection == null)
+            return;
+
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Unzip);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Scan);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Assimilate);
     }
 
     private void AppendCalendarNavigation()

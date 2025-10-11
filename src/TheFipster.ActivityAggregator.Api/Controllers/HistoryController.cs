@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 

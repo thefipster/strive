@@ -14,6 +14,29 @@ public class ExtractorIndex
     public DataSources? Source { get; set; }
     public DateTime? Timestamp { get; set; }
     public DateRanges? Range { get; set; }
-    public List<ExtractionSnippet> ExtractedFiles { get; set; } = new();
+    public List<ExtractionMeta> ExtractedFiles { get; set; } = new();
     public List<string> Metrics { get; set; } = [];
+
+    public static ExtractorIndex New(
+        FileIndex file,
+        string valueHash,
+        List<ExtractionMeta> extracts,
+        List<string> metrics,
+        long size
+    )
+    {
+        return new ExtractorIndex
+        {
+            Path = file.Path,
+            FileHash = file.Hash,
+            ValueHash = valueHash,
+            ZipHash = file.ZipHash,
+            Source = file.Source,
+            Range = file.Range,
+            Timestamp = file.Timestamp,
+            ExtractedFiles = extracts,
+            Metrics = metrics.Distinct().ToList(),
+            Size = size,
+        };
+    }
 }

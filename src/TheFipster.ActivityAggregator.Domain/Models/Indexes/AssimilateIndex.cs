@@ -1,4 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
@@ -13,4 +14,18 @@ public class AssimilateIndex
     public DateTime Timestamp { get; set; }
     public DataKind Kind { get; set; }
     public List<string> Metrics { get; set; } = [];
+
+    public static AssimilateIndex New(ExtractionMeta extract, FileIndex file)
+    {
+        return new AssimilateIndex
+        {
+            Hash = extract.Hash,
+            FileHash = file.Hash,
+            Path = extract.Path,
+            Timestamp = extract.Timestamp,
+            Size = extract.Size,
+            Kind = extract.Range == DateRanges.Time ? DataKind.Session : DataKind.Day,
+            Source = file.Source!.Value,
+        };
+    }
 }

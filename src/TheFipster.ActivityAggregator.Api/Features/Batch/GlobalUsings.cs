@@ -1,0 +1,9 @@
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Components;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Components.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Components.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Mediators;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Mediators.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Mediators.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Services;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Services.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Batch.Services.Decorators;

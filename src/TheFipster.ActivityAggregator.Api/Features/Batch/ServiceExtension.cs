@@ -1,0 +1,67 @@
+using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
+
+namespace TheFipster.ActivityAggregator.Api.Features.Batch;
+
+public static class ServiceExtension
+{
+    public static void AddBatchFeature(this IServiceCollection services)
+    {
+        services.AddCommonFeature();
+
+        services.AddBatchingFeature();
+        services.AddBatchByDateFeature();
+        services.AddBatchPerYearFeature();
+        services.AddBatchPageFeature();
+        services.AddMergeFileFeature();
+    }
+
+    public static void AddCommonFeature(this IServiceCollection services)
+    {
+        services.AddScoped<IIndexer<BatchIndex>, BaseIndexer<BatchIndex>>();
+        services.AddScoped<IPagedIndexer<BatchIndex>, PagedIndexer<BatchIndex>>();
+    }
+
+    public static void AddBatchingFeature(this IServiceCollection services)
+    {
+        services.AddScoped<IBatchAction, BatchAction>();
+        services.Decorate<IBatchAction, BatchActionValidator>();
+
+        services.AddScoped<IBatchService, BatchService>();
+        services.Decorate<IBatchService, BatchNotifier>();
+
+        services.AddScoped<IAssimilationGrouper, AssimilationGrouper>();
+
+        services.AddScoped<IPessimisticMerger, PessimisticMerger>();
+        services.Decorate<IPessimisticMerger, PessimisticMergerIndexer>();
+
+        services.AddScoped<IMetricsMerger, MetricsMerger>();
+        services.AddScoped<IEventsMerger, EventsMerger>();
+        services.AddScoped<ISeriesNormalizer, SeriesNormalizer>();
+    }
+
+    public static void AddBatchByDateFeature(this IServiceCollection services)
+    {
+        services.AddScoped<IBatchByDateAction, BatchByDateAction>();
+        services.Decorate<IBatchByDateAction, BatchByDateValidator>();
+    }
+
+    public static void AddBatchPerYearFeature(this IServiceCollection services)
+    {
+        services.AddScoped<IBatchExistsPerYearAction, BatchExistsPerYearAction>();
+        services.Decorate<IBatchExistsPerYearAction, BatchExistsPerYearValidator>();
+    }
+
+    public static void AddBatchPageFeature(this IServiceCollection services)
+    {
+        services.AddScoped<IBatchPageAction, BatchPageAction>();
+        services.Decorate<IBatchPageAction, BatchPageValidator>();
+    }
+
+    public static void AddMergeFileFeature(this IServiceCollection services)
+    {
+        services.AddScoped<IMergeFileAction, MergeFileAction>();
+        services.Decorate<IMergeFileAction, MergeFileValidator>();
+    }
+}

@@ -1,18 +1,26 @@
+@using TheFipster.ActivityAggregator.Domain.Models.Importing
 <MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
     <MudCard>
         <MudCardHeader>
             <CardHeaderContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.h4">Scan uploaded files</MudText>
-                    <MudIconButton Color="Color.Primary"
-                                   OnClick="@OnScanClicked"
-                                   Disabled="@_isScanActive"
-                                   Icon="@Icons.Material.Outlined.Radar">
-                    </MudIconButton>
+                    @if (_isScanActive)
+                    {
+                        <MudText>@_progressMessage</MudText>
+                        <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="@_isScanActive"/>
+                    }
+                    else
+                    {
+                        <MudIconButton Color="Color.Primary"
+                                       OnClick="@OnScanClicked"
+                                       Disabled="@_isScanActive"
+                                       Icon="@Icons.Material.Outlined.Radar"/>
+                    }
                 </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Indeterminate="@_isScanActive"/>
+        <MudProgressLinear Color="Color.Primary" Value="@_progress"/>
         <MudCardContent>
             <MudTable T="FileIndex" @ref="_fileTable" ServerData="@LoadServerData"
                       RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
@@ -22,11 +30,11 @@
                                   IconSize="Size.Small" Class="mt-0"></MudTextField>
                     <MudSpacer/>
                     <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
-                        <MudSelectItem Value="@("All")">All Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("General")">General</MudSelectItem>
-                        <MudSelectItem Value="@("Classified")">Classified Files</MudSelectItem>
-                        <MudSelectItem Value="@("Unclassified")">Unclassified Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("Special")">Special</MudSelectItem>
+                        <MudSelectItem Value="@ClassificationOptions.All">All Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem>
+                        <MudSelectItem Value="@ClassificationOptions.Classified">Classified Files</MudSelectItem>
+                        <MudSelectItem Value="@ClassificationOptions.Unclassified">Unclassified Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
                         @if (_classifiers != null)
                         {
                             @foreach (var classifier in _classifiers)
@@ -37,8 +45,8 @@
                     </MudSelect>
                     <MudSpacer/>
                     <MudSelect T="string" Label="Range" ValueChanged="@OnRangeFilterChanged">
-                        <MudSelectItem Value="@("All")">All Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("Special")">Special</MudSelectItem>
+                        <MudSelectItem Value="@RangeOptions.All">All Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
                         @foreach (var range in _ranges)
                         {
                             <MudSelectItem Value="@range">@range</MudSelectItem>

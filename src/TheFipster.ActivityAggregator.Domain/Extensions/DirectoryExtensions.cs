@@ -30,6 +30,11 @@ public static class DirectoryExtensions
 
         ProcessDirectory(directory.FullName);
 
-        return new DirectoryStats { FileCount = fileCount, Size = totalSize };
+        return new DirectoryStats
+        {
+            OutputPath = directory.FullName,
+            FileCount = fileCount,
+            Size = totalSize,
+        };
     }
 }

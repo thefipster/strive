@@ -9,12 +9,18 @@ namespace TheFipster.ActivityAggregator.Web.Components.Import;
 public partial class BatchTab : ComponentBase
 {
     private HubConnection? _hubConnection;
+
+    private bool _isRendered;
     private bool _isMergeActive;
+
     private int _selectedYear = DateTime.Now.Year;
+
     private Dictionary<int, int[]> _index = new();
     private IEnumerable<InventoryIndex> _inventory = [];
-    private bool _isRendered;
     private IEnumerable<DateTime>? _batchDates;
+
+    private double _progress;
+    private string? _progressMessage;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -29,10 +35,15 @@ public partial class BatchTab : ComponentBase
     [SupplyParameterFromQuery]
     public int? Year { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await ConnectHubs();
+        await base.OnInitializedAsync();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         await LoadIndex();
-        await ConnectHubs();
         await OnYearChange(_selectedYear);
         await base.OnParametersSetAsync();
     }
@@ -83,14 +94,21 @@ public partial class BatchTab : ComponentBase
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri(Const.Hubs.Ingester.Url))
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<string>(
-            Const.Hubs.Ingester.BatchFinished,
-            _ =>
+        _hubConnection.On<string, bool>(
+            Const.Hubs.Importer.ReportAction,
+            (_, updated) =>
             {
+                if (!updated)
+                    return;
+
+                _progress = 0;
                 _isMergeActive = false;
+                _progressMessage = null;
+
                 InvokeAsync(async () =>
                 {
                     await LoadIndex();
@@ -99,10 +117,13 @@ public partial class BatchTab : ComponentBase
             }
         );
 
-        _hubConnection.On<int>(
-            Const.Hubs.Ingester.BatchProgress,
-            _ =>
+        _hubConnection.On<string, double>(
+            Const.Hubs.Importer.ReportProgress,
+            (message, progress) =>
             {
+                _progress = progress;
+                _progressMessage = message;
+
                 InvokeAsync(async () =>
                 {
                     await LoadIndex();
@@ -112,5 +133,15 @@ public partial class BatchTab : ComponentBase
         );
 
         await _hubConnection.StartAsync();
+        await JoinGroups();
+        _hubConnection.Reconnected += async _ => await JoinGroups();
+    }
+
+    private async Task JoinGroups()
+    {
+        if (_hubConnection == null)
+            return;
+
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Batch);
     }
 }
