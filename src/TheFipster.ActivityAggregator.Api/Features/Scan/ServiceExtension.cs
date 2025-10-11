@@ -1,5 +1,6 @@
 using FluentValidation;
 using TheFipster.ActivityAggregator.Api.Extensions;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Services.Decorators;
 using TheFipster.ActivityAggregator.Api.Interceptors;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
@@ -26,6 +27,7 @@ public static class ServiceExtension
         services.AddScoped<IScanAction, ScanAction>();
 
         services.AddInterceptedScoped<IScannerService, ScannerService>(typeof(TracingInterceptor));
+        services.Decorate<IScannerService, ScannerNotifier>();
 
         services.AddInterceptedScoped<IFileScanner, FileScanner>(typeof(TracingInterceptor));
         services.Decorate<IFileScanner, FileScannerIndexer>();

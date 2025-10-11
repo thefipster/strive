@@ -40,7 +40,7 @@ public class ScannerService(
         await notifier.ReportProgressAsync(
             Const.Hubs.Importer.Actions.Scan,
             new FileInfo(zip.ZipPath).Name,
-            Math.Round((double)_processedZips / _totalZips, 3)
+            Math.Round((double)_processedZips / _totalZips * 100, 1)
         );
     }
 }

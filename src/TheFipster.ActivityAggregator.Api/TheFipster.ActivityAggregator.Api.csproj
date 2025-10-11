@@ -32,7 +32,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\Assimilate\Models\" />
-    <Folder Include="Features\Assimilate\Services\Decorators\" />
     <Folder Include="Features\Batch\Components\Decorators\" />
     <Folder Include="Features\Batch\Mediators\Contracts\" />
     <Folder Include="Features\Batch\Mediators\Decorators\" />

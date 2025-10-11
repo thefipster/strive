@@ -6,3 +6,4 @@ global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Con
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Decorators;
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services;
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Decorators;

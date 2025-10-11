@@ -10,7 +10,7 @@ using TheFipster.ActivityAggregator.Web.Services;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
-public partial class UploadTab : ComponentBase
+public partial class UploadTab : IAsyncDisposable
 {
     private string _uploadKey = Guid.NewGuid().ToString();
     private HubConnection? _hubConnection;
@@ -33,10 +33,10 @@ public partial class UploadTab : ComponentBase
     [Parameter]
     public string? Filter { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         await ConnectHubs();
-        await base.OnParametersSetAsync();
+        await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -85,6 +85,25 @@ public partial class UploadTab : ComponentBase
         await ResetUpload();
     }
 
+    private void OnSearchFilterChanged(string search)
+    {
+        _searchFilter = search;
+        _fileTable?.ReloadServerData();
+    }
+
+    private async Task<TableData<ZipIndex>> LoadServerData(TableState state, CancellationToken ct)
+    {
+        if (Uploader == null)
+            return new TableData<ZipIndex> { TotalItems = 0, Items = [] };
+
+        var page = await Uploader.GetZipPageAsync(
+            new PagedRequest(state.Page, state.PageSize),
+            _searchFilter
+        );
+
+        return new TableData<ZipIndex> { TotalItems = page.Total, Items = page.Items };
+    }
+
     private async Task ResetUpload()
     {
         _uploadKey = Guid.NewGuid().ToString();
@@ -102,10 +121,11 @@ public partial class UploadTab : ComponentBase
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithAutomaticReconnect()
             .Build();
 
         _hubConnection.On<string, bool>(
-            "ReportProcess",
+            Const.Hubs.Importer.ReportAction,
             (_, update) =>
             {
                 if (update)
@@ -117,24 +137,32 @@ public partial class UploadTab : ComponentBase
         );
 
         await _hubConnection.StartAsync();
+        await JoinGroups();
+        _hubConnection.Reconnected += async _ => await JoinGroups();
     }
 
-    private async Task<TableData<ZipIndex>> LoadServerData(TableState state, CancellationToken ct)
+    private async Task JoinGroups()
     {
-        if (Uploader == null)
-            return new TableData<ZipIndex> { TotalItems = 0, Items = [] };
+        if (_hubConnection == null)
+            return;
 
-        var page = await Uploader.GetZipPageAsync(
-            new PagedRequest(state.Page, state.PageSize),
-            _searchFilter
-        );
-
-        return new TableData<ZipIndex> { TotalItems = page.Total, Items = page.Items };
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Unzip);
     }
 
-    private void OnSearchFilterChanged(string search)
+    public async ValueTask DisposeAsync()
     {
-        _searchFilter = search;
-        _fileTable?.ReloadServerData();
+        if (_hubConnection is not null)
+        {
+            try
+            {
+                await _hubConnection.InvokeAsync("LeaveGroup", Const.Hubs.Importer.Actions.Unzip);
+            }
+            catch
+            {
+                // ignore if connection already lost
+            }
+
+            await _hubConnection.DisposeAsync();
+        }
     }
 }

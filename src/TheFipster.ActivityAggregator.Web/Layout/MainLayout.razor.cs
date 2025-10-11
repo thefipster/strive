@@ -35,10 +35,11 @@ public partial class MainLayout
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithAutomaticReconnect()
             .Build();
 
         _hubConnection.On<string, bool>(
-            "ReportProcess",
+            Const.Hubs.Importer.ReportAction,
             (msg, _) =>
             {
                 Snackbar?.Add(msg, Severity.Info);
@@ -47,6 +48,18 @@ public partial class MainLayout
         );
 
         await _hubConnection.StartAsync();
+        await JoinGroups();
+        _hubConnection.Reconnected += async _ => await JoinGroups();
+    }
+
+    private async Task JoinGroups()
+    {
+        if (_hubConnection == null)
+            return;
+
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Unzip);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Scan);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Assimilate);
     }
 
     private void AppendCalendarNavigation()

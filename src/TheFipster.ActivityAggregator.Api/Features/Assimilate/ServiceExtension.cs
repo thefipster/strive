@@ -1,4 +1,6 @@
 using FluentValidation;
+using TheFipster.ActivityAggregator.Api.Extensions;
+using TheFipster.ActivityAggregator.Api.Interceptors;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Models.Requests.Validators;
@@ -25,9 +27,14 @@ public static class ServiceExtension
     {
         services.AddScoped<IAssimilateAction, AssimilateAction>();
 
-        services.AddScoped<IAssimilaterService, AssimilaterService>();
+        services.AddInterceptedScoped<IAssimilaterService, AssimilaterService>(
+            typeof(TracingInterceptor)
+        );
+        services.Decorate<IAssimilaterService, AssimilaterNotifier>();
 
-        services.AddScoped<IFileAssimilator, IFileAssimilator>();
+        services.AddInterceptedScoped<IFileAssimilator, FileAssimilator>(
+            typeof(TracingInterceptor)
+        );
         services.Decorate<IFileAssimilator, FileAssimilatorIndexer>();
 
         services.AddScoped<IIndexer<ExtractorIndex>, BaseIndexer<ExtractorIndex>>();
@@ -48,5 +55,6 @@ public static class ServiceExtension
         services.Decorate<IExtractPageAction, ExtractPageValidation>();
 
         services.AddScoped<IPagedIndexer<ExtractorIndex>, PagedIndexer<ExtractorIndex>>();
+        services.AddScoped<IPagedIndexer<AssimilateIndex>, PagedIndexer<AssimilateIndex>>();
     }
 }

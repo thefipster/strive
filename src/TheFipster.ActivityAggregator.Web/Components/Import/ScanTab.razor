@@ -5,15 +5,24 @@
             <CardHeaderContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.h4">Scan uploaded files</MudText>
-                    <MudIconButton Color="Color.Primary"
-                                   OnClick="@OnScanClicked"
-                                   Disabled="@_isScanActive"
-                                   Icon="@Icons.Material.Outlined.Radar">
-                    </MudIconButton>
+                    @if (_isScanActive)
+                    {
+                        <MudText>@_progressMessage</MudText>
+                        <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="@_isScanActive"/>
+                    }
+                    else
+                    {
+                        <MudIconButton Color="Color.Primary"
+                                       OnClick="@OnScanClicked"
+                                       Disabled="@_isScanActive"
+                                       Icon="@Icons.Material.Outlined.Radar"/>
+                    }
+
+
                 </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Indeterminate="@_isScanActive"/>
+        <MudProgressLinear Color="Color.Primary" Value="@_progress"/>
         <MudCardContent>
             <MudTable T="FileIndex" @ref="_fileTable" ServerData="@LoadServerData"
                       RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">

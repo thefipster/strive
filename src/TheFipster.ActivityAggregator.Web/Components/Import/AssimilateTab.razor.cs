@@ -11,8 +11,11 @@ namespace TheFipster.ActivityAggregator.Web.Components.Import;
 public partial class AssimilateTab : ComponentBase
 {
     private HubConnection? _hubConnection;
-    private bool _isAssimilationActive;
     private MudTable<ExtractorIndex>? _fileTable;
+
+    private bool _isAssimilationActive;
+    private double _progress;
+    private string? _progressMessage;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -20,10 +23,10 @@ public partial class AssimilateTab : ComponentBase
     [Inject]
     public AssimilateApi? Api { get; set; }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         await ConnectHubs();
-        await base.OnParametersSetAsync();
+        await base.OnInitializedAsync();
     }
 
     private async Task OnAssimilateClicked()
@@ -33,37 +36,6 @@ public partial class AssimilateTab : ComponentBase
 
         _isAssimilationActive = true;
         await Api.ExecuteAssimilation();
-    }
-
-    private async Task ConnectHubs()
-    {
-        if (Navigation is null)
-            return;
-
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri(Const.Hubs.Ingester.Url))
-            .Build();
-
-        _hubConnection.On<string>(
-            Const.Hubs.Ingester.AssimilationFinished,
-            _ =>
-            {
-                _isAssimilationActive = false;
-                _fileTable?.ReloadServerData();
-                InvokeAsync(StateHasChanged);
-            }
-        );
-
-        _hubConnection.On<int>(
-            Const.Hubs.Ingester.AssimilationProgress,
-            _ =>
-            {
-                _fileTable?.ReloadServerData();
-                InvokeAsync(StateHasChanged);
-            }
-        );
-
-        await _hubConnection.StartAsync();
     }
 
     private async Task<TableData<ExtractorIndex>> LoadServerData(
@@ -78,5 +50,56 @@ public partial class AssimilateTab : ComponentBase
         var result = await Api.GetFilesAsync(paged);
 
         return new TableData<ExtractorIndex> { TotalItems = result.Total, Items = result.Items };
+    }
+
+    private async Task ConnectHubs()
+    {
+        if (Navigation is null)
+            return;
+
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithAutomaticReconnect()
+            .Build();
+
+        _hubConnection.On<string, bool>(
+            Const.Hubs.Importer.ReportAction,
+            (_, updated) =>
+            {
+                if (!updated)
+                    return;
+
+                _progress = 0;
+                _progressMessage = null;
+                _isAssimilationActive = false;
+
+                _fileTable?.ReloadServerData();
+                InvokeAsync(StateHasChanged);
+            }
+        );
+
+        _hubConnection.On<string, double>(
+            Const.Hubs.Importer.ReportProgress,
+            (message, progress) =>
+            {
+                _progress = progress;
+                _progressMessage = message;
+
+                _fileTable?.ReloadServerData();
+                InvokeAsync(StateHasChanged);
+            }
+        );
+
+        await _hubConnection.StartAsync();
+        await JoinGroups();
+        _hubConnection.Reconnected += async _ => await JoinGroups();
+    }
+
+    private async Task JoinGroups()
+    {
+        if (_hubConnection == null)
+            return;
+
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Assimilate);
     }
 }
