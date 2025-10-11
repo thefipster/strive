@@ -3,7 +3,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components.Contracts;
 
-public interface ISeriesMerger
+public interface ISeriesNormalizer
 {
     NormalizedResult Normalize(Dictionary<Parameters, List<string>> series);
 }

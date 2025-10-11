@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Batch.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components;

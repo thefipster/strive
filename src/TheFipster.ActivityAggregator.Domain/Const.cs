@@ -22,6 +22,7 @@ public static class Const
                 public const string Unzip = "Unzip";
                 public const string Scan = "Scan";
                 public const string Assimilate = "Assimilate";
+                public const string Batch = "Batch";
             }
         }
 

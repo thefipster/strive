@@ -1,12 +1,11 @@
 using System.Globalization;
-using TheFipster.ActivityAggregator.Api.Features.Batch.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Formats;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components;
 
-public class SeriesMerger : ISeriesMerger
+public class SeriesNormalizer : ISeriesNormalizer
 {
     public NormalizedResult Normalize(Dictionary<Parameters, List<string>> series)
     {

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Tools;
 
 namespace TheFipster.ActivityAggregator.Domain.Models.Files;
@@ -49,5 +50,35 @@ public class MergedFile
 
         var json = File.ReadAllText(filepath);
         return FromJson(json);
+    }
+
+    public static MergedFile New(
+        DateTime timestamp,
+        DataKind kind,
+        FileExtraction[] extracts,
+        EventMergeResult eventMerge,
+        NormalizedResult[] seriesMerge,
+        MetricMergeResult metricsMerge,
+        List<AssimilateIndex> assimilations
+    )
+    {
+        var timedSeries = seriesMerge.Where(x => x.Samples != null).Select(x => x.Samples).ToList();
+        var tracks = seriesMerge.Where(x => x.Track != null).Select(x => x.Track).ToList();
+        var pulses = seriesMerge.Where(x => x.Pulses != null).Select(x => x.Pulses).ToList();
+
+        return new MergedFile
+        {
+            Timestamp = timestamp,
+            Kind = kind,
+            Sources = extracts.Select(x => x.Source).ToList(),
+            Events = eventMerge,
+            Series = timedSeries,
+            Tracks = tracks,
+            Pulses = pulses,
+            Metrics = metricsMerge,
+            Assimilations = assimilations
+                .DistinctBy(x => x.Hash)
+                .ToDictionary(x => x.Hash, y => y.Path),
+        };
     }
 }

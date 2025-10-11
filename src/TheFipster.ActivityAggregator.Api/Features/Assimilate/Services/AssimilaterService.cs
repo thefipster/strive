@@ -46,10 +46,13 @@ public class AssimilaterService(
 
     private async Task ReportProgress(PagedResult<FileIndex> page, int counter)
     {
+        var progress = Math.Round((double)counter / page.Total * 100, 1);
+        var message = $"File {counter} of {page.Total}";
+
         await notifier.ReportProgressAsync(
             Const.Hubs.Importer.Actions.Assimilate,
-            $"File {counter} of {page.Total}",
-            Math.Round((double)counter / page.Total * 100, 1)
+            message,
+            progress
         );
     }
 }
