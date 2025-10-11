@@ -4,7 +4,7 @@ using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
 
-public class FilesAction(IPagedIndexer<FileIndex> indexer) : IFilesAction
+public class FilePageAction(IPagedIndexer<FileIndex> indexer) : IFilePageAction
 {
     public PagedResult<FileIndex> GetFilePage(ScanFilePageRequest request)
     {

@@ -7,7 +7,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Scan.Controllers;
 [ApiController]
 [Route("api/scan")]
 public class ScanController(
-    IFilesAction fileAction,
+    IFilePageAction pageAction,
     IClassifiersAction classifiersAction,
     IScanAction scanAction
 ) : ControllerBase
@@ -20,5 +20,5 @@ public class ScanController(
 
     [HttpGet("files")]
     public PagedResult<FileIndex> GetFilePage([FromQuery] ScanFilePageRequest request) =>
-        fileAction.GetFilePage(request);
+        pageAction.GetFilePage(request);
 }

@@ -2,14 +2,12 @@ using FluentValidation;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
-namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Decorators;
+namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Decorators;
 
-public class FilesActionValidator(
-    IFilePageAction component,
-    IValidator<ScanFilePageRequest> validator
-) : IFilePageAction
+public class ExtractPageValidation(IExtractPageAction component, IValidator<PagedRequest> validator)
+    : IExtractPageAction
 {
-    public PagedResult<FileIndex> GetFilePage(ScanFilePageRequest request)
+    public PagedResult<ExtractorIndex> GetFilePage(PagedRequest request)
     {
         var result = validator.Validate(request);
 

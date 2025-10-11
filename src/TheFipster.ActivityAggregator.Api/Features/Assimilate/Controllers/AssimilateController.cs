@@ -1,59 +1,24 @@
-using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Controllers;
 
 [ApiController]
 [Route("api/assimilate")]
 public class AssimilateController(
-    IOptions<ApiConfig> config,
-    IPagedIndexer<ExtractorIndex> extractIndex,
-    IImporterRegistry registry,
-    IAssimilaterService assimilater,
-    IBackgroundTaskQueue tasks
+    IExtractPageAction pageAction,
+    IExtractorsAction extractorsAction,
+    IAssimilateAction assimilateAction
 ) : ControllerBase
 {
     [HttpGet("extracts")]
-    public PagedResult<ExtractorIndex> GetFilePage(int page = 0, int size = 10) =>
-        extractIndex.GetPaged(page, size);
+    public PagedResult<ExtractorIndex> GetFilePage([FromQuery] PagedRequest request) =>
+        pageAction.GetFilePage(request);
 
     [HttpGet("extractors")]
-    public Dictionary<DataSources, int> GetExtractors() =>
-        registry.LoadExtractors().ToDictionary(x => x.Source, y => y.ExtractorVersion);
+    public Dictionary<DataSources, int> GetExtractors() => extractorsAction.GetExtractors();
 
     [HttpGet]
-    public IActionResult Assimilate()
-    {
-        try
-        {
-            var destinationDirectory = config.Value.UnzipDirectoryPath;
-            if (!string.IsNullOrWhiteSpace(destinationDirectory))
-            {
-                tasks.QueueBackgroundWorkItem(async ct =>
-                    await assimilater.ExtractFilesAsync(destinationDirectory, ct)
-                );
-            }
-        }
-        catch (ArgumentException e)
-        {
-            return BadRequest(e.Message);
-        }
-        catch (DataMisalignedException)
-        {
-            return StatusCode(500);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500);
-        }
-
-        return Ok();
-    }
+    public void Assimilate() => assimilateAction.Assimilate();
 }

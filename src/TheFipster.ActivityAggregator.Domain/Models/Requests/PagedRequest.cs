@@ -15,4 +15,7 @@ public class PagedRequest
 
     public PagedResult<TItem> ToResult<TItem>(IEnumerable<TItem> items, int total) =>
         new PagedResult<TItem>(items, Page, Size, total);
+
+    public PageSpecificationRequest<TIndex> ToSpecification<TIndex>() =>
+        new PageSpecificationRequest<TIndex> { Page = Page, Size = Size };
 }
