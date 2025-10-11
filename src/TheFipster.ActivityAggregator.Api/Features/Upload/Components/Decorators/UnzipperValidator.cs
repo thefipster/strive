@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
-namespace TheFipster.ActivityAggregator.Api.Components.Decoration;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Components.Decorators;
 
 public class UnzipperValidator(IUnzipper component, IOptions<ApiConfig> config) : IUnzipper
 {

@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-namespace TheFipster.ActivityAggregator.Api.Components.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Scan.Components.Contracts;
 
 public interface IFileScanner
 {

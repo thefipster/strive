@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Api.Services.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Batch.Services.Contracts;
 
 public interface IBatchService
 {

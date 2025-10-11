@@ -1,8 +1,8 @@
-using TheFipster.ActivityAggregator.Api.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Decoration;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Services.Decorators;
 
 public class UnzipIndexer(IUnzipService component, IIndexer<ZipIndex> indexer) : IUnzipService
 {

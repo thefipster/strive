@@ -1,11 +1,12 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Mediators.Upload.Contracts;
-using TheFipster.ActivityAggregator.Api.Models.Requests;
-using TheFipster.ActivityAggregator.Api.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Models;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Configs;
 
-namespace TheFipster.ActivityAggregator.Api.Mediators.Upload;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators;
 
 public class ChunkAction(
     IOptions<ApiConfig> config,

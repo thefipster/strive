@@ -1,7 +1,7 @@
 using System.Threading.Channels;
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 
-namespace TheFipster.ActivityAggregator.Api.Components;
+namespace TheFipster.ActivityAggregator.Api.Features.Core.Components;
 
 public class BackgroundTaskQueue : IBackgroundTaskQueue
 {

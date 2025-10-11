@@ -1,10 +1,10 @@
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Services;
 
 public class UnzipService(IUnzipper unzip, IIndexer<ZipIndex> indexer) : IUnzipService
 {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using TheFipster.ActivityAggregator.Api.Mediators.Scan.Contracts;
-using TheFipster.ActivityAggregator.Api.Models.Requests;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Models;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;

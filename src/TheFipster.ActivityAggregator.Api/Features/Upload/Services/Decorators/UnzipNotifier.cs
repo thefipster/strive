@@ -1,8 +1,8 @@
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Decoration;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Services.Decorators;
 
 public class UnzipNotifier(IUnzipService component, INotifier notifier) : IUnzipService
 {

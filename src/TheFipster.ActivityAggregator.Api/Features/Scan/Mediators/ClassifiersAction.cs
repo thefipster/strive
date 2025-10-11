@@ -1,8 +1,8 @@
-using TheFipster.ActivityAggregator.Api.Mediators.Scan.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 
-namespace TheFipster.ActivityAggregator.Api.Mediators.Scan;
+namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
 
 public class ClassifiersAction(IImporterRegistry registry) : IClassifiersAction
 {

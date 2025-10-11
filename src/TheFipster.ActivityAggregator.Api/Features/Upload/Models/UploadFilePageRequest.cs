@@ -1,7 +1,7 @@
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
-namespace TheFipster.ActivityAggregator.Api.Models.Requests;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Models;
 
 public class UploadFilePageRequest
 {

@@ -1,7 +1,12 @@
-using TheFipster.ActivityAggregator.Api.Components;
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Services;
-using TheFipster.ActivityAggregator.Api.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services;
+using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Batch.Components;
+using TheFipster.ActivityAggregator.Api.Features.Batch.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Batch.Services;
+using TheFipster.ActivityAggregator.Api.Features.Batch.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Core.Components;
+using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Core.Services;
 using TheFipster.ActivityAggregator.Api.Setup.Application;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;

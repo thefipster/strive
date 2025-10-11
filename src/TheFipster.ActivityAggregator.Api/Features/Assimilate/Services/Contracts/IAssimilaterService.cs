@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Api.Services.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contracts;
 
 public interface IAssimilaterService
 {

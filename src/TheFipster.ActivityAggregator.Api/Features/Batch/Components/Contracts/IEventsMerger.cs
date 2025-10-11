@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
-namespace TheFipster.ActivityAggregator.Api.Components.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components.Contracts;
 
 public interface IEventsMerger
 {

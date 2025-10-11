@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Models.Requests;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Upload.Models;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Tools;
 
-namespace TheFipster.ActivityAggregator.Api.Components;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Components;
 
 public class Uploader(IOptions<ApiConfig> config) : IUploader
 {

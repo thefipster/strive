@@ -1,68 +1,74 @@
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 
-namespace TheFipster.ActivityAggregator.Api.Services;
-
-public class QueuedHostedService : BackgroundService
+namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
 {
-    private const int MaxDegreeOfParallelism = 4;
-
-    private readonly IBackgroundTaskQueue _taskQueue;
-    private readonly ILogger<QueuedHostedService> _logger;
-
-    public QueuedHostedService(IBackgroundTaskQueue taskQueue, ILogger<QueuedHostedService> logger)
+    public class QueuedHostedService : BackgroundService
     {
-        this._taskQueue = taskQueue;
-        this._logger = logger;
-    }
+        private const int MaxDegreeOfParallelism = 4;
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        var workers = Enumerable
-            .Range(0, MaxDegreeOfParallelism)
-            .Select(workerId => Task.Run(() => WorkerLoop(workerId, stoppingToken), stoppingToken))
-            .ToArray();
+        private readonly IBackgroundTaskQueue _taskQueue;
+        private readonly ILogger<QueuedHostedService> _logger;
 
-        return Task.WhenAll(workers);
-    }
-
-    private async Task WorkerLoop(int workerId, CancellationToken stoppingToken)
-    {
-        _logger.LogInformation("Worker {WorkerId} starting.", workerId);
-
-        while (!stoppingToken.IsCancellationRequested)
+        public QueuedHostedService(
+            IBackgroundTaskQueue taskQueue,
+            ILogger<QueuedHostedService> logger
+        )
         {
-            try
-            {
-                var workItem = await _taskQueue.DequeueAsync(stoppingToken);
+            this._taskQueue = taskQueue;
+            this._logger = logger;
+        }
 
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            var workers = Enumerable
+                .Range(0, MaxDegreeOfParallelism)
+                .Select(workerId =>
+                    Task.Run(() => WorkerLoop(workerId, stoppingToken), stoppingToken)
+                )
+                .ToArray();
+
+            return Task.WhenAll(workers);
+        }
+
+        private async Task WorkerLoop(int workerId, CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("Worker {WorkerId} starting.", workerId);
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
                 try
                 {
-                    await workItem(stoppingToken);
+                    var workItem = await _taskQueue.DequeueAsync(stoppingToken);
+
+                    try
+                    {
+                        await workItem(stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(
+                            ex,
+                            "Error occurred executing background job on worker {WorkerId}.",
+                            workerId
+                        );
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // Graceful shutdown
+                    break;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(
-                        ex,
-                        "Error occurred executing background job on worker {WorkerId}.",
-                        workerId
-                    );
+                    _logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
+                }
+                finally
+                {
+                    await Task.Delay(1000, stoppingToken);
                 }
             }
-            catch (OperationCanceledException)
-            {
-                // Graceful shutdown
-                break;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
-            }
-            finally
-            {
-                await Task.Delay(1000, stoppingToken);
-            }
-        }
 
-        _logger.LogInformation("Worker {WorkerId} stopping.", workerId);
+            _logger.LogInformation("Worker {WorkerId} stopping.", workerId);
+        }
     }
 }

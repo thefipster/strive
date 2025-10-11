@@ -1,8 +1,8 @@
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Components.Decoration;
+namespace TheFipster.ActivityAggregator.Api.Features.Scan.Components.Decorators;
 
 public class FileScannerIndexer(IFileScanner component, IIndexer<FileIndex> indexer) : IFileScanner
 {

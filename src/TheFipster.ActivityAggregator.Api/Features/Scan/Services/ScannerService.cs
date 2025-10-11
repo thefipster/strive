@@ -1,9 +1,9 @@
-using TheFipster.ActivityAggregator.Api.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Services.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Contracts;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Services;
+namespace TheFipster.ActivityAggregator.Api.Features.Scan.Services;
 
 public class ScannerService(IIndexer<ZipIndex> zipInventory, IFileScanner fileScanner)
     : IScannerService

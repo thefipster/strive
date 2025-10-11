@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Api.Components.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 
 public interface INotifier
 {

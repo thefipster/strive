@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
-namespace TheFipster.ActivityAggregator.Api.Services.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
 
 public interface IUnzipService
 {

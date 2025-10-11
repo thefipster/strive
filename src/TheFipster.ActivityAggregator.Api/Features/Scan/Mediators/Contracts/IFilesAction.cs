@@ -1,8 +1,8 @@
-using TheFipster.ActivityAggregator.Api.Models.Requests;
+using TheFipster.ActivityAggregator.Api.Features.Scan.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
-namespace TheFipster.ActivityAggregator.Api.Mediators.Scan.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
 
 public interface IFilesAction
 {
