@@ -2,7 +2,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
-namespace TheFipster.ActivityAggregator.Api.Features.Scan.Models;
+namespace TheFipster.ActivityAggregator.Api.Features.Scan.Requests;
 
 public class ScanFilePageRequest
 {

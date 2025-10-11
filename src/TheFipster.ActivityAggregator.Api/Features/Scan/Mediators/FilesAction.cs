@@ -1,5 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Scan.Models;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;

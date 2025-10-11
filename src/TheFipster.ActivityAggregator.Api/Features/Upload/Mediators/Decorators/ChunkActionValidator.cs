@@ -1,27 +1,33 @@
+using FluentValidation;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Models;
 using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Domain.Exceptions;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Decorators;
 
-public class ChunkActionValidator(IChunkAction component, IOptions<ApiConfig> config) : IChunkAction
+public class ChunkActionValidator(
+    IChunkAction component,
+    IValidator<UploadChunkRequest> validator,
+    IOptions<ApiConfig> config
+) : IChunkAction
 {
-    public Task UploadChunkAsync(UploadChunkRequest request)
+    public async Task UploadChunkAsync(UploadChunkRequest request)
     {
-        ValidateRequest(request);
+        await ValidateRequestAsync(request);
         ValidateConfig();
         ValidateFileExtension(request);
 
-        return component.UploadChunkAsync(request);
+        await component.UploadChunkAsync(request);
     }
 
-    private static void ValidateRequest(UploadChunkRequest request)
+    private async Task ValidateRequestAsync(UploadChunkRequest request)
     {
-        // TODO Use fluent validations
+        var result = await validator.ValidateAsync(request);
 
-        if (!request.IsValid)
-            throw new ArgumentException("Arguments are missing.");
+        if (result.IsValid)
+            return;
+
+        throw new ValidationException(result.Errors);
     }
 
     private void ValidateConfig()
@@ -29,21 +35,21 @@ public class ChunkActionValidator(IChunkAction component, IOptions<ApiConfig> co
         var destinationDirectory = config.Value.UnzipDirectoryPath;
 
         if (string.IsNullOrWhiteSpace(destinationDirectory))
-            throw new ArgumentException("Unzip directory is not configured.");
+            throw new ConfigException(
+                nameof(ApiConfig.UnzipDirectoryPath),
+                "Unzip directory is not configured."
+            );
     }
 
     private void ValidateFileExtension(UploadChunkRequest request)
     {
         var ext = Path.GetExtension(request.FileName);
-        if (
-            !string.Equals(
-                ext,
-                config.Value.ImportFileExtensionFilter,
-                StringComparison.OrdinalIgnoreCase
-            )
-        )
-        {
-            throw new ArgumentException("Invalid file extension.", nameof(request.FileName));
-        }
+        var filter = config.Value.ImportFileExtensionFilter;
+
+        if (ext != filter)
+            throw new ArgumentException(
+                $"Invalid file extension. Only {filter} is allowed.",
+                nameof(request.FileName)
+            );
     }
 }

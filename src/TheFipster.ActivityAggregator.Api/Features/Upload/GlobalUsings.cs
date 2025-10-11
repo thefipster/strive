@@ -1,0 +1,11 @@
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Components;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Models;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Models.Validators;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Services;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Decorators;

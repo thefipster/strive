@@ -1,15 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Models;
-
-namespace TheFipster.ActivityAggregator.Api.Controllers;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload.Controllers;
 
 [ApiController]
 [Route("api/upload")]
 public class UploadController(IZipsAction zipsAction, IChunkAction chunkAction) : ControllerBase
 {
     [HttpGet("zips")]
-    public IActionResult GetZipFilePage([FromQuery] UploadFilePageRequest request) =>
+    public IActionResult GetZipFilePage([FromQuery] ZipsPageRequest request) =>
         Ok(zipsAction.GetZipFilePage(request));
 
     [HttpPost("chunk")]

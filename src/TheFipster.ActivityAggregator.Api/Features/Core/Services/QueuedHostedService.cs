@@ -2,21 +2,12 @@ using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
 {
-    public class QueuedHostedService : BackgroundService
+    public class QueuedHostedService(
+        IBackgroundTaskQueue taskQueue,
+        ILogger<QueuedHostedService> logger
+    ) : BackgroundService
     {
         private const int MaxDegreeOfParallelism = 4;
-
-        private readonly IBackgroundTaskQueue _taskQueue;
-        private readonly ILogger<QueuedHostedService> _logger;
-
-        public QueuedHostedService(
-            IBackgroundTaskQueue taskQueue,
-            ILogger<QueuedHostedService> logger
-        )
-        {
-            this._taskQueue = taskQueue;
-            this._logger = logger;
-        }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -32,26 +23,14 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
 
         private async Task WorkerLoop(int workerId, CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Worker {WorkerId} starting.", workerId);
+            logger.LogInformation("Worker {WorkerId} starting.", workerId);
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    var workItem = await _taskQueue.DequeueAsync(stoppingToken);
-
-                    try
-                    {
-                        await workItem(stoppingToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(
-                            ex,
-                            "Error occurred executing background job on worker {WorkerId}.",
-                            workerId
-                        );
-                    }
+                    var workItem = await taskQueue.DequeueAsync(stoppingToken);
+                    await workItem(stoppingToken);
                 }
                 catch (OperationCanceledException)
                 {
@@ -60,7 +39,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
+                    logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
                 }
                 finally
                 {
@@ -68,7 +47,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                 }
             }
 
-            _logger.LogInformation("Worker {WorkerId} stopping.", workerId);
+            logger.LogInformation("Worker {WorkerId} stopping.", workerId);
         }
     }
 }

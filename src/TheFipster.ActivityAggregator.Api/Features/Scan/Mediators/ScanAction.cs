@@ -1,7 +1,5 @@
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Scan.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
@@ -12,7 +10,7 @@ public class ScanAction(
     IBackgroundTaskQueue tasks
 ) : IScanAction
 {
-    public void TryScan()
+    public void Scan()
     {
         var destinationDirectory = config.Value.UnzipDirectoryPath;
         if (!string.IsNullOrWhiteSpace(destinationDirectory))

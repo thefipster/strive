@@ -1,5 +1,5 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 
 namespace TheFipster.ActivityAggregator.Api.Middleware;
@@ -27,7 +27,11 @@ internal sealed class GlobalExceptionHandler : IExceptionHandler
 
         bool handled = false;
 
-        if (exception is ArgumentException || exception is ArgumentNullException)
+        if (
+            exception is ArgumentException
+            || exception is ArgumentNullException
+            || exception is ValidationException
+        )
         {
             problemDetails.Title = "Bad Request";
             problemDetails.Detail = exception.Message;

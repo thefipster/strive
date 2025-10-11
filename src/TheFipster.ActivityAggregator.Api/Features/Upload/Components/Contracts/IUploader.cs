@@ -1,5 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Upload.Models;
-
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
 
 public interface IUploader

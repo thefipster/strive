@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contracts;
 using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
@@ -9,7 +8,7 @@ using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Controllers;
+namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Controllers;
 
 [ApiController]
 [Route("api/assimilate")]

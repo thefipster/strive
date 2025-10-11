@@ -1,21 +1,13 @@
+using FluentValidation;
 using TheFipster.ActivityAggregator.Api.Extensions;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Components;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Decorators;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Decorators;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Services;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Decorators;
 using TheFipster.ActivityAggregator.Api.Interceptors;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
-namespace TheFipster.ActivityAggregator.Api.Setup.Application;
+namespace TheFipster.ActivityAggregator.Api.Features.Upload;
 
-public static class UploadFeatureExtension
+public static class ServiceExtension
 {
     public static void AddUploadFeature(this IServiceCollection services)
     {
@@ -30,14 +22,15 @@ public static class UploadFeatureExtension
         services.AddScoped<IUploader, Uploader>();
 
         services.AddScoped<IChunkAction, ChunkAction>();
+        services.AddScoped<IValidator<UploadChunkRequest>, UploadChunkValidator>();
         services.Decorate<IChunkAction, ChunkActionValidator>();
+
+        services.AddScoped<IUnzipService, UnzipService>();
+        services.Decorate<IUnzipService, UnzipIndexer>();
+        services.Decorate<IUnzipService, UnzipNotifier>();
 
         services.AddInterceptedScoped<IUnzipper, Unzipper>(typeof(TracingInterceptor));
         services.Decorate<IUnzipper, UnzipperValidator>();
-
-        services.AddInterceptedScoped<IUnzipService, UnzipService>(typeof(TracingInterceptor));
-        services.Decorate<IUnzipService, UnzipIndexer>();
-        services.Decorate<IUnzipService, UnzipNotifier>();
     }
 
     private static void AddZipPagingFeature(this IServiceCollection services)
@@ -45,6 +38,7 @@ public static class UploadFeatureExtension
         services.AddScoped<IPagedIndexer<ZipIndex>, PagedIndexer<ZipIndex>>();
 
         services.AddScoped<IZipsAction, ZipsAction>();
+        services.AddScoped<IValidator<ZipsPageRequest>, ZipsPageValidator>();
         services.Decorate<IZipsAction, ZipsActionValidator>();
     }
 }

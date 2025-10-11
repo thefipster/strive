@@ -1,11 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Scan.Models;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
-namespace TheFipster.ActivityAggregator.Api.Controllers;
+namespace TheFipster.ActivityAggregator.Api.Features.Scan.Controllers;
 
 [ApiController]
 [Route("api/scan")]
@@ -16,12 +13,12 @@ public class ScanController(
 ) : ControllerBase
 {
     [HttpGet]
-    public void Scan() => scanAction.TryScan();
+    public void Scan() => scanAction.Scan();
+
+    [HttpGet("classifiers")]
+    public Dictionary<DataSources, int> GetClassifiers() => classifiersAction.GetClassifiers();
 
     [HttpGet("files")]
     public PagedResult<FileIndex> GetFilePage([FromQuery] ScanFilePageRequest request) =>
         fileAction.GetFilePage(request);
-
-    [HttpGet("classifiers")]
-    public Dictionary<DataSources, int> GetClassifiers() => classifiersAction.GetClassifiers();
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 

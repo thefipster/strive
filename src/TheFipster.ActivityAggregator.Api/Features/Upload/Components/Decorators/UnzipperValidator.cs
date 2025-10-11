@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 

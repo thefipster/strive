@@ -1,6 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Setup;
-using TheFipster.ActivityAggregator.Api.Setup.Infrastructure;
-
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var environment = builder.Environment;

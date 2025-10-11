@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
@@ -13,24 +12,10 @@ public class FileScanner(IClassifier classifier, IIndexer<FileIndex> fileInvento
         var file = new FileInfo(filepath);
         var hash = await file.HashXx3Async(ct);
 
-        var index = fileInventory.GetById(hash);
-        if (index != null)
-        {
-            if (!index.AlternateFiles.Contains(filepath))
-                index.AlternateFiles.Add(filepath);
+        if (FileIsAlreadyIndexed(filepath, hash, out var index))
+            return index!;
 
-            if (index.Source.HasValue)
-                return index;
-        }
-
-        index = new FileIndex
-        {
-            Hash = hash,
-            ZipHash = zipHash,
-            Size = file.Length,
-            Path = filepath,
-        };
-
+        index = FileIndex.New(hash, zipHash, file.Length, filepath);
         List<ClassificationResult> results;
         try
         {
@@ -45,10 +30,23 @@ public class FileScanner(IClassifier classifier, IIndexer<FileIndex> fileInvento
             return index;
 
         var result = results.First(x => x.Classification != null);
-        index.Source = result.Classification?.Source;
-        index.Timestamp = result.Classification?.Datetime;
-        index.Range = result.Classification?.Range;
+        index.SetClassification(result.Classification);
 
         return index;
+    }
+
+    private bool FileIsAlreadyIndexed(string filepath, string hash, out FileIndex? index)
+    {
+        index = fileInventory.GetById(hash);
+        if (index == null)
+            return false;
+
+        if (!index.AlternateFiles.Contains(filepath))
+            index.AlternateFiles.Add(filepath);
+
+        if (index.Source.HasValue)
+            return true;
+
+        return false;
     }
 }

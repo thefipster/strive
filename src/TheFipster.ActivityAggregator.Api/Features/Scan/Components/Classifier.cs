@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;

@@ -1,0 +1,10 @@
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Components;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Requests;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Requests.Validators;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Services;
+global using TheFipster.ActivityAggregator.Api.Features.Scan.Services.Contracts;

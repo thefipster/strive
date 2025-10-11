@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
 

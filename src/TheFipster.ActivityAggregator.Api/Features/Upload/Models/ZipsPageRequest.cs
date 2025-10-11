@@ -3,14 +3,12 @@ using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Models;
 
-public class UploadFilePageRequest
+public class ZipsPageRequest
 {
     public int Page { get; set; } = 0;
     public int Size { get; set; } = 10;
 
     public string? Search { get; set; }
-
-    public bool IsValid => Page >= 0 && Size > 0;
 
     public PageSpecificationRequest<ZipIndex> ToSpecification()
     {

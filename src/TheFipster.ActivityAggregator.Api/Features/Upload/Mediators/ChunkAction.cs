@@ -1,9 +1,5 @@
 using Microsoft.Extensions.Options;
 using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Models;
-using TheFipster.ActivityAggregator.Api.Features.Upload.Services.Contracts;
 using TheFipster.ActivityAggregator.Domain.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators;

@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Models;
 
 public class UploadChunkRequest
@@ -21,10 +19,4 @@ public class UploadChunkRequest
 
     [FromForm(Name = "totalSize")]
     public long TotalSize { get; set; }
-
-    public bool IsValid =>
-        Chunk.Length > 0
-        && !string.IsNullOrEmpty(Chunk.Name)
-        && !string.IsNullOrEmpty(UploadId)
-        && !string.IsNullOrEmpty(FileName);
 }

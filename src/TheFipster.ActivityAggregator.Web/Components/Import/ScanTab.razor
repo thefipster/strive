@@ -1,3 +1,4 @@
+@using TheFipster.ActivityAggregator.Domain.Models.Importing
 <MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
     <MudCard>
         <MudCardHeader>
@@ -22,11 +23,11 @@
                                   IconSize="Size.Small" Class="mt-0"></MudTextField>
                     <MudSpacer/>
                     <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
-                        <MudSelectItem Value="@("All")">All Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("General")">General</MudSelectItem>
-                        <MudSelectItem Value="@("Classified")">Classified Files</MudSelectItem>
-                        <MudSelectItem Value="@("Unclassified")">Unclassified Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("Special")">Special</MudSelectItem>
+                        <MudSelectItem Value="@ClassificationOptions.All">All Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem>
+                        <MudSelectItem Value="@ClassificationOptions.Classified">Classified Files</MudSelectItem>
+                        <MudSelectItem Value="@ClassificationOptions.Unclassified">Unclassified Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
                         @if (_classifiers != null)
                         {
                             @foreach (var classifier in _classifiers)
@@ -37,8 +38,8 @@
                     </MudSelect>
                     <MudSpacer/>
                     <MudSelect T="string" Label="Range" ValueChanged="@OnRangeFilterChanged">
-                        <MudSelectItem Value="@("All")">All Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("Special")">Special</MudSelectItem>
+                        <MudSelectItem Value="@RangeOptions.All">All Files</MudSelectItem>
+                        <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
                         @foreach (var range in _ranges)
                         {
                             <MudSelectItem Value="@range">@range</MudSelectItem>

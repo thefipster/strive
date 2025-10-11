@@ -14,9 +14,14 @@ public static class Const
         {
             public const string Url = "/hubs/import";
 
-            public const string OnProcessStart = "OnProcessStart";
-            public const string OnProcessReport = "OnProcessReport";
-            public const string OnProcessDone = "OnProcessDone";
+            public const string ReportAction = "ReportAction";
+            public const string ReportProgress = "ReportAction";
+
+            public static class Actions
+            {
+                public const string Unzip = "Unzip";
+                public const string Scan = "Scan";
+            }
         }
 
         public static class Ingester
