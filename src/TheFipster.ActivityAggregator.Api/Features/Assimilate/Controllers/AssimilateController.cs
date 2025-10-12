@@ -13,8 +13,9 @@ public class AssimilateController(
 ) : ControllerBase
 {
     [HttpGet("extracts")]
-    public PagedResult<ExtractorIndex> GetFilePage([FromQuery] PagedRequest request) =>
-        pageAction.GetFilePage(request);
+    public PagedResult<ExtractorIndex> GetExtractPage(
+        [FromQuery] AssimilateExtractPageRequest request
+    ) => pageAction.GetExtractPage(request);
 
     [HttpGet("extractors")]
     public Dictionary<DataSources, int> GetExtractors() => extractorsAction.GetExtractors();

@@ -22,28 +22,26 @@
 
         <MudCardContent Class="d-flex align-center">
             <MudTable @ref="_fileTable" Context="item" ServerData="@LoadServerData"
-                      Elevation="0" Style="width: 100%">
-                <ToolBarContent>
-                    <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="@OnSearchFilterChanged" IconSize="Size.Small"
-                                  Class="mt-0"></MudTextField>
-                </ToolBarContent>
+                      CustomHeader="true" Elevation="0" Style="width: 100%">
                 <HeaderContent>
-                    <MudTh Style="width:160px;">
-                        <MudText Typo="Typo.subtitle2">Upload date</MudText>
-                    </MudTh>
-                    <MudTh>
-                        <MudText Typo="Typo.subtitle2">File</MudText>
-                    </MudTh>
-                    <MudTh Style="width:100px;">
-                        <MudText Typo="Typo.subtitle2">Zip size</MudText>
-                    </MudTh>
-                    <MudTh Style="width:100px;">
-                        <MudText Typo="Typo.subtitle2">File count</MudText>
-                    </MudTh>
-                    <MudTh Style="width:140px;">
-                        <MudText Typo="Typo.subtitle2">Total File size</MudText>
-                    </MudTh>
+                    <MudTHeadRow>
+                        <MudTh></MudTh>
+                        <MudTh>
+                            <MudTextField T="string" Placeholder="Search" Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" ValueChanged="@OnSearchFilterChanged" IconSize="Size.Small"
+                                          Class="mt-0"></MudTextField>
+                        </MudTh>
+                        <MudTh></MudTh>
+                        <MudTh></MudTh>
+                        <MudTh></MudTh>
+                    </MudTHeadRow>
+                        <MudTHeadRow>
+                        <MudTh Style="width:160px;">Upload date</MudTh>
+                        <MudTh>File</MudTh>
+                        <MudTh Style="width:100px;">Zip size</MudTh>
+                        <MudTh Style="width:100px;">File count</MudTh>
+                        <MudTh Style="width:140px;">Total File size</MudTh>
+                    </MudTHeadRow>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Upload date">

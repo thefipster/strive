@@ -22,44 +22,52 @@
         </MudCardHeader>
         <MudProgressLinear Color="Color.Primary" Value="@_progress"/>
         <MudCardContent>
-            <MudTable T="FileIndex" @ref="_fileTable" ServerData="@LoadServerData"
+            <MudTable T="FileIndex" @ref="_fileTable" ServerData="@LoadServerData" CustomHeader="true"
                       RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
-                <ToolBarContent>
-                    <MudTextField T="string" Label="Filename" Placeholder="Search" ValueChanged="@(s => OnSearch(s))"
-                                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
-                                  IconSize="Size.Small" Class="mt-0"></MudTextField>
-                    <MudSpacer/>
-                    <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
-                        <MudSelectItem Value="@ClassificationOptions.All">All Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem>
-                        <MudSelectItem Value="@ClassificationOptions.Classified">Classified Files</MudSelectItem>
-                        <MudSelectItem Value="@ClassificationOptions.Unclassified">Unclassified Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
-                        @if (_classifiers != null)
-                        {
-                            @foreach (var classifier in _classifiers)
-                            {
-                                <MudSelectItem Value="@classifier">@classifier</MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
-                    <MudSpacer/>
-                    <MudSelect T="string" Label="Range" ValueChanged="@OnRangeFilterChanged">
-                        <MudSelectItem Value="@RangeOptions.All">All Files</MudSelectItem>
-                        <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
-                        @foreach (var range in _ranges)
-                        {
-                            <MudSelectItem Value="@range">@range</MudSelectItem>
-                        }
-                    </MudSelect>
-                </ToolBarContent>
                 <HeaderContent>
-                    <MudTh Style="width:160px;">Indexed</MudTh>
-                    <MudTh>File</MudTh> <!-- this one grows -->
-                    <MudTh Style="width:300px;">Classification</MudTh>
-                    <MudTh Style="width:100px;">Range</MudTh>
-                    <MudTh Style="width:160px;">Timestamp</MudTh>
-                    <MudTh Style="width:100px;">Size</MudTh>
+                    <MudTHeadRow>
+                        <MudTh></MudTh>
+                        <MudTh>
+                            <MudTextField T="string" Label="Filename" Placeholder="Search" ValueChanged="@(s => OnSearch(s))"
+                                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                                          IconSize="Size.Small" Class="mt-0"></MudTextField>
+                        </MudTh>
+                        <MudTh>
+                            <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
+                                <MudSelectItem Value="@ClassificationOptions.All">All Files</MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem>
+                                <MudSelectItem Value="@ClassificationOptions.Classified">Classified Files</MudSelectItem>
+                                <MudSelectItem Value="@ClassificationOptions.Unclassified">Unclassified Files</MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
+                                @if (_classifiers != null)
+                                {
+                                    @foreach (var classifier in _classifiers)
+                                    {
+                                        <MudSelectItem Value="@classifier">@classifier</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudTh>
+                        <MudTh colspan="2">
+                            <MudSelect T="string" Label="Range" ValueChanged="@OnRangeFilterChanged">
+                                <MudSelectItem Value="@RangeOptions.All">All Files</MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
+                                @foreach (var range in _ranges)
+                                {
+                                    <MudSelectItem Value="@range">@range</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudTh>
+                        <MudTh></MudTh>
+                    </MudTHeadRow>
+                    <MudTHeadRow>
+                        <MudTh Style="width:160px;">Indexed</MudTh>
+                        <MudTh>File</MudTh> <!-- this one grows -->
+                        <MudTh Style="width:300px;">Classification</MudTh>
+                        <MudTh Style="width:100px;">Range</MudTh>
+                        <MudTh Style="width:160px;">Timestamp</MudTh>
+                        <MudTh Style="width:100px;">Size</MudTh>
+                    </MudTHeadRow>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd>@context.IndexedAt.ToLocalTime().ToString("g")</MudTd>

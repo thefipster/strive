@@ -1,4 +1,7 @@
+using FluentValidation;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Requests;
+using TheFipster.ActivityAggregator.Domain.Models.Requests.Validators;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
@@ -56,6 +59,7 @@ public static class ServiceExtension
     public static void AddBatchPageFeature(this IServiceCollection services)
     {
         services.AddScoped<IBatchPageAction, BatchPageAction>();
+        services.AddScoped<IValidator<PagedRequest>, PagedRequestValidator>();
         services.Decorate<IBatchPageAction, BatchPageValidator>();
     }
 

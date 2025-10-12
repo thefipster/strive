@@ -31,7 +31,6 @@
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Lite\TheFipster.ActivityAggregator.Storage.Lite.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Features\Assimilate\Models\" />
     <Folder Include="Features\Batch\Models\" />
     <Folder Include="Features\Core\Components\Decorators\" />
     <Folder Include="Features\Core\Models\" />

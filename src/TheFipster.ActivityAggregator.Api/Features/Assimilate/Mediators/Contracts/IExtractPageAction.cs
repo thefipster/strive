@@ -5,5 +5,5 @@ namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Contra
 
 public interface IExtractPageAction
 {
-    PagedResult<ExtractorIndex> GetFilePage(PagedRequest request);
+    PagedResult<ExtractorIndex> GetExtractPage(AssimilateExtractPageRequest request);
 }

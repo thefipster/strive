@@ -4,6 +4,8 @@ global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Components.De
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Contracts;
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators.Decorators;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Models;
+global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Models.Validators;
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services;
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contracts;
 global using TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Decorators;
