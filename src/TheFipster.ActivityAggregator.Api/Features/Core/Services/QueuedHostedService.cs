@@ -17,6 +17,9 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
         private int _activeWorkers;
         private readonly ConcurrentQueue<DateTime> _completionTimes = new();
         private readonly TimeSpan _windowSize = TimeSpan.FromSeconds(10);
+        private DateTime? _queueEmptyTime;
+        private TimeSpan _processingRate = TimeSpan.FromMilliseconds(100);
+        private TimeSpan _updateRate = TimeSpan.FromSeconds(1);
 
         protected override Task ExecuteAsync(CancellationToken ct)
         {
@@ -54,8 +57,8 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                 }
                 finally
                 {
-                    await Task.Delay(100, ct);
                     Interlocked.Decrement(ref _activeWorkers);
+                    await Task.Delay(_processingRate, ct);
                 }
             }
 
@@ -70,10 +73,23 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
             {
                 try
                 {
-                    var rate = GetProcessingRate(ct);
+                    var rate = GetProcessingRate();
 
                     if (_completionTimes.Count == 0)
-                        continue;
+                    {
+                        _updateRate = TimeSpan.FromSeconds(1);
+
+                        if (_queueEmptyTime == null)
+                            _queueEmptyTime = DateTime.UtcNow;
+
+                        if (DateTime.UtcNow - _queueEmptyTime > _windowSize)
+                            continue;
+                    }
+                    else
+                    {
+                        _updateRate = TimeSpan.FromMilliseconds(333);
+                        _queueEmptyTime = null;
+                    }
 
                     await hubContext
                         .Clients.Group(Const.Hubs.Importer.Actions.Queue)
@@ -97,7 +113,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                 }
                 finally
                 {
-                    await Task.Delay(300, ct);
+                    await Task.Delay(_updateRate, ct);
                 }
             }
 
@@ -114,7 +130,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                 _completionTimes.TryDequeue(out _);
         }
 
-        private double GetProcessingRate(CancellationToken ct)
+        private double GetProcessingRate()
         {
             var now = DateTime.UtcNow;
 
