@@ -2,8 +2,8 @@
 
 <MudThemeProvider IsDarkMode="true"/>
 <MudDialogProvider/>
-<MudPopoverProvider />
-<MudSnackbarProvider />
+<MudPopoverProvider/>
+<MudSnackbarProvider/>
 
 <MudLayout>
     <MudAppBar Elevation="1">
@@ -21,9 +21,32 @@
                            Color="Color.Primary"/>
         }
         <MudSpacer/>
+        <div class="d-flex gap-1 align-items-center">
+            @if (_queueRate > 0.1)
+            {
+                <MudText Class="mr-4" Style="width: 100px;">@_queueCount jobs</MudText>
+            }
+            @if (_queueRate > 0.1)
+            {
+                <MudText Class="mr-4" Style="width: 100px;">@_queueRate/s</MudText>
+            }
+            @for (int i = _queueWorker; i > 0; i--)
+            {
+                @if (_queueActive >= i)
+                {
+                    <MudAvatar Color="Color.Primary" Size="Size.Small"/>
+                }
+                else
+                {
+                    <MudAvatar Color="Color.Default" Size="Size.Small"/>
+                }
+            }
+            <MudIcon Class="ml-4" Icon="@Icons.Custom.Brands.StackOverflow"/>
+        </div>
     </MudAppBar>
-    <MudDrawer Variant="@DrawerVariant.Mini" Open="_drawerOpen" Color="Color.Primary" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu DrawerToggled="OnDrawerToggle" />
+    <MudDrawer Variant="@DrawerVariant.Mini" Open="_drawerOpen" Color="Color.Primary" ClipMode="DrawerClipMode.Always"
+               Elevation="2">
+        <NavMenu DrawerToggled="OnDrawerToggle"/>
     </MudDrawer>
     <MudMainContent>
         @Body

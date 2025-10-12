@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;

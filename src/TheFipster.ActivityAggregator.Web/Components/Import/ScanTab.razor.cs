@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
@@ -13,6 +15,8 @@ public partial class ScanTab : ComponentBase
 {
     private HubConnection? _hubConnection;
     private MudTable<FileIndex>? _fileTable;
+
+    private readonly Subject<(int, int, int, double)> _queueEvents = new();
 
     private bool _isScanActive;
     private double _progress;
@@ -100,32 +104,22 @@ public partial class ScanTab : ComponentBase
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<string, bool>(
-            Const.Hubs.Importer.ReportAction,
-            (_, update) =>
+        _queueEvents
+            .Buffer(count: 5)
+            .Select(events => events.Last())
+            .Subscribe(_ =>
             {
-                if (update)
-                {
-                    _progress = 0;
-                    _isScanActive = false;
-                    _progressMessage = null;
-
-                    _fileTable?.ReloadServerData();
-                    InvokeAsync(StateHasChanged);
-                }
-            }
-        );
-
-        _hubConnection.On<string, double>(
-            Const.Hubs.Importer.ReportProgress,
-            (message, progress) =>
-            {
-                _progress = progress;
-                _progressMessage = message;
+                _progress = 0;
+                _isScanActive = false;
+                _progressMessage = null;
 
                 _fileTable?.ReloadServerData();
                 InvokeAsync(StateHasChanged);
-            }
+            });
+
+        _hubConnection.On<int, int, int, double>(
+            Const.Hubs.Importer.ReportQueue,
+            (a, b, c, d) => _queueEvents.OnNext((a, b, c, d))
         );
 
         await _hubConnection.StartAsync();
@@ -138,6 +132,6 @@ public partial class ScanTab : ComponentBase
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Scan);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Queue);
     }
 }

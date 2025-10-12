@@ -16,6 +16,7 @@ public static class Const
 
             public const string ReportAction = "ReportAction";
             public const string ReportProgress = "ReportProgress";
+            public const string ReportQueue = "ReportQueue";
 
             public static class Actions
             {
@@ -23,6 +24,7 @@ public static class Const
                 public const string Scan = "Scan";
                 public const string Assimilate = "Assimilate";
                 public const string Batch = "Batch";
+                public const string Queue = "Queue";
             }
         }
 

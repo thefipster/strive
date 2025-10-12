@@ -1,36 +1,47 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
+using System.Collections.Concurrent;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
+using TheFipster.ActivityAggregator.Api.Hubs;
+using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
 {
     public class QueuedHostedService(
-        IBackgroundTaskQueue taskQueue,
+        IOptions<ApiConfig> config,
+        IBackgroundTaskQueue queue,
+        IHubContext<ImportHub> hubContext,
         ILogger<QueuedHostedService> logger
     ) : BackgroundService
     {
-        private const int MaxDegreeOfParallelism = 4;
+        private int _activeWorkers;
+        private readonly ConcurrentQueue<DateTime> _completionTimes = new();
+        private readonly TimeSpan _windowSize = TimeSpan.FromSeconds(10);
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(CancellationToken ct)
         {
             var workers = Enumerable
-                .Range(0, MaxDegreeOfParallelism)
-                .Select(workerId =>
-                    Task.Run(() => WorkerLoop(workerId, stoppingToken), stoppingToken)
-                )
-                .ToArray();
+                .Range(0, config.Value.MaxDegreeOfParallelism)
+                .Select(workerId => Task.Run(() => WorkerLoop(workerId, ct), ct))
+                .ToList();
+
+            workers.Add(Task.Run(() => ReporterLoop(ct), ct));
 
             return Task.WhenAll(workers);
         }
 
-        private async Task WorkerLoop(int workerId, CancellationToken stoppingToken)
+        private async Task WorkerLoop(int workerId, CancellationToken ct)
         {
             logger.LogInformation("Worker {WorkerId} starting.", workerId);
 
-            while (!stoppingToken.IsCancellationRequested)
+            while (!ct.IsCancellationRequested)
             {
                 try
                 {
-                    var workItem = await taskQueue.DequeueAsync(stoppingToken);
-                    await workItem(stoppingToken);
+                    var workItem = await queue.DequeueAsync(ct);
+                    Interlocked.Increment(ref _activeWorkers);
+                    await workItem(ct);
+                    RecordCompletion();
                 }
                 catch (OperationCanceledException)
                 {
@@ -43,11 +54,78 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                 }
                 finally
                 {
-                    await Task.Delay(1000, stoppingToken);
+                    await Task.Delay(100, ct);
+                    Interlocked.Decrement(ref _activeWorkers);
                 }
             }
 
             logger.LogInformation("Worker {WorkerId} stopping.", workerId);
+        }
+
+        private async Task ReporterLoop(CancellationToken ct)
+        {
+            logger.LogInformation("Reporter starting.");
+
+            while (!ct.IsCancellationRequested)
+            {
+                try
+                {
+                    var rate = GetProcessingRate(ct);
+
+                    if (_completionTimes.Count == 0)
+                        continue;
+
+                    await hubContext
+                        .Clients.Group(Const.Hubs.Importer.Actions.Queue)
+                        .SendAsync(
+                            Const.Hubs.Importer.ReportQueue,
+                            queue.Count,
+                            config.Value.MaxDegreeOfParallelism,
+                            _activeWorkers,
+                            rate,
+                            ct
+                        );
+                }
+                catch (OperationCanceledException)
+                {
+                    // Graceful shutdown
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error occurred in reporter loop.");
+                }
+                finally
+                {
+                    await Task.Delay(300, ct);
+                }
+            }
+
+            logger.LogInformation("Reporter stopping.");
+        }
+
+        private void RecordCompletion()
+        {
+            var now = DateTime.UtcNow;
+            _completionTimes.Enqueue(now);
+
+            // Clean up old timestamps
+            while (_completionTimes.TryPeek(out var oldest) && now - oldest > _windowSize)
+                _completionTimes.TryDequeue(out _);
+        }
+
+        private double GetProcessingRate(CancellationToken ct)
+        {
+            var now = DateTime.UtcNow;
+
+            // purge old entries
+            while (_completionTimes.TryPeek(out var oldest) && now - oldest > _windowSize)
+                _completionTimes.TryDequeue(out _);
+
+            var count = _completionTimes.Count;
+            var rate = count / _windowSize.TotalSeconds;
+
+            return Math.Round(rate, 1);
         }
     }
 }

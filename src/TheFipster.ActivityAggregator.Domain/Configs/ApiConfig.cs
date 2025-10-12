@@ -9,4 +9,6 @@ public class ApiConfig
     public string UnzipDirectoryPath { get; set; } = "unzip";
     public string ConvergeDirectoryPath { get; set; } = "converge";
     public string MergeDirectoryPath { get; set; } = "merge";
+
+    public int MaxDegreeOfParallelism { get; set; } = 4;
 }

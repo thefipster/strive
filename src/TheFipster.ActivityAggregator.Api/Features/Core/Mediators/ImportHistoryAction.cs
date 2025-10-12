@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Mediators.Contracts;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;

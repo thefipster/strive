@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
@@ -16,9 +15,7 @@ public class AssimilateAction(
         if (string.IsNullOrWhiteSpace(destinationDirectory))
             ThrowMissingPathException();
 
-        tasks.QueueBackgroundWorkItem(async ct =>
-            await assimilater.ExtractFilesAsync(destinationDirectory, ct)
-        );
+        tasks.Enqueue(async ct => await assimilater.ExtractFilesAsync(destinationDirectory, ct));
     }
 
     private static void ThrowMissingPathException()

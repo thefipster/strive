@@ -12,6 +12,10 @@ public partial class MainLayout
     private bool _drawerOpen;
 
     private HubConnection? _hubConnection;
+    private int _queueCount;
+    private int _queueWorker;
+    private int _queueActive;
+    private double _queueRate;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -47,6 +51,19 @@ public partial class MainLayout
             }
         );
 
+        _hubConnection.On<int, int, int, double>(
+            Const.Hubs.Importer.ReportQueue,
+            (count, worker, active, rate) =>
+            {
+                _queueCount = count;
+                _queueWorker = worker;
+                _queueActive = active;
+                _queueRate = rate;
+
+                InvokeAsync(StateHasChanged);
+            }
+        );
+
         await _hubConnection.StartAsync();
         await JoinGroups();
         _hubConnection.Reconnected += async _ => await JoinGroups();
@@ -60,6 +77,7 @@ public partial class MainLayout
         await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Unzip);
         await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Scan);
         await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Assimilate);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Queue);
     }
 
     private void AppendCalendarNavigation()

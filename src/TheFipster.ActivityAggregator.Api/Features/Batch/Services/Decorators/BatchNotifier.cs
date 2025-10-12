@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Services.Decorators;

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.SignalR;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 using TheFipster.ActivityAggregator.Api.Hubs;
 using TheFipster.ActivityAggregator.Domain;
 
