@@ -18,15 +18,11 @@ builder.Services.AddSingleton<BatchApi>();
 builder.Services.AddSingleton<InventoryApi>();
 builder.Services.AddSingleton<HistoryApi>();
 
-builder.Services.AddSignalR(e =>
-{
-    e.EnableDetailedErrors = true;
-    e.MaximumReceiveMessageSize = 102400000;
-});
-
 using var listener = new ActivityListenerConfiguration()
     .Instrument.WithDefaultInstrumentation(false)
-    .Instrument.HttpClientRequests(opts => opts.MessageTemplate = "blazor")
+    .Instrument.HttpClientRequests(opts =>
+        opts.MessageTemplate = nameof(TheFipster.ActivityAggregator.Web)
+    )
     .TraceToSharedLogger();
 
 var app = builder.Build();

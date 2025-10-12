@@ -14,7 +14,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
     public class PolarTakeoutGenericPeriodTemperatureImporter : IFileClassifier, IFileExtractor
     {
         private const string Type = "7";
-        public DataSources Source => DataSources.PolarTakeoutGenericPeriodTemperature;
+        public DataSources Source => DataSources.PolarFlowGenericPeriodTemperature;
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 

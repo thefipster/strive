@@ -8,7 +8,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleWeightImporter : IFileClassifier
 {
-    public DataSources Source => DataSources.FitbitTakeoutWeight;
+    public DataSources Source => DataSources.GoogleFitbitWeight;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 

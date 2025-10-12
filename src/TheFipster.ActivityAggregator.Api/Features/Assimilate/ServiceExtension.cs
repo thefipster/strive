@@ -42,8 +42,6 @@ public static class ServiceExtension
         services.Decorate<IExtractionCataloger, ExtractionCatalogerInventory>();
 
         services.AddScoped<IIndexer<AssimilateIndex>, BaseIndexer<AssimilateIndex>>();
-
-        services.AddScoped<IInventoryIndexer, InventoryIndexer>();
     }
 
     private static void AddExtractsPageFeature(this IServiceCollection services)

@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleLivePaceImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutLivePace,
+        DataSources.GoogleFitbitLivePace,
         DateRanges.Month,
         "timestamp,steps,distance millimeters,altitude gain millimeters"
     ),

@@ -8,7 +8,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleUserExercisesImporter : IFileClassifier
 {
-    public DataSources Source => DataSources.FitbitTakeoutUserExercises;
+    public DataSources Source => DataSources.GoogleFitbitUserExercises;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 

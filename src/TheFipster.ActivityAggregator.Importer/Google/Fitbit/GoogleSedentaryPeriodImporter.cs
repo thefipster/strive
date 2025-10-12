@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleSedentaryPeriodImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutSedentaryPeriod,
+        DataSources.GoogleFitbitSedentaryPeriod,
         DateRanges.Day,
         "start time,end time"
     ),

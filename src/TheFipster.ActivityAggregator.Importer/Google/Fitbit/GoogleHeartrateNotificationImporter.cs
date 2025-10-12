@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleHeartrateNotificationImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutHeartrateNotification,
+        DataSources.GoogleFitbitHeartrateNotification,
         DateRanges.Month,
         "timestamp,heart rate notification type,heart rate threshold beats per minute,heart rate trigger value beats per minute"
     ),

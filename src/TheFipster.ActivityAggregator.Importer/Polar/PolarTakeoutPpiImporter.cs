@@ -12,7 +12,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarTakeoutPpiImporter : IFileClassifier, IFileExtractor
     {
-        public DataSources Source => DataSources.PolarTakeoutPpi;
+        public DataSources Source => DataSources.PolarFlowPpi;
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 
@@ -66,7 +66,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             {
                 var date = day.Date;
                 var extraction = new FileExtraction(
-                    DataSources.PolarTakeoutPpi,
+                    DataSources.PolarFlowPpi,
                     file.Filepath,
                     date.Date,
                     DateRanges.Day

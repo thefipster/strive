@@ -8,7 +8,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleUserSleepStagesImporter : IFileClassifier
 {
-    public DataSources Source => DataSources.FitbitTakeoutUserSleepStages;
+    public DataSources Source => DataSources.GoogleFitbitUserSleepStages;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 

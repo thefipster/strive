@@ -1,6 +1,0 @@
-@TheFipster.ActivityAggregator.Api_HostAddress = http://localhost:5279
-
-GET {{TheFipster.ActivityAggregator.Api_HostAddress}}/
-Accept: application/json
-
-###

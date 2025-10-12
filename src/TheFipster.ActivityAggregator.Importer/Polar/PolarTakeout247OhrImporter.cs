@@ -12,7 +12,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarTakeout247OhrImporter : IFileClassifier, IFileExtractor
     {
-        public DataSources Source => DataSources.PolarTakeout247Ohr;
+        public DataSources Source => DataSources.PolarFlow247Ohr;
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 

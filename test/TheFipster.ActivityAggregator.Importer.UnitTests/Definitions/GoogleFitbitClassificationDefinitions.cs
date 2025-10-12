@@ -16,7 +16,7 @@ public static class GoogleFitbitClassificationDefinitions
                 "steps_2023-09-01.csv",
                 "2023-09-01 05:28:00",
                 DateRanges.Month,
-                DataSources.FitbitTakeoutSteps
+                DataSources.GoogleFitbitSteps
             ),
         ];
     }

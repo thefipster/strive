@@ -8,7 +8,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleRunVo2MaxImporter : IFileClassifier
 {
-    public DataSources Source => DataSources.FitbitTakeoutRunVo2Max;
+    public DataSources Source => DataSources.GoogleFitbitRunVo2Max;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 

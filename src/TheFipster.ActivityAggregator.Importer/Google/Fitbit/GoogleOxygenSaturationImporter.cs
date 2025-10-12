@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleOxygenSaturationImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutOxygenSaturation,
+        DataSources.GoogleFitbitOxygenSaturation,
         DateRanges.Month,
         "timestamp,oxygen saturation percentage"
     ),

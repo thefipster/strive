@@ -4,5 +4,5 @@ using TheFipster.ActivityAggregator.Importer.Abstractions;
 namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleAltitudeImporter()
-    : GoogleCsvParser(DataSources.FitbitTakeoutAltitude, DateRanges.Month, "timestamp,gain"),
+    : GoogleCsvParser(DataSources.GoogleFitbitAltitude, DateRanges.Month, "timestamp,gain"),
         IFileClassifier;

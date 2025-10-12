@@ -13,7 +13,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar;
 
 public class PolarTakeoutCalendarItemsImporter : IFileClassifier, IFileExtractor
 {
-    public DataSources Source => DataSources.PolarTakeoutCalendarItems;
+    public DataSources Source => DataSources.PolarFlowCalendarItems;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 

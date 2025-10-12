@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleCaloriesHeartrateZoneImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutCaloriesHeartrateZone,
+        DataSources.GoogleFitbitCaloriesHeartrateZone,
         DateRanges.Month,
         "timestamp,heart rate zone type,kcal"
     ),
