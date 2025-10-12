@@ -10,5 +10,5 @@ public class ApiConfig
     public string ConvergeDirectoryPath { get; set; } = "converge";
     public string MergeDirectoryPath { get; set; } = "merge";
 
-    public int MaxDegreeOfParallelism { get; set; } = 4;
+    public int MaxDegreeOfParallelism { get; set; } = Environment.ProcessorCount / 2;
 }
