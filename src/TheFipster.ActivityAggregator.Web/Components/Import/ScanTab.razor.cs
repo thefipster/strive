@@ -13,14 +13,10 @@ namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
 public partial class ScanTab : ComponentBase
 {
-    private HubConnection? _hubConnection;
     private MudTable<FileIndex>? _fileTable;
 
+    private HubConnection? _hubConnection;
     private readonly Subject<(int, int, int, double)> _queueEvents = new();
-
-    private bool _isScanActive;
-    private double _progress;
-    private string? _progressMessage;
 
     private string[]? _classifiers;
     private readonly string[] _ranges = Enum.GetNames(typeof(DateRanges));
@@ -57,7 +53,6 @@ public partial class ScanTab : ComponentBase
         if (Scanner == null)
             return;
 
-        _isScanActive = true;
         await Scanner.ExecuteFileScan();
     }
 
@@ -109,10 +104,6 @@ public partial class ScanTab : ComponentBase
             .Select(events => events.Last())
             .Subscribe(_ =>
             {
-                _progress = 0;
-                _isScanActive = false;
-                _progressMessage = null;
-
                 _fileTable?.ReloadServerData();
                 InvokeAsync(StateHasChanged);
             });

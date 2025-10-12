@@ -5,22 +5,13 @@
             <CardHeaderContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.h4">Scan unzipped files</MudText>
-                    @if (_isScanActive)
-                    {
-                        <MudText>@_progressMessage</MudText>
-                        <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="@_isScanActive"/>
-                    }
-                    else
-                    {
-                        <MudIconButton Color="Color.Primary"
-                                       OnClick="@OnScanClicked"
-                                       Disabled="@_isScanActive"
-                                       Icon="@Icons.Material.Outlined.Radar"/>
-                    }
+                    <MudIconButton Color="Color.Primary"
+                                   OnClick="@OnScanClicked"
+                                   Icon="@Icons.Material.Outlined.Radar"/>
                 </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Value="@_progress"/>
+        <MudProgressLinear Color="Color.Primary" />
         <MudCardContent>
             <MudTable T="FileIndex" @ref="_fileTable" ServerData="@LoadServerData" CustomHeader="true"
                       RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%">
@@ -28,7 +19,8 @@
                     <MudTHeadRow>
                         <MudTh></MudTh>
                         <MudTh>
-                            <MudTextField T="string" Label="Filename" Placeholder="Search" ValueChanged="@(s => OnSearch(s))"
+                            <MudTextField T="string" Label="Filename" Placeholder="Search"
+                                          ValueChanged="@(s => OnSearch(s))"
                                           Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
                                           IconSize="Size.Small" Class="mt-0"></MudTextField>
                         </MudTh>
@@ -36,8 +28,10 @@
                             <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
                                 <MudSelectItem Value="@ClassificationOptions.All">All Files</MudSelectItem>
                                 <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem>
-                                <MudSelectItem Value="@ClassificationOptions.Classified">Classified Files</MudSelectItem>
-                                <MudSelectItem Value="@ClassificationOptions.Unclassified">Unclassified Files</MudSelectItem>
+                                <MudSelectItem Value="@ClassificationOptions.Classified">Classified Files
+                                </MudSelectItem>
+                                <MudSelectItem Value="@ClassificationOptions.Unclassified">Unclassified Files
+                                </MudSelectItem>
                                 <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
                                 @if (_classifiers != null)
                                 {

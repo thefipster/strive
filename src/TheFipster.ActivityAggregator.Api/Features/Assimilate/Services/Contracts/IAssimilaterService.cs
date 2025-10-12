@@ -2,5 +2,5 @@ namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Contrac
 
 public interface IAssimilaterService
 {
-    Task ExtractFilesAsync(string destinationDirectory, CancellationToken ct);
+    Task ExtractFiles(string destinationDirectory, CancellationToken ct);
 }

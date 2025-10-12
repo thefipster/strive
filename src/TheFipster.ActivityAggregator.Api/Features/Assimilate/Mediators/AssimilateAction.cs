@@ -15,7 +15,7 @@ public class AssimilateAction(
         if (string.IsNullOrWhiteSpace(destinationDirectory))
             ThrowMissingPathException();
 
-        tasks.Enqueue(async ct => await assimilater.ExtractFilesAsync(destinationDirectory, ct));
+        tasks.Enqueue(async ct => await assimilater.ExtractFiles(destinationDirectory, ct));
     }
 
     private static void ThrowMissingPathException()
