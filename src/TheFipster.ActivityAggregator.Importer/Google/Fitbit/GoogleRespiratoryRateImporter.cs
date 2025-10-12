@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleRespiratoryRateImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutRespiratoryRate,
+        DataSources.GoogleFitbitRespiratoryRate,
         DateRanges.AllTime,
         "timestamp,breaths per minute"
     ),

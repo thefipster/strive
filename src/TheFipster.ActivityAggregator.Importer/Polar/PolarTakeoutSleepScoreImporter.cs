@@ -13,7 +13,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar;
 
 public class PolarTakeoutSleepScoreImporter : IFileClassifier, IFileExtractor
 {
-    public DataSources Source => DataSources.PolarTakeoutSleepScore;
+    public DataSources Source => DataSources.PolarFlowSleepScore;
     public int ClassifierVersion => 1;
     public int ExtractorVersion => 1;
 
@@ -66,7 +66,7 @@ public class PolarTakeoutSleepScoreImporter : IFileClassifier, IFileExtractor
         {
             var date = item.Night.Date;
             var extraction = new FileExtraction(
-                DataSources.PolarTakeoutSleepScore,
+                DataSources.PolarFlowSleepScore,
                 file.Filepath,
                 date,
                 DateRanges.Day

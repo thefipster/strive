@@ -6,9 +6,9 @@ namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
 
 public class ExtractPageAction(IPagedIndexer<ExtractorIndex> indexer) : IExtractPageAction
 {
-    public PagedResult<ExtractorIndex> GetFilePage(PagedRequest request)
+    public PagedResult<ExtractorIndex> GetExtractPage(AssimilateExtractPageRequest request)
     {
-        var specifications = request.ToSpecification<ExtractorIndex>();
+        var specifications = request.ToSpecification();
         return indexer.GetPaged(specifications);
     }
 }

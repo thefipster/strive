@@ -16,7 +16,7 @@ public static class PolarFlowClassificationDefinitions
                 "247ohr_2017_10-788de140-3a96-4f44-a833-d19bfbed5fcc.json",
                 "2017-10-07",
                 DateRanges.Month,
-                DataSources.PolarTakeout247Ohr
+                DataSources.PolarFlow247Ohr
             ),
         ];
 
@@ -28,7 +28,7 @@ public static class PolarFlowClassificationDefinitions
                 "generic-period-ecg.json",
                 "2024-08-08 20:05:05",
                 DateRanges.Day,
-                DataSources.PolarTakeoutGenericPeriodEcg
+                DataSources.PolarFlowGenericPeriodEcg
             ),
         ];
 
@@ -40,7 +40,7 @@ public static class PolarFlowClassificationDefinitions
                 "generic-period-skin_contact.json",
                 "2023-01-01",
                 DateRanges.Day,
-                DataSources.PolarTakeoutGenericPeriodSkinContact
+                DataSources.PolarFlowGenericPeriodSkinContact
             ),
         ];
 
@@ -52,7 +52,7 @@ public static class PolarFlowClassificationDefinitions
                 "generic-period-spo2.json",
                 "2024-08-09 14:55:09",
                 DateRanges.Day,
-                DataSources.PolarTakeoutGenericPeriodSpo2
+                DataSources.PolarFlowGenericPeriodSpo2
             ),
         ];
 
@@ -64,7 +64,7 @@ public static class PolarFlowClassificationDefinitions
                 "generic-period-temperature.json",
                 "2023-01-01",
                 DateRanges.Day,
-                DataSources.PolarTakeoutGenericPeriodTemperature
+                DataSources.PolarFlowGenericPeriodTemperature
             ),
         ];
 
@@ -76,7 +76,7 @@ public static class PolarFlowClassificationDefinitions
                 "activity-2014-11-06-e0b29915-ae10-40c9-a34b-9e4f862cbea3.json",
                 "2014-11-06",
                 DateRanges.Day,
-                DataSources.PolarTakeoutActivity
+                DataSources.PolarFlowActivity
             ),
         ];
 
@@ -88,7 +88,7 @@ public static class PolarFlowClassificationDefinitions
                 "training-session-2025-08-09-8166543922-f3906546-0ec8-4289-bee9-d00212b00e3b.json",
                 "2025-08-09 13:09:02.595",
                 DateRanges.Time,
-                DataSources.PolarTakeoutTraining
+                DataSources.PolarFlowTraining
             ),
         ];
 
@@ -100,7 +100,7 @@ public static class PolarFlowClassificationDefinitions
                 "ppi_samples_2024_08_3-826e9ca5-6985-4576-80d2-b782e352c2f1.json",
                 "2024-08-18",
                 DateRanges.Month,
-                DataSources.PolarTakeoutPpi
+                DataSources.PolarFlowPpi
             ),
         ];
 
@@ -112,7 +112,7 @@ public static class PolarFlowClassificationDefinitions
                 "sleep_result_4476608-84a1e546-63b8-461a-ab85-770cfc3651e9.json",
                 "2017-10-08",
                 DateRanges.AllTime,
-                DataSources.PolarTakeoutSleepResult
+                DataSources.PolarFlowSleepResult
             ),
         ];
 
@@ -124,7 +124,7 @@ public static class PolarFlowClassificationDefinitions
                 "sleep_score_4476608-0e38b6c4-ade9-405f-a1a5-8bb11bb68219.json",
                 "2019-08-29",
                 DateRanges.AllTime,
-                DataSources.PolarTakeoutSleepScore
+                DataSources.PolarFlowSleepScore
             ),
         ];
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
+using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
@@ -17,6 +18,12 @@ public partial class AssimilateTab : ComponentBase
     private double _progress;
     private string? _progressMessage;
 
+    private string[]? _extractors;
+    private readonly string[] _parameters = Enum.GetNames(typeof(Parameters));
+
+    private string? _selectedClassifiedFilter;
+    private string? _selectedParameterFilter;
+
     [Inject]
     public NavigationManager? Navigation { get; set; }
 
@@ -29,6 +36,17 @@ public partial class AssimilateTab : ComponentBase
         await base.OnInitializedAsync();
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Api != null)
+            _extractors = (await Api.GetExtractors())
+                .Select(x => x.Key.ToString())
+                .OrderBy(x => x)
+                .ToArray();
+
+        await base.OnParametersSetAsync();
+    }
+
     private async Task OnAssimilateClicked()
     {
         if (Api == null)
@@ -36,6 +54,18 @@ public partial class AssimilateTab : ComponentBase
 
         _isAssimilationActive = true;
         await Api.ExecuteAssimilation();
+    }
+
+    private void OnClassificationFilterChanged(string classification)
+    {
+        _selectedClassifiedFilter = classification;
+        _fileTable?.ReloadServerData();
+    }
+
+    private void OnParameterFilterChanged(string parameter)
+    {
+        _selectedParameterFilter = parameter;
+        _fileTable?.ReloadServerData();
     }
 
     private async Task<TableData<ExtractorIndex>> LoadServerData(
@@ -47,7 +77,11 @@ public partial class AssimilateTab : ComponentBase
             return new TableData<ExtractorIndex> { TotalItems = 0, Items = [] };
 
         var paged = new PagedRequest(state.Page, state.PageSize);
-        var result = await Api.GetFilesAsync(paged);
+        var result = await Api.GetExtractsPageAsync(
+            paged,
+            _selectedClassifiedFilter,
+            _selectedParameterFilter
+        );
 
         return new TableData<ExtractorIndex> { TotalItems = result.Total, Items = result.Items };
     }

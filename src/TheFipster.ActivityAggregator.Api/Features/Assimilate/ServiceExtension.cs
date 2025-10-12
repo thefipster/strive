@@ -2,8 +2,6 @@ using FluentValidation;
 using TheFipster.ActivityAggregator.Api.Extensions;
 using TheFipster.ActivityAggregator.Api.Interceptors;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Domain.Models.Requests.Validators;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
@@ -44,14 +42,15 @@ public static class ServiceExtension
         services.Decorate<IExtractionCataloger, ExtractionCatalogerInventory>();
 
         services.AddScoped<IIndexer<AssimilateIndex>, BaseIndexer<AssimilateIndex>>();
-
-        services.AddScoped<IInventoryIndexer, InventoryIndexer>();
     }
 
     private static void AddExtractsPageFeature(this IServiceCollection services)
     {
         services.AddScoped<IExtractPageAction, ExtractPageAction>();
-        services.AddScoped<IValidator<PagedRequest>, PagedRequestValidator>();
+        services.AddScoped<
+            IValidator<AssimilateExtractPageRequest>,
+            AssimilateExtractPageRequestValidator
+        >();
         services.Decorate<IExtractPageAction, ExtractPageValidation>();
 
         services.AddScoped<IPagedIndexer<ExtractorIndex>, PagedIndexer<ExtractorIndex>>();

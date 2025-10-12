@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleGpsLocationImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutGpsLocation,
+        DataSources.GoogleFitbitGpsLocation,
         DateRanges.Day,
         "timestamp,latitude,longitude,altitude"
     ),

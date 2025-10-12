@@ -13,7 +13,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
     public class PolarTakeoutGenericPeriodSkinContactImporter : IFileClassifier, IFileExtractor
     {
         private const string Type = "8";
-        public DataSources Source => DataSources.PolarTakeoutGenericPeriodSkinContact;
+        public DataSources Source => DataSources.PolarFlowGenericPeriodSkinContact;
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 

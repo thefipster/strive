@@ -13,7 +13,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
     public class PolarTakeoutGenericPeriodSpo2Importer : IFileClassifier, IFileExtractor
     {
         private const string Type = "11";
-        public DataSources Source => DataSources.PolarTakeoutGenericPeriodSpo2;
+        public DataSources Source => DataSources.PolarFlowGenericPeriodSpo2;
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 

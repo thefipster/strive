@@ -8,7 +8,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 {
     public class PolarTakeoutTargetImporter : IFileClassifier
     {
-        public DataSources Source => DataSources.PolarTakeoutTarget;
+        public DataSources Source => DataSources.PolarFlowTarget;
         public int ClassifierVersion => 1;
         public int ExtractorVersion => 1;
 

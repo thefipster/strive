@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleHeartrateVariabilityImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutHeartrateVariability,
+        DataSources.GoogleFitbitHeartrateVariability,
         DateRanges.Month,
         "timestamp,root mean square of successive differences milliseconds,standard deviation milliseconds"
     ),

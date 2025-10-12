@@ -5,7 +5,7 @@ namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleSwimLengthImporter()
     : GoogleCsvParser(
-        DataSources.FitbitTakeoutSwimLength,
+        DataSources.GoogleFitbitSwimLength,
         DateRanges.Month,
         "timestamp,lap time,stroke count,stroke type"
     ),

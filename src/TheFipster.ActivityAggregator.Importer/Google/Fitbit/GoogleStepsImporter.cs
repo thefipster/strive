@@ -8,7 +8,7 @@ using TheFipster.ActivityAggregator.Importer.Abstractions;
 namespace TheFipster.ActivityAggregator.Importer.Google.Fitbit;
 
 public class GoogleStepsImporter()
-    : GoogleCsvParser(DataSources.FitbitTakeoutSteps, DateRanges.Month, "timestamp,steps"),
+    : GoogleCsvParser(DataSources.GoogleFitbitSteps, DateRanges.Month, "timestamp,steps"),
         IFileClassifier,
         IFileExtractor
 {
