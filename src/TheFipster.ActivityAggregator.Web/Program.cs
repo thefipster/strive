@@ -37,5 +37,5 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-app.MapHub<IngestHub>(Const.Hubs.Ingester.Url);
+app.MapHub<IngestHub>(Defaults.Hubs.Ingester.Url);
 app.Run();

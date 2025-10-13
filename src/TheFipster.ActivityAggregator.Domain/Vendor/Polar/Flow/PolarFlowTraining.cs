@@ -1,10 +1,8 @@
-﻿namespace TheFipster.ActivityAggregator.Polar.Domain
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-    public class PolarTakeoutTraining
+namespace TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow
+{
+    public class PolarFlowTraining
     {
         [JsonPropertyName("exportVersion")]
         public string? ExportVersion { get; set; }

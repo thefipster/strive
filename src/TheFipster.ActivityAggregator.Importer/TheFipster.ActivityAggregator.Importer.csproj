@@ -10,6 +10,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj" />
-    <ProjectReference Include="..\TheFipster.ActivityAggregator.Polar.Domain\TheFipster.ActivityAggregator.Polar.Domain.csproj" />
   </ItemGroup>
 </Project>

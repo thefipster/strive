@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace TheFipster.ActivityAggregator.Polar.Domain;
+namespace TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow;
 
-public class PolarTakeoutGenericPeriodTemperature
+public class PolarFlowGenericPeriodTemperature
 {
     [JsonPropertyName("meta")]
     public Meta? Meta { get; set; }

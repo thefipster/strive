@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace TheFipster.ActivityAggregator.Polar.Domain;
+namespace TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow;
 
-public class PolarTakeout247Ohr
+public class PolarFlow247Ohr
 {
     [JsonPropertyName("deviceDays")]
     public List<DeviceDay> DeviceDays { get; set; } = new();

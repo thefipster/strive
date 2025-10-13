@@ -38,7 +38,7 @@ public class ScannerService(
     private async Task ReportProgress(ZipIndex zip)
     {
         await notifier.ReportProgressAsync(
-            Const.Hubs.Importer.Actions.Scan,
+            Defaults.Hubs.Importer.Actions.Scan,
             new FileInfo(zip.ZipPath).Name,
             Math.Round((double)_processedZips / _totalZips * 100, 1)
         );

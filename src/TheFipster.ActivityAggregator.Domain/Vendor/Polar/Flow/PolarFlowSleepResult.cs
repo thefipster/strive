@@ -1,10 +1,8 @@
-namespace TheFipster.ActivityAggregator.Polar.Domain
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-    public class PolarTakeoutSleepResult
+namespace TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow
+{
+    public class PolarFlowSleepResult
     {
         [JsonPropertyName("night")]
         public DateTimeOffset Night { get; set; }

@@ -11,13 +11,13 @@ public class Notifier(IHubContext<ImportHub> hubContext) : INotifier
     {
         await hubContext
             .Clients.Group(action)
-            .SendAsync(Const.Hubs.Importer.ReportAction, message, update);
+            .SendAsync(Defaults.Hubs.Importer.ReportAction, message, update);
     }
 
     public async Task ReportProgressAsync(string action, string message, double progress)
     {
         await hubContext
             .Clients.Group(action)
-            .SendAsync(Const.Hubs.Importer.ReportProgress, message, progress);
+            .SendAsync(Defaults.Hubs.Importer.ReportProgress, message, progress);
     }
 }
