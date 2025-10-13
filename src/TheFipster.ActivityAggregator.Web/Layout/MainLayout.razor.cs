@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
+using Defaults = TheFipster.ActivityAggregator.Domain.Defaults;
 
 namespace TheFipster.ActivityAggregator.Web.Layout;
 
@@ -38,12 +39,12 @@ public partial class MainLayout
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
         _hubConnection.On<string, bool>(
-            Const.Hubs.Importer.ReportAction,
+            Defaults.Hubs.Importer.ReportAction,
             (msg, _) =>
             {
                 Snackbar?.Add(msg, Severity.Info);

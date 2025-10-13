@@ -38,6 +38,6 @@ public class BatchService(
         var progress = Math.Round((double)count / total * 100, 1);
         var message = $"Batch {count} of {total}";
 
-        await notifier.ReportProgressAsync(Const.Hubs.Importer.Actions.Batch, message, progress);
+        await notifier.ReportProgressAsync(Defaults.Hubs.Importer.Actions.Batch, message, progress);
     }
 }

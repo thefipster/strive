@@ -6,8 +6,8 @@ using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
@@ -77,7 +77,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
         {
             var json = File.ReadAllText(file.Filepath);
             var ecgTest =
-                JsonSerializer.Deserialize<PolarTakeoutGenericPeriodEcg>(json)
+                JsonSerializer.Deserialize<PolarFlowGenericPeriodEcg>(json)
                 ?? throw new ExtractionException(
                     file.Filepath,
                     "Couldn't parse polar takeout generic period ecg test file."
@@ -98,7 +98,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
         }
 
         private Dictionary<Parameters, List<string>> CreateSeries(
-            PolarTakeoutGenericPeriodEcg ecgTest,
+            PolarFlowGenericPeriodEcg ecgTest,
             DateTime date
         )
         {
@@ -134,7 +134,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return series;
         }
 
-        private static UnifiedEvent CreateTestEvent(PolarTakeoutGenericPeriodEcg ecgTest)
+        private static UnifiedEvent CreateTestEvent(PolarFlowGenericPeriodEcg ecgTest)
         {
             if (ecgTest.Data?.TestTime == null)
                 throw new ArgumentException("Ecg test has no start time.");

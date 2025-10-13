@@ -8,6 +8,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
+using Defaults = TheFipster.ActivityAggregator.Domain.Defaults;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
@@ -93,7 +94,7 @@ public partial class AssimilateTab : ComponentBase
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 

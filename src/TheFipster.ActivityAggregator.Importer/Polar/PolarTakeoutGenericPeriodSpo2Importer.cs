@@ -5,8 +5,8 @@ using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
@@ -76,7 +76,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
         {
             var json = File.ReadAllText(file.Filepath);
             var spo2Test =
-                JsonSerializer.Deserialize<PolarTakeoutGenericPeriodSpo2>(json)
+                JsonSerializer.Deserialize<PolarFlowGenericPeriodSpo2>(json)
                 ?? throw new ExtractionException(
                     file.Filepath,
                     "Couldn't parse polar takeout generic period SPO2 test file."
@@ -91,7 +91,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             return [result];
         }
 
-        private static UnifiedEvent CreateTestEvent(PolarTakeoutGenericPeriodSpo2 spo2Test)
+        private static UnifiedEvent CreateTestEvent(PolarFlowGenericPeriodSpo2 spo2Test)
         {
             var testTimeMs = long.Parse(spo2Test.Data?.TestTime ?? string.Empty);
             var testTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(

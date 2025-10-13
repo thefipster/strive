@@ -6,8 +6,8 @@ using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
@@ -77,7 +77,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
         {
             var json = File.ReadAllText(file.Filepath);
             var tempData =
-                JsonSerializer.Deserialize<PolarTakeoutGenericPeriodTemperature>(json)
+                JsonSerializer.Deserialize<PolarFlowGenericPeriodTemperature>(json)
                 ?? throw new ExtractionException(
                     file.Filepath,
                     "Couldn't parse polar takeout generic period temperature file."

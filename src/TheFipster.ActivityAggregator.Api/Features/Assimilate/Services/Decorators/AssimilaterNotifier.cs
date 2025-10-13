@@ -8,7 +8,7 @@ public class AssimilaterNotifier(IAssimilaterService component, INotifier notifi
     public async Task ExtractFiles(string destinationDirectory, CancellationToken ct)
     {
         await notifier.ReportActionAsync(
-            Const.Hubs.Importer.Actions.Assimilate,
+            Defaults.Hubs.Importer.Actions.Assimilate,
             "Assimilation started."
         );
 

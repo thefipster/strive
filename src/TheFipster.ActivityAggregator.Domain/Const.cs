@@ -1,6 +1,6 @@
 namespace TheFipster.ActivityAggregator.Domain;
 
-public static class Const
+public static class Defaults
 {
     public static class Cors
     {

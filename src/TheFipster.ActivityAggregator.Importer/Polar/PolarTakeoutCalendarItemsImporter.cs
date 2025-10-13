@@ -6,8 +6,8 @@ using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar;
 
@@ -50,7 +50,7 @@ public class PolarTakeoutCalendarItemsImporter : IFileClassifier, IFileExtractor
     {
         var json = File.ReadAllText(file.Filepath);
         var calendarItems =
-            JsonSerializer.Deserialize<PolarTakeoutCalendarItems>(json)
+            JsonSerializer.Deserialize<PolarFlowCalendarItems>(json)
             ?? throw new ArgumentException("Couldn't parse polar takeout sleep score.");
 
         var result = new List<FileExtraction>();

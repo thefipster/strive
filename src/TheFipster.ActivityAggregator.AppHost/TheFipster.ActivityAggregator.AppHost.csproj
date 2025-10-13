@@ -8,7 +8,7 @@
     <UserSecretsId>578399fb-5d96-472c-b416-a1ee0cff38fb</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.5.1" />
+    <PackageReference Include="Aspire.Hosting.AppHost" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Api\TheFipster.ActivityAggregator.Api.csproj" />

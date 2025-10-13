@@ -24,6 +24,6 @@ public static class EndpointExtension
 
     private static void MapHubs(this WebApplication app)
     {
-        app.MapHub<ImportHub>(Const.Hubs.Importer.Url);
+        app.MapHub<ImportHub>(Defaults.Hubs.Importer.Url);
     }
 }
