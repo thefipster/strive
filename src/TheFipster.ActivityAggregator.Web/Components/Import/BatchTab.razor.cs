@@ -94,12 +94,12 @@ public partial class BatchTab : ComponentBase
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
         _hubConnection.On<string, bool>(
-            Defaults.Hubs.Importer.ReportAction,
+            Const.Hubs.Importer.ReportAction,
             (_, updated) =>
             {
                 if (!updated)
@@ -118,7 +118,7 @@ public partial class BatchTab : ComponentBase
         );
 
         _hubConnection.On<string, double>(
-            Defaults.Hubs.Importer.ReportProgress,
+            Const.Hubs.Importer.ReportProgress,
             (message, progress) =>
             {
                 _progress = progress;
@@ -142,6 +142,6 @@ public partial class BatchTab : ComponentBase
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Batch);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Batch);
     }
 }

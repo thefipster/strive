@@ -32,5 +32,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\Batch\Models\" />
+    <Folder Include="Features\Core\Components\Decorators\" />
+    <Folder Include="Features\Core\Services\Contracts\" />
+    <Folder Include="Features\Core\Services\Decorators\" />
   </ItemGroup>
 </Project>

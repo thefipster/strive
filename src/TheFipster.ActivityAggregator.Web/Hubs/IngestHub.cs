@@ -7,41 +7,41 @@ public class IngestHub : Hub
 {
     public async Task OnWorkerStart(string message)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.WorkerInfo, message);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.WorkerInfo, message);
     }
 
     public async Task OnUnzipFinished(string file, string result)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.UnzipFinished, file, result);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.UnzipFinished, file, result);
     }
 
     public async Task OnFileScanFinished(string result)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.FileScanFinished, result);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.FileScanFinished, result);
     }
 
     public async Task OnFileScanProgress(int count)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.FileScanProgress, count);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.FileScanProgress, count);
     }
 
     public async Task OnAssimilationFinished(string result)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.AssimilationFinished, result);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.AssimilationFinished, result);
     }
 
     public async Task OnAssimilationProgress(int count)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.AssimilationProgress, count);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.AssimilationProgress, count);
     }
 
     public async Task OnBatchFinished(string result)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.BatchFinished, result);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.BatchFinished, result);
     }
 
     public async Task OnBatchProgress(int count)
     {
-        await Clients.All.SendAsync(Defaults.Hubs.Ingester.BatchProgress, count);
+        await Clients.All.SendAsync(Const.Hubs.Ingester.BatchProgress, count);
     }
 }
