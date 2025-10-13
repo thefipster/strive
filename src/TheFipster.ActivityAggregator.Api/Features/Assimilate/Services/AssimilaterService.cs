@@ -50,7 +50,7 @@ public class AssimilaterService(
         var message = $"File {counter} of {page.Total}";
 
         await notifier.ReportProgressAsync(
-            Const.Hubs.Importer.Actions.Assimilate,
+            Defaults.Hubs.Importer.Actions.Assimilate,
             message,
             progress
         );

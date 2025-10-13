@@ -9,14 +9,14 @@ public class AssimilaterNotifier(IAssimilaterService component, INotifier notifi
     public async Task ExtractFilesAsync(string destinationDirectory, CancellationToken ct)
     {
         await notifier.ReportActionAsync(
-            Const.Hubs.Importer.Actions.Assimilate,
+            Defaults.Hubs.Importer.Actions.Assimilate,
             "Assimilation started."
         );
 
         await component.ExtractFilesAsync(destinationDirectory, ct);
 
         await notifier.ReportActionAsync(
-            Const.Hubs.Importer.Actions.Assimilate,
+            Defaults.Hubs.Importer.Actions.Assimilate,
             "Finished assimilation.",
             true
         );

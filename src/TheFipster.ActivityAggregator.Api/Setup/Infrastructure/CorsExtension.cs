@@ -9,7 +9,7 @@ public static class CorsExtension
         services.AddCors(options =>
         {
             options.AddPolicy(
-                Const.Cors.AllowAll,
+                Defaults.Cors.AllowAll,
                 policy =>
                 {
                     policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
@@ -20,7 +20,7 @@ public static class CorsExtension
         services.AddCors(options =>
         {
             options.AddPolicy(
-                Const.Cors.AllowOne,
+                Defaults.Cors.AllowOne,
                 policy =>
                 {
                     policy.WithOrigins("https://localhost:7260").AllowAnyMethod().AllowAnyHeader();
@@ -31,6 +31,8 @@ public static class CorsExtension
 
     public static void UseCorsPolicy(this WebApplication app)
     {
-        app.UseCors(app.Environment.IsDevelopment() ? Const.Cors.AllowAll : Const.Cors.AllowOne);
+        app.UseCors(
+            app.Environment.IsDevelopment() ? Defaults.Cors.AllowAll : Defaults.Cors.AllowOne
+        );
     }
 }

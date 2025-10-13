@@ -7,6 +7,7 @@ using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
+using Defaults = TheFipster.ActivityAggregator.Domain.Defaults;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
@@ -120,12 +121,12 @@ public partial class UploadTab : IAsyncDisposable
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
         _hubConnection.On<string, bool>(
-            Const.Hubs.Importer.ReportAction,
+            Defaults.Hubs.Importer.ReportAction,
             (_, update) =>
             {
                 if (update)
@@ -146,7 +147,7 @@ public partial class UploadTab : IAsyncDisposable
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Unzip);
+        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Unzip);
     }
 
     public async ValueTask DisposeAsync()
@@ -155,7 +156,10 @@ public partial class UploadTab : IAsyncDisposable
         {
             try
             {
-                await _hubConnection.InvokeAsync("LeaveGroup", Const.Hubs.Importer.Actions.Unzip);
+                await _hubConnection.InvokeAsync(
+                    "LeaveGroup",
+                    Defaults.Hubs.Importer.Actions.Unzip
+                );
             }
             catch
             {

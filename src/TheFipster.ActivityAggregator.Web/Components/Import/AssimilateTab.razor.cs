@@ -6,6 +6,7 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
+using Defaults = TheFipster.ActivityAggregator.Domain.Defaults;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
@@ -92,12 +93,12 @@ public partial class AssimilateTab : ComponentBase
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
         _hubConnection.On<string, bool>(
-            Const.Hubs.Importer.ReportAction,
+            Defaults.Hubs.Importer.ReportAction,
             (_, updated) =>
             {
                 if (!updated)
@@ -113,7 +114,7 @@ public partial class AssimilateTab : ComponentBase
         );
 
         _hubConnection.On<string, double>(
-            Const.Hubs.Importer.ReportProgress,
+            Defaults.Hubs.Importer.ReportProgress,
             (message, progress) =>
             {
                 _progress = progress;
@@ -134,6 +135,6 @@ public partial class AssimilateTab : ComponentBase
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Assimilate);
+        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Assimilate);
     }
 }

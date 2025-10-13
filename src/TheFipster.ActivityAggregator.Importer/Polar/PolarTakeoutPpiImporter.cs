@@ -5,8 +5,8 @@ using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Tools;
+using TheFipster.ActivityAggregator.Domain.Vendor.Polar.Flow;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Polar.Domain;
 
 namespace TheFipster.ActivityAggregator.Importer.Polar
 {
@@ -57,7 +57,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
         {
             var json = File.ReadAllText(file.Filepath);
             var ppiSamples =
-                JsonSerializer.Deserialize<List<PolarTakeoutPpiSamples>>(json)
+                JsonSerializer.Deserialize<List<PolarFlowPpiSamples>>(json)
                 ?? throw new ArgumentException("Couldn't parse polar takeout ppi samples.");
 
             var result = new List<FileExtraction>();

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TheFipster.ActivityAggregator.App.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Entry x:Name="WeightEntry" Placeholder="Enter bodyweight (kg)" Keyboard="Numeric"/>
+            <Entry x:Name="ReasonEntry" Placeholder="Enter reason/comment"/>
+
+            <Button Text="Save Entry" Clicked="OnSaveClicked"/>
+            <Button Text="Export JSON" Clicked="OnExportClicked"/>
+
+            <CollectionView x:Name="EntriesList" HeightRequest="300">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame CornerRadius="10" Padding="10" Margin="5"
+                           BorderColor="{AppThemeBinding Light=LightGray, Dark=Gray}"
+                           BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}">
+
+                            <HorizontalStackLayout Spacing="10">
+
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding Date}" FontSize="12"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                    <Label Text="{Binding Weight}" FontSize="16" FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                    <Label Text="{Binding Reason}" FontSize="12" TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}"/>
+                                </VerticalStackLayout>
+
+                                <Button Text="Delete"
+                                    BackgroundColor="Red"
+                                    TextColor="White"
+                                    CornerRadius="5"
+                                    CommandParameter="{Binding .}"
+                                    Clicked="OnDeleteClicked"/>
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
