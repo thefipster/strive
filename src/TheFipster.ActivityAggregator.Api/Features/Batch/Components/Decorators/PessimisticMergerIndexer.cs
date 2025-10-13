@@ -1,4 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
@@ -22,5 +23,15 @@ public class PessimisticMergerIndexer(IPessimisticMerger component, IIndexer<Bat
         );
         indexer.Set(index);
         return index;
+    }
+
+    public MergedFile CombineAssimilationGroup(
+        DateTime timestamp,
+        DataKind kind,
+        List<AssimilateIndex> assimilations,
+        CancellationToken ct
+    )
+    {
+        return component.CombineAssimilationGroup(timestamp, kind, assimilations, ct);
     }
 }

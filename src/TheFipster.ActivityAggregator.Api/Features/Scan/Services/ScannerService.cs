@@ -7,7 +7,6 @@ namespace TheFipster.ActivityAggregator.Api.Features.Scan.Services;
 public class ScannerService(
     IIndexer<ZipIndex> zipInventory,
     IFileScanner fileScanner,
-    INotifier notifier,
     IBackgroundTaskQueue queue
 ) : IScannerService
 {
@@ -16,12 +15,12 @@ public class ScannerService(
         var zips = zipInventory.GetAll().ToArray();
 
         foreach (var zip in zips)
-            queue.Enqueue(async ctx => await ScanZipOutput(zip, ctx));
+            queue.Enqueue(async _ => await ScanZipOutput(zip));
 
         return Task.CompletedTask;
     }
 
-    private Task ScanZipOutput(ZipIndex zip, CancellationToken ct)
+    private Task ScanZipOutput(ZipIndex zip)
     {
         var files = Directory.GetFiles(zip.OutputPath, "*", SearchOption.AllDirectories);
 

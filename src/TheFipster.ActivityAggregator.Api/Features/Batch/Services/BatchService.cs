@@ -26,7 +26,7 @@ public class BatchService(
             {
                 counter++;
                 var isDay = item.IsDay ? DataKind.Day : DataKind.Session;
-                await assimilationGrouper.CombinePerDay(item, isDay, ct);
+                await assimilationGrouper.CombinePerDayAsync(item, isDay, ct);
             }
 
             await ReportProgressAsync(counter, page.Total);
