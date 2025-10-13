@@ -84,11 +84,11 @@
                         }
                     }
 
-                    @if (_mergedFile.Series.Any())
+                    @if (_mergedFile.Samples.Any())
                     {
                         <MudText Class="mt-4 mb-2" Typo="Typo.h6">Samples</MudText>
                         <MudTable Hover="true"
-                                  Items="@_mergedFile.Series.Where(x => x != null).Select(x => x!)"
+                                  Items="@_mergedFile.Samples.Where(x => x != null).Select(x => x!)"
                                   Dense="true">
                             <HeaderContent>
                                 <MudTh Style="width:200px;">Type</MudTh>

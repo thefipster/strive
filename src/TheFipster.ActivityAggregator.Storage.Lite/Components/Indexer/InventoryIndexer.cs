@@ -59,16 +59,6 @@ public class InventoryIndexer(IndexerContext context)
         return result;
     }
 
-    public IEnumerable<InventoryIndex> GetByYear(int year)
-    {
-        var start = new DateTime(year, 1, 1);
-        var end = start.AddYears(1);
-        return Collection
-            .Find(x => x.Timestamp >= start && x.Timestamp < end)
-            .OrderByDescending(x => x.Timestamp)
-            .ToList();
-    }
-
     public PagedResult<InventoryIndex> GetDaysPaged(
         int page,
         int size = 10,
@@ -90,4 +80,33 @@ public class InventoryIndexer(IndexerContext context)
 
     public int GetMinYear() =>
         Collection.FindAll().OrderBy(x => x.Timestamp).First().Timestamp.Year;
+
+    public IEnumerable<InventoryIndex> GetByDate(DateTime date)
+    {
+        var start = new DateTime(date.Year, date.Month, date.Day);
+        var end = start.AddDays(1).AddMilliseconds(-1);
+        return GetInRange(start, end);
+    }
+
+    public IEnumerable<InventoryIndex> GetByMonth(DateTime date)
+    {
+        var start = new DateTime(date.Year, date.Month, 1);
+        var end = start.AddMonths(1).AddMilliseconds(-1);
+        return GetInRange(start, end);
+    }
+
+    public IEnumerable<InventoryIndex> GetByYear(int year)
+    {
+        var start = new DateTime(year, 1, 1);
+        var end = start.AddYears(1);
+        return GetInRange(start, end);
+    }
+
+    public IEnumerable<InventoryIndex> GetInRange(DateTime start, DateTime end)
+    {
+        return Collection
+            .Find(x => x.Timestamp >= start && x.Timestamp < end)
+            .OrderByDescending(x => x.Timestamp)
+            .ToList();
+    }
 }

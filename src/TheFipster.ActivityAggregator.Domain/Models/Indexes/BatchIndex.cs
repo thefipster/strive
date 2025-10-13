@@ -7,6 +7,8 @@ public class BatchIndex
 {
     public DateTime Timestamp { get; set; }
     public DataKind Kind { get; set; }
+    public DateTime Start { get; set; }
+    public DateTime End { get; set; }
     public List<string> Parameters { get; set; } = [];
     public required string Filepath { get; set; }
     public required string Hash { get; set; }
@@ -33,8 +35,12 @@ public class BatchIndex
             Timestamp = mergeFile.Timestamp,
             Kind = mergeFile.Kind,
             Sources = mergeFile.Sources,
-            Metrics = mergeFile.Metrics?.Count ?? 0,
-            Series = mergeFile.Series.Count,
+            Start = mergeFile.Kind == DataKind.Day ? mergeFile.Timestamp.Date : mergeFile.Timestamp,
+            End =
+                mergeFile.Kind == DataKind.Day
+                    ? mergeFile.Timestamp.Date.AddDays(1).AddMilliseconds(-1)
+                    : mergeFile.Samples.Max(x => x.End),
+            Series = mergeFile.Samples.Count,
             Tracks = mergeFile.Tracks.Count,
             Pulses = mergeFile.Pulses.Count,
             Events = mergeFile.Events?.Resolved.Count ?? 0,
