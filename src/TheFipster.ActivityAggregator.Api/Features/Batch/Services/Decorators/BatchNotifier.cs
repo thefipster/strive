@@ -12,11 +12,5 @@ public class BatchNotifier(IBatchService component, INotifier notifier) : IBatch
         );
 
         await component.CombineFilesAsync(convergancePath, ct);
-
-        await notifier.ReportActionAsync(
-            Const.Hubs.Importer.Actions.Batch,
-            "Batches merged.",
-            true
-        );
     }
 }

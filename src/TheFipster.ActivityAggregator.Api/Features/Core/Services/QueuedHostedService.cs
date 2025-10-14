@@ -77,8 +77,6 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
 
                     if (_completionTimes.Count == 0)
                     {
-                        _updateRate = TimeSpan.FromSeconds(1);
-
                         if (_queueEmptyTime == null)
                             _queueEmptyTime = DateTime.UtcNow;
 
@@ -87,7 +85,6 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                     }
                     else
                     {
-                        _updateRate = TimeSpan.FromMilliseconds(333);
                         _queueEmptyTime = null;
                     }
 

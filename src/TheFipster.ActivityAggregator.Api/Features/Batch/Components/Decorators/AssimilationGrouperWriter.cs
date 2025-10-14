@@ -8,7 +8,7 @@ using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components.Decorators;
 
-public class AssimilationGrouperMergeWriter(
+public class AssimilationGrouperWriter(
     IAssimilationGrouper component,
     IOptions<ApiConfig> config,
     IIndexer<BatchIndex> indexer

@@ -85,7 +85,7 @@ public class AssimilationGrouper(
 
         var sessionMerge = merger.CombineAssimilationGroup(
             entry.Timestamp,
-            DataKind.Day,
+            DataKind.Session,
             assimilationOfEntry,
             ct
         );

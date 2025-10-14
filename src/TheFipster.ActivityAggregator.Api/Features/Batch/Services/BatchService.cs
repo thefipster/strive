@@ -5,39 +5,26 @@ using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Services;
 
 public class BatchService(
-    IInventoryIndexer dateInventory,
-    IAssimilationGrouper assimilationGrouper,
-    INotifier notifier
+    IInventoryIndexer inventory,
+    IAssimilationGrouper grouper,
+    IBackgroundTaskQueue queue
 ) : IBatchService
 {
-    public async Task CombineFilesAsync(string convergancePath, CancellationToken ct)
+    public Task CombineFilesAsync(string convergancePath, CancellationToken ct)
     {
         var pageCount = int.MaxValue;
         var pageNo = 0;
-        var counter = 0;
 
         while (pageCount > 0 && !ct.IsCancellationRequested)
         {
-            var page = dateInventory.GetDaysPaged(pageNo);
+            var page = inventory.GetDaysPaged(pageNo);
             pageNo++;
             pageCount = page.Items.Count();
 
-            foreach (var item in page.Items)
-            {
-                counter++;
-                var isDay = item.IsDay ? DataKind.Day : DataKind.Session;
-                await assimilationGrouper.CombinePerDayAsync(item, isDay, ct);
-            }
-
-            await ReportProgressAsync(counter, page.Total);
+            var days = page.Items.GroupBy(x => x.Timestamp.Date).Select(x => x.Key).ToList();
+            days.ForEach(x => queue.Enqueue(async ctx => await grouper.CombinePerDayAsync(x, ctx)));
         }
-    }
 
-    private async Task ReportProgressAsync(int count, int total)
-    {
-        var progress = Math.Round((double)count / total * 100, 1);
-        var message = $"Batch {count} of {total}";
-
-        await notifier.ReportProgressAsync(Const.Hubs.Importer.Actions.Batch, message, progress);
+        return Task.CompletedTask;
     }
 }
