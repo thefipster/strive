@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using TheFipster.ActivityAggregator.Api.Features.Batch.Models;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Files;
@@ -26,7 +25,7 @@ public class AssimilationGroupCombiner(IAssimilationGrouper component, IPessimis
         var result = await component.CombinePerDayAsync(day, ct);
         var sessions = result.Where(x => x.Key.Kind == DataKind.Session).ToList();
 
-        if (sessions.Count == 0)
+        if (sessions.Count <= 1)
             return result;
 
         var groups = GroupOverlappingSessions(sessions);
@@ -41,33 +40,52 @@ public class AssimilationGroupCombiner(IAssimilationGrouper component, IPessimis
     {
         var sorted = sessions
             .Select(x => SessionTimespan.New(x.Key))
-            .OrderBy(x => x.Start)
+            .OrderBy(x => x.Timestamp)
             .ToList();
 
         var groups = new List<List<SessionTimespan>>();
-        var currentGroup = new List<SessionTimespan> { sorted[0] };
 
-        var currentEnd = sorted[0].End;
-
-        for (int i = 1; i < sorted.Count; i++)
+        while (sorted.Count > 0)
         {
-            var session = sorted[i];
-
-            if (SessionOverlaps(session, currentEnd))
+            var firstSampled = GetFirstSampledSession(sorted);
+            if (firstSampled == null)
             {
-                currentGroup.Add(session);
-                currentEnd = new[] { currentEnd, session.End }.Max();
+                groups.Add(sorted);
+                sorted.Clear();
+                continue;
             }
-            else
+
+            var overlapping = sorted
+                .Where(x =>
+                    x.Timestamp > firstSampled.Timestamp.AddMinutes(-30)
+                    && x.Timestamp < firstSampled.End
+                )
+                .ToList();
+
+            if (overlapping.Count > 0)
             {
-                groups.Add(currentGroup);
-                currentGroup = [session];
-                currentEnd = session.End;
+                groups.Add(overlapping);
+                foreach (var session in overlapping)
+                    sorted.Remove(session);
             }
         }
 
-        groups.Add(currentGroup);
         return groups.Where(x => x.Count > 1).ToList();
+    }
+
+    private static SessionTimespan? GetFirstSampledSession(List<SessionTimespan> sorted)
+    {
+        SessionTimespan? firstSampled = null;
+        foreach (var session in sorted)
+        {
+            if (session.Start.HasValue)
+            {
+                firstSampled = session;
+                break;
+            }
+        }
+
+        return firstSampled;
     }
 
     private void UpdateMerge(

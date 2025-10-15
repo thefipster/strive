@@ -69,7 +69,7 @@ namespace TheFipster.ActivityAggregator.Importer.Generic
                     speedSeries.Add(point.Speed.Value.ToString(CultureInfo.InvariantCulture));
 
                 if (point.Timestamp.HasValue)
-                    timeSeries.Add(point.Timestamp.Value.ToString("s"));
+                    timeSeries.Add(point.Timestamp.Value.ToString(DateHelper.SecondFormat));
 
                 if (lastPoint != null)
                     distance += calc.HaversineDistance(lastPoint, point);

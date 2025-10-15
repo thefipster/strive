@@ -79,7 +79,8 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
 
                 foreach (var samples in day.Samples)
                 {
-                    var timestamp = date.AddSeconds(samples.SecondsFromDayStart).ToString("s");
+                    var timestamp = date.AddSeconds(samples.SecondsFromDayStart)
+                        .ToString(DateHelper.SecondFormat);
                     var heartrate = samples.HeartRate.ToString();
 
                     result.Series[Parameters.Timestamp].Add(timestamp);

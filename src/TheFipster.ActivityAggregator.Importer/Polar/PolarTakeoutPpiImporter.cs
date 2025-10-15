@@ -87,7 +87,9 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                         if (minPulse > sample.PulseLength)
                             minPulse = sample.PulseLength;
 
-                        timestampSeries.Add(sample.SampleDateTime.ToString("s"));
+                        timestampSeries.Add(
+                            sample.SampleDateTime.ToString(DateHelper.SecondFormat)
+                        );
                         rrSeries.Add(sample.PulseLength.ToString());
                     }
 

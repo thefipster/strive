@@ -59,7 +59,7 @@ public class RunGpsCsvImporter : IFileClassifier, IFileExtractor
         var duration = (int)(endDate - startDate).TotalSeconds;
 
         var attributes = FileExtraction.EmptyAttributes;
-        attributes.Add(Parameters.StartTime, startDate.ToString("s"));
+        attributes.Add(Parameters.StartTime, startDate.ToString(DateHelper.SecondFormat));
         attributes.Add(Parameters.Duration, duration.ToString());
         attributes.Add(Parameters.Distance, end[6]);
 

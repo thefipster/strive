@@ -68,7 +68,7 @@ namespace TheFipster.ActivityAggregator.Importer.RunGps
 
             var attributes = FileExtraction.EmptyAttributes;
             attributes.Add(Parameters.Duration, duration.ToString());
-            attributes.Add(Parameters.StartTime, startDate.ToString("s"));
+            attributes.Add(Parameters.StartTime, startDate.ToString(DateHelper.SecondFormat));
             attributes.Add(Parameters.Distance, end[8]);
 
             var timestampSeries = new List<string>();
