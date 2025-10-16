@@ -2,9 +2,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using Serilog;
 using SerilogTracing;
-using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Web;
-using TheFipster.ActivityAggregator.Web.Hubs;
+using TheFipster.ActivityAggregator.Web.Components;
 using TheFipster.ActivityAggregator.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,5 +39,4 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-app.MapHub<IngestHub>(Const.Hubs.Ingester.Url);
 app.Run();

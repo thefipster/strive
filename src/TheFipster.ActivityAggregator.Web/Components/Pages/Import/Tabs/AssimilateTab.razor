@@ -1,0 +1,102 @@
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h4">Assimilate scanned files</MudText>
+                    <MudIconButton Color="Color.Primary" OnClick="@OnAssimilateClicked"
+                                   Icon="@Icons.Material.Outlined.Grain">
+                    </MudIconButton>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudProgressLinear Color="Color.Primary" />
+        <MudCardContent Class="d-flex align-center">
+            <MudTable @ref="@_fileTable" T="ExtractorIndex" Context="item" ServerData="@LoadServerData"
+                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%"
+                      CustomHeader="true">
+                <HeaderContent>
+                    <MudTHeadRow>
+                        <MudTh></MudTh>
+                        <MudTh>
+                            <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
+                                <MudSelectItem Value="@ExtractionOptions.All">All Files</MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
+                                @if (_extractors != null)
+                                {
+                                    @foreach (var extractor in _extractors)
+                                    {
+                                        <MudSelectItem Value="@extractor">@extractor</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudTh>
+                        <MudTh>
+                            <MudSelect T="string" Label="Metric" ValueChanged="@OnParameterFilterChanged">
+                                <MudSelectItem Value="@ParametersOptions.Any">Any</MudSelectItem>
+                                <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
+                                @if (_extractors != null)
+                                {
+                                    @foreach (var parameter in _parameters)
+                                    {
+                                        <MudSelectItem Value="@parameter">@parameter</MudSelectItem>
+                                    }
+                                }
+                            </MudSelect>
+                        </MudTh>
+                        <MudTh></MudTh>
+                        <MudTh></MudTh>
+                        <MudTh></MudTh>
+                    </MudTHeadRow>
+                    <MudTHeadRow>
+                        <MudTh Style="width:190px;">Index time</MudTh>
+                        <MudTh Style="width:300px;">Classification</MudTh>
+                        <MudTh>Metrics</MudTh>
+                        <MudTh Style="width:250px;">Timestamp</MudTh>
+                        <MudTh Style="width:100px;">Count</MudTh>
+                        <MudTh Style="width:100px;">Size</MudTh>
+                    </MudTHeadRow>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Index time">
+                        <MudText>@item.IndexedAt</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Classification">
+                        <MudText>@item.Source</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Metrics">
+                        <MudText>
+                            @string.Join(", ", item.Metrics.OrderBy(x => x))
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Timestamp">
+                        @if ((item.ExtractedFiles.Max(x => x.Timestamp) - item.ExtractedFiles.Min(x => x.Timestamp)).TotalDays > 1)
+                        {
+                            <MudText>
+                                @item.ExtractedFiles.Min(x => x.Timestamp).ToString(DateHelper.DayFormat)
+                                -
+                                @item.ExtractedFiles.Max(x => x.Timestamp).ToString(DateHelper.DayFormat)
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText>
+                                @item.Timestamp!.Value.ToString(DateHelper.DayFormat)
+                            </MudText>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Count">
+                        <MudText>@item.ExtractedFiles.Count</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Size">
+                        <FipFileSize Typo="Typo.body1" Size="@item.Size"></FipFileSize>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new[] { 15 }"
+                                   HideRowsPerPage="true"/>
+                </PagerContent>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
