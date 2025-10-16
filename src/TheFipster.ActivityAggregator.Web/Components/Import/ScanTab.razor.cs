@@ -100,7 +100,7 @@ public partial class ScanTab : ComponentBase
             .Build();
 
         _queueEvents
-            .Buffer(count: 5)
+            .Buffer(count: 10)
             .Select(events => events.Last())
             .Subscribe(_ =>
             {

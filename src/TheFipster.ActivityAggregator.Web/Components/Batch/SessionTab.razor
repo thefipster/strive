@@ -53,11 +53,11 @@
                                       Items="@_mergedFile.Metrics.Resolved.ToList()"
                                       Dense="true">
                                 <HeaderContent>
-                                    <MudTh Style="width:200px;">Metric</MudTh>
+                                    <MudTh Style="width:200px;">Parameter</MudTh>
                                     <MudTh>Value</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    <MudTd DataLabel="Metric">@context.Key</MudTd>
+                                    <MudTd DataLabel="Parameter">@context.Key</MudTd>
                                     <MudTd DataLabel="Value">@context.Value</MudTd>
                                 </RowTemplate>
                             </MudTable>
@@ -70,11 +70,11 @@
                                       Items="@_mergedFile.Metrics.Conflicts.ToList()"
                                       Dense="true">
                                 <HeaderContent>
-                                    <MudTh Style="width:200px;">Metric</MudTh>
+                                    <MudTh Style="width:200px;">Parameter</MudTh>
                                     <MudTh>Values</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    <MudTd DataLabel="Metric">@context.Key</MudTd>
+                                    <MudTd DataLabel="Parameter">@context.Key</MudTd>
                                     <MudTd DataLabel="Value">@string.Join(", ", context.Value)</MudTd>
                                 </RowTemplate>
                             </MudTable>
@@ -91,13 +91,13 @@
                                 <MudTh Style="width:200px;">Type</MudTh>
                                 <MudTh Style="width:200px;">Start</MudTh>
                                 <MudTh Style="width:200px;">End</MudTh>
-                                <MudTh>Lines</MudTh>
+                                <MudTh>Parameters</MudTh>
                             </HeaderContent>
                             <RowTemplate>
                                 <MudTd DataLabel="Type">@context.Type</MudTd>
                                 <MudTd DataLabel="Start">@context.Start</MudTd>
                                 <MudTd DataLabel="End">@context.End</MudTd>
-                                <MudTd DataLabel="Lines">@string.Join(", ", context.Values.Keys)</MudTd>
+                                <MudTd DataLabel="Parameters">@string.Join(", ", context.Values.Keys)</MudTd>
                             </RowTemplate>
                         </MudTable>
                     }
@@ -143,16 +143,16 @@
                                       Items="@_mergedFile.Events.Resolved"
                                       Dense="true">
                                 <HeaderContent>
+                                    <MudTh Style="width:200px;">Timestamp</MudTh>
                                     <MudTh Style="width:200px;">Type</MudTh>
-                                    <MudTh Style="width:200px;">Start</MudTh>
-                                    <MudTh Style="width:200px;">End</MudTh>
-                                    <MudTh>Lines</MudTh>
+                                    <MudTh Style="width:200px;">Message</MudTh>
+                                    <MudTh>Parameters</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    <MudTd DataLabel="Type">@context.Timestamp</MudTd>
-                                    <MudTd DataLabel="Start">@context.Type</MudTd>
-                                    <MudTd DataLabel="End">@context.Message</MudTd>
-                                    <MudTd DataLabel="Data">@(string.Join(", ", context.Values.Keys))</MudTd>
+                                    <MudTd DataLabel="Timestamp">@context.Timestamp</MudTd>
+                                    <MudTd DataLabel="Type">@context.Type</MudTd>
+                                    <MudTd DataLabel="Message">@context.Message</MudTd>
+                                    <MudTd DataLabel="Parameters">@(string.Join(", ", context.Values.Keys))</MudTd>
                                 </RowTemplate>
                             </MudTable>
                         }

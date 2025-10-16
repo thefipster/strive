@@ -16,10 +16,10 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
     {
         private int _activeWorkers;
         private readonly ConcurrentQueue<DateTime> _completionTimes = new();
-        private readonly TimeSpan _windowSize = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _windowSize = TimeSpan.FromSeconds(5);
         private DateTime? _queueEmptyTime;
-        private TimeSpan _processingRate = TimeSpan.FromMilliseconds(100);
-        private TimeSpan _updateRate = TimeSpan.FromSeconds(1);
+        private TimeSpan _processingRate = TimeSpan.FromMilliseconds(10);
+        private TimeSpan _updateRate = TimeSpan.FromMilliseconds(100);
 
         protected override Task ExecuteAsync(CancellationToken ct)
         {
@@ -57,8 +57,8 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
                 }
                 finally
                 {
-                    Interlocked.Decrement(ref _activeWorkers);
                     await Task.Delay(_processingRate, ct);
+                    Interlocked.Decrement(ref _activeWorkers);
                 }
             }
 
@@ -68,36 +68,62 @@ namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
         private async Task ReporterLoop(CancellationToken ct)
         {
             logger.LogInformation("Reporter starting.");
+            int lastCount = 0;
+            bool finalized = false;
 
             while (!ct.IsCancellationRequested)
             {
                 try
                 {
-                    var rate = GetProcessingRate();
-
-                    if (_completionTimes.Count == 0)
+                    var count = queue.Count;
+                    if (count != 0 || lastCount != 0)
                     {
-                        if (_queueEmptyTime == null)
-                            _queueEmptyTime = DateTime.UtcNow;
+                        finalized = false;
+                        var rate = GetProcessingRate();
 
-                        if (DateTime.UtcNow - _queueEmptyTime > _windowSize)
-                            continue;
+                        if (_completionTimes.Count == 0)
+                        {
+                            if (_queueEmptyTime == null)
+                                _queueEmptyTime = DateTime.UtcNow;
+
+                            if (DateTime.UtcNow - _queueEmptyTime > _windowSize)
+                                continue;
+                        }
+                        else
+                        {
+                            _queueEmptyTime = null;
+                        }
+
+                        await hubContext
+                            .Clients.Group(Const.Hubs.Importer.Actions.Queue)
+                            .SendAsync(
+                                Const.Hubs.Importer.ReportQueue,
+                                queue.Count,
+                                config.Value.MaxDegreeOfParallelism,
+                                _activeWorkers,
+                                rate,
+                                ct
+                            );
                     }
                     else
                     {
-                        _queueEmptyTime = null;
+                        if (!finalized)
+                        {
+                            finalized = true;
+                            await hubContext
+                                .Clients.Group(Const.Hubs.Importer.Actions.Queue)
+                                .SendAsync(
+                                    Const.Hubs.Importer.ReportQueue,
+                                    0,
+                                    config.Value.MaxDegreeOfParallelism,
+                                    0,
+                                    0,
+                                    ct
+                                );
+                        }
                     }
 
-                    await hubContext
-                        .Clients.Group(Const.Hubs.Importer.Actions.Queue)
-                        .SendAsync(
-                            Const.Hubs.Importer.ReportQueue,
-                            queue.Count,
-                            config.Value.MaxDegreeOfParallelism,
-                            _activeWorkers,
-                            rate,
-                            ct
-                        );
+                    lastCount = count;
                 }
                 catch (OperationCanceledException)
                 {
