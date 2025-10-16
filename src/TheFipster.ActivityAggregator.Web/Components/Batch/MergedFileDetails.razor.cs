@@ -6,5 +6,5 @@ namespace TheFipster.ActivityAggregator.Web.Components.Batch;
 public partial class MergedFileDetails : ComponentBase
 {
     [Parameter]
-    public MergedFile MergedFile { get; set; }
+    public MergedFile? MergedFile { get; set; }
 }

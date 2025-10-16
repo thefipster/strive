@@ -1,5 +1,4 @@
 using System.Threading.Channels;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Core.Components;
 

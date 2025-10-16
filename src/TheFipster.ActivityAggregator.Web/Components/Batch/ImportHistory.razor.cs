@@ -7,7 +7,7 @@ namespace TheFipster.ActivityAggregator.Web.Components.Batch;
 public partial class ImportHistory : ComponentBase
 {
     [Parameter]
-    public List<CommonIndex> Indexes { get; set; }
+    public List<CommonIndex> Indexes { get; set; } = [];
 
     private readonly TableGroupDefinition<CommonIndex> _groupDefinition = new()
     {

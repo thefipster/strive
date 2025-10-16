@@ -1,5 +1,3 @@
-using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Services;

@@ -1,114 +1,121 @@
 <MudText Class="mt-8 mb-4" Typo="Typo.h5">Merged File</MudText>
-@if (MergedFile.Metrics != null)
+@if (MergedFile != null)
 {
-    @if (MergedFile.Metrics.Resolved.Any())
+    @if (MergedFile.Metrics != null)
     {
-        <MudText Class="mb-2" Typo="Typo.h6">Metrics</MudText>
-        <MudTable Hover="true"
-                  Items="@MergedFile.Metrics.Resolved.ToList()"
-                  Dense="true">
-            <HeaderContent>
-                <MudTh Style="width:200px;">Parameter</MudTh>
-                <MudTh>Value</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Parameter">@context.Key</MudTd>
-                <MudTd DataLabel="Value">@context.Value</MudTd>
-            </RowTemplate>
-        </MudTable>
+        @if (MergedFile.Metrics.Resolved.Any())
+        {
+            <MudText Class="mb-2" Typo="Typo.h6">Metrics</MudText>
+            <MudTable Hover="true"
+                      Items="@MergedFile.Metrics.Resolved.ToList()"
+                      Dense="true">
+                <HeaderContent>
+                    <MudTh Style="width:200px;">Parameter</MudTh>
+                    <MudTh>Value</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Parameter">@context.Key</MudTd>
+                    <MudTd DataLabel="Value">@context.Value</MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+
+        @if (MergedFile.Metrics.Conflicts.Any())
+        {
+            <MudText Class="mt-4 mb-2" Typo="Typo.h6">Conflicts</MudText>
+            <MudTable Hover="true"
+                      Items="@MergedFile.Metrics.Conflicts.ToList()"
+                      Dense="true">
+                <HeaderContent>
+                    <MudTh Style="width:200px;">Parameter</MudTh>
+                    <MudTh>Values</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Parameter">@context.Key</MudTd>
+                    <MudTd DataLabel="Value">@string.Join(", ", context.Value)</MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
     }
 
-    @if (MergedFile.Metrics.Conflicts.Any())
+    @if (MergedFile.Samples.Any())
     {
-        <MudText Class="mt-4 mb-2" Typo="Typo.h6">Conflicts</MudText>
+        <MudText Class="mt-4 mb-2" Typo="Typo.h6">Samples</MudText>
         <MudTable Hover="true"
-                  Items="@MergedFile.Metrics.Conflicts.ToList()"
+                  Items="@MergedFile.Samples"
                   Dense="true">
             <HeaderContent>
-                <MudTh Style="width:200px;">Parameter</MudTh>
-                <MudTh>Values</MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd DataLabel="Parameter">@context.Key</MudTd>
-                <MudTd DataLabel="Value">@string.Join(", ", context.Value)</MudTd>
-            </RowTemplate>
-        </MudTable>
-    }
-}
-
-@if (MergedFile.Samples.Any())
-{
-    <MudText Class="mt-4 mb-2" Typo="Typo.h6">Samples</MudText>
-    <MudTable Hover="true"
-              Items="@MergedFile.Samples"
-              Dense="true">
-        <HeaderContent>
-            <MudTh Style="width:200px;">Type</MudTh>
-            <MudTh Style="width:200px;">Start</MudTh>
-            <MudTh Style="width:200px;">End</MudTh>
-            <MudTh>Parameters</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Type">@context.Type.ToString()</MudTd>
-            <MudTd DataLabel="Start">@context.Start</MudTd>
-            <MudTd DataLabel="End">@context.End</MudTd>
-            <MudTd DataLabel="Parameters">@string.Join(", ", context.Values.Keys)</MudTd>
-        </RowTemplate>
-    </MudTable>
-}
-
-@if (MergedFile.Tracks.Any())
-{
-    <MudText Class="mt-4 mb-2" Typo="Typo.h6">Tracks</MudText>
-    <MudTable Hover="true"
-              Items="@MergedFile.Tracks"
-              Dense="true">
-        <HeaderContent>
-            <MudTh Style="width:200px;">Type</MudTh>
-            <MudTh>Points</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Type">@context.Type</MudTd>
-            <MudTd DataLabel="Points">@context.Points.Count</MudTd>
-        </RowTemplate>
-    </MudTable>
-}
-
-@if (MergedFile.Pulses.Any())
-{
-    <MudText Class="mt-4 mb-2" Typo="Typo.h6">RR Intervals</MudText>
-    <MudTable Hover="true"
-              Items="@MergedFile.Pulses"
-              Dense="true">
-        <HeaderContent>
-            <MudTh>Heartbeats</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Heartbeats">@context.Count</MudTd>
-        </RowTemplate>
-    </MudTable>
-}
-
-@if (MergedFile.Events != null)
-{
-    @if (MergedFile.Events.Resolved.Any())
-    {
-        <MudText Class="mt-4 mb-2" Typo="Typo.h6">Events</MudText>
-        <MudTable Hover="true"
-                  Items="@MergedFile.Events.Resolved"
-                  Dense="true">
-            <HeaderContent>
-                <MudTh Style="width:200px;">Timestamp</MudTh>
                 <MudTh Style="width:200px;">Type</MudTh>
-                <MudTh Style="width:200px;">Message</MudTh>
+                <MudTh Style="width:200px;">Start</MudTh>
+                <MudTh Style="width:200px;">End</MudTh>
                 <MudTh>Parameters</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Timestamp">@context.Timestamp</MudTd>
-                <MudTd DataLabel="Type">@context.Type</MudTd>
-                <MudTd DataLabel="Message">@context.Message</MudTd>
-                <MudTd DataLabel="Parameters">@(string.Join(", ", context.Values.Keys))</MudTd>
+                <MudTd DataLabel="Type">@context.Type.ToString()</MudTd>
+                <MudTd DataLabel="Start">@context.Start</MudTd>
+                <MudTd DataLabel="End">@context.End</MudTd>
+                <MudTd DataLabel="Parameters">@string.Join(", ", context.Values.Keys)</MudTd>
             </RowTemplate>
         </MudTable>
     }
+
+    @if (MergedFile.Tracks.Any())
+    {
+        <MudText Class="mt-4 mb-2" Typo="Typo.h6">Tracks</MudText>
+        <MudTable Hover="true"
+                  Items="@MergedFile.Tracks"
+                  Dense="true">
+            <HeaderContent>
+                <MudTh Style="width:200px;">Type</MudTh>
+                <MudTh>Points</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Type">@context.Type</MudTd>
+                <MudTd DataLabel="Points">@context.Points.Count</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+    @if (MergedFile.Pulses.Any())
+    {
+        <MudText Class="mt-4 mb-2" Typo="Typo.h6">RR Intervals</MudText>
+        <MudTable Hover="true"
+                  Items="@MergedFile.Pulses"
+                  Dense="true">
+            <HeaderContent>
+                <MudTh>Heartbeats</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Heartbeats">@context.Count</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+    @if (MergedFile.Events != null)
+    {
+        @if (MergedFile.Events.Resolved.Any())
+        {
+            <MudText Class="mt-4 mb-2" Typo="Typo.h6">Events</MudText>
+            <MudTable Hover="true"
+                      Items="@MergedFile.Events.Resolved"
+                      Dense="true">
+                <HeaderContent>
+                    <MudTh Style="width:200px;">Timestamp</MudTh>
+                    <MudTh Style="width:200px;">Type</MudTh>
+                    <MudTh Style="width:200px;">Message</MudTh>
+                    <MudTh>Parameters</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Timestamp">@context.Timestamp</MudTd>
+                    <MudTd DataLabel="Type">@context.Type</MudTd>
+                    <MudTd DataLabel="Message">@context.Message</MudTd>
+                    <MudTd DataLabel="Parameters">@(string.Join(", ", context.Values.Keys))</MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    }
+}
+else
+{
+    <MudText>No merged file available.</MudText>
 }

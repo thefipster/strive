@@ -1,6 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Decorators;
@@ -8,7 +8,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Decorators
 public class ChunkActionValidator(
     IChunkAction component,
     IValidator<UploadChunkRequest> validator,
-    IOptions<ApiConfig> config
+    IOptions<ImportConfig> config
 ) : IChunkAction
 {
     public async Task UploadChunkAsync(UploadChunkRequest request)
@@ -36,7 +36,7 @@ public class ChunkActionValidator(
 
         if (string.IsNullOrWhiteSpace(destinationDirectory))
             throw new ConfigException(
-                nameof(ApiConfig.UnzipDirectoryPath),
+                nameof(ImportConfig.UnzipDirectoryPath),
                 "Unzip directory is not configured."
             );
     }

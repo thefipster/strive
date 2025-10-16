@@ -2,9 +2,7 @@ using AwesomeAssertions;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Importer.Generic;
 using TheFipster.ActivityAggregator.Importer.Polar;
-using TheFipster.ActivityAggregator.Importer.RunGps;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 

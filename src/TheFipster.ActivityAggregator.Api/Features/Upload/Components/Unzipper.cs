@@ -1,12 +1,12 @@
 using System.IO.Compression;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Components;
 
-public class Unzipper(IOptions<ApiConfig> config) : IUnzipper
+public class Unzipper(IOptions<ImportConfig> config) : IUnzipper
 {
     private string UnzipPath => config.Value.UnzipDirectoryPath;
 

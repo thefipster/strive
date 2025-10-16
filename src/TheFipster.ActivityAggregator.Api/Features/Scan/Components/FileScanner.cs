@@ -1,5 +1,4 @@
 using TheFipster.ActivityAggregator.Domain.Extensions;
-using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 

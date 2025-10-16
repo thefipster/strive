@@ -11,19 +11,6 @@ public class AssimilationGrouper(
     IInventoryIndexer inventory
 ) : IAssimilationGrouper
 {
-    public async Task<BatchIndex> CombinePerDayAsync(
-        InventoryIndex item,
-        DataKind kind,
-        CancellationToken ct
-    )
-    {
-        var assimilations = indexer
-            .GetFiltered(x => x.Kind == kind && x.Timestamp == item.Timestamp)
-            .ToList();
-
-        return await merger.HandleAssimilationGroupAsync(item.Timestamp, kind, assimilations, ct);
-    }
-
     public Task<Dictionary<MergedFile, List<AssimilateIndex>>> CombinePerDayAsync(
         DateTime day,
         CancellationToken ct

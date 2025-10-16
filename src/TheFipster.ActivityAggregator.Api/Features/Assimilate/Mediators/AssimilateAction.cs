@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
 
 public class AssimilateAction(
-    IOptions<ApiConfig> config,
+    IOptions<ImportConfig> config,
     IAssimilaterService assimilater,
     IBackgroundTaskQueue tasks
 ) : IAssimilateAction
@@ -22,7 +22,7 @@ public class AssimilateAction(
     {
         throw new ArgumentException(
             "Converge directory path cannot be empty.",
-            nameof(ApiConfig.ConvergeDirectoryPath)
+            nameof(ImportConfig.ConvergeDirectoryPath)
         );
     }
 }

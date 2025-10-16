@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
 
 public class ScanAction(
-    IOptions<ApiConfig> config,
+    IOptions<ImportConfig> config,
     IScannerService scanner,
     IBackgroundTaskQueue tasks
 ) : IScanAction

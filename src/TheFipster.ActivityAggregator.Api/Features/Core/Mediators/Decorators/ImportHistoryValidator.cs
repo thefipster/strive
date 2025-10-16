@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Mediators.Contracts;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Core.Mediators.Decorators;

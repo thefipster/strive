@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
-using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
@@ -10,19 +9,10 @@ namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components.Decorators
 
 public class AssimilationGrouperWriter(
     IAssimilationGrouper component,
-    IOptions<ApiConfig> config,
+    IOptions<ImportConfig> config,
     IIndexer<BatchIndex> indexer
 ) : IAssimilationGrouper
 {
-    public Task<BatchIndex> CombinePerDayAsync(
-        InventoryIndex item,
-        DataKind kind,
-        CancellationToken ct
-    )
-    {
-        return component.CombinePerDayAsync(item, kind, ct);
-    }
-
     public async Task<Dictionary<MergedFile, List<AssimilateIndex>>> CombinePerDayAsync(
         DateTime day,
         CancellationToken ct

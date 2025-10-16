@@ -3,7 +3,6 @@ using TheFipster.ActivityAggregator.Api.Features.Batch;
 using TheFipster.ActivityAggregator.Api.Features.Core;
 using TheFipster.ActivityAggregator.Api.Features.Scan;
 using TheFipster.ActivityAggregator.Api.Features.Upload;
-using TheFipster.ActivityAggregator.Domain.Configs;
 using TheFipster.ActivityAggregator.Importer;
 using TheFipster.ActivityAggregator.Storage.Lite;
 
@@ -24,10 +23,5 @@ public static class ApplicationExtension
         services.AddScannerFeature();
         services.AddAssimilateFeature();
         services.AddBatchFeature();
-    }
-
-    private static void AddConfig(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.Configure<ApiConfig>(configuration.GetSection(ApiConfig.ConfigSectionName));
     }
 }

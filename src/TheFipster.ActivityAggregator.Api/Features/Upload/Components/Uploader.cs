@@ -1,11 +1,11 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 using TheFipster.ActivityAggregator.Domain.Tools;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Components;
 
-public class Uploader(IOptions<ApiConfig> config) : IUploader
+public class Uploader(IOptions<ImportConfig> config) : IUploader
 {
     private static readonly ConcurrentDictionary<string, object> UploadLocks = new();
 

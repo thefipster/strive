@@ -1,9 +1,10 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Mediators.Decorators;
 
-public class BatchActionValidator(IBatchAction component, IOptions<ApiConfig> config) : IBatchAction
+public class BatchActionValidator(IBatchAction component, IOptions<ImportConfig> config)
+    : IBatchAction
 {
     public void Batch()
     {

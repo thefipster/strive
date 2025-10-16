@@ -8,15 +8,6 @@ namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components.Decorators
 public class AssimilationGroupCombiner(IAssimilationGrouper component, IPessimisticMerger merger)
     : IAssimilationGrouper
 {
-    public Task<BatchIndex> CombinePerDayAsync(
-        InventoryIndex item,
-        DataKind kind,
-        CancellationToken ct
-    )
-    {
-        return component.CombinePerDayAsync(item, kind, ct);
-    }
-
     public async Task<Dictionary<MergedFile, List<AssimilateIndex>>> CombinePerDayAsync(
         DateTime day,
         CancellationToken ct
@@ -130,7 +121,4 @@ public class AssimilationGroupCombiner(IAssimilationGrouper component, IPessimis
         mergeGroup.Add(merge.Key, merge.Value);
         mergeResult.Remove(merge.Key);
     }
-
-    private bool SessionOverlaps(SessionTimespan session, DateTime currentEnd) =>
-        session.Start <= currentEnd;
 }

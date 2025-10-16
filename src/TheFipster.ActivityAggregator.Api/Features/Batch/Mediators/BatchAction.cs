@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Mediators;
 
 public class BatchAction(
-    IOptions<ApiConfig> config,
+    IOptions<ImportConfig> config,
     IBackgroundTaskQueue tasks,
     IBatchService batcher
 ) : IBatchAction
