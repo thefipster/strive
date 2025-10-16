@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{00D5BC73
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Readme.md = Readme.md
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Domain.UnitTests", "test\TheFipster.ActivityAggregator.Domain.UnitTests\TheFipster.ActivityAggregator.Domain.UnitTests.csproj", "{453B9F68-42C3-4D92-8E7F-C7D87413AD34}"

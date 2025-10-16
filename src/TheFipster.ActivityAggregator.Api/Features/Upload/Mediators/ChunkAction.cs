@@ -1,11 +1,10 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators;
 
 public class ChunkAction(
-    IOptions<ApiConfig> config,
+    IOptions<ImportConfig> config,
     IBackgroundTaskQueue tasks,
     IUploader uploader,
     IUnzipService unzipper
@@ -19,7 +18,7 @@ public class ChunkAction(
         if (uploadFilepathWhenCompleted == null)
             return;
 
-        tasks.QueueBackgroundWorkItem(async ct =>
+        tasks.Enqueue(async ct =>
             await unzipper.ExtractAsync(
                 uploadFilepathWhenCompleted,
                 config.Value.UnzipDirectoryPath,

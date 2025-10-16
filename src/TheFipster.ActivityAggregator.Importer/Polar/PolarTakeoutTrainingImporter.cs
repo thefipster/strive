@@ -82,7 +82,7 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
                 polarTraining.Distance.ToString(CultureInfo.InvariantCulture)
             );
             attributes.Add(Parameters.Duration, duration);
-            attributes.Add(Parameters.StartTime, start.DateTime.ToString("s"));
+            attributes.Add(Parameters.StartTime, start.DateTime.ToString(DateHelper.SecondFormat));
 
             var result = new List<FileExtraction>();
             var attributeResult = new FileExtraction(

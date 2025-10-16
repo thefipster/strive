@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
@@ -13,14 +12,14 @@ public class UnzipNotifier(IUnzipService component, INotifier notifier) : IUnzip
     )
     {
         await notifier.ReportActionAsync(
-            Defaults.Hubs.Importer.Actions.Unzip,
+            Const.Hubs.Importer.Actions.Unzip,
             $"Extraction of {new FileInfo(zipFilepath).Name} started."
         );
 
         var index = await component.ExtractAsync(zipFilepath, outputDirectory, ct);
 
         await notifier.ReportActionAsync(
-            Defaults.Hubs.Importer.Actions.Unzip,
+            Const.Hubs.Importer.Actions.Unzip,
             $"Finished {new FileInfo(zipFilepath).Name}",
             true
         );

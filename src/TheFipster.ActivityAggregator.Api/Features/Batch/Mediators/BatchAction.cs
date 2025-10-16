@@ -1,11 +1,10 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Mediators;
 
 public class BatchAction(
-    IOptions<ApiConfig> config,
+    IOptions<ImportConfig> config,
     IBackgroundTaskQueue tasks,
     IBatchService batcher
 ) : IBatchAction
@@ -15,9 +14,7 @@ public class BatchAction(
         var convergencePath = config.Value.ConvergeDirectoryPath;
         if (!string.IsNullOrWhiteSpace(convergencePath))
         {
-            tasks.QueueBackgroundWorkItem(async ct =>
-                await batcher.CombineFilesAsync(convergencePath, ct)
-            );
+            tasks.Enqueue(async ct => await batcher.CombineFilesAsync(convergencePath, ct));
         }
     }
 }

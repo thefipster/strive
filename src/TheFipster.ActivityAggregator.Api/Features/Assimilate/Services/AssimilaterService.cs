@@ -1,7 +1,4 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Domain;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Services;
@@ -9,10 +6,10 @@ namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Services;
 public class AssimilaterService(
     IPagedIndexer<FileIndex> fileInventory,
     IFileAssimilator fileAssimilator,
-    INotifier notifier
+    IBackgroundTaskQueue queue
 ) : IAssimilaterService
 {
-    public async Task ExtractFilesAsync(string destinationDirectory, CancellationToken ct)
+    public Task ExtractFiles(string destinationDirectory, CancellationToken ct)
     {
         try { }
         catch (Exception e)
@@ -22,7 +19,6 @@ public class AssimilaterService(
         }
 
         var pageNo = 0;
-        var counter = 0;
         var currentPageSize = int.MaxValue;
 
         while (!ct.IsCancellationRequested && currentPageSize > 0)
@@ -32,27 +28,9 @@ public class AssimilaterService(
             pageNo++;
 
             foreach (var file in page.Items.Where(x => x.Source is not null))
-            {
-                counter++;
-                await fileAssimilator.ConvergeFileAsync(file, ct);
-
-                if (ct.IsCancellationRequested)
-                    throw new OperationCanceledException();
-            }
-
-            await ReportProgress(page, counter);
+                queue.Enqueue(ctx => fileAssimilator.ConvergeFileAsync(file, ctx));
         }
-    }
 
-    private async Task ReportProgress(PagedResult<FileIndex> page, int counter)
-    {
-        var progress = Math.Round((double)counter / page.Total * 100, 1);
-        var message = $"File {counter} of {page.Total}";
-
-        await notifier.ReportProgressAsync(
-            Defaults.Hubs.Importer.Actions.Assimilate,
-            message,
-            progress
-        );
+        return Task.CompletedTask;
     }
 }

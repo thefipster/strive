@@ -14,9 +14,9 @@ public class MergedFile
     public EventMergeResult? Events { get; set; }
     public Dictionary<string, string> Assimilations { get; set; } = new();
     public List<DataSources> Sources { get; set; } = [];
-    public List<UnifiedSamples?> Series { get; set; } = [];
-    public List<UnifiedTrack?> Tracks { get; set; } = [];
-    public List<List<double>?> Pulses { get; set; } = [];
+    public List<UnifiedSamples> Samples { get; set; } = [];
+    public List<UnifiedTrack> Tracks { get; set; } = [];
+    public List<List<double>> Pulses { get; set; } = [];
 
     public string Write(string rootDir)
     {
@@ -62,9 +62,9 @@ public class MergedFile
         List<AssimilateIndex> assimilations
     )
     {
-        var timedSeries = seriesMerge.Where(x => x.Samples != null).Select(x => x.Samples).ToList();
-        var tracks = seriesMerge.Where(x => x.Track != null).Select(x => x.Track).ToList();
-        var pulses = seriesMerge.Where(x => x.Pulses != null).Select(x => x.Pulses).ToList();
+        var samples = seriesMerge.Where(x => x.Samples != null).Select(x => x.Samples!).ToList();
+        var tracks = seriesMerge.Where(x => x.Track != null).Select(x => x.Track!).ToList();
+        var pulses = seriesMerge.Where(x => x.Pulses != null).Select(x => x.Pulses!).ToList();
 
         return new MergedFile
         {
@@ -72,7 +72,7 @@ public class MergedFile
             Kind = kind,
             Sources = extracts.Select(x => x.Source).ToList(),
             Events = eventMerge,
-            Series = timedSeries,
+            Samples = samples,
             Tracks = tracks,
             Pulses = pulses,
             Metrics = metricsMerge,

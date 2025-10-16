@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
@@ -6,21 +8,20 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
-using Defaults = TheFipster.ActivityAggregator.Domain.Defaults;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
 public partial class AssimilateTab : ComponentBase
 {
-    private HubConnection? _hubConnection;
     private MudTable<ExtractorIndex>? _fileTable;
 
-    private bool _isAssimilationActive;
-    private double _progress;
-    private string? _progressMessage;
+    private HubConnection? _hubConnection;
+    private readonly Subject<(int, int, int, double)> _queueEvents = new();
 
     private string[]? _extractors;
-    private readonly string[] _parameters = Enum.GetNames(typeof(Parameters));
+    private readonly string[] _parameters = Enum.GetNames(typeof(Parameters))
+        .OrderBy(x => x)
+        .ToArray();
 
     private string? _selectedClassifiedFilter;
     private string? _selectedParameterFilter;
@@ -53,7 +54,6 @@ public partial class AssimilateTab : ComponentBase
         if (Api == null)
             return;
 
-        _isAssimilationActive = true;
         await Api.ExecuteAssimilation();
     }
 
@@ -93,36 +93,22 @@ public partial class AssimilateTab : ComponentBase
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<string, bool>(
-            Defaults.Hubs.Importer.ReportAction,
-            (_, updated) =>
+        _queueEvents
+            .Buffer(count: 9)
+            .Select(events => events.Last())
+            .Subscribe(_ =>
             {
-                if (!updated)
-                    return;
-
-                _progress = 0;
-                _progressMessage = null;
-                _isAssimilationActive = false;
-
                 _fileTable?.ReloadServerData();
                 InvokeAsync(StateHasChanged);
-            }
-        );
+            });
 
-        _hubConnection.On<string, double>(
-            Defaults.Hubs.Importer.ReportProgress,
-            (message, progress) =>
-            {
-                _progress = progress;
-                _progressMessage = message;
-
-                _fileTable?.ReloadServerData();
-                InvokeAsync(StateHasChanged);
-            }
+        _hubConnection.On<int, int, int, double>(
+            Const.Hubs.Importer.ReportQueue,
+            (a, b, c, d) => _queueEvents.OnNext((a, b, c, d))
         );
 
         await _hubConnection.StartAsync();
@@ -135,6 +121,6 @@ public partial class AssimilateTab : ComponentBase
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Assimilate);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Queue);
     }
 }

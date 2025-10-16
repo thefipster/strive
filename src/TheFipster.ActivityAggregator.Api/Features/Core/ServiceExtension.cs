@@ -1,9 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Components;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Core.Mediators;
-using TheFipster.ActivityAggregator.Api.Features.Core.Mediators.Contracts;
-using TheFipster.ActivityAggregator.Api.Features.Core.Mediators.Decorators;
-using TheFipster.ActivityAggregator.Api.Features.Core.Services;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 

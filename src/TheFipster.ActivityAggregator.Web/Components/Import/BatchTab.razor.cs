@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using TheFipster.ActivityAggregator.Domain;
@@ -9,9 +11,9 @@ namespace TheFipster.ActivityAggregator.Web.Components.Import;
 public partial class BatchTab : ComponentBase
 {
     private HubConnection? _hubConnection;
+    private readonly Subject<(int, int, int, double)> _queueEvents = new();
 
     private bool _isRendered;
-    private bool _isMergeActive;
 
     private int _selectedYear = DateTime.Now.Year;
 
@@ -19,17 +21,11 @@ public partial class BatchTab : ComponentBase
     private IEnumerable<InventoryIndex> _inventory = [];
     private IEnumerable<DateTime>? _batchDates;
 
-    private double _progress;
-    private string? _progressMessage;
+    [Inject]
+    public required InventoryApi Inventory { get; set; }
 
     [Inject]
-    public NavigationManager? Navigation { get; set; }
-
-    [Inject]
-    public InventoryApi? Inventory { get; set; }
-
-    [Inject]
-    public BatchApi? Batch { get; set; }
+    public required BatchApi Batch { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery]
@@ -43,8 +39,7 @@ public partial class BatchTab : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        await LoadIndex();
-        await OnYearChange(_selectedYear);
+        await Update(_selectedYear);
         await base.OnParametersSetAsync();
     }
 
@@ -59,77 +54,55 @@ public partial class BatchTab : ComponentBase
 
     private async Task OnMergeClicked()
     {
-        if (Batch == null)
-            return;
-
-        _isMergeActive = true;
         await Batch.ExecuteMerge();
     }
 
     private async Task OnYearChange(int year) => await LoadCalendar(year);
 
+    private async Task Update(int year)
+    {
+        await LoadIndex();
+        await OnYearChange(year);
+    }
+
     private async Task LoadCalendar(int year)
     {
         _selectedYear = year;
-        if (Inventory != null)
-            _inventory = await Inventory.GetInventoryByYearAsync(year);
-
-        if (Batch != null)
-            _batchDates = await Batch.GetExistsByYear(_selectedYear);
+        _inventory = await Inventory.GetInventoryByYearAsync(year);
+        _batchDates = await Batch.GetExistsByYear(_selectedYear);
 
         StateHasChanged();
     }
 
     private async Task LoadIndex()
     {
-        if (Inventory != null)
-            _index = (await Inventory.GetInventoryAsync())
-                .OrderByDescending(x => x.Key)
-                .ToDictionary(x => x.Key, x => x.Value);
+        _index = (await Inventory.GetInventoryAsync())
+            .OrderByDescending(x => x.Key)
+            .ToDictionary(x => x.Key, x => x.Value);
     }
 
     private async Task ConnectHubs()
     {
-        if (Navigation is null)
-            return;
-
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<string, bool>(
-            Defaults.Hubs.Importer.ReportAction,
-            (_, updated) =>
+        _queueEvents
+            .Buffer(count: 10)
+            .Select(events => events.Last())
+            .Subscribe(_ =>
             {
-                if (!updated)
-                    return;
-
-                _progress = 0;
-                _isMergeActive = false;
-                _progressMessage = null;
-
                 InvokeAsync(async () =>
                 {
-                    await LoadIndex();
+                    await Update(_selectedYear);
                     StateHasChanged();
                 });
-            }
-        );
+            });
 
-        _hubConnection.On<string, double>(
-            Defaults.Hubs.Importer.ReportProgress,
-            (message, progress) =>
-            {
-                _progress = progress;
-                _progressMessage = message;
-
-                InvokeAsync(async () =>
-                {
-                    await LoadIndex();
-                    StateHasChanged();
-                });
-            }
+        _hubConnection.On<int, int, int, double>(
+            Const.Hubs.Importer.ReportQueue,
+            (a, b, c, d) => _queueEvents.OnNext((a, b, c, d))
         );
 
         await _hubConnection.StartAsync();
@@ -142,6 +115,6 @@ public partial class BatchTab : ComponentBase
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Batch);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Batch);
     }
 }

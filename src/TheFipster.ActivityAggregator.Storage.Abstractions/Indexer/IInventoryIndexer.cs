@@ -5,9 +5,15 @@ namespace TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 public interface IInventoryIndexer : IIndexer<InventoryIndex>
 {
-    void EnsureIndex(InventoryIndex index);
-    Dictionary<int, int[]> GetYearly();
-    IEnumerable<InventoryIndex> GetByYear(int year);
-    PagedResult<InventoryIndex> GetDaysPaged(int page, int size = 10, bool descending = false);
     int GetMinYear();
+
+    void EnsureIndex(InventoryIndex index);
+
+    Dictionary<int, int[]> GetYearly();
+    PagedResult<InventoryIndex> GetDaysPaged(int page, int size = 10, bool descending = false);
+
+    IEnumerable<InventoryIndex> GetByDate(DateTime dayDate);
+    IEnumerable<InventoryIndex> GetByMonth(DateTime date);
+    IEnumerable<InventoryIndex> GetByYear(int year);
+    IEnumerable<InventoryIndex> GetInRange(DateTime start, DateTime end);
 }

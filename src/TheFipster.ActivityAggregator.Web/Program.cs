@@ -1,3 +1,4 @@
+using MudBlazor;
 using MudBlazor.Services;
 using Serilog;
 using SerilogTracing;
@@ -10,7 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSerilog(c => c.ReadFrom.Configuration(builder.Configuration));
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddMudServices();
+builder.Services.AddMudServices(config =>
+{
+    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+});
 builder.Services.AddSingleton<UploadApi>();
 builder.Services.AddSingleton<ScanApi>();
 builder.Services.AddSingleton<AssimilateApi>();
@@ -37,5 +41,5 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-app.MapHub<IngestHub>(Defaults.Hubs.Ingester.Url);
+app.MapHub<IngestHub>(Const.Hubs.Ingester.Url);
 app.Run();

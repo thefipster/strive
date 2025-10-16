@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 using TheFipster.ActivityAggregator.Domain;
-using Defaults = TheFipster.ActivityAggregator.Domain.Defaults;
 
 namespace TheFipster.ActivityAggregator.Web.Layout;
 
@@ -13,6 +12,10 @@ public partial class MainLayout
     private bool _drawerOpen;
 
     private HubConnection? _hubConnection;
+    private int _queueCount;
+    private int _queueWorker;
+    private int _queueActive;
+    private double _queueRate;
 
     [Inject]
     public NavigationManager? Navigation { get; set; }
@@ -35,15 +38,28 @@ public partial class MainLayout
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
         _hubConnection.On<string, bool>(
-            Defaults.Hubs.Importer.ReportAction,
+            Const.Hubs.Importer.ReportAction,
             (msg, _) =>
             {
                 Snackbar?.Add(msg, Severity.Info);
+                InvokeAsync(StateHasChanged);
+            }
+        );
+
+        _hubConnection.On<int, int, int, double>(
+            Const.Hubs.Importer.ReportQueue,
+            (count, worker, active, rate) =>
+            {
+                _queueCount = count;
+                _queueWorker = worker;
+                _queueActive = active;
+                _queueRate = rate;
+
                 InvokeAsync(StateHasChanged);
             }
         );
@@ -58,9 +74,10 @@ public partial class MainLayout
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Unzip);
-        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Scan);
-        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Assimilate);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Unzip);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Scan);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Assimilate);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Queue);
     }
 
     private void AppendCalendarNavigation()

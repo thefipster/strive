@@ -100,8 +100,11 @@ public class PolarTakeoutSleepResultImporter : IFileClassifier, IFileExtractor
                 Parameters.SleepPercentage,
                 efficiency.ToString(CultureInfo.InvariantCulture)
             );
-            extraction.Attributes.Add(Parameters.SleepStart, start.ToString("s"));
-            extraction.Attributes.Add(Parameters.SleepEnd, end.ToString("s"));
+            extraction.Attributes.Add(
+                Parameters.SleepStart,
+                start.ToString(DateHelper.SecondFormat)
+            );
+            extraction.Attributes.Add(Parameters.SleepEnd, end.ToString(DateHelper.SecondFormat));
 
             result.Add(extraction);
         }

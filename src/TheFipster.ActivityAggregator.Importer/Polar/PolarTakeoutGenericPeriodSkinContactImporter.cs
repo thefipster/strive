@@ -99,7 +99,9 @@ namespace TheFipster.ActivityAggregator.Importer.Polar
             {
                 var temperature = sample.SkinContact.GetValueOrDefault().ToString();
                 var deltaMs = long.Parse(sample.RecordingTimeDeltaMilliseconds ?? "-1");
-                var timestamp = file.Date.AddMilliseconds(deltaMs).ToString("s");
+                var timestamp = file
+                    .Date.AddMilliseconds(deltaMs)
+                    .ToString(DateHelper.MillisecondFormat);
 
                 result.Series[Parameters.Timestamp].Add(timestamp);
                 result.Series[Parameters.DeviceWorn].Add(temperature);

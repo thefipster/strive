@@ -1,11 +1,10 @@
 using Microsoft.Extensions.Options;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
-using TheFipster.ActivityAggregator.Domain.Configs;
+using TheFipster.ActivityAggregator.Api.Setup.Configs;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
 
 public class AssimilateAction(
-    IOptions<ApiConfig> config,
+    IOptions<ImportConfig> config,
     IAssimilaterService assimilater,
     IBackgroundTaskQueue tasks
 ) : IAssimilateAction
@@ -16,16 +15,14 @@ public class AssimilateAction(
         if (string.IsNullOrWhiteSpace(destinationDirectory))
             ThrowMissingPathException();
 
-        tasks.QueueBackgroundWorkItem(async ct =>
-            await assimilater.ExtractFilesAsync(destinationDirectory, ct)
-        );
+        tasks.Enqueue(async ct => await assimilater.ExtractFiles(destinationDirectory, ct));
     }
 
     private static void ThrowMissingPathException()
     {
         throw new ArgumentException(
             "Converge directory path cannot be empty.",
-            nameof(ApiConfig.ConvergeDirectoryPath)
+            nameof(ImportConfig.ConvergeDirectoryPath)
         );
     }
 }

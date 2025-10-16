@@ -1,5 +1,4 @@
 using System.Threading.Channels;
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Core.Components;
 
@@ -9,10 +8,11 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
         Func<CancellationToken, Task>
     >();
 
-    public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem) =>
-        _queue.Writer.TryWrite(workItem);
+    public void Enqueue(Func<CancellationToken, Task> workItem) => _queue.Writer.TryWrite(workItem);
 
     public async Task<Func<CancellationToken, Task>> DequeueAsync(
         CancellationToken cancellationToken
     ) => await _queue.Reader.ReadAsync(cancellationToken);
+
+    public int Count => _queue.Reader.Count;
 }

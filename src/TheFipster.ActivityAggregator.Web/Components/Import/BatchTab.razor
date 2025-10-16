@@ -4,20 +4,12 @@
             <CardHeaderContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.h4">Batch assimilations</MudText>
-                    @if (_isMergeActive)
-                    {
-                        <MudText>@_progressMessage</MudText>
-                        <MudProgressCircular Color="Color.Primary" Size="Size.Small" Indeterminate="@_isMergeActive"/>
-                    }
-                    else
-                    {
-                        <MudIconButton Color="Color.Primary" OnClick="@OnMergeClicked" Disabled="@_isMergeActive"
+                        <MudIconButton Color="Color.Primary" OnClick="@OnMergeClicked"
                                        Icon="@Icons.Material.Outlined.Merge" />
-                    }
                 </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Value="@_progress"/>
+        <MudProgressLinear Color="Color.Primary" />
         <MudCardContent Class="d-flex justify-center align-center">
             <MudToggleGroup T="int" Value="@_selectedYear" ValueChanged="@OnYearChange" Outlined="true"
                             Delimiters="true">

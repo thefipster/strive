@@ -1,3 +1,5 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
@@ -6,18 +8,15 @@ using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Web.Services;
-using Defaults = TheFipster.ActivityAggregator.Domain.Defaults;
 
 namespace TheFipster.ActivityAggregator.Web.Components.Import;
 
 public partial class ScanTab : ComponentBase
 {
-    private HubConnection? _hubConnection;
     private MudTable<FileIndex>? _fileTable;
 
-    private bool _isScanActive;
-    private double _progress;
-    private string? _progressMessage;
+    private HubConnection? _hubConnection;
+    private readonly Subject<(int, int, int, double)> _queueEvents = new();
 
     private string[]? _classifiers;
     private readonly string[] _ranges = Enum.GetNames(typeof(DateRanges));
@@ -54,7 +53,6 @@ public partial class ScanTab : ComponentBase
         if (Scanner == null)
             return;
 
-        _isScanActive = true;
         await Scanner.ExecuteFileScan();
     }
 
@@ -97,36 +95,22 @@ public partial class ScanTab : ComponentBase
             return;
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:7098" + Defaults.Hubs.Importer.Url)
+            .WithUrl("https://localhost:7098" + Const.Hubs.Importer.Url)
             .WithAutomaticReconnect()
             .Build();
 
-        _hubConnection.On<string, bool>(
-            Defaults.Hubs.Importer.ReportAction,
-            (_, update) =>
+        _queueEvents
+            .Buffer(count: 10)
+            .Select(events => events.Last())
+            .Subscribe(_ =>
             {
-                if (update)
-                {
-                    _progress = 0;
-                    _isScanActive = false;
-                    _progressMessage = null;
-
-                    _fileTable?.ReloadServerData();
-                    InvokeAsync(StateHasChanged);
-                }
-            }
-        );
-
-        _hubConnection.On<string, double>(
-            Defaults.Hubs.Importer.ReportProgress,
-            (message, progress) =>
-            {
-                _progress = progress;
-                _progressMessage = message;
-
                 _fileTable?.ReloadServerData();
                 InvokeAsync(StateHasChanged);
-            }
+            });
+
+        _hubConnection.On<int, int, int, double>(
+            Const.Hubs.Importer.ReportQueue,
+            (a, b, c, d) => _queueEvents.OnNext((a, b, c, d))
         );
 
         await _hubConnection.StartAsync();
@@ -139,6 +123,6 @@ public partial class ScanTab : ComponentBase
         if (_hubConnection == null)
             return;
 
-        await _hubConnection.InvokeAsync("JoinGroup", Defaults.Hubs.Importer.Actions.Scan);
+        await _hubConnection.InvokeAsync("JoinGroup", Const.Hubs.Importer.Actions.Queue);
     }
 }

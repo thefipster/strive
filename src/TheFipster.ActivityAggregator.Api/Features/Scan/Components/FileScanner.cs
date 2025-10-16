@@ -1,5 +1,4 @@
 using TheFipster.ActivityAggregator.Domain.Extensions;
-using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
@@ -16,23 +15,22 @@ public class FileScanner(IClassifier classifier, IIndexer<FileIndex> fileInvento
             return index!;
 
         index = FileIndex.New(hash, zipHash, file.Length, filepath);
-        List<ClassificationResult> results;
+
         try
         {
-            results = classifier.Classify(file, ct);
+            var results = classifier.Classify(file, ct);
+            if (results.Count(x => x.Classification != null) != 1)
+                return index;
+
+            var result = results.First(x => x.Classification != null);
+            index.SetClassification(result.Classification);
+
+            return index;
         }
         catch (Exception)
         {
             return index;
         }
-
-        if (results.Count(x => x.Classification != null) != 1)
-            return index;
-
-        var result = results.First(x => x.Classification != null);
-        index.SetClassification(result.Classification);
-
-        return index;
     }
 
     private bool FileIsAlreadyIndexed(string filepath, string hash, out FileIndex? index)

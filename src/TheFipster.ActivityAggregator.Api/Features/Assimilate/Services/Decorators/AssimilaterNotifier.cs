@@ -1,4 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
 using TheFipster.ActivityAggregator.Domain;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Decorators;
@@ -6,19 +5,13 @@ namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Services.Decorat
 public class AssimilaterNotifier(IAssimilaterService component, INotifier notifier)
     : IAssimilaterService
 {
-    public async Task ExtractFilesAsync(string destinationDirectory, CancellationToken ct)
+    public async Task ExtractFiles(string destinationDirectory, CancellationToken ct)
     {
         await notifier.ReportActionAsync(
-            Defaults.Hubs.Importer.Actions.Assimilate,
+            Const.Hubs.Importer.Actions.Assimilate,
             "Assimilation started."
         );
 
-        await component.ExtractFilesAsync(destinationDirectory, ct);
-
-        await notifier.ReportActionAsync(
-            Defaults.Hubs.Importer.Actions.Assimilate,
-            "Finished assimilation.",
-            true
-        );
+        await component.ExtractFiles(destinationDirectory, ct);
     }
 }

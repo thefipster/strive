@@ -5,30 +5,20 @@
             <CardHeaderContent>
                 <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.h4">Assimilate scanned files</MudText>
-                    @if (_isAssimilationActive)
-                    {
-                        <MudText>@_progressMessage</MudText>
-                        <MudProgressCircular Color="Color.Primary" Size="Size.Small"
-                                             Indeterminate="@_isAssimilationActive"/>
-                    }
-                    else
-                    {
-                        <MudIconButton Color="Color.Primary" OnClick="@OnAssimilateClicked"
-                                       Disabled="@_isAssimilationActive"
-                                       Icon="@Icons.Material.Outlined.Grain">
-                        </MudIconButton>
-                    }
-
+                    <MudIconButton Color="Color.Primary" OnClick="@OnAssimilateClicked"
+                                   Icon="@Icons.Material.Outlined.Grain">
+                    </MudIconButton>
                 </MudStack>
             </CardHeaderContent>
         </MudCardHeader>
-        <MudProgressLinear Color="Color.Primary" Value="@_progress"/>
+        <MudProgressLinear Color="Color.Primary" />
         <MudCardContent Class="d-flex align-center">
             <MudTable @ref="@_fileTable" T="ExtractorIndex" Context="item" ServerData="@LoadServerData"
-                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%" CustomHeader="true" >
+                      RowsPerPage="10" Loading="false" Hover="true" Elevation="0" Style="width: 100%"
+                      CustomHeader="true">
                 <HeaderContent>
                     <MudTHeadRow>
-                        <MudTh></MudTh> 
+                        <MudTh></MudTh>
                         <MudTh>
                             <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
                                 <MudSelectItem Value="@ExtractionOptions.All">All Files</MudSelectItem>

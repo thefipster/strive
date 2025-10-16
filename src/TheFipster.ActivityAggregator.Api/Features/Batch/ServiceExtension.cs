@@ -35,9 +35,14 @@ public static class ServiceExtension
         services.Decorate<IBatchService, BatchNotifier>();
 
         services.AddScoped<IAssimilationGrouper, AssimilationGrouper>();
+        // AssimilationGroupCombiner alters the return value
+        // so it must be registered before AssimilationGrouperWriter
+        // which persists the return value to disc and db.
+        services.Decorate<IAssimilationGrouper, AssimilationGroupCombiner>();
+        services.Decorate<IAssimilationGrouper, AssimilationGrouperWriter>();
 
         services.AddScoped<IPessimisticMerger, PessimisticMerger>();
-        services.Decorate<IPessimisticMerger, PessimisticMergerIndexer>();
+        //services.Decorate<IPessimisticMerger, PessimisticMergerIndexer>();
 
         services.AddScoped<IMetricsMerger, MetricsMerger>();
         services.AddScoped<IEventsMerger, EventsMerger>();

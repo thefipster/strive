@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
@@ -32,14 +31,6 @@ public partial class SessionTab : ComponentBase
         await LoadHistory();
         await base.OnParametersSetAsync();
     }
-
-    private readonly TableGroupDefinition<CommonIndex> _groupDefinition = new()
-    {
-        GroupName = "Stage",
-        Indentation = true,
-        Expandable = false,
-        Selector = e => e.Type.ToUpper(),
-    };
 
     private async Task LoadMergedFile()
     {
