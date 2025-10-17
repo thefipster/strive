@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
 
-namespace TheFipster.ActivityAggregator.Domain.Models.Importing;
+namespace TheFipster.ActivityAggregator.Domain.Models.Options;
 
 public static class ParametersOptions
 {
