@@ -1,4 +1,4 @@
-﻿namespace TheFipster.ActivityAggregator.Web.Views.Pages.Home
+﻿namespace TheFipster.ActivityAggregator.Web.Components.Pages.Home
 {
     public partial class HomePage { }
 }
