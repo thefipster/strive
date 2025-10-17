@@ -9,16 +9,16 @@ public class PagedIndexer<TItem>(IndexerContext context)
     : BaseIndexer<TItem>(context),
         IPagedIndexer<TItem>
 {
-    public PagedResult<TItem> GetPaged(int page, int size) =>
+    public PagedResponse<TItem> GetPaged(int page, int size) =>
         GetPaged(new PagedRequest(page, size));
 
-    public PagedResult<TItem> GetPaged(PagedRequest paging)
+    public PagedResponse<TItem> GetPaged(PagedRequest paging)
     {
         var specifications = new PageSpecificationRequest<TItem>(paging);
         return GetPaged(specifications);
     }
 
-    public PagedResult<TItem> GetPaged(PageSpecificationRequest<TItem> specifications)
+    public PagedResponse<TItem> GetPaged(PageSpecificationRequest<TItem> specifications)
     {
         var query = Collection.Query();
 
@@ -31,7 +31,7 @@ public class PagedIndexer<TItem>(IndexerContext context)
             .Limit(specifications.Size)
             .ToList();
 
-        return new PagedResult<TItem>(items, specifications.Page, specifications.Size, count);
+        return new PagedResponse<TItem>(items, specifications.Page, specifications.Size, count);
     }
 
     private ILiteQueryable<TItem> AppendFilters(

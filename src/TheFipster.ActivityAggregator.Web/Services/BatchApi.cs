@@ -14,7 +14,7 @@ public class BatchApi() : BaseApi("https://localhost:7098/")
         await ExecuteAction(query);
     }
 
-    public async Task<PagedResult<BatchIndex>> GetFilesAsync(PagedRequest pagedRequest)
+    public async Task<PagedResponse<BatchIndex>> GetFilesAsync(PagedRequest pagedRequest)
     {
         var query = $"{BaseUrl}/merge?page={pagedRequest.Page}&size={pagedRequest.Size}";
         return await GetPagedAsync<BatchIndex>(query);

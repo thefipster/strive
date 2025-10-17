@@ -4,8 +4,6 @@ namespace TheFipster.ActivityAggregator.Domain.Models.Importing;
 
 public class UnifiedEvent
 {
-    public UnifiedEvent() { }
-
     public UnifiedEvent(EventTypes type, DateTime timestamp)
     {
         Type = type;

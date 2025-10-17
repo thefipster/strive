@@ -4,7 +4,7 @@ namespace TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 
 public interface IPagedIndexer<TIndex> : IIndexer<TIndex>
 {
-    PagedResult<TIndex> GetPaged(int page, int size);
-    PagedResult<TIndex> GetPaged(PagedRequest paging);
-    PagedResult<TIndex> GetPaged(PageSpecificationRequest<TIndex> specifications);
+    PagedResponse<TIndex> GetPaged(int page, int size);
+    PagedResponse<TIndex> GetPaged(PagedRequest paging);
+    PagedResponse<TIndex> GetPaged(PageSpecificationRequest<TIndex> specifications);
 }

@@ -10,7 +10,7 @@ public interface IInventoryIndexer : IIndexer<InventoryIndex>
     void EnsureIndex(InventoryIndex index);
 
     Dictionary<int, int[]> GetYearly();
-    PagedResult<InventoryIndex> GetDaysPaged(int page, int size = 10, bool descending = false);
+    PagedResponse<InventoryIndex> GetDaysPaged(int page, int size = 10, bool descending = false);
 
     IEnumerable<InventoryIndex> GetByDate(DateTime dayDate);
     IEnumerable<InventoryIndex> GetByMonth(DateTime date);

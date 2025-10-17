@@ -19,6 +19,6 @@ public class ScanController(
     public Dictionary<DataSources, int> GetClassifiers() => classifiersAction.GetClassifiers();
 
     [HttpGet("files")]
-    public PagedResult<FileIndex> GetFilePage([FromQuery] ScanFilePageRequest request) =>
+    public PagedResponse<FileIndex> GetFilePage([FromQuery] ScanFilePageRequest request) =>
         pageAction.GetFilePage(request);
 }

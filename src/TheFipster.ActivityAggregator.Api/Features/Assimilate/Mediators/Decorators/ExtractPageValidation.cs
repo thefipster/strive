@@ -9,7 +9,7 @@ public class ExtractPageValidation(
     IValidator<AssimilateExtractPageRequest> validator
 ) : IExtractPageAction
 {
-    public PagedResult<ExtractorIndex> GetExtractPage(AssimilateExtractPageRequest request)
+    public PagedResponse<ExtractorIndex> GetExtractPage(AssimilateExtractPageRequest request)
     {
         var result = validator.Validate(request);
 

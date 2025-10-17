@@ -59,7 +59,7 @@ public class InventoryIndexer(IndexerContext context)
         return result;
     }
 
-    public PagedResult<InventoryIndex> GetDaysPaged(
+    public PagedResponse<InventoryIndex> GetDaysPaged(
         int page,
         int size = 10,
         bool descending = false
@@ -75,7 +75,7 @@ public class InventoryIndexer(IndexerContext context)
         var count = query.Count();
         var items = query.Skip(page * size).Limit(size);
 
-        return new PagedResult<InventoryIndex>(items.ToList(), page, size, count);
+        return new PagedResponse<InventoryIndex>(items.ToList(), page, size, count);
     }
 
     public int GetMinYear() =>

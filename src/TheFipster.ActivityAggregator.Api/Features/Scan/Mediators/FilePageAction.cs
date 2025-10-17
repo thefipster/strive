@@ -6,7 +6,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
 
 public class FilePageAction(IPagedIndexer<FileIndex> indexer) : IFilePageAction
 {
-    public PagedResult<FileIndex> GetFilePage(ScanFilePageRequest request)
+    public PagedResponse<FileIndex> GetFilePage(ScanFilePageRequest request)
     {
         var specifications = request.ToSpecification();
         return indexer.GetPaged(specifications);

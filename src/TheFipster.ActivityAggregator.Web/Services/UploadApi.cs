@@ -7,7 +7,7 @@ public class UploadApi() : BaseApi("https://localhost:7098/")
 {
     private const string BasePath = "api/upload";
 
-    public async Task<PagedResult<ZipIndex>> GetZipPageAsync(
+    public async Task<PagedResponse<ZipIndex>> GetZipPageAsync(
         PagedRequest pagedRequest,
         string search
     )

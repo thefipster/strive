@@ -9,7 +9,7 @@ public class FilesActionValidator(
     IValidator<ScanFilePageRequest> validator
 ) : IFilePageAction
 {
-    public PagedResult<FileIndex> GetFilePage(ScanFilePageRequest request)
+    public PagedResponse<FileIndex> GetFilePage(ScanFilePageRequest request)
     {
         var result = validator.Validate(request);
 
