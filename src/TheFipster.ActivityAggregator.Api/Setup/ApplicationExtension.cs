@@ -16,8 +16,8 @@ public static class ApplicationExtension
     )
     {
         services.AddConfig(configuration);
-        services.AddImporters();
         services.AddLiteDbStorage(configuration);
+        services.AddImporterFeature();
         services.AddCoreFeature();
         services.AddUploadFeature();
         services.AddScannerFeature();

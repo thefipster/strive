@@ -13,7 +13,4 @@
   <ItemGroup>
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Domain\TheFipster.ActivityAggregator.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FileHandler\" />
-  </ItemGroup>
 </Project>

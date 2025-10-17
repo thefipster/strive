@@ -1,5 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Garmin;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.Garmin;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
 namespace TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
@@ -11,7 +11,7 @@ public class GarminClassificationDefinition
         yield return
         [
             new FileClassificationCase(
-                typeof(GarminSleepDataImporter),
+                typeof(GarminSleepDataClassifier),
                 Vendors.Garmin,
                 "2025-09-24_2025-10-06_137773893_sleepData.json",
                 "0001-01-01",
@@ -22,7 +22,7 @@ public class GarminClassificationDefinition
         yield return
         [
             new FileClassificationCase(
-                typeof(GarminUdsFileImporter),
+                typeof(GarminUdsFileClassifier),
                 Vendors.Garmin,
                 "UDSFile_2025-06-27_2025-10-05.json",
                 "0001-01-01",

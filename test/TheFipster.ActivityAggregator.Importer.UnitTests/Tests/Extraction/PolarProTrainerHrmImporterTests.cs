@@ -1,8 +1,8 @@
 using AwesomeAssertions;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Importer.Polar;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components.Contracts;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
@@ -21,7 +21,7 @@ public class PolarProTrainerHrmImporterTests(TestFileFixture fixture)
 
         var probe = fixture.GetFileProbe(vendor, filepath);
         var importer =
-            Activator.CreateInstance(typeof(PolarProTrainerHrmImporter)) as IFileExtractor;
+            Activator.CreateInstance(typeof(PolarProTrainerHrmExtractor)) as IFileExtractor;
         importer.Should().NotBeNull();
 
         var index = new ExtractionRequest

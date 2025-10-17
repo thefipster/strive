@@ -1,6 +1,6 @@
 using AwesomeAssertions;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
-using TheFipster.ActivityAggregator.Importer.Polar;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.Polar.Flow;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
@@ -15,7 +15,7 @@ public class PolarTakeout247OhrImporterTests(TestFileFixture fixture)
     {
         // Arrange
         var probe = fixture.GetFileProbe(Vendors.Trash, filename);
-        var importer = new PolarTakeout247OhrImporter();
+        var importer = new PolarFlow247OhrClassifier();
 
         // Act
         Action act = () => importer.Classify(probe);
@@ -30,7 +30,7 @@ public class PolarTakeout247OhrImporterTests(TestFileFixture fixture)
     {
         // Arrange
         var probe = fixture.GetFileProbe(Vendors.Trash, filename);
-        var importer = new PolarTakeout247OhrImporter();
+        var importer = new PolarFlow247OhrClassifier();
 
         // Act
         Action act = () => importer.Classify(probe);

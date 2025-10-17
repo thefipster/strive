@@ -1,7 +1,8 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Components;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Services;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch.Components;
 

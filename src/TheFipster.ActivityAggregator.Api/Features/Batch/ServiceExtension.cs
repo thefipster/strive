@@ -2,8 +2,8 @@ using FluentValidation;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 using TheFipster.ActivityAggregator.Domain.Models.Requests.Validators;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
-using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Components;
+using TheFipster.ActivityAggregator.Storage.Lite.Features.Indexing.Components;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Batch;
 

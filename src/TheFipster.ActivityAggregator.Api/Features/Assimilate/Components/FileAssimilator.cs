@@ -3,14 +3,14 @@ using TheFipster.ActivityAggregator.Domain.Extensions;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components.Contracts;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Components;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Components;
 
 public class FileAssimilator(
     IIndexer<ExtractorIndex> extractInventory,
-    IImporterRegistry registry,
+    IEnumerable<IFileExtractor> extractors,
     IExtractionCataloger cataloger,
     ILogger<FileAssimilator> logger
 ) : IFileAssimilator
@@ -21,7 +21,7 @@ public class FileAssimilator(
         if (index != null)
             return index;
 
-        var extractor = registry.LoadExtractors().FirstOrDefault(x => x.Source == file.Source);
+        var extractor = extractors.FirstOrDefault(x => x.Source == file.Source);
         if (extractor == null)
             return null;
 

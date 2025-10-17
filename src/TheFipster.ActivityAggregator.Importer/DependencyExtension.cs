@@ -1,14 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Features.Classification;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction;
 
 namespace TheFipster.ActivityAggregator.Importer;
 
 public static class DependencyExtension
 {
-    public static IServiceCollection AddImporters(this IServiceCollection services)
+    public static void AddImporterFeature(this IServiceCollection services)
     {
-        services.AddSingleton<IImporterRegistry, Registry>();
-
-        return services;
+        services.AddClassificationFeature();
+        services.AddExtractionFeature();
     }
 }
