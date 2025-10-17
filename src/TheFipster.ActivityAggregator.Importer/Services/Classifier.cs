@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Tools;
 using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Contracts;
 
-namespace TheFipster.ActivityAggregator.Api.Features.Scan.Components;
+namespace TheFipster.ActivityAggregator.Importer.Services;
 
 public class Classifier(IImporterRegistry registry, ILogger<Classifier> logger) : IClassifier
 {

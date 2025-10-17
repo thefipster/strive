@@ -3,6 +3,8 @@ using TheFipster.ActivityAggregator.Api.Extensions;
 using TheFipster.ActivityAggregator.Api.Features.Scan.Services.Decorators;
 using TheFipster.ActivityAggregator.Api.Interceptors;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Importer.Contracts;
+using TheFipster.ActivityAggregator.Importer.Services;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
 using TheFipster.ActivityAggregator.Storage.Lite.Components.Indexer;
 
