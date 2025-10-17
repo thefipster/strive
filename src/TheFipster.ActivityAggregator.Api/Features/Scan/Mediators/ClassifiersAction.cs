@@ -1,10 +1,10 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Contracts;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
 
-public class ClassifiersAction(IImporterRegistry registry) : IClassifiersAction
+public class ClassifiersAction(IEnumerable<IFileClassifier> classifiers) : IClassifiersAction
 {
     public Dictionary<DataSources, int> GetClassifiers() =>
-        registry.LoadClassifiers().ToDictionary(x => x.Source, y => y.ClassifierVersion);
+        classifiers.ToDictionary(x => x.Source, y => y.ClassifierVersion);
 }

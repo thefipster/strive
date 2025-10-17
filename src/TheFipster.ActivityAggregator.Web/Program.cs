@@ -1,33 +1,13 @@
-using MudBlazor;
-using MudBlazor.Services;
-using Serilog;
-using SerilogTracing;
-using TheFipster.ActivityAggregator.Domain;
-using TheFipster.ActivityAggregator.Web;
-using TheFipster.ActivityAggregator.Web.Hubs;
-using TheFipster.ActivityAggregator.Web.Services;
+using TheFipster.ActivityAggregator.Web.Components;
+using TheFipster.ActivityAggregator.Web.Setup;
+using TheFipster.ActivityAggregator.Web.Setup.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
-builder.Services.AddSerilog(c => c.ReadFrom.Configuration(builder.Configuration));
-builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddMudServices(config =>
-{
-    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
-});
-builder.Services.AddSingleton<UploadApi>();
-builder.Services.AddSingleton<ScanApi>();
-builder.Services.AddSingleton<AssimilateApi>();
-builder.Services.AddSingleton<BatchApi>();
-builder.Services.AddSingleton<InventoryApi>();
-builder.Services.AddSingleton<HistoryApi>();
-
-using var listener = new ActivityListenerConfiguration()
-    .Instrument.WithDefaultInstrumentation(false)
-    .Instrument.HttpClientRequests(opts =>
-        opts.MessageTemplate = nameof(TheFipster.ActivityAggregator.Web)
-    )
-    .TraceToSharedLogger();
+builder.Services.AddMonitoring(configuration);
+builder.Services.AddFrontend();
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
@@ -41,5 +21,4 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
-app.MapHub<IngestHub>(Const.Hubs.Ingester.Url);
 app.Run();

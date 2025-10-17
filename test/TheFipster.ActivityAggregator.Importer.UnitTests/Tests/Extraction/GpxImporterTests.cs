@@ -1,8 +1,8 @@
 using AwesomeAssertions;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Importer.Generic;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components.Contracts;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
@@ -18,7 +18,7 @@ public class GpxImporterTests(TestFileFixture fixture) : IClassFixture<TestFileF
         var expectedTimestamp = new DateTime(2009, 02, 09, 17, 17, 0);
 
         var probe = fixture.GetFileProbe(vendor, filepath);
-        var importer = Activator.CreateInstance(typeof(GpxImporter)) as IFileExtractor;
+        var importer = Activator.CreateInstance(typeof(GenericGpxExtractor)) as IFileExtractor;
         importer.Should().NotBeNull();
 
         var index = new ExtractionRequest

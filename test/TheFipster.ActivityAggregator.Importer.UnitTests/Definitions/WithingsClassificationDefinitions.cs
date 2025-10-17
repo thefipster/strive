@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.Withings;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
-using TheFipster.ActivityAggregator.Importer.Withings;
 
 namespace TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
 
@@ -11,7 +11,7 @@ public class WithingsClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(WithingsBloodPressureImporter),
+                typeof(WithingsBloodPressureClassifier),
                 Vendors.Withings,
                 "bp.csv",
                 "0001-01-01 00:00:00",
@@ -23,7 +23,7 @@ public class WithingsClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(WithingsSignalImporter),
+                typeof(WithingsSignalClassifier),
                 Vendors.Withings,
                 "signal.csv",
                 "0001-01-01 00:00:00",
@@ -35,7 +35,7 @@ public class WithingsClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(WithingsOtherImporter),
+                typeof(WithingsOtherClassifier),
                 Vendors.Withings,
                 "other.csv",
                 "0001-01-01 00:00:00",

@@ -7,7 +7,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Decorators
 public class ZipsActionValidator(IZipsAction component, IValidator<ZipsPageRequest> validator)
     : IZipsAction
 {
-    public PagedResult<ZipIndex> GetZipFilePage(ZipsPageRequest request)
+    public PagedResponse<ZipIndex> GetZipFilePage(ZipsPageRequest request)
     {
         var result = validator.Validate(request);
 

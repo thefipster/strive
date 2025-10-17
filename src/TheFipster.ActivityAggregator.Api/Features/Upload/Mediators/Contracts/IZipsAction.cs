@@ -5,5 +5,5 @@ namespace TheFipster.ActivityAggregator.Api.Features.Upload.Mediators.Contracts;
 
 public interface IZipsAction
 {
-    PagedResult<ZipIndex> GetZipFilePage(ZipsPageRequest request);
+    PagedResponse<ZipIndex> GetZipFilePage(ZipsPageRequest request);
 }

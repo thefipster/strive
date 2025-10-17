@@ -1,5 +1,5 @@
 using AwesomeAssertions;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Contracts;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;

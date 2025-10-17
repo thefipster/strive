@@ -1,8 +1,8 @@
 using AwesomeAssertions;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Importer.FipsterApp;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components.Contracts;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
@@ -18,7 +18,7 @@ public class TheFipsterAppWeightImporterTests(TestFileFixture fixture)
         // Arrange
         var probe = fixture.GetFileProbe(vendor, filepath);
         var importer =
-            Activator.CreateInstance(typeof(TheFipsterAppWeightImporter)) as IFileExtractor;
+            Activator.CreateInstance(typeof(TheFipsterAppWeightExtractor)) as IFileExtractor;
 
         importer.Should().NotBeNull();
 

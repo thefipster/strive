@@ -1,8 +1,8 @@
 using AwesomeAssertions;
 using TheFipster.ActivityAggregator.Domain.Enums;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
-using TheFipster.ActivityAggregator.Importer.RunGps;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components.Contracts;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Fixtures;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
@@ -19,7 +19,7 @@ public class RunGpsCsv2ImporterTests(TestFileFixture fixture) : IClassFixture<Te
         var expectedDataSource = DataSources.RunGpsCsvV2;
 
         var probe = fixture.GetFileProbe(vendor, filepath);
-        var importer = Activator.CreateInstance(typeof(RunGpsCsv2Importer)) as IFileExtractor;
+        var importer = Activator.CreateInstance(typeof(RunGpsCsv2Extractor)) as IFileExtractor;
         importer.Should().NotBeNull();
 
         var index = new ExtractionRequest

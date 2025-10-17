@@ -1,6 +1,6 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
+using TheFipster.ActivityAggregator.Domain.Models.Options;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Models;

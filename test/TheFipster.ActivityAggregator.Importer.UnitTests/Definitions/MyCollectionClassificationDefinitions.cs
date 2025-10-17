@@ -1,7 +1,7 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Generic;
-using TheFipster.ActivityAggregator.Importer.Gpsies;
-using TheFipster.ActivityAggregator.Importer.RunGps;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.Generic;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.Gpsies;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.RunGps;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
 namespace TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
@@ -13,7 +13,7 @@ public static class MyCollectionClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(GpsiesCsvImporter),
+                typeof(GpsiesCsvClassifier),
                 Vendors.MyCollection,
                 "2011.04.03 - 1248\\Rungps03042011150848.csv",
                 "2011-04-03 12:48",
@@ -25,7 +25,7 @@ public static class MyCollectionClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(KmlImporter),
+                typeof(GenericKmlClassifier),
                 Vendors.MyCollection,
                 "2009.02.09 - 1717\\Gps.kml",
                 "2009-02-09 17:17:00",
@@ -37,7 +37,7 @@ public static class MyCollectionClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(GpxImporter),
+                typeof(GenericGpxClassifier),
                 Vendors.MyCollection,
                 "2009.02.09 - 1717\\GpsX.gpx",
                 "2009-02-09 17:17:00",
@@ -49,7 +49,7 @@ public static class MyCollectionClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(RunGpsCsvImporter),
+                typeof(RunGpsCsvClassifier),
                 Vendors.MyCollection,
                 "2008.03.16 - 1619\\data.csv",
                 "2008-03-16 16:20:03.803",
@@ -61,7 +61,7 @@ public static class MyCollectionClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(RunGpsCsv2Importer),
+                typeof(RunGpsCsv2Classifier),
                 Vendors.MyCollection,
                 "2011.04.03 - 1248\\unbenannt.csv",
                 "2011-04-03 12:48:47.401",

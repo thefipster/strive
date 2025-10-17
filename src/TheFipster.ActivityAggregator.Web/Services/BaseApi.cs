@@ -55,10 +55,10 @@ public abstract class BaseApi
         return collection;
     }
 
-    protected async Task<PagedResult<TResult>> GetPagedAsync<TResult>(string query)
+    protected async Task<PagedResponse<TResult>> GetPagedAsync<TResult>(string query)
     {
         var json = await GetBodyAsync(query);
-        var page = JsonSerializer.Deserialize<PagedResult<TResult>>(json, JsonStandards.Options);
+        var page = JsonSerializer.Deserialize<PagedResponse<TResult>>(json, JsonStandards.Options);
 
         if (page == null)
             throw new InvalidDataException("Result couldn't be parsed.");

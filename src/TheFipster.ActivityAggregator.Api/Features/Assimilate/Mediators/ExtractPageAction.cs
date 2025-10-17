@@ -1,12 +1,12 @@
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Components;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
 
 public class ExtractPageAction(IPagedIndexer<ExtractorIndex> indexer) : IExtractPageAction
 {
-    public PagedResult<ExtractorIndex> GetExtractPage(AssimilateExtractPageRequest request)
+    public PagedResponse<ExtractorIndex> GetExtractPage(AssimilateExtractPageRequest request)
     {
         var specifications = request.ToSpecification();
         return indexer.GetPaged(specifications);

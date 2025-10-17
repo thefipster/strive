@@ -1,5 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Services;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Core.Controllers;
 

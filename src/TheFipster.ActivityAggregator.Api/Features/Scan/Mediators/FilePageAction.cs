@@ -1,12 +1,12 @@
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Components;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators;
 
 public class FilePageAction(IPagedIndexer<FileIndex> indexer) : IFilePageAction
 {
-    public PagedResult<FileIndex> GetFilePage(ScanFilePageRequest request)
+    public PagedResponse<FileIndex> GetFilePage(ScanFilePageRequest request)
     {
         var specifications = request.ToSpecification();
         return indexer.GetPaged(specifications);

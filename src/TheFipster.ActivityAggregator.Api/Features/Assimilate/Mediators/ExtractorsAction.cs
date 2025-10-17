@@ -1,13 +1,10 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Abstractions;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components.Contracts;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Mediators;
 
-public class ExtractorsAction(IImporterRegistry registry) : IExtractorsAction
+public class ExtractorsAction(IEnumerable<IFileExtractor> extractors) : IExtractorsAction
 {
-    public Dictionary<DataSources, int> GetExtractors()
-    {
-        var extractors = registry.LoadExtractors();
-        return extractors.ToDictionary(x => x.Source, y => y.ExtractorVersion);
-    }
+    public Dictionary<DataSources, int> GetExtractors() =>
+        extractors.ToDictionary(x => x.Source, y => y.ExtractorVersion);
 }

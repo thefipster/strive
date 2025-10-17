@@ -1,5 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.FipsterApp;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.TheFipsterApp;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
 namespace TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
@@ -11,7 +11,7 @@ public class TheFipsterAppClassificationDefinition
         yield return
         [
             new FileClassificationCase(
-                typeof(TheFipsterAppWeightImporter),
+                typeof(TheFipsterAppWeightClassifier),
                 Vendors.TheFipsterApp,
                 "weights.json",
                 "0001-01-01 00:00:00",

@@ -21,7 +21,7 @@ public class BatchController(
     public IEnumerable<DateTime> GetExists(int year) => batchPerYearAction.GetExists(year);
 
     [HttpGet("merge")]
-    public PagedResult<BatchIndex> GetPage([FromQuery] PagedRequest request) =>
+    public PagedResponse<BatchIndex> GetPage([FromQuery] PagedRequest request) =>
         batchPageAction.GetPage(request);
 
     [HttpGet("merge/{date}")]

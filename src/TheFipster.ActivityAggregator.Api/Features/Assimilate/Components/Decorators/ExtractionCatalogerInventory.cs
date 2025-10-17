@@ -1,7 +1,7 @@
 using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Storage.Abstractions.Indexer;
+using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Services;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Components.Decorators;
 

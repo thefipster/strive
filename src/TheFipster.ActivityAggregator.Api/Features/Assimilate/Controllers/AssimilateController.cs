@@ -13,7 +13,7 @@ public class AssimilateController(
 ) : ControllerBase
 {
     [HttpGet("extracts")]
-    public PagedResult<ExtractorIndex> GetExtractPage(
+    public PagedResponse<ExtractorIndex> GetExtractPage(
         [FromQuery] AssimilateExtractPageRequest request
     ) => pageAction.GetExtractPage(request);
 

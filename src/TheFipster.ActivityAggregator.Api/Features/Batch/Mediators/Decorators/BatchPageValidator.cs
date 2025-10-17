@@ -7,7 +7,7 @@ namespace TheFipster.ActivityAggregator.Api.Features.Batch.Mediators.Decorators;
 public class BatchPageValidator(IBatchPageAction component, IValidator<PagedRequest> validator)
     : IBatchPageAction
 {
-    public PagedResult<BatchIndex> GetPage(PagedRequest request)
+    public PagedResponse<BatchIndex> GetPage(PagedRequest request)
     {
         var result = validator.Validate(request);
 

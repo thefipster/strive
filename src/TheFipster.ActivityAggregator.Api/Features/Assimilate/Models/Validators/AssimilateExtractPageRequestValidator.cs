@@ -1,5 +1,5 @@
 using FluentValidation;
-using TheFipster.ActivityAggregator.Domain.Models.Importing;
+using TheFipster.ActivityAggregator.Domain.Models.Options;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Models.Validators;
 

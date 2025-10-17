@@ -1,5 +1,5 @@
 using TheFipster.ActivityAggregator.Domain.Enums;
-using TheFipster.ActivityAggregator.Importer.Polar;
+using TheFipster.ActivityAggregator.Importer.Features.Classification.Components.Vendors.Polar.ProTrainer;
 using TheFipster.ActivityAggregator.Importer.UnitTests.Models;
 
 namespace TheFipster.ActivityAggregator.Importer.UnitTests.Definitions;
@@ -11,7 +11,7 @@ public static class PolarProTrainerClassificationDefinitions
         yield return
         [
             new FileClassificationCase(
-                typeof(PolarProTrainerHrmImporter),
+                typeof(PolarProTrainerHrmClassifier),
                 Vendors.PolarProTrainer,
                 "09041005.hrm",
                 "2009-04-10 20:34:46",

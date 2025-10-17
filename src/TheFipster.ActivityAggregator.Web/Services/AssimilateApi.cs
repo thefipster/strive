@@ -16,7 +16,7 @@ public class AssimilateApi() : BaseApi("https://localhost:7098/")
         return await GetDictionaryAsync<DataSources, int>(query);
     }
 
-    public async Task<PagedResult<ExtractorIndex>> GetExtractsPageAsync(
+    public async Task<PagedResponse<ExtractorIndex>> GetExtractsPageAsync(
         PagedRequest pagedRequest,
         string? classified = null,
         string? parameter = null,

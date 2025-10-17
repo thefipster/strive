@@ -16,7 +16,7 @@ public class ScanApi() : BaseApi("https://localhost:7098/")
         return await GetDictionaryAsync<DataSources, int>(query);
     }
 
-    public async Task<PagedResult<FileIndex>> GetFilesPageAsync(
+    public async Task<PagedResponse<FileIndex>> GetFilesPageAsync(
         PagedRequest pagedRequest,
         string? range = null,
         string? classified = null,

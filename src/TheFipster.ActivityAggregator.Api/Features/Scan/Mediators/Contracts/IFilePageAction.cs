@@ -5,5 +5,5 @@ namespace TheFipster.ActivityAggregator.Api.Features.Scan.Mediators.Contracts;
 
 public interface IFilePageAction
 {
-    PagedResult<FileIndex> GetFilePage(ScanFilePageRequest request);
+    PagedResponse<FileIndex> GetFilePage(ScanFilePageRequest request);
 }

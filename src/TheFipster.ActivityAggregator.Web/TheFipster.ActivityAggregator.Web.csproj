@@ -21,4 +21,31 @@
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Storage.Lite\TheFipster.ActivityAggregator.Storage.Lite.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="Components\Common\FipFileSize.razor" />
+    <AdditionalFiles Include="Components\Common\NavMenu.razor" />
+    <AdditionalFiles Include="Components\Common\YearCalendar\MonthColumn.razor" />
+    <AdditionalFiles Include="Components\Common\YearCalendar\YearCalendar.razor" />
+    <AdditionalFiles Include="Components\Layout\MainLayout.razor" />
+    <AdditionalFiles Include="Components\Pages\Batch\BatchPage.razor" />
+    <AdditionalFiles Include="Components\Pages\Batch\Components\DayTab.razor" />
+    <AdditionalFiles Include="Components\Pages\Batch\Components\ImportHistory.razor" />
+    <AdditionalFiles Include="Components\Pages\Batch\Components\MergedFileDetails.razor" />
+    <AdditionalFiles Include="Components\Pages\Batch\Components\SessionTab.razor" />
+    <AdditionalFiles Include="Components\Pages\Error\ErrorPage.razor" />
+    <AdditionalFiles Include="Components\Pages\Home\HomePage.razor" />
+    <AdditionalFiles Include="Components\Pages\Import\ImportPage.razor" />
+    <AdditionalFiles Include="Components\Pages\Import\Tabs\AssimilateTab.razor" />
+    <AdditionalFiles Include="Components\Pages\Import\Tabs\BatchTab.razor" />
+    <AdditionalFiles Include="Components\Pages\Import\Tabs\InfoTab.razor" />
+    <AdditionalFiles Include="Components\Pages\Import\Tabs\ScanTab.razor" />
+    <AdditionalFiles Include="Components\Pages\Import\Tabs\UploadTab.razor" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Layout\MainLayout.razor" />
+    <_ContentIncludedByDefault Remove="Components\FipFileSize.razor" />
+    <_ContentIncludedByDefault Remove="Components\NavMenu.razor" />
+    <_ContentIncludedByDefault Remove="Components\YearCalendar\MonthColumn.razor" />
+    <_ContentIncludedByDefault Remove="Components\YearCalendar\YearCalendar.razor" />
+  </ItemGroup>
 </Project>
