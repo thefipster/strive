@@ -1,16 +1,16 @@
 using TheFipster.ActivityAggregator.Domain.Exceptions;
 using TheFipster.ActivityAggregator.Domain.Extensions;
+using TheFipster.ActivityAggregator.Domain.Models.Files;
 using TheFipster.ActivityAggregator.Domain.Models.Importing;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
-using TheFipster.ActivityAggregator.Domain.Models.Requests;
-using TheFipster.ActivityAggregator.Importer.Features.Extraction.Components.Contracts;
+using TheFipster.ActivityAggregator.Importer.Features.Extraction.Services.Contracts;
 using TheFipster.ActivityAggregator.Storage.Abstractions.Features.Indexing.Components;
 
 namespace TheFipster.ActivityAggregator.Api.Features.Assimilate.Components;
 
 public class FileAssimilator(
     IIndexer<ExtractorIndex> extractInventory,
-    IEnumerable<IFileExtractor> extractors,
+    IExtractor extractor,
     IExtractionCataloger cataloger,
     ILogger<FileAssimilator> logger
 ) : IFileAssimilator
@@ -21,22 +21,14 @@ public class FileAssimilator(
         if (index != null)
             return index;
 
-        var extractor = extractors.FirstOrDefault(x => x.Source == file.Source);
-        if (extractor == null)
-            return null;
-
-        return await TryExtractAsync(file, ct, extractor);
+        return await TryExtractAsync(file, ct);
     }
 
-    private async Task<ExtractorIndex?> TryExtractAsync(
-        FileIndex file,
-        CancellationToken ct,
-        IFileExtractor extractor
-    )
+    private async Task<ExtractorIndex?> TryExtractAsync(FileIndex file, CancellationToken ct)
     {
         try
         {
-            return await ExtractAsync(file, extractor, ct);
+            return await ExtractAsync(file, ct);
         }
         catch (ExtractionException e)
         {
@@ -50,33 +42,31 @@ public class FileAssimilator(
         }
     }
 
-    private async Task<ExtractorIndex?> ExtractAsync(
-        FileIndex file,
-        IFileExtractor extractor,
-        CancellationToken ct
-    )
+    private async Task<ExtractorIndex?> ExtractAsync(FileIndex file, CancellationToken ct)
     {
-        var extracts = new List<ExtractionMeta>();
-        var metrics = new List<string>();
+        var extractions = await extractor.ExtractFile(file);
+        var valueHash = extractions.Select(x => x.ToHash()).ToUnorderedCollectionHash();
+
         long size = 0;
-        var request = ExtractionRequest.New(file);
-        var extractions = extractor.Extract(request);
+        var parameters = new List<string>();
+        var extracts = new List<ExtractionMeta>();
 
         foreach (var extract in extractions)
         {
-            metrics.AddRange(extract.Attributes.Keys.Select(x => x.ToString()));
-            metrics.AddRange(extract.Series.Keys.Select(x => x.ToString()));
-            metrics.AddRange(extract.Events.Select(x => x.Type.ToString()));
-
+            AppendAllParameters(parameters, extract);
             var meta = await cataloger.HandleExtractAsync(file, extract, ct);
-
             extracts.Add(meta);
             size += meta.Size;
         }
 
-        var valueHash = extractions.Select(x => x.ToHash()).ToUnorderedCollectionHash();
+        return ExtractorIndex.New(file, valueHash, extracts, parameters, size);
+    }
 
-        return ExtractorIndex.New(file, valueHash, extracts, metrics, size);
+    private void AppendAllParameters(List<string> parameters, FileExtraction extract)
+    {
+        parameters.AddRange(extract.Attributes.Keys.Select(x => x.ToString()));
+        parameters.AddRange(extract.Series.Keys.Select(x => x.ToString()));
+        parameters.AddRange(extract.Events.Select(x => x.Type.ToString()));
     }
 
     private void LogUnexpectedError(FileIndex file, Exception e) =>

@@ -9,6 +9,8 @@ namespace TheFipster.ActivityAggregator.Importer.Features.Extraction.Services;
 
 public class Extractor(IEnumerable<IFileExtractor> extractors) : IExtractor
 {
+    public IEnumerable<IFileExtractor> Extractors => extractors;
+
     public Task<List<FileExtraction>> ExtractFile(FileIndex file)
     {
         var extractor = extractors.FirstOrDefault(x => x.Source == file.Source);
