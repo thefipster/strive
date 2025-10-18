@@ -1,3 +1,4 @@
+global using TheFipster.ActivityAggregator.Api.Features.Scan;
 global using TheFipster.ActivityAggregator.Api.Features.Scan.Components;
 global using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Contracts;
 global using TheFipster.ActivityAggregator.Api.Features.Scan.Components.Decorators;

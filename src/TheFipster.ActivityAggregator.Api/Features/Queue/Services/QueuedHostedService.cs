@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
+using TheFipster.ActivityAggregator.Api.Features.Queue.Components.Contracts;
 using TheFipster.ActivityAggregator.Api.Hubs;
 using TheFipster.ActivityAggregator.Api.Setup.Configs;
 using TheFipster.ActivityAggregator.Domain;
 
-namespace TheFipster.ActivityAggregator.Api.Features.Core.Services
+namespace TheFipster.ActivityAggregator.Api.Features.Queue.Services
 {
     public class QueuedHostedService(
         IOptions<SettingsConfig> config,

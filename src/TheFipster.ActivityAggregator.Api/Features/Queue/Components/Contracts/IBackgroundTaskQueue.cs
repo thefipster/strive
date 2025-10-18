@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.Api.Features.Core.Components.Contracts;
+namespace TheFipster.ActivityAggregator.Api.Features.Queue.Components.Contracts;
 
 public interface IBackgroundTaskQueue
 {
