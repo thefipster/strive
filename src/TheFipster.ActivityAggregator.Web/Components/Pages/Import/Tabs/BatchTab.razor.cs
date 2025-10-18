@@ -27,6 +27,9 @@ public partial class BatchTab : ComponentBase
     [Inject]
     public required BatchApi Batch { get; set; }
 
+    [Inject]
+    public required NavigationManager Navigation { get; set; }
+
     [Parameter]
     [SupplyParameterFromQuery]
     public int? Year { get; set; }
@@ -34,19 +37,18 @@ public partial class BatchTab : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await ConnectHubs();
-        await base.OnInitializedAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        await Update(_selectedYear);
-        await base.OnParametersSetAsync();
+        _selectedYear = Year ?? DateTime.Now.Year;
+        await LoadCalendar(_selectedYear);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && Year.HasValue)
-            await OnYearChange(Year.Value);
+            OnYearChange(Year.Value);
 
         await base.OnAfterRenderAsync(firstRender);
         _isRendered = true;
@@ -57,12 +59,9 @@ public partial class BatchTab : ComponentBase
         await Batch.ExecuteMerge();
     }
 
-    private async Task OnYearChange(int year) => await LoadCalendar(year);
-
-    private async Task Update(int year)
+    private void OnYearChange(int year)
     {
-        await LoadIndex();
-        await OnYearChange(year);
+        Navigation.NavigateTo($"import?tab=batch&year={year}");
     }
 
     private async Task LoadCalendar(int year)
@@ -70,15 +69,11 @@ public partial class BatchTab : ComponentBase
         _selectedYear = year;
         _inventory = await Inventory.GetInventoryByYearAsync(year);
         _batchDates = await Batch.GetExistsByYear(_selectedYear);
-
-        StateHasChanged();
-    }
-
-    private async Task LoadIndex()
-    {
         _index = (await Inventory.GetInventoryAsync())
             .OrderByDescending(x => x.Key)
             .ToDictionary(x => x.Key, x => x.Value);
+
+        StateHasChanged();
     }
 
     private async Task ConnectHubs()
@@ -91,14 +86,7 @@ public partial class BatchTab : ComponentBase
         _queueEvents
             .Buffer(count: 10)
             .Select(events => events.Last())
-            .Subscribe(_ =>
-            {
-                InvokeAsync(async () =>
-                {
-                    await Update(_selectedYear);
-                    StateHasChanged();
-                });
-            });
+            .Subscribe(_ => InvokeAsync(async () => await LoadCalendar(_selectedYear)));
 
         _hubConnection.On<int, int, int, double>(
             Const.Hubs.Importer.ReportQueue,

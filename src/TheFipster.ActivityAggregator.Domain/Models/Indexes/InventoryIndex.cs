@@ -19,4 +19,9 @@ public class InventoryIndex
     public DateTime Timestamp { get; set; }
     public bool IsDay { get; set; }
     public int Count { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Timestamp}-{IsDay}-{Count}";
+    }
 }

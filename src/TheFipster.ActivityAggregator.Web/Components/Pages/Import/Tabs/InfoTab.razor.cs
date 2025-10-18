@@ -39,7 +39,5 @@ public partial class InfoTab : ComponentBase
         }
 
         _capabilities = _capabilities.OrderBy(x => x.Source.ToString()).ToList();
-
-        await base.OnParametersSetAsync();
     }
 }
