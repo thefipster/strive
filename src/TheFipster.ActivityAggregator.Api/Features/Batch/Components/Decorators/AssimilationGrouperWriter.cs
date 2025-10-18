@@ -25,7 +25,7 @@ public class AssimilationGrouperWriter(
             var merge = result.Key;
             var assimilations = result.Value;
 
-            var path = merge.Write(config.Value.ConvergeDirectoryPath);
+            var path = merge.Write(config.Value.MergeDirectoryPath);
             var file = new FileInfo(path);
             var hash = await file.HashXx3Async(ct);
 
