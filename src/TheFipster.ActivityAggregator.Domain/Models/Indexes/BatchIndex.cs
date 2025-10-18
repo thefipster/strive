@@ -30,26 +30,45 @@ public class BatchIndex
         List<AssimilateIndex> assimilations
     )
     {
-        return new BatchIndex
+        var index = new BatchIndex
         {
+            Filepath = filepath,
+            Hash = hash,
             Timestamp = mergeFile.Timestamp,
             Kind = mergeFile.Kind,
             Sources = mergeFile.Sources,
-            Start = mergeFile.Kind == DataKind.Day ? mergeFile.Timestamp.Date : mergeFile.Timestamp,
-            End =
-                mergeFile.Kind == DataKind.Day
-                    ? mergeFile.Timestamp.Date.AddDays(1).AddMilliseconds(-1)
-                    : mergeFile.Samples.Max(x => x.End),
-            Series = mergeFile.Samples.Count,
-            Tracks = mergeFile.Tracks.Count,
-            Pulses = mergeFile.Pulses.Count,
-            Events = mergeFile.Events?.Resolved.Count ?? 0,
-            Parameters = parameters.Distinct().ToList(),
-            Assimilations = assimilations
-                .DistinctBy(x => x.Hash)
-                .ToDictionary(x => x.Hash, y => y.Path),
-            Filepath = filepath,
-            Hash = hash,
         };
+
+        index.Start = GetStartTimestamp(mergeFile);
+        index.End = GetEndTimestamp(mergeFile);
+        index.Series = mergeFile.Samples.Count;
+        index.Tracks = mergeFile.Tracks.Count;
+        index.Pulses = mergeFile.Pulses.Count;
+        index.Events = mergeFile.Events?.Resolved.Count ?? 0;
+        index.Parameters = parameters.Distinct().ToList();
+        index.Assimilations = assimilations
+            .DistinctBy(x => x.Hash)
+            .ToDictionary(x => x.Hash, y => y.Path);
+
+        return index;
+    }
+
+    private static DateTime GetStartTimestamp(MergedFile mergeFile)
+    {
+        if (mergeFile.Kind == DataKind.Day)
+            return mergeFile.Timestamp.Date;
+
+        return mergeFile.Timestamp;
+    }
+
+    private static DateTime GetEndTimestamp(MergedFile mergeFile)
+    {
+        if (mergeFile.Kind == DataKind.Day)
+            return mergeFile.Timestamp.Date.AddDays(1).AddMilliseconds(-1);
+
+        if (mergeFile.Samples.Any())
+            return mergeFile.Samples.Max(x => x.End);
+
+        return mergeFile.Timestamp;
     }
 }
