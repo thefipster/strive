@@ -8,6 +8,7 @@
     <PackageReference Include="Aspire.Hosting.AppHost" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Fip.Strive.Apps.AdminWeb\Fip.Strive.Apps.AdminWeb.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Api\TheFipster.ActivityAggregator.Api.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Web\TheFipster.ActivityAggregator.Web.csproj" />
   </ItemGroup>

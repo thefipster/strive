@@ -1,7 +1,7 @@
+using TheFipster.ActivityAggregator.AppHost.Systems;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-var api = builder.AddProject<Projects.TheFipster_ActivityAggregator_Api>("api");
-
-builder.AddProject<Projects.TheFipster_ActivityAggregator_Web>("blazor").WithReference(api);
+builder.AddStriveProject();
 
 builder.Build().Run();
