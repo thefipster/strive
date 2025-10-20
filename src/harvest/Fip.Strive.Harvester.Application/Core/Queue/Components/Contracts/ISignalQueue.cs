@@ -7,6 +7,8 @@ public interface ISignalQueue
     int Count { get; }
     Task EnqueueAsync(Signal signal, CancellationToken ct = default);
     Task<JobEntity?> DequeueAsync(CancellationToken ct = default);
+    Task MarkAsStartedAsync(Guid jobId);
     Task MarkAsSuccessAsync(Guid jobId);
-    Task MarkAsFailedAsync(Guid jobId, Exception ex);
+    Task MarkAsFailedAsync(Guid jobId, string reason);
+    Task MarkAsFailedAsync(Guid jobId, string reason, Exception ex);
 }

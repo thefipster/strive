@@ -1,28 +1,28 @@
-using Fip.Strive.Harvester.Application.Features.Scheduler.Jobs;
+using Fip.Strive.Harvester.Application.Features.Schedule.Jobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 
-namespace Fip.Strive.Harvester.Application.Features.Scheduler;
+namespace Fip.Strive.Harvester.Application.Features.Schedule;
 
 public static class Registration
 {
-    public static void AddSchedulerFeature(
+    public static void AddScheduleFeature(
         this IServiceCollection services,
         IConfiguration configuration
     )
     {
-        var schedulerSection = configuration.GetSection(SchedulerConfig.ConfigSectionName);
+        var schedulerSection = configuration.GetSection(ScheduleConfig.ConfigSectionName);
 
-        var schedulerConfig = new SchedulerConfig();
+        var schedulerConfig = new ScheduleConfig();
         schedulerSection.Bind(schedulerConfig);
 
-        services.Configure<SchedulerConfig>(schedulerSection);
+        services.Configure<ScheduleConfig>(schedulerSection);
 
         services.AddQuartzScheduler(schedulerConfig);
     }
 
-    public static void AddQuartzScheduler(this IServiceCollection services, SchedulerConfig config)
+    public static void AddQuartzScheduler(this IServiceCollection services, ScheduleConfig config)
     {
         services.AddQuartz(q =>
         {

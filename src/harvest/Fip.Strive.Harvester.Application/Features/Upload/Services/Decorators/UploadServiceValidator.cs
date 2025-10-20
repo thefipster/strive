@@ -21,20 +21,20 @@ public class UploadServiceValidator(IUploadService component, IOptions<UploadCon
         component.SetReportInterval(interval);
     }
 
-    public async Task<string> SaveAsync(string filename, Stream stream, CancellationToken ct)
+    public async Task<string> SaveUploadAsync(string filename, Stream stream, CancellationToken ct)
     {
         Validate(filename);
-        return await component.SaveAsync(filename, stream, ct);
+        return await component.SaveUploadAsync(filename, stream, ct);
     }
 
     private void Validate(string filename)
     {
-        var uploadDir = config.Value.UploadPath;
+        var uploadDir = config.Value.Path;
 
         if (string.IsNullOrEmpty(uploadDir))
             throw new ConfigurationException(
                 UploadConfig.ConfigSectionName,
-                nameof(config.Value.UploadPath),
+                nameof(config.Value.Path),
                 "Is null or empty."
             );
 

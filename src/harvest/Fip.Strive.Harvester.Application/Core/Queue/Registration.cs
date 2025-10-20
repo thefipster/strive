@@ -1,7 +1,6 @@
 using Fip.Strive.Harvester.Application.Core.Queue.Components;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Services;
-using Fip.Strive.Harvester.Application.Infrastructure.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +19,7 @@ public static class Registration
             scan.FromAssembliesOf(typeof(ISignalQueueWorker))
                 .AddClasses(classes => classes.AssignableTo<ISignalQueueWorker>())
                 .AsImplementedInterfaces()
-                .WithTransientLifetime()
+                .WithScopedLifetime()
         );
 
         services.AddHostedService<QueuedHostedService>();

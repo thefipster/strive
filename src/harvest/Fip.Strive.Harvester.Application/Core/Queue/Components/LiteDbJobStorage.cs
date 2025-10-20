@@ -4,7 +4,7 @@ using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using LiteDB;
 
-namespace Fip.Strive.Harvester.Application.Infrastructure.Data;
+namespace Fip.Strive.Harvester.Application.Core.Queue.Components;
 
 public class LiteDbJobStorage : IJobStorage, IDisposable
 {
@@ -56,13 +56,13 @@ public class LiteDbJobStorage : IJobStorage, IDisposable
         _collection.Update(job);
     }
 
-    public void MarkAsFailed(Guid id, Exception exception)
+    public void MarkAsFailed(Guid id, string message, Exception exception)
     {
         var job = _collection.FindOne(x => x.Id == id);
         job.FinishedAt = DateTime.UtcNow;
         job.Status = JobStatus.Failed;
         job.Error =
-            $"{exception.GetType().Name}: {exception.Message}{Environment.NewLine}{Environment.NewLine}{exception.StackTrace}";
+            $"{message}{Environment.NewLine}{exception.GetType().Name}: {exception.Message}{Environment.NewLine}{Environment.NewLine}{exception.StackTrace}";
         _collection.Update(job);
     }
 

@@ -4,5 +4,5 @@ public class UploadConfig
 {
     public const string ConfigSectionName = "Features:Upload";
 
-    public string? UploadPath { get; set; }
+    public string? Path { get; set; }
 }

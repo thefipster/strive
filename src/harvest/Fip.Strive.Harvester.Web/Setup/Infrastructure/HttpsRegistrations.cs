@@ -1,5 +1,3 @@
-using Serilog;
-
 namespace Fip.Strive.Harvester.Web.Setup.Infrastructure;
 
 public static class HttpsRegistrations

@@ -1,5 +1,3 @@
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
-using Fip.Strive.Harvester.Application.Features.Importer.Worker;
 using Fip.Strive.Harvester.Application.Features.Upload.Services;
 using Fip.Strive.Harvester.Application.Features.Upload.Services.Contracts;
 using Fip.Strive.Harvester.Application.Features.Upload.Services.Decorators;
@@ -16,7 +14,9 @@ public static class Registration
     )
     {
         services.Configure<UploadConfig>(configuration.GetSection(UploadConfig.ConfigSectionName));
+
         services.AddTransient<IUploadService, UploadService>();
         services.Decorate<IUploadService, UploadServiceValidator>();
+        services.Decorate<IUploadService, UploadServiceSignaller>();
     }
 }

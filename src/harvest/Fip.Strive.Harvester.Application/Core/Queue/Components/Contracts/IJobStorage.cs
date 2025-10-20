@@ -10,6 +10,6 @@ public interface IJobStorage
     void MarkAsStarted(Guid id);
     void MarkAsSuccess(Guid id);
     void MarkAsFailed(Guid id, string message);
-    void MarkAsFailed(Guid id, Exception ex);
+    void MarkAsFailed(Guid id, string message, Exception ex);
     void Dispose();
 }

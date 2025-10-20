@@ -17,11 +17,11 @@ public partial class UploadButton(IUploadService uploadService)
     private async Task OnFileUpload(IBrowserFile? file)
     {
         if (file == null)
-            return; 
-        
+            return;
+
         _isUploading = true;
         await using var stream = file.OpenReadStream(maxAllowedSize: _sizeLimit);
-        await uploadService.SaveAsync(file.Name, stream, CancellationToken.None);
+        await uploadService.SaveUploadAsync(file.Name, stream, CancellationToken.None);
     }
 
     private async void OnProgressChanged(object? sender, int progressPercent)

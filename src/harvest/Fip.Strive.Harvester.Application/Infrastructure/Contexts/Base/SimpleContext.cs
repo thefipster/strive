@@ -8,12 +8,15 @@ public class SimpleContext : IDisposable
 {
     private readonly LiteDatabase _database;
 
-    public SimpleContext(string filepath)
+    public SimpleContext(string filepath, BsonMapper? mapper = null)
     {
         var dir = ValidateDirectoryPath(filepath);
         EnsureDirectory(dir);
 
-        _database = new LiteDatabase(filepath);
+        if (mapper == null)
+            _database = new LiteDatabase(filepath);
+        else
+            _database = new LiteDatabase(filepath, mapper);
     }
 
     public ILiteCollection<T> GetCollection<T>() => _database.GetCollection<T>(typeof(T).Name);

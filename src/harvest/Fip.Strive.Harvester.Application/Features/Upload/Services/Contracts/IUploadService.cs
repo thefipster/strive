@@ -6,5 +6,5 @@ public interface IUploadService
 
     void SetReportInterval(TimeSpan interval);
 
-    Task<string> SaveAsync(string filename, Stream stream, CancellationToken ct);
+    Task<string> SaveUploadAsync(string filename, Stream stream, CancellationToken ct);
 }

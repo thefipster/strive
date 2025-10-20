@@ -14,11 +14,11 @@ public class UploadService(IOptions<UploadConfig> config) : IUploadService
 
     public void SetReportInterval(TimeSpan interval) => _reportInterval = interval;
 
-    public async Task<string> SaveAsync(string filename, Stream stream, CancellationToken ct)
+    public async Task<string> SaveUploadAsync(string filename, Stream stream, CancellationToken ct)
     {
         _stopwatch.Start();
 
-        var filePath = Path.Combine(config.Value.UploadPath!, filename);
+        var filePath = Path.Combine(config.Value.Path!, filename);
         await using var fs = new FileStream(filePath, FileMode.Create);
 
         var buffer = new byte[_uploadBufferSize];

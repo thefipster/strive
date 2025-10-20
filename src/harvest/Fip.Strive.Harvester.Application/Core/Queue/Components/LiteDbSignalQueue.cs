@@ -3,7 +3,7 @@ using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Microsoft.Extensions.Options;
 
-namespace Fip.Strive.Harvester.Application.Core.Queue.Services;
+namespace Fip.Strive.Harvester.Application.Core.Queue.Components;
 
 public class LiteDbSignalQueue(IJobStorage jobs, IOptions<QueueConfig> config)
     : ISignalQueue,
@@ -38,6 +38,14 @@ public class LiteDbSignalQueue(IJobStorage jobs, IOptions<QueueConfig> config)
             return TryDequeueAndRefill();
     }
 
+    public Task MarkAsStartedAsync(Guid jobId)
+    {
+        lock (_lock)
+            jobs.MarkAsStarted(jobId);
+
+        return Task.CompletedTask;
+    }
+
     public Task MarkAsSuccessAsync(Guid jobId)
     {
         lock (_lock)
@@ -46,10 +54,18 @@ public class LiteDbSignalQueue(IJobStorage jobs, IOptions<QueueConfig> config)
         return Task.CompletedTask;
     }
 
-    public Task MarkAsFailedAsync(Guid jobId, Exception ex)
+    public Task MarkAsFailedAsync(Guid jobId, string reason)
     {
         lock (_lock)
-            jobs.MarkAsFailed(jobId, ex);
+            jobs.MarkAsFailed(jobId, reason);
+
+        return Task.CompletedTask;
+    }
+
+    public Task MarkAsFailedAsync(Guid jobId, string reason, Exception ex)
+    {
+        lock (_lock)
+            jobs.MarkAsFailed(jobId, reason, ex);
 
         return Task.CompletedTask;
     }

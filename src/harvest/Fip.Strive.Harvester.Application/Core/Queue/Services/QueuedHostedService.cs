@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,7 @@ namespace Fip.Strive.Harvester.Application.Core.Queue.Services;
 public class QueuedHostedService(
     IOptions<QueueConfig> config,
     ISignalQueue queue,
-    IEnumerable<ISignalQueueWorker> workers,
+    IServiceScopeFactory scopeFactory,
     ILogger<QueuedHostedService> logger
 ) : BackgroundService
 {
@@ -42,30 +43,38 @@ public class QueuedHostedService(
 
         while (!ct.IsCancellationRequested)
         {
-            try
+            var job = await queue.DequeueAsync(ct);
+            if (job != null)
             {
-                var job = await queue.DequeueAsync(ct);
-                if (job != null)
+                try
                 {
                     Interlocked.Increment(ref _activeWorkers);
+
+                    await queue.MarkAsStartedAsync(job.Id);
                     await DoAsync(job, ct);
+                    await queue.MarkAsSuccessAsync(job.Id);
+
                     RecordCompletion();
                 }
+                catch (OperationCanceledException)
+                {
+                    // Graceful shutdown
+                    await queue.MarkAsFailedAsync(job.Id, "Operation cancelled.");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    await queue.MarkAsFailedAsync(
+                        job.Id,
+                        $"Error occurred in worker loop {workerId}",
+                        ex
+                    );
+                    logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
+                }
             }
-            catch (OperationCanceledException)
-            {
-                // Graceful shutdown
-                break;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
-            }
-            finally
-            {
-                await Task.Delay(_processingDelay, ct);
-                Interlocked.Decrement(ref _activeWorkers);
-            }
+
+            await Task.Delay(_processingDelay, ct);
+            Interlocked.Decrement(ref _activeWorkers);
         }
 
         logger.LogInformation("Worker {WorkerId} stopping.", workerId);
@@ -73,7 +82,10 @@ public class QueuedHostedService(
 
     private async Task DoAsync(JobEntity job, CancellationToken ct)
     {
+        using var scope = scopeFactory.CreateScope();
+
         var type = job.Type;
+        var workers = scope.ServiceProvider.GetRequiredService<IEnumerable<ISignalQueueWorker>>();
         var worker = workers.FirstOrDefault(worker => worker.Type == type);
 
         if (worker != null)
