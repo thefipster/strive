@@ -1,4 +1,4 @@
-namespace Fip.Strive.Harvester.Application;
+namespace Fip.Strive.Harvester.Application.Infrastructure.Configs;
 
 public class IndexConfig
 {

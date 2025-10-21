@@ -1,5 +1,6 @@
-using Fip.Strive.Harvester.Application.Infrastructure.Config;
+using Fip.Strive.Harvester.Application.Infrastructure.Configs;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts.Base;
+using Fip.Strive.Harvester.Application.Infrastructure.Contexts.Config;
 using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Harvester.Application.Infrastructure.Contexts;

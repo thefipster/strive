@@ -1,4 +1,3 @@
-using Castle.DynamicProxy;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
 using Fip.Strive.Harvester.Application.Features.Import;
