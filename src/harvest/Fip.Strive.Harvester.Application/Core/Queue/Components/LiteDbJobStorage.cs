@@ -23,8 +23,25 @@ public class LiteDbJobStorage : IJobStorage, IDisposable
 
     public void Insert(JobEntity job) => _collection.Insert(job);
 
-    public IEnumerable<JobEntity> GetPending(int count) =>
-        _collection.Find(x => x.Status == JobStatus.Pending).OrderBy(x => x.CreatedAt).Take(count);
+    public IEnumerable<JobEntity> GetStored(int count)
+    {
+        var jobs = _collection
+            .Find(x => x.Status == JobStatus.Stored)
+            .OrderBy(x => x.CreatedAt)
+            .Take(count)
+            .ToList();
+
+        if (!jobs.Any())
+            return Enumerable.Empty<JobEntity>();
+
+        var ids = jobs.Select(x => x.Id).ToArray();
+        _collection.UpdateMany(
+            x => new JobEntity { Status = JobStatus.Pending },
+            x => ids.Contains(x.Id)
+        );
+
+        return jobs;
+    }
 
     public IEnumerable<JobEntity> GetCompleted(int count) =>
         _collection
@@ -56,18 +73,11 @@ public class LiteDbJobStorage : IJobStorage, IDisposable
         _collection.Update(job);
     }
 
-    public void MarkAsFailed(Guid id, string message, Exception exception)
-    {
-        var job = _collection.FindOne(x => x.Id == id);
-        job.FinishedAt = DateTime.UtcNow;
-        job.Status = JobStatus.Failed;
-        job.Error =
-            $"{message}{Environment.NewLine}{exception.GetType().Name}: {exception.Message}{Environment.NewLine}{Environment.NewLine}{exception.StackTrace}";
-        _collection.Update(job);
-    }
+    public void MarkAsFailed(Guid id, string message, Exception exception) =>
+        MarkAsFailed(
+            id,
+            $"{message}{Environment.NewLine}{exception.GetType().Name}: {exception.Message}{Environment.NewLine}{Environment.NewLine}{exception.StackTrace}"
+        );
 
-    public void Dispose()
-    {
-        _context.Dispose();
-    }
+    public void Dispose() => _context.Dispose();
 }

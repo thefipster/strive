@@ -21,7 +21,7 @@ public class HelloWorldWorker(ILogger<HelloWorldWorker> logger) : ISignalQueueWo
         if (signal == null)
             throw new InvalidJobException(job, "Can't read payload.");
 
-        logger.LogInformation("Hello world rolled a {DiceRoll} on a D20", signal.DiceRoll);
+        logger.LogInformation("Hello world worker received a {DiceRoll} on a D20", signal.DiceRoll);
         return Task.CompletedTask;
     }
 }

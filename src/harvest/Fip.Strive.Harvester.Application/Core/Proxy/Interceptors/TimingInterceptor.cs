@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Castle.Core.Interceptor;
+using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
 
 namespace Fip.Strive.Harvester.Application.Core.Interceptors;

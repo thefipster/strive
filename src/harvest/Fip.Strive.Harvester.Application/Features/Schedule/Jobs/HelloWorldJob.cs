@@ -9,9 +9,14 @@ public class HelloWorldJob(ILogger<HelloWorldJob> logger, ISignalQueue queue) : 
 {
     public async Task Execute(IJobExecutionContext context)
     {
-        logger.LogInformation("Hello world at {Time}", DateTimeOffset.Now);
-
         var signal = new HelloWorldSignal();
+
+        logger.LogInformation(
+            "Hello world job at {Time} rolled a {DiceRoll} on a D20.",
+            DateTimeOffset.Now,
+            signal.DiceRoll
+        );
+
         await queue.EnqueueAsync(signal);
     }
 }

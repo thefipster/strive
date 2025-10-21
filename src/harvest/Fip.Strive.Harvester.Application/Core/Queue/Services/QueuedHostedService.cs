@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+using Fip.Strive.Harvester.Application.Core.Queue.Components;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,185 +12,50 @@ public class QueuedHostedService(
     IOptions<QueueConfig> config,
     ISignalQueue queue,
     IServiceScopeFactory scopeFactory,
-    ILogger<QueuedHostedService> logger
+    ILogger<QueuedHostedService> logger,
+    ILoggerFactory loggerFactory
 ) : BackgroundService
 {
-    private readonly TimeSpan _windowSize = TimeSpan.FromSeconds(config.Value.RateWindowSeconds);
-    private readonly TimeSpan _processingDelay = TimeSpan.FromMilliseconds(
-        config.Value.ProcessingDelayMs
-    );
-    private readonly TimeSpan _updateDelay = TimeSpan.FromMilliseconds(config.Value.UpdateDelayMs);
-    private readonly ConcurrentQueue<DateTime> _completionTimes = new();
-
-    private DateTime? _queueEmptyTime;
-    private int _activeWorkers;
-
     protected override Task ExecuteAsync(CancellationToken ct)
     {
-        var instances = Enumerable
+        logger.LogInformation("Queued hosted service started");
+        ;
+
+        var metrics = new QueueMetrics(config);
+
+        var workers = Enumerable
             .Range(0, config.Value.MaxDegreeOfParallelism)
-            .Select(workerId => Task.Run(() => WorkerLoop(workerId, ct), ct))
+            .Select(id =>
+                Task.Run(
+                    () =>
+                        new QueueRunner(
+                            queue,
+                            scopeFactory,
+                            loggerFactory.CreateLogger<QueueRunner>(),
+                            metrics,
+                            config
+                        ).RunAsync(id, ct),
+                    ct
+                )
+            )
             .ToList();
 
-        instances.Add(Task.Run(() => ReporterLoop(ct), ct));
+        workers.Add(
+            Task.Run(
+                () =>
+                    new QueueReporter(
+                        queue,
+                        loggerFactory.CreateLogger<QueueReporter>(),
+                        config
+                    ).RunAsync(ct),
+                ct
+            )
+        );
 
-        return Task.WhenAll(instances);
-    }
+        Task.WhenAll(workers);
 
-    private async Task WorkerLoop(int workerId, CancellationToken ct)
-    {
-        logger.LogInformation("Worker {WorkerId} starting.", workerId);
+        logger.LogInformation("Queued hosted service finished");
 
-        while (!ct.IsCancellationRequested)
-        {
-            var job = await queue.DequeueAsync(ct);
-            if (job != null)
-            {
-                try
-                {
-                    Interlocked.Increment(ref _activeWorkers);
-
-                    await queue.MarkAsStartedAsync(job.Id);
-                    await DoAsync(job, ct);
-                    await queue.MarkAsSuccessAsync(job.Id);
-
-                    RecordCompletion();
-                }
-                catch (OperationCanceledException)
-                {
-                    // Graceful shutdown
-                    await queue.MarkAsFailedAsync(job.Id, "Operation cancelled.");
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    await queue.MarkAsFailedAsync(
-                        job.Id,
-                        $"Error occurred in worker loop {workerId}",
-                        ex
-                    );
-                    logger.LogError(ex, "Error occurred in worker loop {WorkerId}.", workerId);
-                }
-            }
-
-            await Task.Delay(_processingDelay, ct);
-            Interlocked.Decrement(ref _activeWorkers);
-        }
-
-        logger.LogInformation("Worker {WorkerId} stopping.", workerId);
-    }
-
-    private async Task DoAsync(JobEntity job, CancellationToken ct)
-    {
-        using var scope = scopeFactory.CreateScope();
-
-        var type = job.Type;
-        var workers = scope.ServiceProvider.GetRequiredService<IEnumerable<ISignalQueueWorker>>();
-        var worker = workers.FirstOrDefault(worker => worker.Type == type);
-
-        if (worker != null)
-            await worker.ProcessAsync(job, ct);
-    }
-
-    private async Task ReporterLoop(CancellationToken ct)
-    {
-        logger.LogInformation("Reporter starting.");
-        int lastCount = 0;
-        bool finalized = false;
-
-        while (!ct.IsCancellationRequested)
-        {
-            try
-            {
-                var count = queue.Count;
-                if (count != 0 || lastCount != 0)
-                {
-                    finalized = false;
-                    var rate = GetProcessingRate();
-
-                    if (_completionTimes.Count == 0)
-                    {
-                        if (_queueEmptyTime == null)
-                            _queueEmptyTime = DateTime.UtcNow;
-
-                        if (DateTime.UtcNow - _queueEmptyTime > _windowSize)
-                            continue;
-                    }
-                    else
-                    {
-                        _queueEmptyTime = null;
-                    }
-
-                    // await hubContext
-                    //     .Clients.Group(Const.Hubs.Importer.Actions.Queue)
-                    //     .SendAsync(
-                    //         Const.Hubs.Importer.ReportQueue,
-                    //         queue.Count,
-                    //         config.Value.MaxDegreeOfParallelism,
-                    //         _activeWorkers,
-                    //         rate,
-                    //         ct
-                    //     );
-                }
-                else
-                {
-                    if (!finalized)
-                    {
-                        finalized = true;
-                        // await hubContext
-                        //     .Clients.Group(Const.Hubs.Importer.Actions.Queue)
-                        //     .SendAsync(
-                        //         Const.Hubs.Importer.ReportQueue,
-                        //         0,
-                        //         config.Value.MaxDegreeOfParallelism,
-                        //         0,
-                        //         0,
-                        //         ct
-                        //     );
-                    }
-                }
-
-                lastCount = count;
-            }
-            catch (OperationCanceledException)
-            {
-                // Graceful shutdown
-                break;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred in reporter loop.");
-            }
-            finally
-            {
-                await Task.Delay(_updateDelay, ct);
-            }
-        }
-
-        logger.LogInformation("Reporter stopping.");
-    }
-
-    private void RecordCompletion()
-    {
-        var now = DateTime.UtcNow;
-        _completionTimes.Enqueue(now);
-
-        // Clean up old timestamps
-        while (_completionTimes.TryPeek(out var oldest) && now - oldest > _windowSize)
-            _completionTimes.TryDequeue(out _);
-    }
-
-    private double GetProcessingRate()
-    {
-        var now = DateTime.UtcNow;
-
-        // purge old entries
-        while (_completionTimes.TryPeek(out var oldest) && now - oldest > _windowSize)
-            _completionTimes.TryDequeue(out _);
-
-        var count = _completionTimes.Count;
-        var rate = count / _windowSize.TotalSeconds;
-
-        return Math.Round(rate, 1);
+        return Task.CompletedTask;
     }
 }
