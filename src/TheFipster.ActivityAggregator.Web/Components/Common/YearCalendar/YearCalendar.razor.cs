@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using Microsoft.AspNetCore.Components;
 using TheFipster.ActivityAggregator.Domain.Models.Indexes;
 
@@ -22,7 +23,7 @@ public partial class YearCalendar : ComponentBase
     {
         var groupedInvetory = Inventory
             .GroupBy(x => x.Timestamp.Month)
-            .ToDictionary(x => new DateTime(Year, x.Key, 1), y => y.ToList());
+            .ToDictionary(x => new DateTime(x.First().Timestamp.Year, x.Key, 1), y => y.ToList());
 
         for (int i = 1; i <= 12; i++)
         {

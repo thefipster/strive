@@ -19,7 +19,7 @@ public partial class MonthColumn : ComponentBase
 
     private Dictionary<int, List<InventoryIndex>> _dailyInventory = new();
 
-    protected override Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         var groupedInvetory = Inventory
             .GroupBy(x => x.Timestamp.Day)
@@ -32,8 +32,6 @@ public partial class MonthColumn : ComponentBase
         }
 
         _dailyInventory = groupedInvetory;
-
-        return base.OnParametersSetAsync();
     }
 
     private void OnDayAvatarClicked(int day)

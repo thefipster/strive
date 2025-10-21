@@ -1,8 +1,3 @@
-using TheFipster.ActivityAggregator.Api.Features.Assimilate;
-using TheFipster.ActivityAggregator.Api.Features.Batch;
-using TheFipster.ActivityAggregator.Api.Features.Core;
-using TheFipster.ActivityAggregator.Api.Features.Scan;
-using TheFipster.ActivityAggregator.Api.Features.Upload;
 using TheFipster.ActivityAggregator.Importer;
 using TheFipster.ActivityAggregator.Storage.Lite;
 
@@ -17,6 +12,8 @@ public static class ApplicationExtension
     {
         services.AddConfig(configuration);
         services.AddLiteDbStorage(configuration);
+        services.AddInfoFeature();
+        services.AddQueueFeature();
         services.AddImporterFeature();
         services.AddCoreFeature();
         services.AddUploadFeature();

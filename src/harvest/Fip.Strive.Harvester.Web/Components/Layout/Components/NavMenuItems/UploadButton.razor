@@ -1,0 +1,18 @@
+﻿<MudStack AlignItems="AlignItems.Center" 
+          Style="width: 48px;">
+    @if (_isUploading)
+    {
+        <MudProgressCircular Size="Size.Small" 
+                             Value="_uploadProgress"/>
+    }
+    else
+    {
+        <MudFileUpload T="IBrowserFile"
+                       FilesChanged="OnFileUpload"
+                       Accept=".zip">
+            <ActivatorContent>
+                <MudIconButton Icon="@Icons.Material.Filled.FileUpload"/>
+            </ActivatorContent>
+        </MudFileUpload>
+    }
+</MudStack> 

@@ -31,7 +31,6 @@ public partial class ScanTab : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await ConnectHubs();
-        await base.OnInitializedAsync();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -40,8 +39,6 @@ public partial class ScanTab : ComponentBase
             .Select(x => x.Key.ToString())
             .OrderBy(x => x)
             .ToArray();
-
-        await base.OnParametersSetAsync();
     }
 
     private async Task OnScanClicked()

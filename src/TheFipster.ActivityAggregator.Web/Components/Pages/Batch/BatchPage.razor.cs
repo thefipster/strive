@@ -28,7 +28,5 @@ public partial class BatchPage : ComponentBase
 
         if (_date.HasValue)
             _batches = await Batcher.GetDayAsync(_date.Value);
-
-        await base.OnParametersSetAsync();
     }
 }

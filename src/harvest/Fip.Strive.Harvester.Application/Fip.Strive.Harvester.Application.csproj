@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Castle.DynamicProxy" />
+    <PackageReference Include="LiteDB" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Quartz.Extensions.Hosting" />
+    <PackageReference Include="Scrutor" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Queue\Services\Contracts\" />
+    <Folder Include="Features\Import\Models\Config\" />
+  </ItemGroup>
+</Project>

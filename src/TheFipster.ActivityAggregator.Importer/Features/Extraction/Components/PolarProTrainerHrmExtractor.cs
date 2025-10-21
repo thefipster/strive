@@ -25,22 +25,28 @@ namespace TheFipster.ActivityAggregator.Importer.Features.Extraction.Components
 
             var dateValue = meta["Date"];
             var startTimeValue = meta["StartTime"];
-            var date = GetDate(dateValue, startTimeValue);
+            var startDate = GetDate(dateValue, startTimeValue);
 
             var durationValue = meta["Length"];
-            int duration = GetStartTime(durationValue);
+            int duration = GetDuration(durationValue);
+
+            var endDate = startDate.AddSeconds(duration);
 
             var interval = int.Parse(meta["Interval"]);
             var smode = meta["SMode"];
 
             var slot = 0;
 
-            var result = new FileExtraction(Source, file.Filepath, date, DateRanges.Time);
+            var result = new FileExtraction(Source, file.Filepath, startDate, DateRanges.Time);
 
             var heartrateSeries = samples[slot].Select(x => x.ToString()).ToList();
-            var timeSeries = GenerateTimeSeries(date, interval, heartrateSeries);
+            var timeSeries = GenerateTimeSeries(startDate, interval, heartrateSeries);
 
-            result.Attributes.Add(Parameters.StartTime, date.ToString(DateHelper.SecondFormat));
+            result.Attributes.Add(
+                Parameters.StartTime,
+                startDate.ToString(DateHelper.SecondFormat)
+            );
+            result.Attributes.Add(Parameters.EndTime, endDate.ToString(DateHelper.SecondFormat));
             result.Attributes.Add(Parameters.Duration, duration.ToString());
 
             result.Series.Add(Parameters.Timestamp, timeSeries);
@@ -85,7 +91,7 @@ namespace TheFipster.ActivityAggregator.Importer.Features.Extraction.Components
             return timeSeries;
         }
 
-        private static int GetStartTime(string durationValue)
+        private static int GetDuration(string durationValue)
         {
             var lengthSplit = durationValue.Split(".");
             var lengthParts = lengthSplit[0].Split(":");

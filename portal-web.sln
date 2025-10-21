@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregator.Web", "src\TheFipster.ActivityAggregator.Web\TheFipster.ActivityAggregator.Web.csproj", "{97CA6F22-C4FD-4E62-ABBD-62C543E2C6A2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_Apps", "1_Apps", "{D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregator.Api", "src\TheFipster.ActivityAggregator.Api\TheFipster.ActivityAggregator.Api.csproj", "{CC2BA09E-B864-4700-ADDA-3353AE7DF1F2}"
 EndProject
@@ -17,26 +17,30 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheFipster.ActivityAggregat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Storage.Abstractions", "src\TheFipster.ActivityAggregator.Storage.Abstractions\TheFipster.ActivityAggregator.Storage.Abstractions.csproj", "{A25B06DA-C568-44E6-BD07-89236D129E10}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{00D5BC73-9BEF-483D-9A00-ABE505980C01}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_Files", "5_Files", "{00D5BC73-9BEF-483D-9A00-ABE505980C01}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Readme.md = Readme.md
 		Directory.Packages.props = Directory.Packages.props
+		Directory.Build.props = Directory.Build.props
+		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Domain.UnitTests", "test\TheFipster.ActivityAggregator.Domain.UnitTests\TheFipster.ActivityAggregator.Domain.UnitTests.csproj", "{453B9F68-42C3-4D92-8E7F-C7D87413AD34}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{8834090C-C6EA-4DFC-B599-E9B5BCA5189A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_Test", "3_Test", "{8834090C-C6EA-4DFC-B599-E9B5BCA5189A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.Importer.UnitTests", "test\TheFipster.ActivityAggregator.Importer.UnitTests\TheFipster.ActivityAggregator.Importer.UnitTests.csproj", "{9BC9A21E-3341-4E82-A262-AE57DE78C9C1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{E89A0F4C-55ED-44CD-BA97-CEA14DE02C5C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Docs", "4_Docs", "{E89A0F4C-55ED-44CD-BA97-CEA14DE02C5C}"
 	ProjectSection(SolutionItems) = preProject
 		docs\import-flow.drawio = docs\import-flow.drawio
 		docs\pipeline.md = docs\pipeline.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.AppHost", "src\TheFipster.ActivityAggregator.AppHost\TheFipster.ActivityAggregator.AppHost.csproj", "{9CDD772E-ACD2-4AAA-809E-9410A75482E7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2_Libs", "2_Libs", "{CA21E992-7CE6-4004-A236-6977E51B2CB7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +93,10 @@ Global
 		{CC2BA09E-B864-4700-ADDA-3353AE7DF1F2} = {D7D4D24F-5118-4E1A-8C94-F4D36B1796B1}
 		{453B9F68-42C3-4D92-8E7F-C7D87413AD34} = {8834090C-C6EA-4DFC-B599-E9B5BCA5189A}
 		{9BC9A21E-3341-4E82-A262-AE57DE78C9C1} = {8834090C-C6EA-4DFC-B599-E9B5BCA5189A}
+		{AD4FF157-8353-440F-BE8A-D09E11B98119} = {CA21E992-7CE6-4004-A236-6977E51B2CB7}
+		{1AEE86B0-C65C-4EEA-A6FE-361A3003AAFB} = {CA21E992-7CE6-4004-A236-6977E51B2CB7}
+		{A25B06DA-C568-44E6-BD07-89236D129E10} = {CA21E992-7CE6-4004-A236-6977E51B2CB7}
+		{93A57BB0-817A-4D27-884F-1CE0684572D8} = {CA21E992-7CE6-4004-A236-6977E51B2CB7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5143E01-51B5-4A75-A772-1CAB1DF6CB1B}

@@ -6,6 +6,7 @@ public static class ApplicationExtension
 {
     public static void AddApplicationServices(this IServiceCollection services)
     {
+        services.AddSingleton<InfoApi>();
         services.AddSingleton<UploadApi>();
         services.AddSingleton<ScanApi>();
         services.AddSingleton<AssimilateApi>();

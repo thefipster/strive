@@ -1,0 +1,23 @@
+<MudContainer Class="ma-5 pa-5 d-flex flex-column gap-5 flex-grow-1" Fixed="true">
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h4">Import Information</MudText>
+                </MudStack>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent Class="d-flex align-center">
+            <MudTable Context="item" Items="_values" Dense="true" Hover="true" Elevation="0" Style="width: 100%;">
+                <HeaderContent>
+                    <MudTh Style="width:300px;">Setting</MudTh>
+                    <MudTh>Value</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">@item.Key</MudTd>
+                    <MudTd DataLabel="Source File">@item.Value</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>

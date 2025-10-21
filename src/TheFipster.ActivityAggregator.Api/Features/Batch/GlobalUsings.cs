@@ -1,3 +1,4 @@
+global using TheFipster.ActivityAggregator.Api.Features.Batch;
 global using TheFipster.ActivityAggregator.Api.Features.Batch.Components;
 global using TheFipster.ActivityAggregator.Api.Features.Batch.Components.Contracts;
 global using TheFipster.ActivityAggregator.Api.Features.Batch.Components.Decorators;

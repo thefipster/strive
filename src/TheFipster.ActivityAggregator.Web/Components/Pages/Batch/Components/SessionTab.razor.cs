@@ -29,7 +29,6 @@ public partial class SessionTab : ComponentBase
     {
         await LoadMergedFile();
         await LoadHistory();
-        await base.OnParametersSetAsync();
     }
 
     private async Task LoadMergedFile()

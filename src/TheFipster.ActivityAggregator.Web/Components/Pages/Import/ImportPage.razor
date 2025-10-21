@@ -1,4 +1,5 @@
 @page "/import"
+@using TheFipster.ActivityAggregator.Web.Components.Pages.Info.Tabs
 
 <MudTabs @ref="@_tabs" Elevation="0" Centered="true" Color="Color.Primary" ApplyEffectsToContainer="true" PanelClass="pa-6">
     <MudTabPanel ID="@("upload")" Text="Upload">
@@ -18,9 +19,6 @@
     </MudTabPanel>
     <MudTabPanel ID="@("unify")" Text="Unify">
         <MudText>Unify batches</MudText>
-    </MudTabPanel>
-    <MudTabPanel ID="@("infos")" Text="Infos">
-        <InfoTab />
     </MudTabPanel>
 </MudTabs>
 

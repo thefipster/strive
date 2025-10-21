@@ -1,10 +1,10 @@
-    <MudContainer Fixed="true">
-        <MudGrid Justify="Justify.SpaceEvenly">
+    <MudContainer MaxWidth="MaxWidth.False">
+        <MudGrid>
         @if (_monthlyInventory.Any())
         {
             @foreach (var month in _monthlyInventory.OrderBy(x => x.Key))
             {
-                <MudItem Class="flex-grow-1">
+                <MudItem xs="1">
                     <MonthColumn Month="@month.Key" Inventory="@month.Value" Batches="@_monthyBatches[month.Key]"/>
                 </MudItem>
             }

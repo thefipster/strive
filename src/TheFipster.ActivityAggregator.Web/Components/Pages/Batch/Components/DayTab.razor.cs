@@ -29,7 +29,6 @@ public partial class DayTab : ComponentBase
     {
         await LoadMergedFile();
         await LoadHistory();
-        await base.OnParametersSetAsync();
     }
 
     private async Task LoadMergedFile()

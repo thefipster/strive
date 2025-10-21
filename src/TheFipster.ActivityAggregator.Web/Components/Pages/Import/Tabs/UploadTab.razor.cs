@@ -33,7 +33,6 @@ public partial class UploadTab : IAsyncDisposable
     protected override async Task OnInitializedAsync()
     {
         await ConnectHubs();
-        await base.OnInitializedAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -1,3 +1,4 @@
+global using TheFipster.ActivityAggregator.Api.Features.Upload;
 global using TheFipster.ActivityAggregator.Api.Features.Upload.Components;
 global using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Contracts;
 global using TheFipster.ActivityAggregator.Api.Features.Upload.Components.Decorators;
