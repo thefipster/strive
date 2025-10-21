@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{81B23DB6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Application.UnitTests", "test\harvest\Fip.Strive.Harvester.Application.UnitTests\Fip.Strive.Harvester.Application.UnitTests.csproj", "{FB6542FC-100E-4DD8-B3E8-505C49632B86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.AppHost", "src\Fip.Strive.AppHost\Fip.Strive.AppHost.csproj", "{C7257019-2F1F-478E-93E7-5B425599CE78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{FB6542FC-100E-4DD8-B3E8-505C49632B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB6542FC-100E-4DD8-B3E8-505C49632B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB6542FC-100E-4DD8-B3E8-505C49632B86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7257019-2F1F-478E-93E7-5B425599CE78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7257019-2F1F-478E-93E7-5B425599CE78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7257019-2F1F-478E-93E7-5B425599CE78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7257019-2F1F-478E-93E7-5B425599CE78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}

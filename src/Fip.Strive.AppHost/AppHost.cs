@@ -1,4 +1,4 @@
-using TheFipster.ActivityAggregator.AppHost.Systems;
+using Fip.Strive.AppHost.Systems;
 
 var builder = DistributedApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-namespace TheFipster.ActivityAggregator.AppHost.Systems;
+namespace Fip.Strive.AppHost.Systems;
 
 public static class ActivityAggregator
 {

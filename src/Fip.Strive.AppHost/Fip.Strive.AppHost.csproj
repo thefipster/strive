@@ -12,4 +12,9 @@
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Api\TheFipster.ActivityAggregator.Api.csproj" />
     <ProjectReference Include="..\TheFipster.ActivityAggregator.Web\TheFipster.ActivityAggregator.Web.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <DependentUpon>appsettings.json</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>
