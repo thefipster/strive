@@ -2,6 +2,8 @@
   <ItemGroup>
     <PackageReference Include="Castle.Core" />
     <PackageReference Include="LiteDB" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />

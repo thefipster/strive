@@ -1,18 +1,21 @@
 using System.Text.Json;
+using Fip.Strive.Harvester.Application.Core.Hubs;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Exceptions;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Features.Schedule.Signals;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace Fip.Strive.Harvester.Application.Features.Schedule.Workers;
 
-public class HelloWorldWorker(ILogger<HelloWorldWorker> logger) : ISignalQueueWorker
+public class HelloWorldWorker(ILogger<HelloWorldWorker> logger, IHubContext<HelloWorldHub> hub)
+    : ISignalQueueWorker
 {
     public SignalTypes Type => SignalTypes.HelloWorldSignal;
 
-    public Task ProcessAsync(JobEntity job, CancellationToken ct)
+    public async Task ProcessAsync(JobEntity job, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(job.Payload))
             throw new InvalidJobException(job, "Payload is null or empty.");
@@ -22,6 +25,10 @@ public class HelloWorldWorker(ILogger<HelloWorldWorker> logger) : ISignalQueueWo
             throw new InvalidJobException(job, "Can't read payload.");
 
         logger.LogInformation("Hello world worker received a {DiceRoll} on a D20", signal.DiceRoll);
-        return Task.CompletedTask;
+
+        await hub.Clients.All.SendAsync(
+            "HelloWorld",
+            $"Psst worker here, did you hear, the hello world job rolled a {signal.DiceRoll} on a D20."
+        );
     }
 }

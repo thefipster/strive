@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
 
-namespace Fip.Strive.Harvester.Application.Core.Interceptors;
+namespace Fip.Strive.Harvester.Application.Core.Proxy.Interceptors;
 
 public class TimingInterceptor(ILogger<TimingInterceptor> logger) : IInterceptor
 {

@@ -1,7 +1,7 @@
 using Fip.Strive.Harvester.Application.Features.Import.Models;
 using LiteDB;
 
-namespace Fip.Strive.Harvester.Application.Infrastructure.Config;
+namespace Fip.Strive.Harvester.Application.Infrastructure.Contexts.Config;
 
 public static class IndexerMapper
 {

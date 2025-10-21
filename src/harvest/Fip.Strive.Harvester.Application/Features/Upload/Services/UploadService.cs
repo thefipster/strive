@@ -18,7 +18,7 @@ public class UploadService(IOptions<UploadConfig> config) : IUploadService
     {
         _stopwatch.Start();
 
-        var filePath = Path.Combine(config.Value.Path!, filename);
+        var filePath = Path.Combine(config.Value.Path, filename);
         await using var fs = new FileStream(filePath, FileMode.Create);
 
         var buffer = new byte[_uploadBufferSize];

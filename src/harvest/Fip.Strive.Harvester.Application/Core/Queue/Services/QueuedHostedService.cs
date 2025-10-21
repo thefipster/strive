@@ -19,7 +19,6 @@ public class QueuedHostedService(
     protected override Task ExecuteAsync(CancellationToken ct)
     {
         logger.LogInformation("Queued hosted service started");
-        ;
 
         var metrics = new QueueMetrics(config);
 
