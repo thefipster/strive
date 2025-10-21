@@ -1,4 +1,3 @@
-using Castle.Core.Interceptor;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

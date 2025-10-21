@@ -5,7 +5,7 @@ namespace Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 public interface IJobStorage
 {
     void Insert(JobEntity job);
-    IEnumerable<JobEntity> GetPending(int count);
+    IEnumerable<JobEntity> GetStored(int count);
     IEnumerable<JobEntity> GetCompleted(int count);
     void MarkAsStarted(Guid id);
     void MarkAsSuccess(Guid id);

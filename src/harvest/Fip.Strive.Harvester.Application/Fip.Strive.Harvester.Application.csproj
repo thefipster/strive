@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Castle.DynamicProxy" />
+    <PackageReference Include="Castle.Core" />
     <PackageReference Include="LiteDB" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
@@ -15,7 +15,6 @@
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\Queue\Services\Contracts\" />
     <Folder Include="Features\Import\Models\Config\" />
   </ItemGroup>
 </Project>

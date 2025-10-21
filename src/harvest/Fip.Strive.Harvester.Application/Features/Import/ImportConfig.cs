@@ -4,5 +4,5 @@ public class ImportConfig
 {
     public const string ConfigSectionName = "Import";
 
-    public string Path { get; set; }
+    public string Path { get; set; } = "data/files/import";
 }
