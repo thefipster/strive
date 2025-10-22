@@ -1,5 +1,8 @@
 using Fip.Strive.Harvester.Application.Core.Queue.Components;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
+using Fip.Strive.Harvester.Application.Core.Queue.Repositories;
+using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

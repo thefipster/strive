@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Fip.Strive.Harvester.Application.Core.Hubs;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Exceptions;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;

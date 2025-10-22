@@ -5,6 +5,6 @@ public static class ErrorHandlerRegistration
     public static void UseErrorHandling(this WebApplication app)
     {
         if (!app.Environment.IsDevelopment())
-            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+            app.UseExceptionHandler("/error", createScopeForErrors: true);
     }
 }

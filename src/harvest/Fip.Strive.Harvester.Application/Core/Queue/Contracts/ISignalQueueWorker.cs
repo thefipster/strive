@@ -1,7 +1,7 @@
 using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 
-namespace Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+namespace Fip.Strive.Harvester.Application.Core.Queue.Contracts;
 
 public interface ISignalQueueWorker
 {

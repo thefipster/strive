@@ -1,6 +1,6 @@
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 
-namespace Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+namespace Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 
 public interface IJobStorage
 {

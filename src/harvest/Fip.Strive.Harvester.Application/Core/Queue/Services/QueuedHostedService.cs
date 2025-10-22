@@ -1,6 +1,8 @@
+using Fip.Strive.Harvester.Application.Core.Hubs;
 using Fip.Strive.Harvester.Application.Core.Queue.Components;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,7 +15,8 @@ public class QueuedHostedService(
     ISignalQueue queue,
     IServiceScopeFactory scopeFactory,
     ILogger<QueuedHostedService> logger,
-    ILoggerFactory loggerFactory
+    ILoggerFactory loggerFactory,
+    IHubContext<QueueHub> hub
 ) : BackgroundService
 {
     protected override Task ExecuteAsync(CancellationToken ct)
@@ -45,7 +48,9 @@ public class QueuedHostedService(
                     new QueueReporter(
                         queue,
                         loggerFactory.CreateLogger<QueueReporter>(),
-                        config
+                        config,
+                        hub,
+                        metrics
                     ).RunAsync(ct),
                 ct
             )
