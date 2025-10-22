@@ -8,9 +8,9 @@ public class HelloWorldSignal() : Signal(SignalTypes.HelloWorldSignal)
 {
     public int DiceRoll { get; set; } = new Random().Next(1, 21);
 
-    public override JobEntity ToJobEntity()
+    public override JobDetails ToJobEntity()
     {
-        return new JobEntity
+        return new JobDetails
         {
             Id = Id,
             Type = Type,

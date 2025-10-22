@@ -2,75 +2,63 @@ using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
-using LiteDB;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Repositories;
 
-public class LiteDbJobStorage : IJobStorage, IDisposable
+public class LiteDbJobStorage(SignalQueueContext context)
+    : LiteDbBaseJobRepository(context),
+        IJobStorage
 {
-    private readonly ILiteCollection<JobEntity> _collection;
-    private readonly SignalQueueContext _context;
+    public void Insert(JobDetails job) => Collection.Insert(job);
 
-    public LiteDbJobStorage(SignalQueueContext context)
+    public IEnumerable<JobDetails> GetStored(int count)
     {
-        _context = context;
-
-        _collection = context.GetCollection<JobEntity>();
-        _collection.EnsureIndex(x => x.Status);
-        _collection.EnsureIndex(x => x.CreatedAt);
-        _collection.EnsureIndex(x => x.Type);
-    }
-
-    public void Insert(JobEntity job) => _collection.Insert(job);
-
-    public IEnumerable<JobEntity> GetStored(int count)
-    {
-        var jobs = _collection
+        var jobs = Collection
             .Find(x => x.Status == JobStatus.Stored)
             .OrderBy(x => x.CreatedAt)
             .Take(count)
             .ToList();
 
         if (!jobs.Any())
-            return Enumerable.Empty<JobEntity>();
+            return Enumerable.Empty<JobDetails>();
 
         var ids = jobs.Select(x => x.Id).ToArray();
-        _collection.UpdateMany(
-            x => new JobEntity { Status = JobStatus.Pending },
+        Collection.UpdateMany(
+            x => new JobDetails { Status = JobStatus.Pending },
             x => ids.Contains(x.Id)
         );
 
         return jobs;
     }
 
-    public IEnumerable<JobEntity> GetCompleted(int count) =>
-        _collection
+    public IEnumerable<JobDetails> GetCompleted(int count) =>
+        Collection
             .Find(x => x.Status == JobStatus.Failed || x.Status == JobStatus.Succeeded)
             .OrderBy(x => x.FinishedAt)
             .Take(count);
 
     public void MarkAsStarted(Guid id)
     {
-        var job = _collection.FindOne(x => x.Id == id);
+        var job = Collection.FindOne(x => x.Id == id);
         job.StartedAt = DateTime.UtcNow;
-        _collection.Update(job);
+        Collection.Update(job);
     }
 
     public void MarkAsSuccess(Guid id)
     {
-        var job = _collection.FindOne(x => x.Id == id);
+        var job = Collection.FindOne(x => x.Id == id);
         job.FinishedAt = DateTime.UtcNow;
         job.Status = JobStatus.Succeeded;
-        _collection.Update(job);
+        Collection.Update(job);
     }
 
     public void MarkAsFailed(Guid id, string message)
     {
-        var job = _collection.FindOne(x => x.Id == id);
+        var job = Collection.FindOne(x => x.Id == id);
         job.FinishedAt = DateTime.UtcNow;
         job.Status = JobStatus.Failed;
         job.Error = message;
-        _collection.Update(job);
+        Collection.Update(job);
     }
 
     public void MarkAsFailed(Guid id, string message, Exception exception) =>
@@ -78,6 +66,4 @@ public class LiteDbJobStorage : IJobStorage, IDisposable
             id,
             $"{message}{Environment.NewLine}{exception.GetType().Name}: {exception.Message}{Environment.NewLine}{Environment.NewLine}{exception.StackTrace}"
         );
-
-    public void Dispose() => _context.Dispose();
 }

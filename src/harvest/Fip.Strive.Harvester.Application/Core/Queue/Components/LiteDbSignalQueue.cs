@@ -11,7 +11,7 @@ public class LiteDbSignalQueue(IJobStorage jobs, IOptions<QueueConfig> config)
     : ISignalQueue,
         IDisposable
 {
-    private readonly ConcurrentQueue<JobEntity> _queue = new();
+    private readonly ConcurrentQueue<JobDetails> _queue = new();
 
     private bool QueueShouldBeRefilled =>
         _queue.Count < config.Value.QueueCountLimit - config.Value.QueueBatchSize;
@@ -33,7 +33,7 @@ public class LiteDbSignalQueue(IJobStorage jobs, IOptions<QueueConfig> config)
         return Task.CompletedTask;
     }
 
-    public async Task<JobEntity?> DequeueAsync(CancellationToken ct = default)
+    public async Task<JobDetails?> DequeueAsync(CancellationToken ct = default)
     {
         var job = await TryDequeueStartedJobAsync();
 
@@ -74,7 +74,7 @@ public class LiteDbSignalQueue(IJobStorage jobs, IOptions<QueueConfig> config)
 
     public void Dispose() => jobs.Dispose();
 
-    private Task<JobEntity?> TryDequeueStartedJobAsync()
+    private Task<JobDetails?> TryDequeueStartedJobAsync()
     {
         if (_queue.TryDequeue(out var job))
             jobs.MarkAsStarted(job.Id);

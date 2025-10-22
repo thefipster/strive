@@ -1,7 +1,6 @@
 using Fip.Strive.Harvester.Application.Core.Hubs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
-using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Layout.Components;
 

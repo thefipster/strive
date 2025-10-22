@@ -10,4 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Pages\Queue\JobTable.razor" />
+  </ItemGroup>
 </Project>

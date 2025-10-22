@@ -9,9 +9,9 @@ public class Signal(SignalTypes type)
     public DateTime EmittedAt { get; set; } = DateTime.UtcNow;
     public SignalTypes Type { get; set; } = type;
 
-    public virtual JobEntity ToJobEntity()
+    public virtual JobDetails ToJobEntity()
     {
-        return new JobEntity
+        return new JobDetails
         {
             Id = Id,
             Type = Type,
