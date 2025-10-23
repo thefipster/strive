@@ -2,7 +2,7 @@ using Fip.Strive.Harvester.Application.Core.Queue.Models;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 
-public interface IJobStorage
+public interface IJobControl : IDisposable
 {
     void Insert(JobDetails job);
     IEnumerable<JobDetails> GetStored(int count);
@@ -11,5 +11,4 @@ public interface IJobStorage
     void MarkAsSuccess(Guid id);
     void MarkAsFailed(Guid id, string message);
     void MarkAsFailed(Guid id, string message, Exception ex);
-    void Dispose();
 }

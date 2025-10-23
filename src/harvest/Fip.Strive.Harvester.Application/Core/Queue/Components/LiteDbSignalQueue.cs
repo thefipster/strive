@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Components;
 
-public class LiteDbSignalQueue(IJobStorage jobs, IOptions<QueueConfig> config)
+public class LiteDbSignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
     : ISignalQueue,
         IDisposable
 {

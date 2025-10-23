@@ -4,11 +4,10 @@ using LiteDB;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Repositories;
 
-public class LiteDbBaseJobRepository : IDisposable
+public class LiteDbBaseJobRepository
 {
     protected readonly ILiteCollection<JobDetails> Collection;
     private readonly SignalQueueContext _context;
-    private bool _disposed;
 
     public LiteDbBaseJobRepository(SignalQueueContext context)
     {
@@ -18,23 +17,5 @@ public class LiteDbBaseJobRepository : IDisposable
         Collection.EnsureIndex(x => x.Status);
         Collection.EnsureIndex(x => x.CreatedAt);
         Collection.EnsureIndex(x => x.Type);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            if (disposing)
-            {
-                _context.Dispose();
-            }
-            _disposed = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

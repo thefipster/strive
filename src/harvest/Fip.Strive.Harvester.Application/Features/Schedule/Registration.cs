@@ -27,6 +27,7 @@ public static class Registration
         services.AddQuartz(q =>
         {
             q.AddRegularIntervalJob<HelloWorldJob>(config.HelloWorldIntervalSeconds);
+            q.AddRegularIntervalJob<QueueCleanupJob>(60);
         });
 
         services.AddQuartzHostedService(options =>
@@ -41,11 +42,11 @@ public static class Registration
     )
         where TJob : IJob
     {
-        var jobName = nameof(TJob);
+        var jobName = typeof(TJob).Name;
         var jobKey = new JobKey(jobName);
         quartz.AddJob<TJob>(opts => opts.WithIdentity(jobKey));
 
-        var triggerName = $"{nameof(TJob)}Trigger";
+        var triggerName = $"{jobName}Trigger";
         var interval = TimeSpan.FromSeconds(intervalSeconds);
         quartz.AddTrigger(opts =>
             opts.ForJob(jobKey)
