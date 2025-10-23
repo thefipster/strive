@@ -11,4 +11,5 @@ public interface IJobControl : IDisposable
     void MarkAsSuccess(Guid id);
     void MarkAsFailed(Guid id, string message);
     void MarkAsFailed(Guid id, string message, Exception ex);
+    void Reset();
 }

@@ -80,6 +80,20 @@ public class LiteDbJobControl : IJobControl
             $"{message}{Environment.NewLine}{exception.GetType().Name}: {exception.Message}{Environment.NewLine}{Environment.NewLine}{exception.StackTrace}"
         );
 
+    public void Reset()
+    {
+        var ids = _collection
+            .Find(x => x.Status == JobStatus.Pending)
+            .OrderBy(x => x.CreatedAt)
+            .Select(x => x.Id)
+            .ToArray();
+
+        _collection.UpdateMany(
+            x => new JobDetails { Status = JobStatus.Stored },
+            x => ids.Contains(x.Id)
+        );
+    }
+
     protected void Dispose(bool disposing)
     {
         if (!_disposed)

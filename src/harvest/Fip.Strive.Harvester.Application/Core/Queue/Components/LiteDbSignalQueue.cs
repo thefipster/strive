@@ -7,14 +7,22 @@ using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Components;
 
-public class LiteDbSignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
-    : ISignalQueue,
-        IDisposable
+public class LiteDbSignalQueue : ISignalQueue, IDisposable
 {
+    private readonly IJobControl _jobs;
+    private readonly IOptions<QueueConfig> _config;
     private readonly ConcurrentQueue<JobDetails> _queue = new();
 
     private bool QueueShouldBeRefilled =>
-        _queue.Count < config.Value.QueueCountLimit - config.Value.QueueBatchSize;
+        _queue.Count < _config.Value.QueueCountLimit - _config.Value.QueueBatchSize;
+
+    public LiteDbSignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
+    {
+        _config = config;
+
+        _jobs = jobs;
+        _jobs.Reset();
+    }
 
     public int Count => _queue.Count;
 
@@ -22,13 +30,13 @@ public class LiteDbSignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
     {
         var job = signal.ToJobEntity();
 
-        if (config.Value.QueueCountLimit < _queue.Count)
+        if (_config.Value.QueueCountLimit < _queue.Count)
         {
             job.Status = JobStatus.Pending;
             _queue.Enqueue(job);
         }
 
-        jobs.Insert(job);
+        _jobs.Insert(job);
 
         return Task.CompletedTask;
     }
@@ -45,19 +53,19 @@ public class LiteDbSignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
 
     public Task MarkAsStartedAsync(Guid jobId, CancellationToken ct = default)
     {
-        jobs.MarkAsStarted(jobId);
+        _jobs.MarkAsStarted(jobId);
         return Task.CompletedTask;
     }
 
     public Task MarkAsSuccessAsync(Guid jobId, CancellationToken ct = default)
     {
-        jobs.MarkAsSuccess(jobId);
+        _jobs.MarkAsSuccess(jobId);
         return Task.CompletedTask;
     }
 
     public Task MarkAsFailedAsync(Guid jobId, string reason, CancellationToken ct = default)
     {
-        jobs.MarkAsFailed(jobId, reason);
+        _jobs.MarkAsFailed(jobId, reason);
         return Task.CompletedTask;
     }
 
@@ -68,23 +76,23 @@ public class LiteDbSignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
         CancellationToken ct = default
     )
     {
-        jobs.MarkAsFailed(jobId, reason, ex);
+        _jobs.MarkAsFailed(jobId, reason, ex);
         return Task.CompletedTask;
     }
 
-    public void Dispose() => jobs.Dispose();
+    public void Dispose() => _jobs.Dispose();
 
     private Task<JobDetails?> TryDequeueStartedJobAsync()
     {
         if (_queue.TryDequeue(out var job))
-            jobs.MarkAsStarted(job.Id);
+            _jobs.MarkAsStarted(job.Id);
 
         return Task.FromResult(job);
     }
 
     private void RefillQueue()
     {
-        var storedJobs = jobs.GetStored(config.Value.QueueBatchSize);
+        var storedJobs = _jobs.GetStored(_config.Value.QueueBatchSize);
 
         foreach (var job in storedJobs)
             _queue.Enqueue(job);
