@@ -1,14 +1,21 @@
+using Fip.Strive.Harvester.Application.Core.Queue;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Quartz;
 
 namespace Fip.Strive.Harvester.Application.Features.Schedule.Jobs;
 
-public class QueueCleanupJob(IJobDeleter deleter, ILogger<QueueCleanupJob> logger) : IJob
+public class QueueCleanupJob(
+    IJobDeleter deleter,
+    ILogger<QueueCleanupJob> logger,
+    IOptions<QueueConfig> config
+) : IJob
 {
     public Task Execute(IJobExecutionContext context)
     {
-        var deleteCount = deleter.DeleteBefore(DateTime.UtcNow.AddMinutes(-10));
+        var configuredDeleteTime = DateTime.UtcNow.AddDays(config.Value.DeleteAfterDays * -1);
+        var deleteCount = deleter.DeleteBefore(configuredDeleteTime);
         //deleter.Rebuild();
 
         logger.LogInformation("Cleaned up queue, removed {QueueDeleteCount} jobs", deleteCount);

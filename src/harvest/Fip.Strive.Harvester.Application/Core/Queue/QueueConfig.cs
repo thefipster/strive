@@ -11,4 +11,6 @@ public class QueueConfig
     public long RateWindowSeconds { get; set; } = 5;
     public long ProcessingDelayMs { get; set; } = 10;
     public long UpdateDelayMs { get; set; } = 100;
+
+    public int DeleteAfterDays { get; set; } = 30;
 }

@@ -27,7 +27,7 @@ public static class Registration
         services.AddQuartz(q =>
         {
             q.AddRegularIntervalJob<HelloWorldJob>(config.HelloWorldIntervalSeconds);
-            q.AddRegularIntervalJob<QueueCleanupJob>(60);
+            q.AddRegularIntervalJob<QueueCleanupJob>(config.QueueCleanupIntervalSeconds);
         });
 
         services.AddQuartzHostedService(options =>
