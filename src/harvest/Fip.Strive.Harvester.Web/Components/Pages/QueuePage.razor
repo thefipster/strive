@@ -1,13 +1,25 @@
 @page "/queue"
 @using Fip.Strive.Harvester.Application.Core.Queue.Models
 
-<MudText Typo="Typo.h1">Queue</MudText>
-
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h1">Queue</MudText>
+    @if (_isRunning)
+    {
+        <MudIconButton Icon="@Icons.Material.Filled.Pause" Color="Color.Primary" OnClick="@OnPauseRequested"/>
+    }
+    else
+    {
+        <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Primary" OnClick="@OnResumeRequested"/>
+    }
+</MudStack>
 <MudGrid>
     <MudItem xs="4">
         <MudTable T="JobDetails" Context="job" ServerData="@OnUpcommingRequested">
             <ToolBarContent>
+
                 <MudText Typo="Typo.h2">Available Jobs</MudText>
+
+
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Signalled</MudTh>
@@ -27,7 +39,7 @@
                 <MudText>No matching records found</MudText>
             </NoRecordsContent>
             <PagerContent>
-                <MudTablePager />
+                <MudTablePager/>
             </PagerContent>
         </MudTable>
     </MudItem>
@@ -54,7 +66,7 @@
                 <MudText>No matching records found</MudText>
             </NoRecordsContent>
             <PagerContent>
-                <MudTablePager />
+                <MudTablePager/>
             </PagerContent>
         </MudTable>
     </MudItem>
@@ -81,7 +93,7 @@
                 <MudText>No matching records found</MudText>
             </NoRecordsContent>
             <PagerContent>
-                <MudTablePager />
+                <MudTablePager/>
             </PagerContent>
         </MudTable>
     </MudItem>

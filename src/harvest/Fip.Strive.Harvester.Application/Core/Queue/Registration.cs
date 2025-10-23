@@ -24,8 +24,9 @@ public static class Registration
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
-
-        services.AddHostedService<QueuedHostedService>();
+        
+        services.AddSingleton<QueuedHostedService>();
+        services.AddHostedService(sp => sp.GetRequiredService<QueuedHostedService>());
 
         services.AddSingleton<ISignalQueue, LiteDbSignalQueue>();
 

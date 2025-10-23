@@ -12,23 +12,71 @@ public class QueuedHostedService(
     IQueueWorkerFactory workerFactory
 ) : BackgroundService
 {
-    protected override Task ExecuteAsync(CancellationToken ct)
+    private readonly object _lock = new();
+    private CancellationTokenSource? _runCts;
+    private Task? _runTask;
+    private readonly QueueMetrics _metrics = new(config);
+
+    public bool IsRunning => _runTask is { IsCompleted: false };
+
+    public void StartWork()
     {
-        logger.LogInformation("Queued hosted service started");
+        lock (_lock)
+        {
+            if (IsRunning)
+            {
+                logger.LogWarning("QueuedHostedService is already running.");
+                return;
+            }
 
-        var metrics = new QueueMetrics(config);
+            logger.LogInformation("Starting QueuedHostedService workers.");
+            _runCts = new CancellationTokenSource();
+            _runTask = RunInternalAsync(_runCts.Token);
+        }
+    }
 
+    public async Task StopWorkAsync()
+    {
+        lock (_lock)
+        {
+            if (!IsRunning)
+                return;
+
+            logger.LogInformation("Stopping QueuedHostedService workers.");
+            _runCts?.Cancel();
+        }
+
+        if (_runTask is not null)
+        {
+            try
+            {
+                await _runTask;
+            }
+            catch (OperationCanceledException) { }
+        }
+
+        _runTask = null;
+        _runCts = null;
+    }
+
+    private async Task RunInternalAsync(CancellationToken ct)
+    {
         var workers = Enumerable
             .Range(0, config.Value.MaxDegreeOfParallelism)
-            .Select(id => Task.Run(() => workerFactory.CreateRunner(metrics).RunAsync(id, ct), ct))
+            .Select(id => Task.Run(() => workerFactory.CreateRunner(_metrics).RunAsync(id, ct), ct))
             .ToList();
 
-        workers.Add(Task.Run(() => workerFactory.CreateReporter(metrics).RunAsync(ct), ct));
+        workers.Add(Task.Run(() => workerFactory.CreateReporter(_metrics).RunAsync(ct), ct));
 
-        Task.WhenAll(workers);
+        await Task.WhenAll(workers);
+    }
 
-        logger.LogInformation("Queued hosted service finished");
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        logger.LogInformation("QueuedHostedService initialized.");
 
-        return Task.CompletedTask;
+        StartWork();
+        // Keep running until the host shuts down
+        await Task.Delay(Timeout.Infinite, stoppingToken);
     }
 }
