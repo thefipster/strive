@@ -21,6 +21,8 @@ public class SimpleContext : IDisposable
 
     public ILiteCollection<T> GetCollection<T>() => _database.GetCollection<T>(typeof(T).Name);
 
+    public void Rebuild() => _database.Rebuild();
+
     public void Dispose() => _database.Dispose();
 
     private static DirectoryInfo ValidateDirectoryPath(string filepath)

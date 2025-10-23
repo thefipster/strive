@@ -1,6 +1,14 @@
 <MudAppBar Elevation="1">
     <MudIcon Class="ml-3" Icon="@Icons.Material.Outlined.GpsFixed" Color="Color.Inherit"/>
-    <MudText Typo="Typo.h5" Class="ml-7">Strive</MudText>
+    <MudLink Style="text-decoration: none;" Color="Color.Inherit" Href="/">
+        <MudText Typo="Typo.h5" Class="ml-7">Strive</MudText>
+    </MudLink>
+    <MudSpacer />
+    <MudStack Row="true" Spacing="5">
+        <MudText>Pending: @_queueCount</MudText>
+        <MudText>Active: @_queueRunners</MudText>
+        <MudText>Rate: @_queueRate</MudText>
+    </MudStack>
     <MudSpacer/>
     <NavMenu />
 </MudAppBar>

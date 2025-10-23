@@ -16,5 +16,6 @@ public static class ApplicationServices
     public static void UseApplication(this WebApplication app)
     {
         app.MapHub<HelloWorldHub>($"/hubs/{HelloWorldHub.HubName}");
+        app.MapHub<QueueHub>($"/hubs/{QueueHub.HubName}");
     }
 }

@@ -22,7 +22,7 @@ public class ThreadSafeSignalQueue(ISignalQueue component) : ISignalQueue
         }
     }
 
-    public async Task<JobEntity?> DequeueAsync(CancellationToken ct = default)
+    public async Task<JobDetails?> DequeueAsync(CancellationToken ct = default)
     {
         await _sem.WaitAsync(ct);
         try

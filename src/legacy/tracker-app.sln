@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.App", "src\TheFipster.ActivityAggregator.App\TheFipster.ActivityAggregator.App.csproj", "{2B22DF1B-5E7C-45E6-9B02-A52D1FF98C44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheFipster.ActivityAggregator.App", "TheFipster.ActivityAggregator.App\TheFipster.ActivityAggregator.App.csproj", "{2B22DF1B-5E7C-45E6-9B02-A52D1FF98C44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

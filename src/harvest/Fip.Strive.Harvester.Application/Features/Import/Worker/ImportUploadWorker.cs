@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Fip.Strive.Core.Domain.Exceptions;
 using Fip.Strive.Core.Domain.Extensions;
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Exceptions;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
@@ -17,7 +17,7 @@ public class ImportUploadWorker(IZipIndexer indexer, IOptions<ImportConfig> conf
 {
     public SignalTypes Type => SignalTypes.UploadSignal;
 
-    public async Task ProcessAsync(JobEntity job, CancellationToken ct)
+    public async Task ProcessAsync(JobDetails job, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(job.Payload))
             throw new InvalidJobException(job, "Payload is null or empty.");

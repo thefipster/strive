@@ -1,0 +1,100 @@
+@page "/queue"
+@using Fip.Strive.Harvester.Application.Core.Queue.Models
+
+<MudStack Row="true" Justify="Justify.SpaceBetween">
+    <MudText Typo="Typo.h1">Queue</MudText>
+    @if (_isRunning)
+    {
+        <MudIconButton Icon="@Icons.Material.Filled.Pause" Color="Color.Primary" OnClick="@OnPauseRequested"/>
+    }
+    else
+    {
+        <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Primary" OnClick="@OnResumeRequested"/>
+    }
+</MudStack>
+<MudGrid>
+    <MudItem xs="4">
+        <MudTable T="JobDetails" Context="job" ServerData="@OnUpcommingRequested">
+            <ToolBarContent>
+
+                <MudText Typo="Typo.h2">Available Jobs</MudText>
+
+
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Signalled</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Id</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
+                <MudTd DataLabel="Created">@job.CreatedAt</MudTd>
+                <MudTd DataLabel="Id">@job.Id</MudTd>
+                <MudTd DataLabel="Type">@job.Type</MudTd>
+                <MudTd DataLabel="Status">@job.Status</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+    <MudItem xs="4">
+        <MudTable T="JobDetails" Context="job" ServerData="@OnSucceededRequested">
+            <ToolBarContent>
+                <MudText Typo="Typo.h2">Succeeded Jobs</MudText>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Signalled</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Id</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
+                <MudTd DataLabel="Created">@job.CreatedAt</MudTd>
+                <MudTd DataLabel="Id">@job.Id</MudTd>
+                <MudTd DataLabel="Type">@job.Type</MudTd>
+                <MudTd DataLabel="Status">@job.Status</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+    <MudItem xs="4">
+        <MudTable T="JobDetails" Context="job" ServerData="@OnFailedRequested">
+            <ToolBarContent>
+                <MudText Typo="Typo.h2">Failed Jobs</MudText>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>Signalled</MudTh>
+                <MudTh>Created</MudTh>
+                <MudTh>Id</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Status</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
+                <MudTd DataLabel="Created">@job.CreatedAt</MudTd>
+                <MudTd DataLabel="Id">@job.Id</MudTd>
+                <MudTd DataLabel="Type">@job.Type</MudTd>
+                <MudTd DataLabel="Status">@job.Status</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No matching records found</MudText>
+            </NoRecordsContent>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+</MudGrid>

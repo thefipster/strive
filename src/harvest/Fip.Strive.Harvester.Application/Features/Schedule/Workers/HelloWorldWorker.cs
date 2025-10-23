@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Fip.Strive.Harvester.Application.Core.Hubs;
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Exceptions;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
@@ -15,7 +15,7 @@ public class HelloWorldWorker(ILogger<HelloWorldWorker> logger, IHubContext<Hell
 {
     public SignalTypes Type => SignalTypes.HelloWorldSignal;
 
-    public async Task ProcessAsync(JobEntity job, CancellationToken ct)
+    public async Task ProcessAsync(JobDetails job, CancellationToken ct)
     {
         if (string.IsNullOrEmpty(job.Payload))
             throw new InvalidJobException(job, "Payload is null or empty.");

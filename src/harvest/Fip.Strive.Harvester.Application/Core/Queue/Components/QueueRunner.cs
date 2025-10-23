@@ -1,4 +1,5 @@
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -57,7 +58,7 @@ public class QueueRunner(
         await Task.Delay(_processingDelay, ct);
     }
 
-    private async Task RunJobAsync(CancellationToken ct, JobEntity job)
+    private async Task RunJobAsync(CancellationToken ct, JobDetails job)
     {
         metrics.IncrementActiveWorkers();
         await queue.MarkAsStartedAsync(job.Id, ct);
@@ -68,7 +69,7 @@ public class QueueRunner(
         metrics.RecordCompletion();
     }
 
-    private async Task ExecuteWorkerAsync(JobEntity job, CancellationToken ct)
+    private async Task ExecuteWorkerAsync(JobDetails job, CancellationToken ct)
     {
         using var scope = scopeFactory.CreateScope();
 

@@ -2,7 +2,7 @@ using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Models;
 
-public class JobEntity
+public class JobDetails
 {
     public Guid Id { get; set; }
     public SignalTypes Type { get; set; }
