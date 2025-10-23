@@ -17,6 +17,6 @@ app.UseHttps();
 app.MapStaticAssets();
 app.UseAntiforgery();
 app.UseFrontend();
-app.UseMonitoring();
 app.UseApplication();
+app.UseHealthChecks();
 app.Run();

@@ -24,7 +24,7 @@ public static class Registration
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
-        
+
         services.AddSingleton<QueuedHostedService>();
         services.AddHostedService(sp => sp.GetRequiredService<QueuedHostedService>());
 
@@ -37,5 +37,7 @@ public static class Registration
         services.AddScoped<IJobReader, LiteDbJobReader>();
 
         services.AddScoped<IJobDeleter, LiteDbJobDeleter>();
+
+        services.AddHealthChecks().AddCheck<QueueHealthCheck>("queue");
     }
 }
