@@ -29,6 +29,8 @@ public static class Registration
 
         services.AddSingleton<ISignalQueue, LiteDbSignalQueue>();
 
+        services.AddSingleton<IQueueWorkerFactory, QueueWorkerFactory>();
+
         services.AddSingleton<IJobControl, LiteDbJobControl>();
 
         services.AddScoped<IJobReader, LiteDbJobReader>();
