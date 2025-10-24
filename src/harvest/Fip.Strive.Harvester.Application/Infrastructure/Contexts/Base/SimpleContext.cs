@@ -20,6 +20,8 @@ public class SimpleContext : IDisposable
     }
 
     public ILiteCollection<T> GetCollection<T>() => _database.GetCollection<T>(typeof(T).Name);
+    
+    public IEnumerable<string> GetCollectionNames() => _database.GetCollectionNames();
 
     public void Rebuild() => _database.Rebuild();
 

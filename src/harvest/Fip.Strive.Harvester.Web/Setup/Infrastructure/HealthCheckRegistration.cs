@@ -8,10 +8,17 @@ public static class HealthCheckRegistration
 {
     public static void UseHealthChecks(this WebApplication app)
     {
-        app.MapHealthChecks(
-            "/health",
-            new HealthCheckOptions { ResponseWriter = WriteJsonHealthResponse }
-        );
+        app.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            Predicate = _ => true,
+            ResponseWriter = WriteJsonHealthResponse
+        });
+
+        app.MapHealthChecks("/health/queue", new HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("queue"),
+            ResponseWriter = WriteJsonHealthResponse
+        });
     }
 
     private static Task WriteJsonHealthResponse(HttpContext context, HealthReport report)

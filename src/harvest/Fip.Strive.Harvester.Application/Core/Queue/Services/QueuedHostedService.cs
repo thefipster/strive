@@ -74,9 +74,10 @@ public class QueuedHostedService(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("QueuedHostedService initialized.");
-
+        
         StartWork();
-        // Keep running until the host shuts down
         await Task.Delay(Timeout.Infinite, stoppingToken);
+        
+        logger.LogInformation("QueuedHostedService finished.");
     }
 }

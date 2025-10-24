@@ -1,6 +1,7 @@
 using Fip.Strive.Harvester.Application.Core.Queue.Components;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
+using Fip.Strive.Harvester.Application.Core.Queue.Health;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Services;
@@ -38,6 +39,7 @@ public static class Registration
 
         services.AddScoped<IJobDeleter, LiteDbJobDeleter>();
 
-        services.AddHealthChecks().AddCheck<QueueHealthCheck>("queue");
+        services.AddHealthChecks().AddCheck<WorkerHealthCheck>("Queue_Workers", tags: new[] { "queue", "workers" });
+        services.AddHealthChecks().AddCheck<JobHealthCheck>("Queue_Storage", tags: new[] { "queue", "storage" });
     }
 }
