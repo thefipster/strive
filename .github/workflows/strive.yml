@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: strive-build
 
 on:
   push:
@@ -20,8 +20,10 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
-    - name: Restore dependencies
+    - name: Restore
       run: dotnet restore strive.sln 
     - name: Build
       run: dotnet build --no-restore strive.sln
+    - name: Test
+      run: dotnet test strive.sln 
 
