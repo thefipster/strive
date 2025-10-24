@@ -1,7 +1,7 @@
-using Fip.Strive.Harvester.Application.Core.Queue.Enums;
-using Fip.Strive.Harvester.Application.Core.Queue.Models;
+using System.Text.Json;
+using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 
-namespace Fip.Strive.Harvester.Application.Features.Upload.Signals;
+namespace Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 
 public class UploadSignal() : Signal(SignalTypes.UploadSignal)
 {

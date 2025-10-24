@@ -1,3 +1,4 @@
+using Fip.Strive.Harvester.Application.Infrastructure.Configs;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ public static class Registration
         IConfiguration configuration
     )
     {
+        services.Configure<IndexConfig>(configuration.GetSection(IndexConfig.ConfigSectionName));
+
         services.AddSingleton<IndexContext>();
         services.AddSingleton<SignalQueueContext>();
     }

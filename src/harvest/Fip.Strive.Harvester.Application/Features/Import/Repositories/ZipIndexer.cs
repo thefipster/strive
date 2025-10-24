@@ -1,13 +1,13 @@
-using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Models;
+using Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using LiteDB;
 
-namespace Fip.Strive.Harvester.Application.Features.Import.Components;
+namespace Fip.Strive.Harvester.Application.Features.Import.Repositories;
 
 public class ZipIndexer : IZipIndexer
 {
-    private ILiteCollection<ZipIndex> _collection;
+    private readonly ILiteCollection<ZipIndex> _collection;
 
     public ZipIndexer(IndexContext context)
     {

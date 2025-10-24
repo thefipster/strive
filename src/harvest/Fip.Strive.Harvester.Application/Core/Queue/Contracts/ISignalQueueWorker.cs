@@ -1,4 +1,5 @@
-using Fip.Strive.Harvester.Application.Core.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Contracts;

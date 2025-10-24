@@ -1,10 +1,11 @@
 using System.Text.Json;
+using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Hubs;
 using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
-using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Exceptions;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
-using Fip.Strive.Harvester.Application.Features.Schedule.Signals;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 

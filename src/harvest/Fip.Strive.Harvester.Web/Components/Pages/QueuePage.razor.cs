@@ -1,4 +1,5 @@
-using Fip.Strive.Harvester.Application.Core.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Services;
@@ -36,7 +37,7 @@ public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
 
     private Task<TableData<JobDetails>> OnFailedRequested(TableState state, CancellationToken ct)
     {
-        var result = jobReader.GetJobs(JobStatus.Running, state.Page, state.PageSize);
+        var result = jobReader.GetFailedJobs(state.Page, state.PageSize);
         return Task.FromResult(
             new TableData<JobDetails> { Items = result.Items, TotalItems = result.Total }
         );

@@ -1,6 +1,6 @@
 using Fip.Strive.Harvester.Application.Features.Import.Models;
 
-namespace Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
+namespace Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
 
 public interface IZipIndexer
 {

@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Domain.Schemas.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -8,7 +9,8 @@ public class JobHealthCheck(SignalQueueContext queueContext) : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         try
         {
