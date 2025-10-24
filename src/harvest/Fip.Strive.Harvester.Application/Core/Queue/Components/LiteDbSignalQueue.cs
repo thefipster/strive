@@ -30,7 +30,7 @@ public class LiteDbSignalQueue : ISignalQueue, IDisposable
     {
         var job = signal.ToJobEntity();
 
-        if (_config.Value.QueueCountLimit < _queue.Count)
+        if (_config.Value.QueueCountLimit > _queue.Count)
         {
             job.Status = JobStatus.Pending;
             _queue.Enqueue(job);
