@@ -42,6 +42,9 @@ public static class Registration
     )
         where TJob : IJob
     {
+        if (intervalSeconds <= 0)
+            return;
+
         var jobName = typeof(TJob).Name;
         var jobKey = new JobKey(jobName);
         quartz.AddJob<TJob>(opts => opts.WithIdentity(jobKey));

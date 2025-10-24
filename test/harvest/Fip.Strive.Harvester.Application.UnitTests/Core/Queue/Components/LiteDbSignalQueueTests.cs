@@ -1,7 +1,9 @@
 using AwesomeAssertions;
+using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Queue;
 using Fip.Strive.Harvester.Application.Core.Queue.Components;
-using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Microsoft.Extensions.Options;
@@ -16,11 +18,7 @@ public class LiteDbSignalQueueTests
     {
         // Arrange
         var jobControl = Substitute.For<IJobControl>();
-        var config = Options.Create(new QueueConfig
-        {
-            QueueCountLimit = 100,
-            QueueBatchSize = 10
-        });
+        var config = Options.Create(new QueueConfig { QueueCountLimit = 100, QueueBatchSize = 10 });
         var queue = new LiteDbSignalQueue(jobControl, config);
         var signal = new Signal(SignalTypes.VoidSignal);
 
@@ -37,11 +35,7 @@ public class LiteDbSignalQueueTests
     {
         // Arrange
         var jobControl = Substitute.For<IJobControl>();
-        var config = Options.Create(new QueueConfig
-        {
-            QueueCountLimit = 100,
-            QueueBatchSize = 10
-        });
+        var config = Options.Create(new QueueConfig { QueueCountLimit = 100, QueueBatchSize = 10 });
         var queue = new LiteDbSignalQueue(jobControl, config);
         var signal = new Signal(SignalTypes.VoidSignal);
 
@@ -60,20 +54,26 @@ public class LiteDbSignalQueueTests
     {
         // Arrange
         var jobControl = Substitute.For<IJobControl>();
-        var config = Options.Create(new QueueConfig
-        {
-            QueueCountLimit = 100,
-            QueueBatchSize = 10
-        });
-        
+        var config = Options.Create(new QueueConfig { QueueCountLimit = 100, QueueBatchSize = 10 });
+
         var storedJobs = new List<JobDetails>
         {
-            new JobDetails { Id = Guid.NewGuid(), Type = SignalTypes.VoidSignal, Status = JobStatus.Stored },
-            new JobDetails { Id = Guid.NewGuid(), Type = SignalTypes.VoidSignal, Status = JobStatus.Stored }
+            new JobDetails
+            {
+                Id = Guid.NewGuid(),
+                Type = SignalTypes.VoidSignal,
+                Status = JobStatus.Stored,
+            },
+            new JobDetails
+            {
+                Id = Guid.NewGuid(),
+                Type = SignalTypes.VoidSignal,
+                Status = JobStatus.Stored,
+            },
         };
-        
+
         jobControl.GetStored(10).Returns(storedJobs);
-        
+
         var queue = new LiteDbSignalQueue(jobControl, config);
 
         // Act

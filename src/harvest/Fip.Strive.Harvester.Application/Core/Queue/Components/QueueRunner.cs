@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Domain.Schemas.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
@@ -77,7 +78,9 @@ public class QueueRunner(
             .ServiceProvider.GetRequiredService<IEnumerable<ISignalQueueWorker>>()
             .FirstOrDefault(w => w.Type == job.Type);
 
-        if (worker != null)
-            await worker.ProcessAsync(job, ct);
+        if (worker == null)
+            throw new InvalidOperationException($"No worker found for type {job.Type}");
+
+        await worker.ProcessAsync(job, ct);
     }
 }

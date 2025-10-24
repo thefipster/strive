@@ -1,6 +1,6 @@
-using Fip.Strive.Harvester.Application.Core.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 
-namespace Fip.Strive.Harvester.Application.Core.Queue.Models;
+namespace Fip.Strive.Core.Domain.Schemas.Queue.Models;
 
 public class JobDetails
 {

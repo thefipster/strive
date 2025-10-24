@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
+using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
-using Fip.Strive.Harvester.Application.Core.Queue.Enums;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Microsoft.Extensions.Options;

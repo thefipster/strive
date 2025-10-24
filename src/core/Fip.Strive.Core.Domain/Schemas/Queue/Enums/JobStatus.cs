@@ -1,4 +1,4 @@
-namespace Fip.Strive.Harvester.Application.Core.Queue.Enums;
+namespace Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 
 public enum JobStatus
 {
