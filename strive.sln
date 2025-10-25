@@ -42,6 +42,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Tests.UnitT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Domain.UnitTests", "test\core\Fip.Strive.Core.Domain.UnitTests\Fip.Strive.Core.Domain.UnitTests.csproj", "{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{C4FD9DCD-9908-4582-87F3-F0148D4312D9}"
+	ProjectSection(SolutionItems) = preProject
+		src\harvest\Directory.Build.props = src\harvest\Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,5 +101,6 @@ Global
 		{D8ABB662-711D-4D09-A55C-91752495B6D5} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{8FEA1A12-0AFE-42D3-A4C1-94AA2AA75C04} = {D8ABB662-711D-4D09-A55C-91752495B6D5}
 		{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD} = {D8ABB662-711D-4D09-A55C-91752495B6D5}
+		{C4FD9DCD-9908-4582-87F3-F0148D4312D9} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
 	EndGlobalSection
 EndGlobal

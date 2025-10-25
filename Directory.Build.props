@@ -5,6 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <Authors>TheFipster</Authors>
-    <RepositoryUrl>https://github.com/thefipster/activity-aggregator</RepositoryUrl>
+    <RepositoryUrl>https://github.com/thefipster/strive</RepositoryUrl>
   </PropertyGroup>
 </Project>

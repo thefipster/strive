@@ -18,7 +18,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\Queue\Enums\" />
-  </ItemGroup>
 </Project>
