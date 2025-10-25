@@ -485,3 +485,4 @@ $RECYCLE.BIN/
 
 # Test data
 test/data
+coverage-report/
