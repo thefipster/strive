@@ -17,8 +17,6 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.Configure<QueueConfig>(configuration.GetSection(QueueConfig.ConfigSectionName));
-
         services.Scan(scan =>
             scan.FromAssembliesOf(typeof(ISignalQueueWorker))
                 .AddClasses(classes => classes.AssignableTo<ISignalQueueWorker>())
@@ -39,7 +37,11 @@ public static class Registration
 
         services.AddScoped<IJobDeleter, LiteDbJobDeleter>();
 
-        services.AddHealthChecks().AddCheck<WorkerHealthCheck>("Queue_Workers", tags: new[] { "queue", "workers" });
-        services.AddHealthChecks().AddCheck<JobHealthCheck>("Queue_Storage", tags: new[] { "queue", "storage" });
+        services
+            .AddHealthChecks()
+            .AddCheck<WorkerHealthCheck>("Queue_Workers", tags: new[] { "queue", "workers" });
+        services
+            .AddHealthChecks()
+            .AddCheck<JobHealthCheck>("Queue_Storage", tags: new[] { "queue", "storage" });
     }
 }

@@ -12,13 +12,7 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        var schedulerSection = configuration.GetSection(ScheduleConfig.ConfigSectionName);
-
-        var schedulerConfig = new ScheduleConfig();
-        schedulerSection.Bind(schedulerConfig);
-
-        services.Configure<ScheduleConfig>(schedulerSection);
-
+        var schedulerConfig = GetSchedulerConfig(configuration);
         services.AddQuartzScheduler(schedulerConfig);
     }
 
@@ -56,5 +50,13 @@ public static class Registration
                 .WithIdentity(triggerName)
                 .WithSimpleSchedule(x => x.WithInterval(interval).RepeatForever())
         );
+    }
+
+    private static ScheduleConfig GetSchedulerConfig(IConfiguration configuration)
+    {
+        var schedulerConfig = new ScheduleConfig();
+        var schedulerSection = configuration.GetSection(schedulerConfig.ConfigSectionName);
+        schedulerSection.Bind(schedulerConfig);
+        return schedulerConfig;
     }
 }

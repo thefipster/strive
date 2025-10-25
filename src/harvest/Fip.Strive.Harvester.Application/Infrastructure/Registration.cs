@@ -12,8 +12,6 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.Configure<IndexConfig>(configuration.GetSection(IndexConfig.ConfigSectionName));
-
         services.AddSingleton<IndexContext>();
         services.AddSingleton<SignalQueueContext>();
     }

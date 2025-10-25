@@ -20,7 +20,7 @@ public class SimpleContext : IDisposable
     }
 
     public ILiteCollection<T> GetCollection<T>() => _database.GetCollection<T>(typeof(T).Name);
-    
+
     public IEnumerable<string> GetCollectionNames() => _database.GetCollectionNames();
 
     public void Rebuild() => _database.Rebuild();
@@ -49,7 +49,6 @@ public class SimpleContext : IDisposable
         catch (Exception e)
         {
             throw new ConfigurationException(
-                QueueConfig.ConfigSectionName,
                 nameof(QueueConfig.DatabasePath),
                 $"Could not create directory {directory.FullName} for signal queue database.",
                 e
