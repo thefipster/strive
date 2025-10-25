@@ -5,7 +5,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Services;
 
-public class ExpansionService(IUnzipper unzipper, IScanner scanner) : IExpansionService
+public class ExpansionService(IUnzipper unzipper, IZipEnumerator scanner) : IExpansionService
 {
     public async Task UnpackZipFileAsync(ImportSignal signal, CancellationToken ct)
     {

@@ -57,6 +57,14 @@ public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
         );
     }
 
+    private Task<TableData<JobDetails>> OnRunningRequested(TableState state, CancellationToken ct)
+    {
+        var result = jobReader.GetJobs(JobStatus.Running, state.Page, state.PageSize);
+        return Task.FromResult(
+            new TableData<JobDetails> { Items = result.Items, TotalItems = result.Total }
+        );
+    }
+
     private async Task OnPauseRequested()
     {
         await queue.StopWorkAsync();

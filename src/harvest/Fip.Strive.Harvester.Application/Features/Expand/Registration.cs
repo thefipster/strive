@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Component;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Decorators;
@@ -5,6 +6,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Repositories;
 using Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Services;
 using Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
+using Fip.Strive.Harvester.Application.Infrastructure.Repositories.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,12 +23,13 @@ public static class Registration
 
         services.AddScoped<IUnzipper, Unzipper>();
 
-        services.AddScoped<IScanner, Scanner>();
+        services.AddScoped<IZipEnumerator, ZipEnumerator>();
 
-        services.AddScoped<IChecker, Checker>();
-        services.Decorate<IChecker, CheckerSignalled>();
+        services.AddScoped<IFileHashGate, FileHashGate>();
+        services.Decorate<IFileHashGate, FileHashGateSignalled>();
 
         services.AddScoped<IFileIndexer, FileIndexer>();
+        services.AddScoped<ISpecificationReader<FileIndex>, FilePager>();
 
         services.AddScoped<IExpansionService, ExpansionService>();
     }

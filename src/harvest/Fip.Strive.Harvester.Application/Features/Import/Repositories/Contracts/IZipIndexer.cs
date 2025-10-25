@@ -4,6 +4,6 @@ namespace Fip.Strive.Harvester.Application.Features.Import.Repositories.Contract
 
 public interface IZipIndexer
 {
-    ZipIndex? Get(string hash);
-    void Set(ZipIndex index);
+    ZipIndex? Find(string hash);
+    void Upsert(ZipIndex index);
 }

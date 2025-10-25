@@ -18,7 +18,7 @@ public class ZipInventory(
     {
         var file = new FileInfo(signal.Filepath);
         var hash = await file.HashXx3Async(ct);
-        var index = indexer.Get(hash);
+        var index = indexer.Find(hash);
 
         if (FileIsIndexed(index, file))
             return RemoveAlreadyKnownFile(signal, file.Name, index!);
@@ -27,7 +27,7 @@ public class ZipInventory(
             index = ImportNewFile(signal, hash);
 
         index.AddFile(file.Name);
-        indexer.Set(index);
+        indexer.Upsert(index);
 
         return index;
     }

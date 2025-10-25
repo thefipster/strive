@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Component.Decorators;
 
-public class CheckerSignalled(
-    IChecker component,
+public class FileHashGateSignalled(
+    IFileHashGate component,
     ISignalQueue queue,
-    ILogger<CheckerSignalled> logger
-) : IChecker
+    ILogger<FileHashGateSignalled> logger
+) : IFileHashGate
 {
     public async Task<FileIndex> CheckFileAsync(
         WorkItem work,

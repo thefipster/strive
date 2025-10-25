@@ -3,7 +3,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
 
-public interface IChecker
+public interface IFileHashGate
 {
     Task<FileIndex> CheckFileAsync(WorkItem work, string filepath, CancellationToken ct);
 }

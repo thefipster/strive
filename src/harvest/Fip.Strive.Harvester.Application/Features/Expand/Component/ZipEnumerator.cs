@@ -3,7 +3,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Component;
 
-public class Scanner(IChecker checker) : IScanner
+public class ZipEnumerator(IFileHashGate checker) : IZipEnumerator
 {
     public async Task ExploreFolderAsync(WorkItem work, CancellationToken ct)
     {

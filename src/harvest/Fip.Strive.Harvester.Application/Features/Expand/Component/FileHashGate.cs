@@ -6,7 +6,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Component;
 
-public class Checker(IFileIndexer indexer) : IChecker
+public class FileHashGate(IFileIndexer indexer) : IFileHashGate
 {
     public async Task<FileIndex> CheckFileAsync(
         WorkItem work,

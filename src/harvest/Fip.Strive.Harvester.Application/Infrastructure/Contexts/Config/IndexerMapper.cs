@@ -11,6 +11,7 @@ public static class IndexerMapper
         {
             var mapper = BsonMapper.Global;
             mapper.Entity<ZipIndex>().Id(x => x.Hash);
+            mapper.Entity<FileIndex>().Id(x => x.Hash);
 
             return mapper;
         }

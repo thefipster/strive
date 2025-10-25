@@ -28,11 +28,6 @@ public class WorkItem
 
     public FileSignal ToSignal(string filepath)
     {
-        return new FileSignal
-        {
-            Id = Signal.Id,
-            ReferenceId = Signal.ReferenceId,
-            Filepath = filepath,
-        };
+        return new FileSignal { ReferenceId = Signal.ReferenceId, Filepath = filepath };
     }
 }
