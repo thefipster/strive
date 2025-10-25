@@ -39,9 +39,7 @@ public static class Registration
 
         services
             .AddHealthChecks()
-            .AddCheck<WorkerHealthCheck>("Queue_Workers", tags: new[] { "queue", "workers" });
-        services
-            .AddHealthChecks()
+            .AddCheck<WorkerHealthCheck>("Queue_Workers", tags: new[] { "queue", "workers" })
             .AddCheck<JobHealthCheck>("Queue_Storage", tags: new[] { "queue", "storage" });
     }
 }
