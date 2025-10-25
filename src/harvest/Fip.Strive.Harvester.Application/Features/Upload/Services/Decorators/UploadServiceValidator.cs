@@ -32,11 +32,7 @@ public class UploadServiceValidator(IUploadService component, IOptions<UploadCon
         var uploadDir = config.Value.Path;
 
         if (string.IsNullOrEmpty(uploadDir))
-            throw new ConfigurationException(
-                UploadConfig.ConfigSectionName,
-                nameof(config.Value.Path),
-                "Is null or empty."
-            );
+            throw new ConfigurationException(nameof(config.Value.Path), "Is null or empty.");
 
         try
         {

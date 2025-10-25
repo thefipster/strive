@@ -18,8 +18,6 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.Configure<ImportConfig>(configuration.GetSection(ImportConfig.ConfigSectionName));
-
         services.AddScoped<IZipIndexer, ZipIndexer>();
 
         services.AddScoped<IZipFileAccess, ZipFileAccess>();

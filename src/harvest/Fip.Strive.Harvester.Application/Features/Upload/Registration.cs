@@ -13,8 +13,6 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.Configure<UploadConfig>(configuration.GetSection(UploadConfig.ConfigSectionName));
-
         services.AddTransient<IUploadService, UploadService>();
         services.Decorate<IUploadService, UploadServiceValidator>();
         services.Decorate<IUploadService, UploadServiceSignaller>();
