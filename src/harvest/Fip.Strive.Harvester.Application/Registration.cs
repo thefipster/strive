@@ -1,3 +1,4 @@
+using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
 using Fip.Strive.Harvester.Application.Features.Import;
@@ -16,6 +17,8 @@ public static class Registration
         IConfiguration configuration
     )
     {
+        services.AddConfigs(configuration);
+
         // Core
         services.AddProxyFeature(configuration);
         services.AddQueueFeature(configuration);
