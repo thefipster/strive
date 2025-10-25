@@ -1,4 +1,4 @@
-using Fip.Strive.Harvester.Application.Features.Import.Models;
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using LiteDB;

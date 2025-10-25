@@ -7,10 +7,11 @@ public interface IUnzipper
     /// <summary>
     /// Extracts the contents of a zip file into the target directory.
     /// </summary>
-    /// <param name="zipFilePath">The full path to the zip file.</param>
+    /// <param name="work">State of the current work item.</param>
     /// <param name="overwrite">If files in the output directory should be overwritten.</param>
+    /// <param name="ct">The cancellation token to stop the operation.</param>
     /// <returns>
-    /// The base path of the extracted files.
+    /// Updated state containing the output directory.
     /// </returns>
-    string Extract(string zipFilePath, bool overwrite = false);
+    WorkItem Extract(WorkItem work, bool overwrite = false, CancellationToken ct = default);
 }

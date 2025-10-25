@@ -1,15 +1,17 @@
 using System.IO.Compression;
+using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
+using Fip.Strive.Harvester.Application.Features.Expand.Models;
 using Microsoft.Extensions.Options;
 
-namespace Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
+namespace Fip.Strive.Harvester.Application.Features.Expand.Component;
 
 public class Unzipper(IOptions<ExpandConfig> config) : IUnzipper
 {
     private string TargetRootPath => config.Value.Path;
 
-    public string Extract(string zipFilePath, bool overwrite = false)
+    public WorkItem Extract(WorkItem work, bool overwrite = false, CancellationToken ct = default)
     {
-        var file = new FileInfo(zipFilePath);
+        var file = new FileInfo(work.ZipPath);
         var outputName = file.Name.Replace(file.Extension, string.Empty);
         var outputPath = Path.Combine(TargetRootPath, outputName);
 
@@ -26,7 +28,8 @@ public class Unzipper(IOptions<ExpandConfig> config) : IUnzipper
             );
         }
 
-        ZipFile.ExtractToDirectory(zipFilePath, outputPath, overwrite);
-        return outputPath;
+        ZipFile.ExtractToDirectory(work.ZipPath, outputPath, overwrite);
+        work.OutputPath = outputPath;
+        return work;
     }
 }
