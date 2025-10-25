@@ -9,7 +9,7 @@ public class Scanner(IChecker checker) : IScanner
     {
         if (work.OutputPath == null)
             throw new InvalidOperationException(
-                $"Can't explore a null output path for zip file {work.ZipPath}"
+                $"Can't explore a null output path for zip file {work.Signal.Filepath}"
             );
 
         var files = Directory.EnumerateFiles(work.OutputPath, "*", SearchOption.AllDirectories);

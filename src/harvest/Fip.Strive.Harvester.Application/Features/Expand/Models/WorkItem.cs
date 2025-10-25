@@ -5,20 +5,13 @@ namespace Fip.Strive.Harvester.Application.Features.Expand.Models;
 
 public class WorkItem
 {
-    public Guid Id { get; set; }
-    public Guid ReferenceId { get; set; }
-    public required string ZipPath { get; set; }
+    public required ImportSignal Signal { get; init; }
     public string? OutputPath { get; set; }
     public string? Hash { get; set; }
 
     public static WorkItem FromSignal(ImportSignal signal)
     {
-        return new WorkItem
-        {
-            Id = signal.Id,
-            ReferenceId = signal.ReferenceId,
-            ZipPath = signal.Filepath,
-        };
+        return new WorkItem { Signal = signal };
     }
 
     public FileIndex ToIndex(string hash)
@@ -26,9 +19,10 @@ public class WorkItem
         Hash = hash;
         return new FileIndex
         {
-            Hash = hash,
-            ReferenceId = ReferenceId,
-            SignalId = Id,
+            Hash = Hash,
+            ReferenceId = Signal.ReferenceId,
+            SignalledAt = Signal.EmittedAt,
+            SignalId = Signal.Id,
         };
     }
 
@@ -36,8 +30,8 @@ public class WorkItem
     {
         return new FileSignal
         {
-            Id = Id,
-            ReferenceId = ReferenceId,
+            Id = Signal.Id,
+            ReferenceId = Signal.ReferenceId,
             Filepath = filepath,
         };
     }

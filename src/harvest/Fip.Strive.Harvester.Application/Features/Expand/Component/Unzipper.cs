@@ -11,7 +11,7 @@ public class Unzipper(IOptions<ExpandConfig> config) : IUnzipper
 
     public WorkItem Extract(WorkItem work, bool overwrite = false, CancellationToken ct = default)
     {
-        var file = new FileInfo(work.ZipPath);
+        var file = new FileInfo(work.Signal.Filepath);
         var outputName = file.Name.Replace(file.Extension, string.Empty);
         var outputPath = Path.Combine(TargetRootPath, outputName);
 
@@ -28,7 +28,7 @@ public class Unzipper(IOptions<ExpandConfig> config) : IUnzipper
             );
         }
 
-        ZipFile.ExtractToDirectory(work.ZipPath, outputPath, overwrite);
+        ZipFile.ExtractToDirectory(work.Signal.Filepath, outputPath, overwrite);
         work.OutputPath = outputPath;
         return work;
     }

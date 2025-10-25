@@ -3,6 +3,7 @@ using Fip.Strive.Core.Domain.Schemas.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Services;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
@@ -10,6 +11,19 @@ namespace Fip.Strive.Harvester.Web.Components.Pages;
 public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
 {
     private bool _isRunning = true;
+
+    private bool _dialogVisible;
+    private string _selectedError = string.Empty;
+    private string _selectedPayload = string.Empty;
+
+    private readonly DialogOptions _dialogOptions = new()
+    {
+        FullWidth = true,
+        MaxWidth = MaxWidth.Large,
+    };
+
+    [Inject]
+    public required IDialogService DialogService { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -53,5 +67,13 @@ public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
     {
         queue.StartWork();
         _isRunning = true;
+    }
+
+    private void OnOpenErrorDialog(JobDetails job)
+    {
+        _selectedError = job.Error ?? string.Empty;
+        _selectedPayload = job.Payload ?? string.Empty;
+        _dialogVisible = true;
+        StateHasChanged();
     }
 }

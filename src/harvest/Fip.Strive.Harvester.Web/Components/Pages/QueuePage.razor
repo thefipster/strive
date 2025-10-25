@@ -88,7 +88,10 @@
                 <MudTd DataLabel="Created">@job.CreatedAt</MudTd>
                 <MudTd DataLabel="Id">@job.Id</MudTd>
                 <MudTd DataLabel="Type">@job.Type</MudTd>
-                <MudTd DataLabel="Status">@job.Status</MudTd>
+                <MudTd DataLabel="Status">
+                    @job.Status
+                    <MudIconButton Icon="@Icons.Material.Rounded.Info" OnClick="@(() => OnOpenErrorDialog(job))" />
+                </MudTd>
             </RowTemplate>
             <NoRecordsContent>
                 <MudText>No matching records found</MudText>
@@ -99,3 +102,18 @@
         </MudTable>
     </MudItem>
 </MudGrid>
+
+<MudDialog @bind-Visible="_dialogVisible" Options="_dialogOptions" >
+    <TitleContent>
+        <MudText Typo="Typo.h6">Error Details</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.button" Inline="false">Stack Trace</MudText>
+        <MudText Class="pb-5">@_selectedError</MudText>
+        <MudText Typo="Typo.button" Inline="false">Payload</MudText>
+        <MudText>@_selectedPayload</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _dialogVisible = false)">Close</MudButton>
+    </DialogActions>
+</MudDialog>
