@@ -1,3 +1,4 @@
+using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,5 +12,7 @@ public static class Registration
     )
     {
         services.Configure<ExpandConfig>(configuration.GetSection(ExpandConfig.ConfigSectionName));
+
+        services.AddScoped<IUnzipper, Unzipper>();
     }
 }
