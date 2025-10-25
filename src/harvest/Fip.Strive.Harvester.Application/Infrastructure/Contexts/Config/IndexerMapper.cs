@@ -1,4 +1,4 @@
-using Fip.Strive.Harvester.Application.Features.Import.Models;
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using LiteDB;
 
 namespace Fip.Strive.Harvester.Application.Infrastructure.Contexts.Config;
@@ -11,6 +11,7 @@ public static class IndexerMapper
         {
             var mapper = BsonMapper.Global;
             mapper.Entity<ZipIndex>().Id(x => x.Hash);
+            mapper.Entity<FileIndex>().Id(x => x.Hash);
 
             return mapper;
         }

@@ -1,6 +1,7 @@
 using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
+using Fip.Strive.Harvester.Application.Features.Expand;
 using Fip.Strive.Harvester.Application.Features.Import;
 using Fip.Strive.Harvester.Application.Features.Schedule;
 using Fip.Strive.Harvester.Application.Features.Upload;
@@ -28,5 +29,6 @@ public static class Registration
         services.AddScheduleFeature(configuration);
         services.AddUploadFeature(configuration);
         services.AddImportFeature(configuration);
+        services.AddExpandFeature(configuration);
     }
 }
