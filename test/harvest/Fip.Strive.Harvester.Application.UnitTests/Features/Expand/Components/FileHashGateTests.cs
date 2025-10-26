@@ -26,7 +26,7 @@ public class FileHashGateTests
     public async Task CheckFileAsync_WhenIndexExists_ShouldAddFileToExistingIndexAndReturnIt()
     {
         // Arrange
-        var filepath = @"C:\temp\somefile.txt";
+        var filepath = "temp/somefile.txt";
         var filename = "somefile.txt";
         var hash = "abc123hash";
         var referenceId = Guid.NewGuid();
@@ -65,7 +65,7 @@ public class FileHashGateTests
     public async Task CheckFileAsync_WhenIndexDoesNotExist_ShouldCreateNewIndexAndReturnIt()
     {
         // Arrange
-        var filepath = @"C:\temp\newfile.txt";
+        var filepath = "temp/newfile.txt";
         var filename = "newfile.txt";
         var hash = "xyz789hash";
         var referenceId = Guid.NewGuid();
@@ -103,7 +103,7 @@ public class FileHashGateTests
     public async Task CheckFileAsync_ShouldHashFileWithCorrectPath()
     {
         // Arrange
-        var filepath = @"C:\temp\testfile.txt";
+        var filepath = "temp/testfile.txt";
         var hash = "hashvalue";
         var signal = new ImportSignal
         {
@@ -129,7 +129,7 @@ public class FileHashGateTests
     public async Task CheckFileAsync_ShouldExtractFilenameFromPath()
     {
         // Arrange
-        var filepath = @"C:\some\deep\directory\myfile.txt";
+        var filepath = "some/deep/directory/myfile.txt";
         var expectedFilename = "myfile.txt";
         var hash = "somehash";
         var signal = new ImportSignal

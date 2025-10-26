@@ -42,7 +42,7 @@ public class UnzipCoordinatorTests
     public void Expand_WhenDirectoryCreationFails_ThrowsInvalidOperationException()
     {
         // Arrange
-        var targetRoot = Path.Combine("C:", "target-root");
+        var targetRoot = Path.Combine("temp", "target-root");
         var options = Options.Create(new ExpandConfig { Path = targetRoot });
 
         var zipExtractor = Substitute.For<IZipExtractor>();
@@ -53,7 +53,7 @@ public class UnzipCoordinatorTests
 
         var unzipper = new UnzipCoordinator(options, zipExtractor, directoryService);
 
-        var zipPath = Path.Combine("C:", "zips", "archive.zip");
+        var zipPath = Path.Combine("temp", "zips", "archive.zip");
         var work = new WorkItem { Signal = new ImportSignal { Filepath = zipPath } };
 
         // Act
@@ -67,13 +67,13 @@ public class UnzipCoordinatorTests
     public void Expand_WhenExtractionFails_ThrowsInvalidOperationException()
     {
         // Arrange
-        var targetRoot = Path.Combine("C:", "target-root");
+        var targetRoot = Path.Combine("temp", "target-root");
         var options = Options.Create(new ExpandConfig { Path = targetRoot });
 
         var zipExtractor = Substitute.For<IZipExtractor>();
         var directoryService = Substitute.For<IDirectoryService>();
 
-        var zipPath = Path.Combine("C:", "zips", "archive.zip");
+        var zipPath = Path.Combine("temp", "zips", "archive.zip");
         var work = new WorkItem { Signal = new ImportSignal { Filepath = zipPath } };
 
         var expectedOutputPath = Path.Combine(
