@@ -1,13 +1,12 @@
 using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
-using Fip.Strive.Harvester.Application.Core.Queue.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
-public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
+public partial class QueuePage(IJobReader jobReader)
 {
     private bool _dialogVisible;
     private string _selectedError = string.Empty;

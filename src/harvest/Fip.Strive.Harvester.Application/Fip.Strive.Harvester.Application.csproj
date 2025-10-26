@@ -18,5 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Application\Fip.Strive.Core.Application.csproj" />
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
+    <ProjectReference Include="..\..\core\Fip.Strive.Core.Ingestion\Fip.Strive.Core.Ingestion.csproj" />
   </ItemGroup>
 </Project>

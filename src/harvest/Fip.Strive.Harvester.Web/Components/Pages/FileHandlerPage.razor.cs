@@ -1,3 +1,3 @@
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
-public partial class FileHandlerPage() { }
+public partial class FileHandlerPage { }

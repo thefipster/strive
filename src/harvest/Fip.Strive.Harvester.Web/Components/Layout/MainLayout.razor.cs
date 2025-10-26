@@ -8,7 +8,7 @@ namespace Fip.Strive.Harvester.Web.Components.Layout;
 public partial class MainLayout
 {
     private bool _isDarkMode = true;
-    private MudThemeProvider _mudThemeProvider;
+    private MudThemeProvider? _mudThemeProvider;
 
     MudTheme _striveTheme = new()
     {
@@ -50,7 +50,7 @@ public partial class MainLayout
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && _mudThemeProvider is not null)
         {
             _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
             await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
