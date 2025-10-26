@@ -36,7 +36,7 @@ public class ZipInventoryTests
         var filepath = Path.Combine(_testRootPath, "newfile.zip");
         var uploadSignal = UploadSignal.From(filepath);
         var hash = "newhash123";
-        var importedPath = @"C:\import\newfile.zip";
+        var importedPath = "files/import/newfile.zip";
 
         _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
         _indexer.Find(hash).Returns((ZipIndex?)null);
@@ -194,13 +194,13 @@ public class ZipInventoryTests
     public async Task ImportAsync_ShouldUpsertIndexWithCorrectMetadata()
     {
         // Arrange
-        var filepath = @"C:\upload\test.zip";
+        var filepath = "files/upload/test.zip";
         var uploadSignal = UploadSignal.From(filepath);
         var hash = "testhash";
 
         _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
         _indexer.Find(hash).Returns((ZipIndex?)null);
-        _fileAccess.Import(filepath).Returns(@"C:\import\test.zip");
+        _fileAccess.Import(filepath).Returns("files/import/test.zip");
 
         // Act
         await _sut.ImportAsync(uploadSignal, CancellationToken.None);
@@ -261,13 +261,13 @@ public class ZipInventoryTests
     public async Task ImportAsync_ShouldSetHashOnWorkItem()
     {
         // Arrange
-        var filepath = @"C:\upload\file.zip";
+        var filepath = "files/upload/file.zip";
         var uploadSignal = UploadSignal.From(filepath);
         var expectedHash = "computedhash";
 
         _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(expectedHash);
         _indexer.Find(expectedHash).Returns((ZipIndex?)null);
-        _fileAccess.Import(filepath).Returns(@"C:\import\file.zip");
+        _fileAccess.Import(filepath).Returns("files/import/file.zip");
 
         // Act
         var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
