@@ -1,9 +1,7 @@
 @page "/indexes"
 @using Fip.Strive.Core.Domain.Schemas.Index.Models
 
-<MudStack Row="true" Justify="Justify.SpaceBetween">
-    <MudText Typo="Typo.h1">Indexes</MudText>
-</MudStack>
+<Headline Text="Indexes" />
 
 <MudTable T="ZipIndex" Context="zip" ServerData="@OnZipIndexRequested" OnRowClick="@OnZipIndexRowClick">
     <ToolBarContent>

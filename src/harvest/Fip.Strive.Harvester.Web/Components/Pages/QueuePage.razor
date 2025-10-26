@@ -1,20 +1,11 @@
 @page "/queue"
 @using Fip.Strive.Core.Domain.Schemas.Queue.Models
 
-<MudStack Row="true" Justify="Justify.SpaceBetween">
-    <MudText Typo="Typo.h1">Queue</MudText>
-    @if (_isRunning)
-    {
-        <MudIconButton Icon="@Icons.Material.Filled.Pause" Color="Color.Primary" OnClick="@OnPauseRequested"/>
-    }
-    else
-    {
-        <MudIconButton Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Primary" OnClick="@OnResumeRequested"/>
-    }
-</MudStack>
+<Headline Text="Queue" />
+
 <MudGrid>
-    <MudItem xs="3">
-        <MudTable T="JobDetails" Context="job" ServerData="@OnUpcommingRequested">
+    <MudItem xs="3" md="6" sm="12">
+        <MudTable Elevation="3" T="JobDetails" Context="job" ServerData="@OnUpcommingRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Available Jobs</MudText>
             </ToolBarContent>
@@ -38,7 +29,7 @@
             </PagerContent>
         </MudTable>
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="3" md="6" sm="12">
         <MudTable T="JobDetails" Context="job" ServerData="@OnRunningRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Running Jobs</MudText>
@@ -61,7 +52,7 @@
             </PagerContent>
         </MudTable>
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="3" md="6" sm="12">
         <MudTable T="JobDetails" Context="job" ServerData="@OnSucceededRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Succeeded Jobs</MudText>
@@ -84,7 +75,7 @@
             </PagerContent>
         </MudTable>
     </MudItem>
-    <MudItem xs="3">
+    <MudItem xs="3" md="6" sm="12">
         <MudTable T="JobDetails" Context="job" ServerData="@OnFailedRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Failed Jobs</MudText>
@@ -113,7 +104,7 @@
     </MudItem>
 </MudGrid>
 
-<MudDialog @bind-Visible="_dialogVisible" Options="_dialogOptions" >
+<MudDialog @bind-Visible="_dialogVisible" Options="_dialogOptions">
     <TitleContent>
         <MudText Typo="Typo.h6">Error Details</MudText>
     </TitleContent>
@@ -123,7 +114,4 @@
         <MudText Typo="Typo.button" Inline="false">Payload</MudText>
         <MudText>@_selectedPayload</MudText>
     </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="@(() => _dialogVisible = false)">Close</MudButton>
-    </DialogActions>
 </MudDialog>

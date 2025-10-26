@@ -20,14 +20,20 @@ public class QueueRunner(
         config.Value.ProcessingDelayMs
     );
 
+    private bool _isRunning = false;
+
+    public bool IsRunning => _isRunning;
+
     public async Task RunAsync(int workerId, CancellationToken ct)
     {
         logger.LogInformation("QueueRunner {WorkerId} starting.", workerId);
+        _isRunning = true;
 
         while (!ct.IsCancellationRequested)
             await LoopAsync(workerId, ct);
 
         logger.LogInformation("QueueRunner {WorkerId} stopping.", workerId);
+        _isRunning = false;
     }
 
     private async Task LoopAsync(int workerId, CancellationToken ct)

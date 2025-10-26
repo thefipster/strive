@@ -1,7 +1,6 @@
-﻿@using Fip.Strive.Harvester.Web.Components.Layout.Components
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 
-<MudThemeProvider IsDarkMode="true"/>
+<MudThemeProvider @ref="_mudThemeProvider" @bind-IsDarkMode="_isDarkMode" Theme="_striveTheme"/>
 <MudDialogProvider/>
 <MudPopoverProvider/>
 <MudSnackbarProvider/>

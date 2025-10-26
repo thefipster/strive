@@ -12,72 +12,29 @@ public class QueuedHostedService(
     IQueueWorkerFactory workerFactory
 ) : BackgroundService
 {
-    private readonly object _lock = new();
-    private CancellationTokenSource? _runCts;
-    private Task? _runTask;
-    private readonly QueueMetrics _metrics = new(config);
+    private List<IQueueRunner> _runners = [];
+    private List<Task> _workers = [];
 
-    public bool IsRunning => _runTask is { IsCompleted: false };
+    public bool IsRunning => _runners.Any(x => x.IsRunning);
 
-    public void StartWork()
+    protected override Task ExecuteAsync(CancellationToken ct)
     {
-        lock (_lock)
+        logger.LogInformation("Queued hosted service started");
+
+        var metrics = new QueueMetrics(config);
+
+        for (int i = 0; i < config.Value.MaxDegreeOfParallelism; i++)
         {
-            if (IsRunning)
-            {
-                logger.LogWarning("QueuedHostedService is already running.");
-                return;
-            }
-
-            logger.LogInformation("Starting QueuedHostedService workers.");
-            _runCts = new CancellationTokenSource();
-            _runTask = RunInternalAsync(_runCts.Token);
-        }
-    }
-
-    public async Task StopWorkAsync()
-    {
-        lock (_lock)
-        {
-            if (!IsRunning)
-                return;
-
-            logger.LogInformation("Stopping QueuedHostedService workers.");
-            _runCts?.Cancel();
+            var runner = workerFactory.CreateRunner(metrics);
+            _runners.Add(runner);
+            _workers.Add(runner.RunAsync(i, ct));
         }
 
-        if (_runTask is not null)
-        {
-            try
-            {
-                await _runTask;
-            }
-            catch (OperationCanceledException) { }
-        }
+        _workers.Add(Task.Run(() => workerFactory.CreateReporter(metrics).RunAsync(ct), ct));
 
-        _runTask = null;
-        _runCts = null;
-    }
+        Task.WhenAll(_workers);
 
-    private async Task RunInternalAsync(CancellationToken ct)
-    {
-        var workers = Enumerable
-            .Range(0, config.Value.MaxDegreeOfParallelism)
-            .Select(id => Task.Run(() => workerFactory.CreateRunner(_metrics).RunAsync(id, ct), ct))
-            .ToList();
-
-        workers.Add(Task.Run(() => workerFactory.CreateReporter(_metrics).RunAsync(ct), ct));
-
-        await Task.WhenAll(workers);
-    }
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        logger.LogInformation("QueuedHostedService initialized.");
-        
-        StartWork();
-        await Task.Delay(Timeout.Infinite, stoppingToken);
-        
-        logger.LogInformation("QueuedHostedService finished.");
+        logger.LogInformation("Queued hosted service finished");
+        return Task.CompletedTask;
     }
 }
