@@ -10,7 +10,7 @@ public class WorkItemTests
     public void FromSignal_ShouldCreateWorkItemWithSignalAndDefaultValues()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
 
         // Act
         var workItem = WorkItem.FromSignal(uploadSignal);
@@ -27,7 +27,7 @@ public class WorkItemTests
     public void Filename_ShouldExtractFilenameFromSignalFilepath()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\folder\myarchive.zip");
+        var uploadSignal = UploadSignal.From("files/upload/folder/myarchive.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
 
         // Act
@@ -41,7 +41,7 @@ public class WorkItemTests
     public void Filename_WithDifferentPathSeparators_ShouldExtractCorrectly()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:/upload/folder/file.zip");
+        var uploadSignal = UploadSignal.From("files/upload/folder/file.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
 
         // Act
@@ -55,7 +55,7 @@ public class WorkItemTests
     public void ToSignal_ShouldCreateImportSignalWithReferenceIdAndFilepath()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         var filepath = @"C:\import\test.zip";
 
@@ -72,7 +72,7 @@ public class WorkItemTests
     public void ToIndex_WhenHashIsSet_ShouldCreateZipIndexWithCorrectProperties()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\archive.zip");
+        var uploadSignal = UploadSignal.From("files/upload/archive.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         workItem.Hash = "abc123hash";
 
@@ -92,7 +92,7 @@ public class WorkItemTests
     public void ToIndex_WhenHashIsNull_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         workItem.Hash = null;
 
@@ -109,7 +109,7 @@ public class WorkItemTests
     public void ToIndex_WhenHashIsEmpty_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         workItem.Hash = string.Empty;
 
@@ -126,7 +126,7 @@ public class WorkItemTests
     public void ToIndex_WhenHashIsWhitespace_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         workItem.Hash = "   ";
 
@@ -143,7 +143,7 @@ public class WorkItemTests
     public void ToIndex_ShouldAddFilenameToIndexFiles()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\subfolder\myfile.zip");
+        var uploadSignal = UploadSignal.From("files/upload/subfolder/myfile.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         workItem.Hash = "hash123";
 
@@ -159,7 +159,7 @@ public class WorkItemTests
     public void Skip_DefaultValue_ShouldBeFalse()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
 
         // Act
         var workItem = WorkItem.FromSignal(uploadSignal);
@@ -172,7 +172,7 @@ public class WorkItemTests
     public void Skip_WhenSet_ShouldPersistValue()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
 
         // Act
@@ -186,9 +186,9 @@ public class WorkItemTests
     public void ImportedPath_WhenSet_ShouldPersistValue()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
-        var importedPath = @"C:\import\test.zip";
+        var importedPath = "files/import/test.zip";
 
         // Act
         workItem.ImportedPath = importedPath;
@@ -201,7 +201,7 @@ public class WorkItemTests
     public void Hash_WhenSet_ShouldPersistValue()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         var hash = "myhash123";
 
@@ -216,12 +216,12 @@ public class WorkItemTests
     public void ToSignal_ShouldInheritReferenceIdFromUploadSignal()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var expectedReferenceId = uploadSignal.ReferenceId;
         var workItem = WorkItem.FromSignal(uploadSignal);
 
         // Act
-        var importSignal = workItem.ToSignal(@"C:\import\test.zip");
+        var importSignal = workItem.ToSignal("files/import/test.zip");
 
         // Assert
         importSignal.ReferenceId.Should().Be(expectedReferenceId);
@@ -231,7 +231,7 @@ public class WorkItemTests
     public void ToIndex_WithComplexFilepath_ShouldExtractFilenameCorrectly()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\very\long\path\with\many\folders\archive.zip");
+        var uploadSignal = UploadSignal.From(@"very/long/path/with/many/folders/archive.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
         workItem.Hash = "complexhash";
 
@@ -246,9 +246,9 @@ public class WorkItemTests
     public void WorkItem_AllProperties_ShouldBeSettableAndGettable()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From("files/upload/test.zip");
         var workItem = WorkItem.FromSignal(uploadSignal);
-        var importedPath = @"C:\import\test.zip";
+        var importedPath = "files/import/test.zip";
         var hash = "testhash";
 
         // Act
