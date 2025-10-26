@@ -17,9 +17,14 @@ public class QueueReporter(
 {
     private readonly TimeSpan _updateDelay = TimeSpan.FromMilliseconds(config.Value.UpdateDelayMs);
 
+    private bool _isRunning = false;
+
+    public bool IsRunning => _isRunning;
+
     public async Task RunAsync(CancellationToken ct)
     {
         logger.LogInformation("QueueReporter starting.");
+        _isRunning = true;
 
         int lastCount = 0;
         bool finalized = false;
@@ -54,6 +59,7 @@ public class QueueReporter(
         }
 
         logger.LogInformation("Reporter stopping.");
+        _isRunning = false;
     }
 
     private async Task ReportAsync()

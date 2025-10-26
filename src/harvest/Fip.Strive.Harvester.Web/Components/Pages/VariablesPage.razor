@@ -1,0 +1,28 @@
+@page "/variables"
+
+<Headline Text="Variables" />
+
+@if (_values != null)
+{
+
+    <MudTable T="KeyValuePair<string, string>" Items="_values" Dense="true" Hover="true" Context="setting">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Value</MudTh>
+        </HeaderContent>
+        <ColGroup>
+            <col style="width: 500px"/>
+            <col/>
+        </ColGroup>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@setting.Key</MudTd>
+            <MudTd DataLabel="Value">@setting.Value</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}

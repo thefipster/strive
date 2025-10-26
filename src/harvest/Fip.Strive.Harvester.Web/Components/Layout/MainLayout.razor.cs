@@ -7,6 +7,20 @@ namespace Fip.Strive.Harvester.Web.Components.Layout;
 
 public partial class MainLayout
 {
+    private bool _isDarkMode = true;
+    private MudThemeProvider? _mudThemeProvider;
+
+    MudTheme _striveTheme = new()
+    {
+        Typography = new Typography
+        {
+            H1 = new H1Typography { FontSize = "3rem" },
+            H2 = new H2Typography { FontSize = "2rem" },
+            H3 = new H3Typography { FontSize = "1.6rem" },
+            H4 = new H4Typography { FontSize = "1.3rem" },
+        },
+    };
+
     private HubConnection? _hubConnection;
 
     [Inject]
@@ -34,9 +48,26 @@ public partial class MainLayout
         await _hubConnection.StartAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _mudThemeProvider is not null)
+        {
+            _isDarkMode = await _mudThemeProvider.GetSystemDarkModeAsync();
+            await _mudThemeProvider.WatchSystemDarkModeAsync(OnSystemDarkModeChanged);
+            StateHasChanged();
+        }
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_hubConnection is not null)
             await _hubConnection.DisposeAsync();
+    }
+
+    private Task OnSystemDarkModeChanged(bool newValue)
+    {
+        _isDarkMode = newValue;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }

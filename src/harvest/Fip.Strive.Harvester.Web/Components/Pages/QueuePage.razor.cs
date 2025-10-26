@@ -1,17 +1,13 @@
 using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models;
-using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
-using Fip.Strive.Harvester.Application.Core.Queue.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
-public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
+public partial class QueuePage(IJobReader jobReader)
 {
-    private bool _isRunning = true;
-
     private bool _dialogVisible;
     private string _selectedError = string.Empty;
     private string _selectedPayload = string.Empty;
@@ -20,15 +16,12 @@ public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
     {
         FullWidth = true,
         MaxWidth = MaxWidth.Large,
+        CloseButton = true,
+        CloseOnEscapeKey = true,
     };
 
     [Inject]
     public required IDialogService DialogService { get; set; }
-
-    protected override void OnParametersSet()
-    {
-        _isRunning = queue.IsRunning;
-    }
 
     private Task<TableData<JobDetails>> OnUpcommingRequested(TableState state, CancellationToken ct)
     {
@@ -65,20 +58,12 @@ public partial class QueuePage(IJobReader jobReader, QueuedHostedService queue)
         );
     }
 
-    private async Task OnPauseRequested()
+    private void OnErrorRowClicked(TableRowClickEventArgs<JobDetails> obj)
     {
-        await queue.StopWorkAsync();
-        _isRunning = false;
-    }
+        var job = obj.Item;
+        if (job == null)
+            return;
 
-    private void OnResumeRequested()
-    {
-        queue.StartWork();
-        _isRunning = true;
-    }
-
-    private void OnOpenErrorDialog(JobDetails job)
-    {
         _selectedError = job.Error ?? string.Empty;
         _selectedPayload = job.Payload ?? string.Empty;
         _dialogVisible = true;

@@ -10,7 +10,6 @@ public partial class AppBar
 
     private int _queueCount;
     private double _queueRate;
-    private int _queueRunners;
 
     [Inject]
     public required NavigationManager Navigation { get; set; }
@@ -24,10 +23,9 @@ public partial class AppBar
 
         _hubConnection.On<int, int, double>(
             QueueHub.QueueReportMethodName,
-            (count, runner, rate) =>
+            (count, _, rate) =>
             {
                 _queueCount = count;
-                _queueRunners = runner;
                 _queueRate = rate;
                 InvokeAsync(StateHasChanged);
             }

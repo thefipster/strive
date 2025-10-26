@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Application;
+using Fip.Strive.Core.Ingestion;
 using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
@@ -23,6 +24,7 @@ public static class Registration
     {
         // Core
         services.AddCoreServices();
+        services.AddIngestionFeature();
 
         // Shared
         services.AddConfigs(configuration);

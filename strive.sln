@@ -50,6 +50,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{C4FD9DCD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Application", "src\core\Fip.Strive.Core.Application\Fip.Strive.Core.Application.csproj", "{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Ingestion", "src\core\Fip.Strive.Core.Ingestion\Fip.Strive.Core.Ingestion.csproj", "{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,10 @@ Global
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
@@ -110,5 +116,6 @@ Global
 		{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD} = {D8ABB662-711D-4D09-A55C-91752495B6D5}
 		{C4FD9DCD-9908-4582-87F3-F0148D4312D9} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
+		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 	EndGlobalSection
 EndGlobal

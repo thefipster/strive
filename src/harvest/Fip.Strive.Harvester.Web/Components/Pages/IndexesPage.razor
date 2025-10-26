@@ -1,11 +1,9 @@
 @page "/indexes"
 @using Fip.Strive.Core.Domain.Schemas.Index.Models
 
-<MudStack Row="true" Justify="Justify.SpaceBetween">
-    <MudText Typo="Typo.h1">Indexes</MudText>
-</MudStack>
+<Headline Text="Indexes" />
 
-<MudTable T="ZipIndex" Context="zip" ServerData="@OnZipIndexRequested" OnRowClick="@OnZipIndexRowClick">
+<MudTable T="ZipIndex" Class="mb-5" Context="zip" Dense="true" Hover="true" ServerData="@OnZipIndexRequested" OnRowClick="@OnZipIndexRowClick">
     <ToolBarContent>
         <MudText Typo="Typo.h2">Imported Zips</MudText>
     </ToolBarContent>
@@ -16,6 +14,13 @@
         <MudTh>Signal</MudTh>
         <MudTh>Reference</MudTh>
     </HeaderContent>
+    <ColGroup>
+        <col Style="width: 200px;"/>
+        <col Style="width: 200px;"/>
+        <col />
+        <col Style="width: 350px;"/>
+        <col Style="width: 350px;"/>
+    </ColGroup>
     <RowTemplate>
         <MudTd DataLabel="Signalled">@zip.SignalledAt</MudTd>
         <MudTd DataLabel="Hash">@zip.Hash</MudTd>
@@ -33,7 +38,7 @@
 
 @if (_selectedZip != null)
 {
-    <MudTable @ref="_fileTable" T="FileIndex" Context="file" ServerData="@OnFileIndexRequested">
+    <MudTable @ref="_fileTable" T="FileIndex" Dense="true" Hover="true" Context="file" ServerData="@OnFileIndexRequested">
         <ToolBarContent>
             <MudText Typo="Typo.h2">@_selectedZip.Files.First().Key Files</MudText>
         </ToolBarContent>
@@ -44,6 +49,13 @@
             <MudTh>Signal</MudTh>
             <MudTh>Reference</MudTh>
         </HeaderContent>
+        <ColGroup>
+            <col Style="width: 200px;"/>
+            <col Style="width: 200px;"/>
+            <col />
+            <col Style="width: 350px;"/>
+            <col Style="width: 350px;"/>
+        </ColGroup>
         <RowTemplate>
             <MudTd DataLabel="Signalled">@file.SignalledAt</MudTd>
             <MudTd DataLabel="Hash">@file.Hash</MudTd>
