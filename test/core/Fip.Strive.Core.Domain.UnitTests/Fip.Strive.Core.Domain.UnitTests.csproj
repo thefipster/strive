@@ -16,4 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\core\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Schemas\Queue\" />
+  </ItemGroup>
 </Project>

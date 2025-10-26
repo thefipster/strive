@@ -1,7 +1,7 @@
 using Fip.Strive.Core.Domain.Extensions;
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
-using Fip.Strive.Harvester.Application.Features.Import.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ public class ZipInventory(
     {
         var file = new FileInfo(signal.Filepath);
         var hash = await file.HashXx3Async(ct);
-        var index = indexer.Get(hash);
+        var index = indexer.Find(hash);
 
         if (FileIsIndexed(index, file))
             return RemoveAlreadyKnownFile(signal, file.Name, index!);
@@ -27,7 +27,7 @@ public class ZipInventory(
             index = ImportNewFile(signal, hash);
 
         index.AddFile(file.Name);
-        indexer.Set(index);
+        indexer.Upsert(index);
 
         return index;
     }
@@ -50,7 +50,7 @@ public class ZipInventory(
     private ZipIndex ImportNewFile(UploadSignal signal, string hash)
     {
         fileAccess.Import(signal.Filepath);
-        var index = ZipIndex.From(signal.Id, hash, signal.EmittedAt);
+        var index = ZipIndex.From(signal, hash);
         return index;
     }
 }

@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Components;
 using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Components.Decorators;
@@ -6,6 +7,7 @@ using Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Services;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Decorators;
+using Fip.Strive.Harvester.Application.Infrastructure.Repositories.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +21,7 @@ public static class Registration
     )
     {
         services.AddScoped<IZipIndexer, ZipIndexer>();
+        services.AddScoped<ISpecificationReader<ZipIndex>, ZipPager>();
 
         services.AddScoped<IZipFileAccess, ZipFileAccess>();
         services.Decorate<IZipFileAccess, ZipFileAccessValidator>();

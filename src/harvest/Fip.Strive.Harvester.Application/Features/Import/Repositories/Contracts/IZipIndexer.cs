@@ -1,9 +1,9 @@
-using Fip.Strive.Harvester.Application.Features.Import.Models;
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
 
 public interface IZipIndexer
 {
-    ZipIndex? Get(string hash);
-    void Set(ZipIndex index);
+    ZipIndex? Find(string hash);
+    void Upsert(ZipIndex index);
 }
