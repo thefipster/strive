@@ -45,8 +45,8 @@ function Test-Strive {
     )
     Write-Host "Testing"
     dotnet test --collect:"XPlat Code Coverage"
-    reportgenerator -reports:**/coverage*.xml -targetdir:coverage-report -reporttypes:Html
-    Start-Process (Join-Path $PSScriptRoot 'coverage-report\index.html')
+    reportgenerator -reports:**/coverage*.xml -targetdir:logs/coverage -reporttypes:Html
+    Start-Process (Join-Path $PSScriptRoot 'logs\coverage\index.html')
 }
 
 switch ($Command) {

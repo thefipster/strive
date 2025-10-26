@@ -1,4 +1,4 @@
-namespace Fip.Strive.Harvester.Application.Features.Expand.Models;
+namespace Fip.Strive.Core.Application.Features.FileSystem.Models;
 
 public class DirectorySize
 {

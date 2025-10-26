@@ -21,7 +21,7 @@ public static class Registration
     {
         services.Configure<ExpandConfig>(configuration.GetSection(ExpandConfig.ConfigSectionName));
 
-        services.AddScoped<IUnzipper, Unzipper>();
+        services.AddScoped<IZipExtractor, UnzipCoordinator>();
 
         services.AddScoped<IZipEnumerator, ZipEnumerator>();
 

@@ -3,7 +3,7 @@ using AwesomeAssertions;
 using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 
-namespace Fip.Strive.Core.Domain.UnitTests.Models.Signals;
+namespace Fip.Strive.Core.Domain.UnitTests.Schemas.Queue.Models.Signals;
 
 public class ImportSignalTests
 {

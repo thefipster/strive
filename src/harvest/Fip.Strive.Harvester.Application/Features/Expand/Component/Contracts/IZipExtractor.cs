@@ -2,7 +2,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
 
-public interface IUnzipper
+public interface IZipExtractor
 {
     /// <summary>
     /// Extracts the contents of a zip file into the target directory.
@@ -13,5 +13,5 @@ public interface IUnzipper
     /// <returns>
     /// Updated state containing the output directory.
     /// </returns>
-    WorkItem Extract(WorkItem work, bool overwrite = false, CancellationToken ct = default);
+    WorkItem Expand(WorkItem work, bool overwrite = false, CancellationToken ct = default);
 }

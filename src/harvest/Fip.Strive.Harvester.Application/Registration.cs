@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Application;
 using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
@@ -18,9 +19,11 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.AddConfigs(configuration);
-
         // Core
+        services.AddCoreServices();
+
+        // Shared
+        services.AddConfigs(configuration);
         services.AddProxyFeature(configuration);
         services.AddQueueFeature(configuration);
         services.AddInfrastructureServices(configuration);
