@@ -1,3 +1,5 @@
+// ReSharper disable AccessToDisposedClosure
+
 using AwesomeAssertions;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
@@ -68,7 +70,9 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Services
 
             // Assert
             await act.Should().ThrowAsync<OperationCanceledException>();
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
             await scanner.DidNotReceiveWithAnyArgs().ExploreFolderAsync(default, default);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
         }
     }
 }

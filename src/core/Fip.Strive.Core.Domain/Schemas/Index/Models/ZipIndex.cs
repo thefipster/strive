@@ -12,15 +12,4 @@ public class ZipIndex
     public Guid ReferenceId { get; set; }
 
     public void AddFile(string filename) => Files.Add(filename, DateTime.UtcNow);
-
-    public static ZipIndex From(Signal signal, string hash)
-    {
-        return new()
-        {
-            SignalId = signal.Id,
-            ReferenceId = signal.ReferenceId,
-            SignalledAt = signal.EmittedAt,
-            Hash = hash,
-        };
-    }
 }

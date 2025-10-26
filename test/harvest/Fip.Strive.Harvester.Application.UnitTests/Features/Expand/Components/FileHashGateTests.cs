@@ -1,112 +1,153 @@
 using AwesomeAssertions;
+using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Component;
-using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
-using Fip.Strive.Harvester.Application.Features.Expand.Component.Decorators;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 
 namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Components;
 
 public class FileHashGateTests
 {
-    [Fact]
-    public async Task CheckFileAsync_WhenIndexExists_AddsFilenameAndUpserts()
+    private readonly IFileIndexer _indexer;
+    private readonly IFileHasher _hasher;
+    private readonly FileHashGate _sut;
+
+    public FileHashGateTests()
     {
-        // Arrange
-        var tempFile = Path.GetTempFileName();
-        await File.WriteAllTextAsync(tempFile, "test-content");
-        var fileName = Path.GetFileName(tempFile);
-        var fileHash = "FER34teEG43g34g";
-
-        var index = new FileIndex { Hash = fileHash };
-        index.AddFile("already-known.txt");
-
-        var indexer = Substitute.For<IFileIndexer>();
-        indexer.Find(Arg.Any<string>()).Returns(index);
-        indexer.When(x => x.Upsert(Arg.Any<FileIndex>())).Do(_ => { });
-
-        var gate = new FileHashGate(indexer);
-
-        // Act
-        var result = await gate.CheckFileAsync(null!, tempFile, CancellationToken.None);
-
-        // Assert
-        result.Should().BeSameAs(index);
-        index.Files.Should().ContainKey(fileName);
-        indexer.Received(1).Upsert(index);
-
-        // Cleanup
-        File.Delete(tempFile);
-    }
-}
-
-public class FileHashGateSignalledTests
-{
-    [Fact]
-    public async Task CheckFileAsync_WhenSingleFile_EnqueuesSignal()
-    {
-        // Arrange
-        var fileHash = "FER34teEG43g34g";
-        var index = new FileIndex { Hash = fileHash };
-        index.AddFile("only-one.txt"); // single file => should enqueue
-        var work = new WorkItem
-        {
-            Signal = new ImportSignal { Filepath = index.Files.First().Key },
-        };
-
-        var component = Substitute.For<IFileHashGate>();
-        component
-            .CheckFileAsync(Arg.Any<WorkItem>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(index));
-
-        var queue = Substitute.For<ISignalQueue>();
-        queue
-            .EnqueueAsync(Arg.Any<Signal>(), Arg.Any<CancellationToken>())
-            .Returns(Task.CompletedTask);
-
-        var logger = Substitute.For<ILogger<FileHashGateSignalled>>();
-
-        var decorator = new FileHashGateSignalled(component, queue, logger);
-
-        // Act
-        await decorator.CheckFileAsync(work, "C:\\some\\path.txt", CancellationToken.None);
-
-        // Assert
-        queue.Received(1).EnqueueAsync(Arg.Any<Signal>(), Arg.Any<CancellationToken>());
+        _indexer = Substitute.For<IFileIndexer>();
+        _hasher = Substitute.For<IFileHasher>();
+        _sut = new FileHashGate(_indexer, _hasher);
     }
 
     [Fact]
-    public async Task CheckFileAsync_WhenMultipleFiles_DoesNotEnqueue()
+    public async Task CheckFileAsync_WhenIndexExists_ShouldAddFileToExistingIndexAndReturnIt()
     {
         // Arrange
-        var fileHash = "FER34teEG43g34g";
-        var index = new FileIndex { Hash = fileHash };
-        index.AddFile("one.txt");
-        index.AddFile("two.txt"); // multiple files => should not enqueue
-        var work = new WorkItem
+        var filepath = @"C:\temp\somefile.txt";
+        var filename = "somefile.txt";
+        var hash = "abc123hash";
+        var referenceId = Guid.NewGuid();
+        var signal = new ImportSignal
         {
-            Signal = new ImportSignal { Filepath = index.Files.First().Key },
+            Filepath = "archive.zip",
+            ReferenceId = referenceId,
+            EmittedAt = DateTime.UtcNow,
+            Id = Guid.NewGuid(),
         };
+        var work = WorkItem.FromSignal(signal);
 
-        var component = Substitute.For<IFileHashGate>();
-        component
-            .CheckFileAsync(Arg.Any<WorkItem>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(index));
+        var existingIndex = new FileIndex
+        {
+            Hash = hash,
+            ReferenceId = referenceId,
+            SignalledAt = signal.EmittedAt,
+            SignalId = signal.Id,
+        };
+        existingIndex.AddFile("otherfile.txt");
 
-        var queue = Substitute.For<ISignalQueue>();
-        var logger = Substitute.For<ILogger<FileHashGateSignalled>>();
-
-        var decorator = new FileHashGateSignalled(component, queue, logger);
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns(existingIndex);
 
         // Act
-        await decorator.CheckFileAsync(work, "C:\\some\\path.txt", CancellationToken.None);
+        var result = await _sut.CheckFileAsync(work, filepath, CancellationToken.None);
 
         // Assert
-        queue.DidNotReceive().EnqueueAsync(Arg.Any<Signal>(), Arg.Any<CancellationToken>());
+        result.Should().BeSameAs(existingIndex);
+        result.Files.Should().ContainKey(filename);
+        result.Files.Should().HaveCount(2);
+        _indexer.Received(1).Upsert(existingIndex);
+    }
+
+    [Fact]
+    public async Task CheckFileAsync_WhenIndexDoesNotExist_ShouldCreateNewIndexAndReturnIt()
+    {
+        // Arrange
+        var filepath = @"C:\temp\newfile.txt";
+        var filename = "newfile.txt";
+        var hash = "xyz789hash";
+        var referenceId = Guid.NewGuid();
+        var signalId = Guid.NewGuid();
+        var emittedAt = new DateTime(2023, 5, 10, 10, 30, 0, DateTimeKind.Utc);
+        var signal = new ImportSignal
+        {
+            Filepath = "archive.zip",
+            ReferenceId = referenceId,
+            EmittedAt = emittedAt,
+            Id = signalId,
+        };
+        var work = WorkItem.FromSignal(signal);
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns((FileIndex?)null);
+
+        // Act
+        var result = await _sut.CheckFileAsync(work, filepath, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Hash.Should().Be(hash);
+        result.ReferenceId.Should().Be(referenceId);
+        result.SignalId.Should().Be(signalId);
+        result.SignalledAt.Should().Be(emittedAt);
+        result.Files.Should().ContainKey(filename);
+        result.Files.Should().HaveCount(1);
+        _indexer
+            .Received(1)
+            .Upsert(Arg.Is<FileIndex>(i => i.Hash == hash && i.Files.ContainsKey(filename)));
+    }
+
+    [Fact]
+    public async Task CheckFileAsync_ShouldHashFileWithCorrectPath()
+    {
+        // Arrange
+        var filepath = @"C:\temp\testfile.txt";
+        var hash = "hashvalue";
+        var signal = new ImportSignal
+        {
+            Filepath = "archive.zip",
+            ReferenceId = Guid.NewGuid(),
+            EmittedAt = DateTime.UtcNow,
+            Id = Guid.NewGuid(),
+        };
+        var work = WorkItem.FromSignal(signal);
+        var cancellationToken = new CancellationToken();
+
+        _hasher.HashXx3Async(filepath, cancellationToken).Returns(hash);
+        _indexer.Find(hash).Returns((FileIndex?)null);
+
+        // Act
+        await _sut.CheckFileAsync(work, filepath, cancellationToken);
+
+        // Assert
+        await _hasher.Received(1).HashXx3Async(filepath, cancellationToken);
+    }
+
+    [Fact]
+    public async Task CheckFileAsync_ShouldExtractFilenameFromPath()
+    {
+        // Arrange
+        var filepath = @"C:\some\deep\directory\myfile.txt";
+        var expectedFilename = "myfile.txt";
+        var hash = "somehash";
+        var signal = new ImportSignal
+        {
+            Filepath = "archive.zip",
+            ReferenceId = Guid.NewGuid(),
+            EmittedAt = DateTime.UtcNow,
+            Id = Guid.NewGuid(),
+        };
+        var work = WorkItem.FromSignal(signal);
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns((FileIndex?)null);
+
+        // Act
+        var result = await _sut.CheckFileAsync(work, filepath, CancellationToken.None);
+
+        // Assert
+        result.Files.Should().ContainKey(expectedFilename);
     }
 }

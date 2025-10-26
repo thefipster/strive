@@ -70,7 +70,13 @@ namespace Fip.Strive.Core.Domain.UnitTests.Schemas.Index.Models
             var hash = "zip-hash-abc";
 
             // Act
-            var zipIndex = ZipIndex.From(signal, hash);
+            var zipIndex = new ZipIndex
+            {
+                Hash = hash,
+                SignalId = signal.Id,
+                ReferenceId = signal.ReferenceId,
+                SignalledAt = signal.EmittedAt,
+            };
 
             // Assert
             zipIndex.Should().NotBeNull();

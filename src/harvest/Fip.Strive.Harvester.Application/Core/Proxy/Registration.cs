@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using Castle.DynamicProxy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Core.Proxy;
 
+[ExcludeFromCodeCoverage]
 public static class Registration
 {
     public static void AddProxyFeature(

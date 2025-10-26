@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Harvester.Application.Features.Schedule.Jobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -5,6 +6,7 @@ using Quartz;
 
 namespace Fip.Strive.Harvester.Application.Features.Schedule;
 
+[ExcludeFromCodeCoverage]
 public static class Registration
 {
     public static void AddScheduleFeature(

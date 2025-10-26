@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Application.Features.FileSystem.Models;
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 
 namespace Fip.Strive.Core.Application.Features.FileSystem.Services;
 
+[ExcludeFromCodeCoverage]
 public class DirectoryService : IDirectoryService
 {
     public void CreateDirectory(string path) => Directory.CreateDirectory(path);
