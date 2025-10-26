@@ -13,17 +13,17 @@ public static class Registration
             scan.FromAssembliesOf(typeof(IFileClassifier))
                 .AddClasses(classes => classes.AssignableTo<IFileClassifier>())
                 .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+                .WithScopedLifetime()
         );
 
         services.Scan(scan =>
             scan.FromAssembliesOf(typeof(IFileExtractor))
                 .AddClasses(classes => classes.AssignableTo<IFileExtractor>())
                 .AsImplementedInterfaces()
-                .WithSingletonLifetime()
+                .WithScopedLifetime()
         );
 
-        services.AddSingleton<IClassifier, Classifier>();
-        services.AddSingleton<IExtractor, Extractor>();
+        services.AddScoped<IClassifier, Classifier>();
+        services.AddScoped<IExtractor, Extractor>();
     }
 }

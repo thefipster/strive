@@ -1,6 +1,5 @@
 using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models;
-using Fip.Strive.Harvester.Application.Core.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using Fip.Strive.Harvester.Application.Infrastructure.Models;
@@ -36,6 +35,19 @@ public class LiteDbJobReader(SignalQueueContext context)
             .Query()
             .Where(x => x.Status == status)
             .OrderByDescending(x => x.CreatedAt);
+
+        var count = query.Count();
+        var items = query.Skip(page * size).Limit(size).ToArray();
+
+        return new PagedResponse<JobDetails>(items, count);
+    }
+
+    public PagedResponse<JobDetails> GetJobs(int page, int size, params JobStatus[] statuses)
+    {
+        var query = Collection.Query();
+
+        query = query.Where(x => statuses.Contains(x.Status));
+        query = query.OrderByDescending(x => x.CreatedAt);
 
         var count = query.Count();
         var items = query.Skip(page * size).Limit(size).ToArray();
