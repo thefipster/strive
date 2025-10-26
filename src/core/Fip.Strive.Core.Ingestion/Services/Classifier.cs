@@ -11,6 +11,11 @@ namespace Fip.Strive.Core.Ingestion.Services;
 public class Classifier(IEnumerable<IFileClassifier> classifiers, ILogger<Classifier> logger)
     : IClassifier
 {
+    public IFileClassifier? Find(DataSources source) =>
+        classifiers.FirstOrDefault(x => x.Source == source);
+
+    public IEnumerable<IFileClassifier> GetAll() => classifiers;
+
     public List<ClassificationResult> Classify(string filepath, CancellationToken ct)
     {
         var probe = new FileProbe(filepath);
@@ -28,10 +33,6 @@ public class Classifier(IEnumerable<IFileClassifier> classifiers, ILogger<Classi
 
         return classifications;
     }
-
-    public IFileClassifier GetClassifier(DataSources source) =>
-        classifiers.FirstOrDefault(x => x.Source == source)
-        ?? throw new ClassificationException($"Couldn't load classifier {source}");
 
     private ClassificationResult TryClassification(
         string filepath,

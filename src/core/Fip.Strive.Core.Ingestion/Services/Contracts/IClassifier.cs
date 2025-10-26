@@ -8,5 +8,7 @@ public interface IClassifier
 {
     List<ClassificationResult> Classify(string filepath, CancellationToken ct);
 
-    IFileClassifier GetClassifier(DataSources source);
+    IFileClassifier? Find(DataSources source);
+
+    IEnumerable<IFileClassifier> GetAll();
 }

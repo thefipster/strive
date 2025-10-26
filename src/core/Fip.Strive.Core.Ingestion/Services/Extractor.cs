@@ -8,9 +8,12 @@ namespace Fip.Strive.Core.Ingestion.Services;
 
 public class Extractor(IEnumerable<IFileExtractor> extractors) : IExtractor
 {
-    public IEnumerable<IFileExtractor> Extractors => extractors;
+    public IFileExtractor? Find(DataSources source) =>
+        extractors.FirstOrDefault(x => x.Source == source);
 
-    public Task<List<FileExtraction>> ExtractFile(
+    public IEnumerable<IFileExtractor> GetAll() => extractors;
+
+    public Task<List<FileExtraction>> Extract(
         string filepath,
         DataSources source,
         DateTime? date = null

@@ -58,8 +58,12 @@ public partial class QueuePage(IJobReader jobReader)
         );
     }
 
-    private void OnOpenErrorDialog(JobDetails job)
+    private void OnErrorRowClicked(TableRowClickEventArgs<JobDetails> obj)
     {
+        var job = obj.Item;
+        if (job == null)
+            return;
+
         _selectedError = job.Error ?? string.Empty;
         _selectedPayload = job.Payload ?? string.Empty;
         _dialogVisible = true;

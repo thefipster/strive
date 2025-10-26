@@ -6,11 +6,9 @@ namespace Fip.Strive.Core.Ingestion.Services.Contracts;
 
 public interface IExtractor
 {
-    IEnumerable<IFileExtractor> Extractors { get; }
+    IEnumerable<IFileExtractor> GetAll();
 
-    Task<List<FileExtraction>> ExtractFile(
-        string filepath,
-        DataSources source,
-        DateTime? date = null
-    );
+    IFileExtractor? Find(DataSources source);
+
+    Task<List<FileExtraction>> Extract(string filepath, DataSources source, DateTime? date = null);
 }

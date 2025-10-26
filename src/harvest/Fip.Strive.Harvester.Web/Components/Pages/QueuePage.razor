@@ -5,7 +5,7 @@
 
 <MudGrid>
     <MudItem xs="3" md="6" sm="12">
-        <MudTable Elevation="3" T="JobDetails" Context="job" ServerData="@OnUpcommingRequested">
+        <MudTable T="JobDetails" Context="job" Dense="true" Hover="true" ServerData="@OnUpcommingRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Available Jobs</MudText>
             </ToolBarContent>
@@ -15,6 +15,12 @@
                 <MudTh>Type</MudTh>
                 <MudTh>Status</MudTh>
             </HeaderContent>
+            <ColGroup>
+                <col Style="width: 200px;"/>
+                <col />
+                <col Style="width: 150px;"/>
+                <col Style="width: 150px;"/>
+            </ColGroup>
             <RowTemplate>
                 <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
                 <MudTd DataLabel="Id">@job.Id</MudTd>
@@ -30,7 +36,7 @@
         </MudTable>
     </MudItem>
     <MudItem xs="3" md="6" sm="12">
-        <MudTable T="JobDetails" Context="job" ServerData="@OnRunningRequested">
+        <MudTable T="JobDetails" Context="job" Dense="true" Hover="true" ServerData="@OnRunningRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Running Jobs</MudText>
             </ToolBarContent>
@@ -39,6 +45,11 @@
                 <MudTh>Id</MudTh>
                 <MudTh>Type</MudTh>
             </HeaderContent>
+            <ColGroup>
+                <col Style="width: 200px;"/>
+                <col />
+                <col Style="width: 300px;"/>
+            </ColGroup>
             <RowTemplate>
                 <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
                 <MudTd DataLabel="Id">@job.Id</MudTd>
@@ -53,7 +64,7 @@
         </MudTable>
     </MudItem>
     <MudItem xs="3" md="6" sm="12">
-        <MudTable T="JobDetails" Context="job" ServerData="@OnSucceededRequested">
+        <MudTable T="JobDetails" Context="job" Dense="true" Hover="true" ServerData="@OnSucceededRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Succeeded Jobs</MudText>
             </ToolBarContent>
@@ -62,6 +73,11 @@
                 <MudTh>Id</MudTh>
                 <MudTh>Type</MudTh>
             </HeaderContent>
+            <ColGroup>
+                <col Style="width: 200px;"/>
+                <col />
+                <col Style="width: 300px;"/>
+            </ColGroup>
             <RowTemplate>
                 <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
                 <MudTd DataLabel="Id">@job.Id</MudTd>
@@ -76,7 +92,7 @@
         </MudTable>
     </MudItem>
     <MudItem xs="3" md="6" sm="12">
-        <MudTable T="JobDetails" Context="job" ServerData="@OnFailedRequested">
+        <MudTable T="JobDetails" Context="job" Dense="true" Hover="true" OnRowClick="@OnErrorRowClicked" ServerData="@OnFailedRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Failed Jobs</MudText>
             </ToolBarContent>
@@ -84,15 +100,16 @@
                 <MudTh>Signalled</MudTh>
                 <MudTh>Id</MudTh>
                 <MudTh>Type</MudTh>
-                <MudTh>Error</MudTh>
             </HeaderContent>
+            <ColGroup>
+                <col Style="width: 200px;"/>
+                <col />
+                <col Style="width: 300px;"/>
+            </ColGroup>
             <RowTemplate>
                 <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
                 <MudTd DataLabel="Id">@job.Id</MudTd>
                 <MudTd DataLabel="Type">@job.Type</MudTd>
-                <MudTd DataLabel="Error">
-                    <MudIconButton Icon="@Icons.Material.Rounded.Info" OnClick="@(() => OnOpenErrorDialog(job))" Size="Size.Small" />
-                </MudTd>
             </RowTemplate>
             <NoRecordsContent>
                 <MudText>No matching records found</MudText>

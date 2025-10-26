@@ -1,4 +1,48 @@
 @page "/filehandler"
+@using Fip.Strive.Core.Ingestion.Contracts
 
-<Headline Text="File Handler" />
+<Headline Text="File Handler"/>
 
+@if (_handlers != null)
+{
+
+    <MudTable T="KeyValuePair<IFileClassifier, IFileExtractor?>" Items="_handlers" Dense="true" Hover="true" Context="source">
+        <HeaderContent>
+            <MudTh>Value</MudTh>
+            <MudTh>Classifier</MudTh>
+            <MudTh>Extractor</MudTh>
+            <MudTh>Source</MudTh>
+        </HeaderContent>
+        <ColGroup>
+            <col style="width: 100px"/>
+            <col style="width: 100px"/>
+            <col style="width: 100px"/>
+            <col/>
+        </ColGroup>
+        <RowTemplate>
+            <MudTd DataLabel="Source">@((int)source.Key.Source)</MudTd>
+            <MudTd DataLabel="Classifier">
+                <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small"
+                         Color="Color.Info">@($"v{source.Key.ClassifierVersion}")</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Extractor">
+                @if (source.Value == null)
+                {
+                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Small">nA</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Variant="Variant.Outlined" Size="Size.Small"
+                             Color="Color.Info">@($"v{source.Value.ExtractorVersion}")</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="Source">@source.Key.Source</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
