@@ -6,6 +6,7 @@
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />

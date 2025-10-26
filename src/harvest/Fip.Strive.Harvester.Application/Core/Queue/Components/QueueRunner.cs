@@ -43,6 +43,7 @@ public class QueueRunner(
         {
             try
             {
+                metrics.IncrementActiveWorkers();
                 await RunJobAsync(ct, job);
             }
             catch (OperationCanceledException)
@@ -58,6 +59,7 @@ public class QueueRunner(
             }
             finally
             {
+                metrics.RecordCompletion();
                 metrics.DecrementActiveWorkers();
             }
         }
@@ -67,13 +69,11 @@ public class QueueRunner(
 
     private async Task RunJobAsync(CancellationToken ct, JobDetails job)
     {
-        metrics.IncrementActiveWorkers();
         await queue.MarkAsStartedAsync(job.Id, ct);
 
         await ExecuteWorkerAsync(job, ct);
 
         await queue.MarkAsSuccessAsync(job.Id, ct);
-        metrics.RecordCompletion();
     }
 
     private async Task ExecuteWorkerAsync(JobDetails job, CancellationToken ct)

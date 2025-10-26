@@ -1,7 +1,11 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models;
+using Fip.Strive.Harvester.Application.Core.Hubs;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
@@ -20,45 +24,70 @@ public partial class QueuePage(IJobReader jobReader)
         CloseOnEscapeKey = true,
     };
 
+    private HubConnection? _hubConnection;
+    private readonly Subject<int> _queueEvents = new();
+    private MudTable<JobDetails>? _activeTable;
+    private MudTable<JobDetails>? _doneTable;
+
     [Inject]
     public required IDialogService DialogService { get; set; }
 
-    private Task<TableData<JobDetails>> OnUpcommingRequested(TableState state, CancellationToken ct)
+    [Inject]
+    public required NavigationManager Navigation { get; set; }
+
+    protected override async Task OnInitializedAsync()
     {
-        var result = jobReader.GetUpcommingJobs(state.Page, state.PageSize);
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri($"/hubs/{QueueHub.HubName}"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        _queueEvents
+            .Buffer(count: 10)
+            .Select(events => events.Last())
+            .Subscribe(_ =>
+            {
+                _activeTable?.ReloadServerData();
+                _doneTable?.ReloadServerData();
+                InvokeAsync(StateHasChanged);
+            });
+
+        _hubConnection.On<int, int, double>(
+            QueueHub.QueueReportMethodName,
+            (count, _, _) => _queueEvents.OnNext(count)
+        );
+
+        await _hubConnection.StartAsync();
+    }
+
+    private Task<TableData<JobDetails>> OnActiveRequested(TableState state, CancellationToken ct)
+    {
+        var result = jobReader.GetJobs(
+            state.Page,
+            state.PageSize,
+            JobStatus.Stored,
+            JobStatus.Pending,
+            JobStatus.Running
+        );
         return Task.FromResult(
             new TableData<JobDetails> { Items = result.Items, TotalItems = result.Total }
         );
     }
 
-    private Task<TableData<JobDetails>> OnSucceededRequested(
-        TableState state,
-        CancellationToken arg2
-    )
+    private Task<TableData<JobDetails>> OnDoneRequested(TableState state, CancellationToken ct)
     {
-        var result = jobReader.GetSucceededJobs(state.Page, state.PageSize);
+        var result = jobReader.GetJobs(
+            state.Page,
+            state.PageSize,
+            JobStatus.Succeeded,
+            JobStatus.Failed
+        );
         return Task.FromResult(
             new TableData<JobDetails> { Items = result.Items, TotalItems = result.Total }
         );
     }
 
-    private Task<TableData<JobDetails>> OnFailedRequested(TableState state, CancellationToken ct)
-    {
-        var result = jobReader.GetFailedJobs(state.Page, state.PageSize);
-        return Task.FromResult(
-            new TableData<JobDetails> { Items = result.Items, TotalItems = result.Total }
-        );
-    }
-
-    private Task<TableData<JobDetails>> OnRunningRequested(TableState state, CancellationToken ct)
-    {
-        var result = jobReader.GetJobs(JobStatus.Running, state.Page, state.PageSize);
-        return Task.FromResult(
-            new TableData<JobDetails> { Items = result.Items, TotalItems = result.Total }
-        );
-    }
-
-    private void OnErrorRowClicked(TableRowClickEventArgs<JobDetails> obj)
+    private void OnRowClicked(TableRowClickEventArgs<JobDetails> obj)
     {
         var job = obj.Item;
         if (job == null)
