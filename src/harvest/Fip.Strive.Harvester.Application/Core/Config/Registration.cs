@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Fip.Strive.Core.Domain.Exceptions;
 using Fip.Strive.Harvester.Application.Core.Config.Models;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Core.Config;
 
+[ExcludeFromCodeCoverage]
 public static class Registration
 {
     public static void AddConfigs(this IServiceCollection services, IConfiguration configuration)

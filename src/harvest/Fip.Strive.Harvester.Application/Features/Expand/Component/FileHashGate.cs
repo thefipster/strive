@@ -1,4 +1,4 @@
-using Fip.Strive.Core.Domain.Extensions;
+using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
@@ -6,7 +6,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Component;
 
-public class FileHashGate(IFileIndexer indexer) : IFileHashGate
+public class FileHashGate(IFileIndexer indexer, IFileHasher hasher) : IFileHashGate
 {
     public async Task<FileIndex> CheckFileAsync(
         WorkItem work,
@@ -14,14 +14,14 @@ public class FileHashGate(IFileIndexer indexer) : IFileHashGate
         CancellationToken ct
     )
     {
-        var file = new FileInfo(filepath);
-        var hash = await file.HashXx3Async(ct);
+        var filename = Path.GetFileName(filepath);
+        var hash = await hasher.HashXx3Async(filepath, ct);
 
         var index = indexer.Find(hash);
         if (index == null)
             index = work.ToIndex(hash);
 
-        index.AddFile(file.Name);
+        index.AddFile(filename);
         indexer.Upsert(index);
 
         return index;

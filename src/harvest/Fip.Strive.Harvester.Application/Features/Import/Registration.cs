@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Components;
 using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Features.Import;
 
+[ExcludeFromCodeCoverage]
 public static class Registration
 {
     public static void AddImportFeature(

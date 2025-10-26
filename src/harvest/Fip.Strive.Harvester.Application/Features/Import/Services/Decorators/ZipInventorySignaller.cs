@@ -1,6 +1,7 @@
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+using Fip.Strive.Harvester.Application.Features.Import.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,20 +17,16 @@ public class ZipInventorySignaller(
 {
     private string _rootPath = config.Value.Path;
 
-    public async Task<ZipIndex> ImportAsync(UploadSignal signal, CancellationToken ct)
+    public async Task<WorkItem> ImportAsync(UploadSignal signal, CancellationToken ct)
     {
-        var index = await component.ImportAsync(signal, ct);
-        var filename = index.Files.First().Key;
+        var work = await component.ImportAsync(signal, ct);
 
-        if (index.Files.Count == 0)
-            return LogImpossibleError(filename, index);
+        if (work.Skip)
+            return WorkAndLogFileAlreadyKnown(work);
 
-        if (index.Files.Count > 1)
-            return LogFileIsKnown(filename, index);
+        await EmitSignal(signal, ct, work.ImportedPath!);
 
-        await EmitSignal(signal, ct, filename);
-
-        return index;
+        return work;
     }
 
     private async Task EmitSignal(UploadSignal signal, CancellationToken ct, string filename)
@@ -40,20 +37,9 @@ public class ZipInventorySignaller(
         await queue.EnqueueAsync(newSignal, ct);
     }
 
-    private ZipIndex LogFileIsKnown(string filepath, ZipIndex index)
+    private WorkItem WorkAndLogFileAlreadyKnown(WorkItem work)
     {
-        logger.LogInformation("File {ExpandedFile} is already known. Skipping.", filepath);
-        return index;
-    }
-
-    private ZipIndex LogImpossibleError(string filepath, ZipIndex index)
-    {
-        logger.LogInformation(
-            "This should not happen... I have a filepath {ExpandedFile} "
-                + "but the file list in the index is empty... don't ask me mate, "
-                + "something upstream must have gone wrong.",
-            filepath
-        );
-        return index;
+        logger.LogInformation("File {ImportedFile} is already known. Skipping.", work.ImportedPath);
+        return work;
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Harvester.Application.Core.Queue.Components;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Contracts;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue;
 
+[ExcludeFromCodeCoverage]
 public static class Registration
 {
     public static void AddQueueFeature(

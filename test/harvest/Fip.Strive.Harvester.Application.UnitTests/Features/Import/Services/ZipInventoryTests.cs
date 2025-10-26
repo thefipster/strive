@@ -1,0 +1,278 @@
+using AwesomeAssertions;
+using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
+using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
+using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
+using Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Features.Import.Services;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
+
+namespace Fip.Strive.Harvester.Application.UnitTests.Features.Import.Services;
+
+public class ZipInventoryTests
+{
+    private readonly IZipIndexer _indexer;
+    private readonly IZipFileAccess _fileAccess;
+    private readonly IFileHasher _hasher;
+    private readonly ILogger<ZipInventory> _logger;
+    private readonly ZipInventory _sut;
+    private readonly string _testRootPath;
+
+    public ZipInventoryTests()
+    {
+        _indexer = Substitute.For<IZipIndexer>();
+        _fileAccess = Substitute.For<IZipFileAccess>();
+        _hasher = Substitute.For<IFileHasher>();
+        _logger = Substitute.For<ILogger<ZipInventory>>();
+        _sut = new ZipInventory(_indexer, _fileAccess, _hasher, _logger);
+        _testRootPath = Path.Combine(Path.GetTempPath(), $"ZipInventoryTests_{Guid.NewGuid()}");
+    }
+
+    [Fact]
+    public async Task ImportAsync_WhenFileIsNew_ShouldHashImportAndUpsertIndex()
+    {
+        // Arrange
+        var filepath = Path.Combine(_testRootPath, "newfile.zip");
+        var uploadSignal = UploadSignal.From(filepath);
+        var hash = "newhash123";
+        var importedPath = "files/import/newfile.zip";
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns((ZipIndex?)null);
+        _fileAccess.Import(filepath).Returns(importedPath);
+
+        // Act
+        var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+        // Assert
+        result.Hash.Should().Be(hash);
+        result.ImportedPath.Should().Be(importedPath);
+        result.Skip.Should().BeFalse();
+        _indexer
+            .Received(1)
+            .Upsert(Arg.Is<ZipIndex>(i => i.Hash == hash && i.Files.ContainsKey("newfile.zip")));
+    }
+
+    [Fact]
+    public async Task ImportAsync_WhenFileIsAlreadyIndexed_ShouldSkipAndDeleteFile()
+    {
+        // Arrange
+        var filepath = Path.Combine(_testRootPath, "duplicate.zip");
+        Directory.CreateDirectory(_testRootPath);
+        File.WriteAllText(filepath, "test content");
+
+        var uploadSignal = UploadSignal.From(filepath);
+        var hash = "existinghash";
+
+        var existingIndex = new ZipIndex
+        {
+            Hash = hash,
+            ReferenceId = uploadSignal.ReferenceId,
+            SignalledAt = uploadSignal.EmittedAt,
+            SignalId = uploadSignal.Id,
+        };
+        existingIndex.AddFile("duplicate.zip");
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns(existingIndex);
+
+        try
+        {
+            // Act
+            var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+            // Assert
+            result.Skip.Should().BeTrue();
+            result.Hash.Should().Be(hash);
+            File.Exists(filepath).Should().BeFalse();
+            _fileAccess.DidNotReceive().Import(Arg.Any<string>());
+            _indexer.DidNotReceive().Upsert(Arg.Any<ZipIndex>());
+            _logger.Received(1);
+        }
+        finally
+        {
+            if (Directory.Exists(_testRootPath))
+                Directory.Delete(_testRootPath, true);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_WhenIndexExistsButFileIsNew_ShouldNotImportButUpsertIndex()
+    {
+        // Arrange
+        var filepath = Path.Combine(_testRootPath, "anotherfile.zip");
+        var uploadSignal = UploadSignal.From(filepath);
+        var hash = "samehash";
+
+        var existingIndex = new ZipIndex
+        {
+            Hash = hash,
+            ReferenceId = Guid.NewGuid(),
+            SignalledAt = DateTime.UtcNow,
+            SignalId = Guid.NewGuid(),
+        };
+        existingIndex.AddFile("differentfile.zip");
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns(existingIndex);
+
+        // Act
+        var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+        // Assert
+        result.Hash.Should().Be(hash);
+        result.Skip.Should().BeFalse();
+        result.ImportedPath.Should().BeNull();
+        _fileAccess.DidNotReceive().Import(Arg.Any<string>());
+        _indexer
+            .Received(1)
+            .Upsert(
+                Arg.Is<ZipIndex>(i => i.Hash == hash && i.Files.ContainsKey("anotherfile.zip"))
+            );
+    }
+
+    [Fact]
+    public async Task ImportAsync_ShouldHashFileWithCorrectPath()
+    {
+        // Arrange
+        var filepath = @"C:\temp\test.zip";
+        var uploadSignal = UploadSignal.From(filepath);
+        var cancellationToken = new CancellationToken();
+
+        _hasher.HashXx3Async(filepath, cancellationToken).Returns("somehash");
+        _indexer.Find(Arg.Any<string>()).Returns((ZipIndex?)null);
+        _fileAccess.Import(filepath).Returns(@"C:\import\test.zip");
+
+        // Act
+        await _sut.ImportAsync(uploadSignal, cancellationToken);
+
+        // Assert
+        await _hasher.Received(1).HashXx3Async(filepath, cancellationToken);
+    }
+
+    [Fact]
+    public async Task ImportAsync_ShouldCreateWorkItemFromSignal()
+    {
+        // Arrange
+        var filepath = @"C:\upload\myfile.zip";
+        var uploadSignal = UploadSignal.From(filepath);
+        var hash = "hash123";
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns((ZipIndex?)null);
+        _fileAccess.Import(filepath).Returns(@"C:\import\myfile.zip");
+
+        // Act
+        var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+        // Assert
+        result.Signal.Should().BeSameAs(uploadSignal);
+    }
+
+    [Fact]
+    public async Task ImportAsync_WhenIndexIsNull_ShouldCallFileAccessImport()
+    {
+        // Arrange
+        var filepath = @"C:\upload\newfile.zip";
+        var uploadSignal = UploadSignal.From(filepath);
+        var hash = "newhash";
+        var expectedImportPath = @"C:\import\newfile.zip";
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns((ZipIndex?)null);
+        _fileAccess.Import(filepath).Returns(expectedImportPath);
+
+        // Act
+        await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+        // Assert
+        _fileAccess.Received(1).Import(filepath);
+    }
+
+    [Fact]
+    public async Task ImportAsync_ShouldUpsertIndexWithCorrectMetadata()
+    {
+        // Arrange
+        var filepath = "files/upload/test.zip";
+        var uploadSignal = UploadSignal.From(filepath);
+        var hash = "testhash";
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns((ZipIndex?)null);
+        _fileAccess.Import(filepath).Returns("files/import/test.zip");
+
+        // Act
+        await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+        // Assert
+        _indexer
+            .Received(1)
+            .Upsert(
+                Arg.Is<ZipIndex>(i =>
+                    i.Hash == hash
+                    && i.ReferenceId == uploadSignal.ReferenceId
+                    && i.SignalId == uploadSignal.Id
+                    && i.SignalledAt == uploadSignal.EmittedAt
+                    && i.Files.ContainsKey("test.zip")
+                )
+            );
+    }
+
+    [Fact]
+    public async Task ImportAsync_WhenFileIsIndexedWithDifferentCasing_ShouldStillSkip()
+    {
+        // Arrange
+        var filepath = Path.Combine(_testRootPath, "TestFile.ZIP");
+        Directory.CreateDirectory(_testRootPath);
+        File.WriteAllText(filepath, "content");
+
+        var uploadSignal = UploadSignal.From(filepath);
+        var hash = "hash";
+
+        var existingIndex = new ZipIndex
+        {
+            Hash = hash,
+            ReferenceId = uploadSignal.ReferenceId,
+            SignalledAt = uploadSignal.EmittedAt,
+            SignalId = uploadSignal.Id,
+        };
+        existingIndex.AddFile("TestFile.ZIP");
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
+        _indexer.Find(hash).Returns(existingIndex);
+
+        try
+        {
+            // Act
+            var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+            // Assert
+            result.Skip.Should().BeTrue();
+        }
+        finally
+        {
+            if (Directory.Exists(_testRootPath))
+                Directory.Delete(_testRootPath, true);
+        }
+    }
+
+    [Fact]
+    public async Task ImportAsync_ShouldSetHashOnWorkItem()
+    {
+        // Arrange
+        var filepath = "files/upload/file.zip";
+        var uploadSignal = UploadSignal.From(filepath);
+        var expectedHash = "computedhash";
+
+        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(expectedHash);
+        _indexer.Find(expectedHash).Returns((ZipIndex?)null);
+        _fileAccess.Import(filepath).Returns("files/import/file.zip");
+
+        // Act
+        var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
+
+        // Assert
+        result.Hash.Should().Be(expectedHash);
+    }
+}

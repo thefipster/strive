@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Application;
 using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Proxy;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application;
 
+[ExcludeFromCodeCoverage]
 public static class Registration
 {
     public static void AddApplicationServices(

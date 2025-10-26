@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Component;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand;
 
+[ExcludeFromCodeCoverage]
 public static class Registration
 {
     public static void AddExpandFeature(
