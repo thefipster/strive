@@ -114,9 +114,7 @@ public class ImportUploadWorkerTests
         var act = async () => await _sut.ProcessAsync(job, CancellationToken.None);
 
         // Assert
-        await act.Should()
-            .ThrowAsync<InvalidJobException>()
-            .WithMessage("*Payload is null or empty*");
+        await act.Should().ThrowAsync<InvalidJobException>().WithMessage("*Payload is null*");
         await _inventory
             .DidNotReceive()
             .ImportAsync(Arg.Any<UploadSignal>(), Arg.Any<CancellationToken>());
@@ -139,8 +137,8 @@ public class ImportUploadWorkerTests
 
         // Assert
         await act.Should()
-            .ThrowAsync<InvalidJobException>()
-            .WithMessage("*Payload is null or empty*");
+            .ThrowAsync<JsonException>()
+            .WithMessage("*The input does not contain any JSON tokens.*");
         await _inventory
             .DidNotReceive()
             .ImportAsync(Arg.Any<UploadSignal>(), Arg.Any<CancellationToken>());
