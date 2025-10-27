@@ -10,7 +10,8 @@ using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
-public partial class QueuePage(IJobReader jobReader)
+[Route("/queue")]
+public partial class QueuePage(IJobReader jobReader) : ComponentBase
 {
     private bool _dialogVisible;
     private string _selectedError = string.Empty;

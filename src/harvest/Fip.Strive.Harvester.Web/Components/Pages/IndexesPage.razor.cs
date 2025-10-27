@@ -1,14 +1,16 @@
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Infrastructure.Models;
 using Fip.Strive.Harvester.Application.Infrastructure.Repositories.Contracts;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
+[Route("/indexes")]
 public partial class IndexesPage(
     ISpecificationReader<ZipIndex> zipPager,
     ISpecificationReader<FileIndex> filePager
-)
+) : ComponentBase
 {
     private ZipIndex? _selectedZip;
     private MudTable<FileIndex>? _fileTable;

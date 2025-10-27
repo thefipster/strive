@@ -14,12 +14,11 @@ public abstract class QueueWorker(SignalTypes type) : ISignalQueueWorker
 
     protected TSignal GetSafePayload<TSignal>(JobDetails job)
     {
-        if (string.IsNullOrEmpty(job.Payload))
-            throw new InvalidJobException(job, "Payload is null or empty.");
+        var payload = job.Payload ?? throw new InvalidJobException(job, "Payload is null.");
 
-        var signal = JsonSerializer.Deserialize<TSignal>(job.Payload);
-        if (signal == null)
-            throw new InvalidJobException(job, "Can't read payload.");
+        var signal =
+            JsonSerializer.Deserialize<TSignal>(payload)
+            ?? throw new InvalidJobException(job, "Can't read payload.");
 
         return signal;
     }

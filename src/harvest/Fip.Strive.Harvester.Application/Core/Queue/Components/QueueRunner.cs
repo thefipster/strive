@@ -20,7 +20,7 @@ public class QueueRunner(
         config.Value.ProcessingDelayMs
     );
 
-    private bool _isRunning = false;
+    private bool _isRunning;
 
     public bool IsRunning => _isRunning;
 
