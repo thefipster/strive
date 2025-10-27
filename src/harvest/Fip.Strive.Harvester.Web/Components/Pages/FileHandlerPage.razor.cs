@@ -1,9 +1,11 @@
 using Fip.Strive.Core.Ingestion.Contracts;
 using Fip.Strive.Core.Ingestion.Services.Contracts;
+using Microsoft.AspNetCore.Components;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
-public partial class FileHandlerPage(IClassifier classifier, IExtractor extractor)
+[Route("/filehandler")]
+public partial class FileHandlerPage(IClassifier classifier, IExtractor extractor) : ComponentBase
 {
     private Dictionary<IFileClassifier, IFileExtractor?>? _handlers;
 
