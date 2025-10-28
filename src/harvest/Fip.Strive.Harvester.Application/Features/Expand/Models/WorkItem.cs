@@ -26,8 +26,14 @@ public class WorkItem
         };
     }
 
-    public FileSignal ToSignal(string filepath)
+    public FileSignal ToSignal()
     {
-        return new FileSignal { ReferenceId = Signal.ReferenceId, Filepath = filepath };
+        return new FileSignal
+        {
+            ReferenceId = Signal.ReferenceId,
+            Hash =
+                Hash
+                ?? throw new InvalidOperationException("Cannot create FileSignal without hash"),
+        };
     }
 }

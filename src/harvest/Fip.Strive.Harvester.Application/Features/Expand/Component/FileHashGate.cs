@@ -1,8 +1,8 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
+using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
-using Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Component;
 

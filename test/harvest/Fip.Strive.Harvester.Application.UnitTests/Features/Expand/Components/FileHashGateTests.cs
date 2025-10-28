@@ -2,9 +2,9 @@ using AwesomeAssertions;
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
+using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Component;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
-using Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
 using NSubstitute;
 
 namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Components;

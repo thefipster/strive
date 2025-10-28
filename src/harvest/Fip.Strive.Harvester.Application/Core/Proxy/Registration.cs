@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Castle.DynamicProxy;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Core.Proxy;
@@ -8,10 +7,7 @@ namespace Fip.Strive.Harvester.Application.Core.Proxy;
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    public static void AddProxyFeature(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static void AddProxyFeature(this IServiceCollection services)
     {
         services.AddSingleton<ProxyGenerator>();
 

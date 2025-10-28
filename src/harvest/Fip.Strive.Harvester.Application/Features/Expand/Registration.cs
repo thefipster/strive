@@ -1,14 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
+using Fip.Strive.Harvester.Application.Core.Indexing.Repositories;
+using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Component;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Component.Decorators;
 using Fip.Strive.Harvester.Application.Features.Expand.Repositories;
-using Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Services;
 using Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Repositories.Contracts;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand;
@@ -16,13 +16,8 @@ namespace Fip.Strive.Harvester.Application.Features.Expand;
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    public static void AddExpandFeature(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static void AddExpandFeature(this IServiceCollection services)
     {
-        services.Configure<ExpandConfig>(configuration.GetSection(ExpandConfig.ConfigSectionName));
-
         services.AddScoped<IZipExtractor, UnzipCoordinator>();
 
         services.AddScoped<IZipEnumerator, ZipEnumerator>();

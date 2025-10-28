@@ -26,7 +26,7 @@ public class FileHashGateSignalled(
         if (index.Files.Count > 1)
             return LogFileIsKnown(filepath, index);
 
-        var signal = work.ToSignal(filepath);
+        var signal = work.ToSignal();
         await queue.EnqueueAsync(signal, ct);
 
         return index;

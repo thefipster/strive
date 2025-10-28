@@ -6,7 +6,6 @@ using Fip.Strive.Harvester.Application.Core.Queue.Health;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue;
@@ -14,10 +13,7 @@ namespace Fip.Strive.Harvester.Application.Core.Queue;
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    public static void AddQueueFeature(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static void AddQueueFeature(this IServiceCollection services)
     {
         services.Scan(scan =>
             scan.FromAssembliesOf(typeof(ISignalQueueWorker))

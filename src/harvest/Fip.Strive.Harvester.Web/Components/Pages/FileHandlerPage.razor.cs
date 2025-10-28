@@ -1,3 +1,5 @@
+#nullable enable
+
 using Fip.Strive.Core.Ingestion.Contracts;
 using Fip.Strive.Core.Ingestion.Services.Contracts;
 using Microsoft.AspNetCore.Components;

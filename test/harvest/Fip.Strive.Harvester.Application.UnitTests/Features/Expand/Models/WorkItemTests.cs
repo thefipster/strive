@@ -28,7 +28,7 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Models
         }
 
         [Fact]
-        public void ToSignal_Should_ReturnFileSignalWithReferenceIdAndFilepath()
+        public void ToSignalWithoutIndex_Should_ThrowInvalidOperationException()
         {
             // Arrange
             var signal = new ImportSignal
@@ -39,15 +39,13 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Models
                 Id = Guid.NewGuid(),
             };
             var workItem = WorkItem.FromSignal(signal);
-            var filepath = @"C:\temp\somefile.txt";
 
-            // Act
-            var fileSignal = workItem.ToSignal(filepath);
-
-            // Assert
-            fileSignal.Should().NotBeNull();
-            fileSignal.ReferenceId.Should().Be(signal.ReferenceId);
-            fileSignal.Filepath.Should().Be(filepath);
+            // Act & Assert
+            FluentActions
+                // ReSharper disable once AccessToDisposedClosure
+                .Invoking(() => workItem.ToSignal())
+                .Should()
+                .Throw<InvalidOperationException>();
         }
 
         [Fact]
