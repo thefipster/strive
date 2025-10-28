@@ -29,6 +29,7 @@ public class FileHashGateSignalledTests
     public async Task CheckFileAsync_WhenIndexHasOneFile_ShouldEnqueueSignalAndReturnIndex()
     {
         // Arrange
+        var hash = "somehash";
         var filepath = @"C:\temp\newfile.txt";
         var referenceId = Guid.NewGuid();
         var signal = new ImportSignal
@@ -39,7 +40,7 @@ public class FileHashGateSignalledTests
             Id = Guid.NewGuid(),
         };
         var work = WorkItem.FromSignal(signal);
-        var index = work.ToIndex("somehash");
+        var index = work.ToIndex(hash);
         index.AddFile("newfile.txt");
 
         _component.CheckFileAsync(work, filepath, Arg.Any<CancellationToken>()).Returns(index);
@@ -52,7 +53,7 @@ public class FileHashGateSignalledTests
         await _queue
             .Received(1)
             .EnqueueAsync(
-                Arg.Is<FileSignal>(s => s.ReferenceId == referenceId && s.Hash == filepath),
+                Arg.Is<FileSignal>(s => s.ReferenceId == referenceId && s.Hash == hash),
                 Arg.Any<CancellationToken>()
             );
     }
