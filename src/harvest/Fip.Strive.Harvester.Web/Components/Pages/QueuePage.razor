@@ -4,7 +4,7 @@
     <MudItem xs="3" md="6" sm="12">
         <MudTable @ref="_activeTable" T="JobDetails" Context="job" OnRowClick="@OnRowClicked" Dense="true" Hover="true" ServerData="@OnActiveRequested">
             <ToolBarContent>
-                <MudText Typo="Typo.h2">Available Jobs</MudText>
+                <MudText Typo="Typo.h2">Active Jobs</MudText>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Signalled</MudTh>
@@ -36,7 +36,7 @@
     <MudItem xs="3" md="6" sm="12">
         <MudTable @ref="_doneTable" T="JobDetails" Context="job" Dense="true" Hover="true" OnRowClick="@OnRowClicked" ServerData="@OnDoneRequested">
             <ToolBarContent>
-                <MudText Typo="Typo.h2">Failed Jobs</MudText>
+                <MudText Typo="Typo.h2">Finished Jobs</MudText>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Signalled</MudTh>

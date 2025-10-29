@@ -1,3 +1,4 @@
+using System.Text;
 using Fip.Strive.Core.Domain.Exceptions;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Components;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
@@ -15,6 +16,19 @@ public class Classifier(IEnumerable<IFileClassifier> classifiers, ILogger<Classi
         classifiers.FirstOrDefault(x => x.Source == source);
 
     public IEnumerable<IFileClassifier> GetAll() => classifiers;
+
+    public string GetHash()
+    {
+        var orderedClassifiers = classifiers
+            .OrderBy(x => x.Source)
+            .Select(x => $"{x.Source}:{x.ClassifierVersion}");
+
+        var hashInput = string.Join("|", orderedClassifiers);
+        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(hashInput));
+
+        return Convert.ToHexString(hashBytes);
+    }
 
     public List<ClassificationResult> Classify(string filepath, CancellationToken ct)
     {

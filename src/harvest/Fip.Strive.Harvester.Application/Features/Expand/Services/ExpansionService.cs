@@ -8,11 +8,13 @@ namespace Fip.Strive.Harvester.Application.Features.Expand.Services;
 public class ExpansionService(IZipExtractor zipExtractor, IZipEnumerator scanner)
     : IExpansionService
 {
-    public async Task UnpackZipFileAsync(ImportSignal signal, CancellationToken ct)
+    public async Task<WorkItem> UnpackZipFileAsync(ImportSignal signal, CancellationToken ct)
     {
         var workItem = WorkItem.FromSignal(signal);
 
         workItem = zipExtractor.Expand(workItem, false, ct);
         await scanner.ExploreFolderAsync(workItem, ct);
+
+        return workItem;
     }
 }

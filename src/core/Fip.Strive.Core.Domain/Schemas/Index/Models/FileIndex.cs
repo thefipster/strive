@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 
 namespace Fip.Strive.Core.Domain.Schemas.Index.Models;
@@ -10,6 +11,12 @@ public class FileIndex
     public DateTime SignalledAt { get; set; }
     public Guid SignalId { get; set; }
     public Guid ReferenceId { get; set; }
+    public bool Classified { get; set; }
+    public ClassificationResults ClassificationResult { get; set; }
+    public string? ClassifierHash { get; set; }
+    public DataSources? Source { get; set; }
+    public int ClassfierVersion { get; set; }
+    public DateTime? LastClassificationAt { get; set; }
 
     public void AddFile(string filename)
     {

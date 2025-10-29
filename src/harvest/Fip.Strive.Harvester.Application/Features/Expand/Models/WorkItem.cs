@@ -26,7 +26,7 @@ public class WorkItem
         };
     }
 
-    public FileSignal ToSignal()
+    public FileSignal ToSignal(string filepath)
     {
         return new FileSignal
         {
@@ -34,6 +34,7 @@ public class WorkItem
             Hash =
                 Hash
                 ?? throw new InvalidOperationException("Cannot create FileSignal without hash"),
+            Filepath = filepath,
         };
     }
 }

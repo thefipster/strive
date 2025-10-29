@@ -7,4 +7,5 @@ public enum SignalTypes
     UploadSignal,
     ImportSignal,
     FileSignal,
+    TypedSignal,
 }
