@@ -33,17 +33,18 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Models
             // Arrange
             var signal = new ImportSignal
             {
-                Filepath = "some-file.txt",
+                Filepath = "some-file.zip",
                 ReferenceId = Guid.NewGuid(),
                 EmittedAt = DateTime.UtcNow,
                 Id = Guid.NewGuid(),
             };
             var workItem = WorkItem.FromSignal(signal);
+            var filepath = "expanded-file.json";
 
             // Act & Assert
             FluentActions
                 // ReSharper disable once AccessToDisposedClosure
-                .Invoking(() => workItem.ToSignal())
+                .Invoking(() => workItem.ToSignal(filepath))
                 .Should()
                 .Throw<InvalidOperationException>();
         }

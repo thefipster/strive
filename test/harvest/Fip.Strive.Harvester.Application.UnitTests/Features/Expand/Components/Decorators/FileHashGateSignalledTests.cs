@@ -53,7 +53,9 @@ public class FileHashGateSignalledTests
         await _queue
             .Received(1)
             .EnqueueAsync(
-                Arg.Is<FileSignal>(s => s.ReferenceId == referenceId && s.Filepath == hash),
+                Arg.Is<FileSignal>(s =>
+                    s.ReferenceId == referenceId && s.Filepath == filepath && s.Hash == hash
+                ),
                 Arg.Any<CancellationToken>()
             );
     }
