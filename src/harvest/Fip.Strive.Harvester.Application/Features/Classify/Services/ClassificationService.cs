@@ -9,7 +9,8 @@ using Fip.Strive.Harvester.Application.Features.Classify.Services.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Classify.Services;
 
-public class Scanner(IFileIndexer indexer, IClassifier classifier, ISignalQueue queue) : IScanner
+public class ClassificationService(IFileIndexer indexer, IClassifier classifier, ISignalQueue queue)
+    : IScanner
 {
     public Task<WorkItem> ClassifyAsync(FileSignal signal, CancellationToken ct)
     {

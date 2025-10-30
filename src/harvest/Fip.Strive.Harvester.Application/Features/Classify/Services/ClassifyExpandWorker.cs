@@ -4,7 +4,7 @@ using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Queue.Components;
 using Fip.Strive.Harvester.Application.Features.Classify.Services.Contracts;
 
-namespace Fip.Strive.Harvester.Application.Features.Classify.Workers;
+namespace Fip.Strive.Harvester.Application.Features.Classify.Services;
 
 public class ClassifyExpandWorker(IScanner scanner) : QueueWorker(SignalTypes.FileSignal)
 {

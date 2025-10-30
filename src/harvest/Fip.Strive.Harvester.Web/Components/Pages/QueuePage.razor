@@ -1,3 +1,4 @@
+@using Fip.Strive.Core.Domain.Schemas.Queue.Enums
 <Headline Text="Queue" />
 
 <MudGrid>
@@ -54,7 +55,19 @@
                 <MudTd DataLabel="Signalled">@job.SignalledAt</MudTd>
                 <MudTd DataLabel="Id">@job.Id</MudTd>
                 <MudTd DataLabel="Type">@job.Type</MudTd>
-                <MudTd DataLabel="Status">@job.Status</MudTd>
+                <MudTd DataLabel="Status">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        @job.Status
+                        @if (job.Status == JobStatus.Failed)
+                        {
+                            <MudChip T="string" Class="pr-2" Color="Color.Error" Variant="Variant.Outlined" Size="Size.Small"></MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Class="pr-2" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small"></MudChip>
+                        }
+                    </MudStack>
+                </MudTd>
             </RowTemplate>
             <NoRecordsContent>
                 <MudText>No matching records found</MudText>
