@@ -20,25 +20,20 @@ public class DirectoryService : IDirectoryService
         int fileCount = 0;
         long totalSize = 0;
 
-        void ProcessDirectory(string path)
+        void ProcessDirectory(string innerPath)
         {
-            var files = Directory.GetFiles(path);
+            var files = Directory.GetFiles(innerPath);
             fileCount += files.Length;
 
             foreach (var file in files)
                 totalSize += new FileInfo(file).Length;
 
-            foreach (var dir in Directory.GetDirectories(path))
+            foreach (var dir in Directory.GetDirectories(innerPath))
                 ProcessDirectory(dir);
         }
 
         ProcessDirectory(path);
 
-        return new DirectorySize
-        {
-            OutputPath = path,
-            FileCount = fileCount,
-            Size = totalSize,
-        };
+        return DirectorySize.New(path, fileCount, totalSize);
     }
 }

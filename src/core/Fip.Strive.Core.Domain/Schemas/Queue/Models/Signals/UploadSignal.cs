@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 
 namespace Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;

@@ -1,8 +1,8 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
+using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Models;
-using Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
 using Microsoft.Extensions.Logging;
 

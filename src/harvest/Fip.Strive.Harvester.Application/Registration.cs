@@ -4,6 +4,7 @@ using Fip.Strive.Core.Ingestion;
 using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
+using Fip.Strive.Harvester.Application.Features.Classify;
 using Fip.Strive.Harvester.Application.Features.Expand;
 using Fip.Strive.Harvester.Application.Features.Import;
 using Fip.Strive.Harvester.Application.Features.Schedule;
@@ -28,14 +29,15 @@ public static class Registration
 
         // Shared
         services.AddConfigs(configuration);
-        services.AddProxyFeature(configuration);
-        services.AddQueueFeature(configuration);
+        services.AddProxyFeature();
+        services.AddQueueFeature();
         services.AddInfrastructureServices(configuration);
 
         // Feature
         services.AddScheduleFeature(configuration);
-        services.AddUploadFeature(configuration);
-        services.AddImportFeature(configuration);
-        services.AddExpandFeature(configuration);
+        services.AddUploadFeature();
+        services.AddImportFeature();
+        services.AddExpandFeature();
+        services.AddClassifyFeature();
     }
 }

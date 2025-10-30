@@ -28,6 +28,13 @@ public class WorkItem
 
     public FileSignal ToSignal(string filepath)
     {
-        return new FileSignal { ReferenceId = Signal.ReferenceId, Filepath = filepath };
+        return new FileSignal
+        {
+            ReferenceId = Signal.ReferenceId,
+            Hash =
+                Hash
+                ?? throw new InvalidOperationException("Cannot create FileSignal without hash"),
+            Filepath = filepath,
+        };
     }
 }

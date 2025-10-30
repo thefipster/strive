@@ -28,26 +28,25 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Models
         }
 
         [Fact]
-        public void ToSignal_Should_ReturnFileSignalWithReferenceIdAndFilepath()
+        public void ToSignalWithoutIndex_Should_ThrowInvalidOperationException()
         {
             // Arrange
             var signal = new ImportSignal
             {
-                Filepath = "some-file.txt",
+                Filepath = "some-file.zip",
                 ReferenceId = Guid.NewGuid(),
                 EmittedAt = DateTime.UtcNow,
                 Id = Guid.NewGuid(),
             };
             var workItem = WorkItem.FromSignal(signal);
-            var filepath = @"C:\temp\somefile.txt";
+            var filepath = "expanded-file.json";
 
-            // Act
-            var fileSignal = workItem.ToSignal(filepath);
-
-            // Assert
-            fileSignal.Should().NotBeNull();
-            fileSignal.ReferenceId.Should().Be(signal.ReferenceId);
-            fileSignal.Filepath.Should().Be(filepath);
+            // Act & Assert
+            FluentActions
+                // ReSharper disable once AccessToDisposedClosure
+                .Invoking(() => workItem.ToSignal(filepath))
+                .Should()
+                .Throw<InvalidOperationException>();
         }
 
         [Fact]

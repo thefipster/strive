@@ -1,9 +1,9 @@
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
-using Fip.Strive.Harvester.Application.Features.Import.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using LiteDB;
 
-namespace Fip.Strive.Harvester.Application.Features.Import.Repositories;
+namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories;
 
 public class ZipIndexer : IZipIndexer
 {
@@ -13,6 +13,7 @@ public class ZipIndexer : IZipIndexer
     {
         _collection = context.GetCollection<ZipIndex>();
         _collection.EnsureIndex(x => x.Hash);
+        _collection.EnsureIndex(x => x.ReferenceId);
     }
 
     public ZipIndex? Find(string hash) => _collection.FindById(hash);

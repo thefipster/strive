@@ -11,4 +11,6 @@ public interface IClassifier
     IFileClassifier? Find(DataSources source);
 
     IEnumerable<IFileClassifier> GetAll();
+
+    string GetHash();
 }

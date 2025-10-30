@@ -1,6 +1,6 @@
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 
-namespace Fip.Strive.Harvester.Application.Features.Expand.Repositories.Contracts;
+namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 
 public interface IFileIndexer
 {

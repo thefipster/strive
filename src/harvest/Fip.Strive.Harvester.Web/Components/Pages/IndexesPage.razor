@@ -43,6 +43,7 @@
             <MudTh>Signalled</MudTh>
             <MudTh>Hash</MudTh>
             <MudTh>File</MudTh>
+            <MudTh>Classification</MudTh>
             <MudTh>Signal</MudTh>
             <MudTh>Reference</MudTh>
         </HeaderContent>
@@ -50,6 +51,7 @@
             <col Style="width: 200px;"/>
             <col Style="width: 200px;"/>
             <col />
+            <col Style="width: 500px;"/>
             <col Style="width: 350px;"/>
             <col Style="width: 350px;"/>
         </ColGroup>
@@ -57,6 +59,7 @@
             <MudTd DataLabel="Signalled">@file.SignalledAt</MudTd>
             <MudTd DataLabel="Hash">@file.Hash</MudTd>
             <MudTd DataLabel="File">@file.Files.FirstOrDefault()</MudTd>
+            <MudTd DataLabel="Signal">@file.Source</MudTd>
             <MudTd DataLabel="Signal">@file.SignalId</MudTd>
             <MudTd DataLabel="Reference">@file.ReferenceId</MudTd>
         </RowTemplate>
