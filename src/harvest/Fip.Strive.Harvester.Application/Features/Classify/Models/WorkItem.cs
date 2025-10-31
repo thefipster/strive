@@ -10,17 +10,6 @@ public class WorkItem
     public FileIndex? Index { get; set; }
     public List<ClassificationResult> Classifications { get; set; } = [];
 
-    public string GetFilePath()
-    {
-        if (Index is null)
-            throw new InvalidOperationException("Cannot get file path without index.");
-
-        if (Index.Files.Count == 0)
-            throw new InvalidOperationException("Index contains no files.");
-
-        return Index.Files.First().Key;
-    }
-
     public static WorkItem FromSignal(FileSignal signal)
     {
         return new WorkItem { Signal = signal };
@@ -34,6 +23,7 @@ public class WorkItem
             Filepath = Signal.Filepath,
             Hash = Signal.Hash,
             Source = Index!.Source!.Value,
+            Timestamp = Index!.Timestamp!.Value,
         };
     }
 }

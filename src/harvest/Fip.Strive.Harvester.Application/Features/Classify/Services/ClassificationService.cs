@@ -55,8 +55,12 @@ public class ClassificationService(IFileIndexer indexer, IClassifier classifier,
         index.Classified = true;
         index.ClassificationResult = ClassificationResults.Classified;
 
-        var classification = work.Classifications.First(x => x.Classification != null);
+        var classification = work
+            .Classifications.Where(x => x.Classification != null)
+            .Select(x => x.Classification!)
+            .First();
         index.Source = classification.Source;
+        index.Timestamp = classification.Datetime;
         index.ClassfierVersion = classification.Version;
     }
 

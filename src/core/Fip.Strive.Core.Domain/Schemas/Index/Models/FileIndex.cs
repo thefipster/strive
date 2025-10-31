@@ -17,6 +17,7 @@ public class FileIndex
     public DataSources? Source { get; set; }
     public int ClassfierVersion { get; set; }
     public DateTime? LastClassificationAt { get; set; }
+    public DateTime? Timestamp { get; set; }
 
     public void AddFile(string filename)
     {

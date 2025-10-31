@@ -8,4 +8,5 @@ public class TypedSignal() : Signal(SignalTypes.TypedSignal)
     public required string Filepath { get; set; }
     public required string Hash { get; set; }
     public required DataSources Source { get; set; }
+    public required DateTime Timestamp { get; set; }
 }
