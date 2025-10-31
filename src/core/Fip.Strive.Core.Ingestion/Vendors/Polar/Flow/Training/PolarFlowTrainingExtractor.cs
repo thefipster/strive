@@ -42,7 +42,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Training
                 Source,
                 filepath,
                 start.UtcDateTime,
-                DateRanges.Time,
+                DataKind.Session,
                 attributes
             );
             result.Add(attributeResult);
@@ -109,7 +109,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Training
                         Source,
                         filepath,
                         start.UtcDateTime,
-                        DateRanges.Time,
+                        DataKind.Session,
                         attributes,
                         series
                     )

@@ -36,7 +36,7 @@ public class PolarFlowCalendarItemsClassifier : IFileClassifier
         {
             Filepath = probe.Filepath,
             Source = Source,
-            Datetype = DateRanges.AllTime,
+            Datetype = DateRanges.Multi,
         };
     }
 }

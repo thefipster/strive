@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Withings.Signal;
 public class WithingsSignalClassifier()
     : CsvClassifier(
         DataSources.WithingsSignal,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         "date,type,frequency,duration,wearposition,signal,doctor_assessment,doctor_name,checkup_date",
         ",",
         0

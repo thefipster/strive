@@ -51,7 +51,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Ohr
                 Filepath = probe.Filepath,
                 Source = Source,
                 Datetime = DateTime.Parse(date),
-                Datetype = DateRanges.Month,
+                Datetype = DateRanges.Multi,
             };
         }
     }

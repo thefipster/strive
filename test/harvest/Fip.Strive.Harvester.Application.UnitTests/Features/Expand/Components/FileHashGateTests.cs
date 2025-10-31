@@ -11,13 +11,13 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Components;
 
 public class FileHashGateTests
 {
-    private readonly IFileIndexer _indexer;
+    private readonly IIndexer<FileIndex, string> _indexer;
     private readonly IFileHasher _hasher;
     private readonly FileHashGate _sut;
 
     public FileHashGateTests()
     {
-        _indexer = Substitute.For<IFileIndexer>();
+        _indexer = Substitute.For<IIndexer<FileIndex, string>>();
         _hasher = Substitute.For<IFileHasher>();
         _sut = new FileHashGate(_indexer, _hasher);
     }

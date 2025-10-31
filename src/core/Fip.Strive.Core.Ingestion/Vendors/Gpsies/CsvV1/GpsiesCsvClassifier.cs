@@ -42,7 +42,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Gpsies.CsvV1
                 Filepath = probe.Filepath,
                 Source = Source,
                 Datetime = date,
-                Datetype = DateRanges.Time,
+                Datetype = DateRanges.Session,
             };
         }
     }

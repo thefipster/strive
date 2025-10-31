@@ -1,4 +1,5 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace Fip.Strive.Harvester.Application.Features.Import.Services;
 
 public class ZipInventory(
-    IZipIndexer indexer,
+    IIndexer<ZipIndex, string> indexer,
     IZipFileAccess fileAccess,
     IFileHasher hasher,
     ILogger<ZipInventory> logger

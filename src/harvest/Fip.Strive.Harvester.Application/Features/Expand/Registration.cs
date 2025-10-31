@@ -23,7 +23,7 @@ public static class Registration
         services.AddScoped<IFileHashGate, FileHashGate>();
         services.Decorate<IFileHashGate, FileHashGateSignalled>();
 
-        services.AddScoped<IFileIndexer, FileIndexer>();
+        services.AddScoped<IIndexer<FileIndex, string>, FileIndexer>();
         services.AddScoped<ISpecificationReader<FileIndex>, FilePager>();
 
         services.AddScoped<IExpansionService, ExpansionService>();

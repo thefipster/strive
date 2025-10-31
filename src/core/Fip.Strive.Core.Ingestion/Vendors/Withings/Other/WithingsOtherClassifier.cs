@@ -4,4 +4,4 @@ using Fip.Strive.Core.Ingestion.Components;
 namespace Fip.Strive.Core.Ingestion.Vendors.Withings.Other;
 
 public class WithingsOtherClassifier()
-    : CsvClassifier(DataSources.WithingsOther, DateRanges.AllTime, "type,date,value", ",", 1);
+    : CsvClassifier(DataSources.WithingsOther, DateRanges.Multi, "type,date,value", ",", 1);

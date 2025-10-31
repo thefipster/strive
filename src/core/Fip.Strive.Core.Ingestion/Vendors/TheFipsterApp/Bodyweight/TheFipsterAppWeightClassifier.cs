@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.TheFipsterApp.Bodyweight;
 public class TheFipsterAppWeightClassifier()
     : JsonClassifier(
         DataSources.TheFipsterAppWeight,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         ["Weight", "Reason", "Date"],
         "Date"
     );

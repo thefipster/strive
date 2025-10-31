@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.ActiveMinutes;
 public class GoogleFitbitActiveMinutesClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitActiveMinutes,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,light,moderate,very"
     );

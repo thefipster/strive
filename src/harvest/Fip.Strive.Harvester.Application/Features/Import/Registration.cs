@@ -19,7 +19,7 @@ public static class Registration
 {
     public static void AddImportFeature(this IServiceCollection services)
     {
-        services.AddScoped<IZipIndexer, ZipIndexer>();
+        services.AddScoped<IIndexer<ZipIndex, string>, ZipIndexer>();
         services.AddScoped<ISpecificationReader<ZipIndex>, ZipPager>();
 
         services.AddScoped<IZipFileAccess, ZipFileAccess>();

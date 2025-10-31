@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.RecoveryBlob;
 public class PolarFlowNightlyRecoveryBlobClassifier()
     : JsonClassifier(
         DataSources.PolarFlowNightlyRecoveryBlob,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         ["hrvData", "startTime", "samplingIntervalInMillis", "samples"],
         "startTime"
     );

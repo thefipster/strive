@@ -33,7 +33,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Generic.Gpx
                 Filepath = probe.Filepath,
                 Source = Source,
                 Datetime = date,
-                Datetype = DateRanges.Time,
+                Datetype = DateRanges.Session,
             };
         }
     }

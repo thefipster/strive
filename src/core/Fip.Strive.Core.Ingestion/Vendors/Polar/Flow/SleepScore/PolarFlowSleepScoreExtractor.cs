@@ -27,7 +27,7 @@ public class PolarFlowSleepScoreExtractor : IFileExtractor
                 DataSources.PolarFlowSleepScore,
                 filepath,
                 date,
-                DateRanges.Day
+                DataKind.Day
             );
 
             var sleepScore = item.SleepScoreResult["sleepScore"];

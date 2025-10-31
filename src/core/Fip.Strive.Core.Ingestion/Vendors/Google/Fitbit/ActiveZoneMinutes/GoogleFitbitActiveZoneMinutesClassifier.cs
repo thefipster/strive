@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.ActiveZoneMinutes;
 public class GoogleFitbitActiveZoneMinutesClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitActiveZoneMinutes,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,heart rate zone,total minutes"
     );

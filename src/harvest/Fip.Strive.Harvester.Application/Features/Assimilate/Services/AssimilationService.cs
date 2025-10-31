@@ -1,18 +1,29 @@
+using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Core.Ingestion.Services.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Features.Assimilate.Models;
 using Fip.Strive.Harvester.Application.Features.Assimilate.Services.Contracts;
+using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Harvester.Application.Features.Assimilate.Services;
 
-public class AssimilationService(IExtractor extractor) : IAssimilationService
+public class AssimilationService(
+    IExtractor extractor,
+    IFileHasher hasher,
+    IIndexer<DataIndex, string> indexer,
+    IIndexer<FileIndex, string> files,
+    IInventory inventory,
+    IOptions<AssimilateConfig> config
+) : IAssimilationService
 {
+    private string _rootPath = config.Value.Path;
+
     public async Task<WorkItem> ExtractFileAsync(TypedSignal signal, CancellationToken ct)
     {
         WorkItem work = WorkItem.FromSignal(signal);
-
-        // check file index for assimilation and version
 
         work.Extractions = await extractor.ExtractAsync(
             work.Signal.Filepath,
@@ -20,23 +31,54 @@ public class AssimilationService(IExtractor extractor) : IAssimilationService
             work.Signal.Timestamp
         );
         foreach (var extraction in work.Extractions)
-            HandleExtraction(extraction, work);
+            await HandleExtraction(extraction, work, ct);
 
-        // update file index with assimilation info
+        var index = files.Find(signal.Hash);
+        // TODO Handle index
 
         return work;
     }
 
-    private void HandleExtraction(FileExtraction extraction, WorkItem work)
+    private async Task HandleExtraction(
+        FileExtraction extraction,
+        WorkItem work,
+        CancellationToken ct = default
+    )
     {
-        // save extraction to disc
+        var filepath = extraction.Write(_rootPath);
 
-        // update assimilation index
+        await SaveIndexAsync(extraction, work, filepath, ct);
+        SaveInventory(extraction);
+    }
 
-        // create inventory
+    private async Task SaveIndexAsync(
+        FileExtraction extraction,
+        WorkItem work,
+        string filepath,
+        CancellationToken ct = default
+    )
+    {
+        var hash = await hasher.HashXx3Async(filepath, ct);
+        work.Index = new DataIndex
+        {
+            Hash = hash,
+            Filepath = filepath,
+            Kind = extraction.Kind,
+            Timestamp = extraction.Timestamp,
+            Source = extraction.Source,
+            SourceFile = extraction.SourceFile,
+            ReferenceId = work.Signal.ReferenceId,
+            SignalledAt = work.Signal.EmittedAt,
+            SignalId = work.Signal.Id,
+            ExtractorVersion = extraction.Version,
+        };
 
-        // profit
+        indexer.Upsert(work.Index);
+    }
 
-        throw new NotImplementedException();
+    private void SaveInventory(FileExtraction extraction)
+    {
+        var dateEntry = new DateEntry { Kind = extraction.Kind, Timestamp = extraction.Timestamp };
+        inventory.Upsert(dateEntry);
     }
 }

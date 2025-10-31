@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Garmin.SleepData;
 public class GarminSleepDataClassifier()
     : JsonClassifier(
         DataSources.GarminSleepData,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         [
             "sleepStartTimestampGMT",
             "calendarDate",

@@ -44,7 +44,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.ProTrainer.Hrm
                 Filepath = probe.Filepath,
                 Source = Source,
                 Datetime = datetime,
-                Datetype = DateRanges.Time,
+                Datetype = DateRanges.Session,
             };
         }
 

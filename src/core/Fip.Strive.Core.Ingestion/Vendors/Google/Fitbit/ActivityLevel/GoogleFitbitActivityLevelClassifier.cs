@@ -4,4 +4,4 @@ using Fip.Strive.Core.Ingestion.Components;
 namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.ActivityLevel;
 
 public class GoogleFitbitActivityLevelClassifier()
-    : CsvClassifier(DataSources.GoogleFitbitActivityLevel, DateRanges.Month, "timestamp,level");
+    : CsvClassifier(DataSources.GoogleFitbitActivityLevel, DateRanges.Multi, "timestamp,level");

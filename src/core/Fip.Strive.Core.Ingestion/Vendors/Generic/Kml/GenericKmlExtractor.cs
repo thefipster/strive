@@ -84,7 +84,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Generic.Kml
                 Source,
                 filepath,
                 date.Value,
-                DateRanges.Time,
+                DataKind.Session,
                 attributes,
                 series
             );

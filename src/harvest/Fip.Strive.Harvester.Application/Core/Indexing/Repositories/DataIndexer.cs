@@ -5,18 +5,18 @@ using LiteDB;
 
 namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories;
 
-public class ZipIndexer : IIndexer<ZipIndex, string>
+public class DataIndexer : IIndexer<DataIndex, string>
 {
-    private readonly ILiteCollection<ZipIndex> _collection;
+    private readonly ILiteCollection<DataIndex> _collection;
 
-    public ZipIndexer(IndexContext context)
+    public DataIndexer(IndexContext context)
     {
-        _collection = context.GetCollection<ZipIndex>();
+        _collection = context.GetCollection<DataIndex>();
         _collection.EnsureIndex(x => x.Hash);
         _collection.EnsureIndex(x => x.ReferenceId);
     }
 
-    public ZipIndex? Find(string hash) => _collection.FindById(hash);
+    public DataIndex? Find(string hash) => _collection.FindById(hash);
 
-    public void Upsert(ZipIndex index) => _collection.Upsert(index);
+    public void Upsert(DataIndex index) => _collection.Upsert(index);
 }

@@ -36,7 +36,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.ProTrainer.Hrm
 
             var slot = 0;
 
-            var result = new FileExtraction(Source, filepath, startDate, DateRanges.Time);
+            var result = new FileExtraction(Source, filepath, startDate, DataKind.Session);
 
             var heartrateSeries = samples[slot].Select(x => x.ToString()).ToList();
             var timeSeries = GenerateTimeSeries(startDate, interval, heartrateSeries);

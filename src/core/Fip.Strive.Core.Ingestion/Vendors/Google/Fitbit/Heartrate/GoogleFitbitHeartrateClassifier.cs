@@ -34,7 +34,7 @@ public class GoogleFitbitHeartrateClassifier : IFileClassifier
             Filepath = probe.Filepath,
             Source = Source,
             Datetime = date,
-            Datetype = probe.Filepath.Contains("daily") ? DateRanges.AllTime : DateRanges.Day,
+            Datetype = probe.Filepath.Contains("daily") ? DateRanges.Multi : DateRanges.Day,
         };
     }
 }

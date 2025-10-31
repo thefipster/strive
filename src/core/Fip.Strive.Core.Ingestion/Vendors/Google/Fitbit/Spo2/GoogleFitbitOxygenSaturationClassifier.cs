@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.Spo2
     public class GoogleFitbitOxygenSaturationClassifier()
         : CsvClassifier(
             DataSources.GoogleFitbitOxygenSaturation,
-            DateRanges.Month,
+            DateRanges.Multi,
             "timestamp,oxygen saturation percentage"
         );
 }

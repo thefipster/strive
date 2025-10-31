@@ -24,7 +24,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Ohr
             foreach (var day in ohrData.DeviceDays)
             {
                 var date = day.Date;
-                var result = new FileExtraction(Source, filepath, date, DateRanges.Day);
+                var result = new FileExtraction(Source, filepath, date, DataKind.Day);
                 result.Series.Add(Parameters.Timestamp, []);
                 result.Series.Add(Parameters.Heartrate, []);
 

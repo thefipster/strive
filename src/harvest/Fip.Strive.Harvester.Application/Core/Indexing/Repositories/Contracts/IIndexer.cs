@@ -2,8 +2,8 @@ using Fip.Strive.Core.Domain.Schemas.Index.Models;
 
 namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
 
-public interface IFileIndexer
+public interface IIndexer<TIndex, in TKey>
 {
-    FileIndex? Find(string hash);
-    void Upsert(FileIndex index);
+    TIndex? Find(TKey hash);
+    void Upsert(TIndex index);
 }

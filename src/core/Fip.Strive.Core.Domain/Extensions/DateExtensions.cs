@@ -1,26 +1,23 @@
-﻿using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
+﻿using Fip.Strive.Core.Domain.Schemas.Ingestion.Components;
+using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
 
 namespace Fip.Strive.Core.Domain.Extensions
 {
     public static class DateExtensions
     {
-        public static string GetPath(this DateRanges type, DateTime date) =>
-            type switch
+        public static string GetPath(this DateTime date, DataKind kind) =>
+            kind switch
             {
-                DateRanges.Time => $"{date:yyyy}\\{date:MM}\\{date:dd}\\{date:HH_mm}",
-                DateRanges.Day => $"{date:yyyy}\\{date:MM}\\{date:dd}",
-                DateRanges.Month => $"{date:yyyy}\\{date:MM}",
-                DateRanges.Year => $"{date:yyyy}",
+                DataKind.Day => $"{date:yyyy}_{date:MM}_{date:dd}",
+                DataKind.Session => $"{date:yyyy}\\{date:MM}\\{date:dd}\\{date:HH_mm}",
                 _ => string.Empty,
             };
 
-        public static string ToRangeString(this DateTime date, DateRanges range) =>
-            range switch
+        public static string ToRangeString(this DateTime date, DataKind kind) =>
+            kind switch
             {
-                DateRanges.Time => $"{date:yyyy}_{date:MM}_{date:dd}_{date:HH_mm}",
-                DateRanges.Day => $"{date:yyyy}_{date:MM}_{date:dd}",
-                DateRanges.Month => $"{date:yyyy}_{date:MM}",
-                DateRanges.Year => $"{date:yyyy}",
+                DataKind.Day => date.ToString(DateHelper.DayFormat),
+                DataKind.Session => date.ToString(DateHelper.FsMillisecondFormat),
                 _ => string.Empty,
             };
     }

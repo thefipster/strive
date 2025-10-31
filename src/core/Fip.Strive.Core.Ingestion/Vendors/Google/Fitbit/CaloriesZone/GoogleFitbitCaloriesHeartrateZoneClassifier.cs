@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.CaloriesZone;
 public class GoogleFitbitCaloriesHeartrateZoneClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitCaloriesHeartrateZone,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,heart rate zone type,kcal"
     );

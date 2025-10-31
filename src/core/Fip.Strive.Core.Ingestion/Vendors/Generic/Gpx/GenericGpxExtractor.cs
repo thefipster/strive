@@ -74,7 +74,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Generic.Gpx
             if (start == null)
                 throw new ExtractionException(filepath, "No timestamp was found or provided.");
 
-            var result = new FileExtraction(Source, filepath, start.Value, DateRanges.Time);
+            var result = new FileExtraction(Source, filepath, start.Value, DataKind.Session);
 
             result.Attributes.Add(
                 Parameters.Distance,

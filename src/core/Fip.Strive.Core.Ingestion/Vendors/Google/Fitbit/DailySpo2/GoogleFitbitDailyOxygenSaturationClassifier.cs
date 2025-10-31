@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.DailySpo2;
 public class GoogleFitbitDailyOxygenSaturationClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitDailyOxygenSaturation,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,average percentage,lower bound percentage,upper bound percentage,baseline percentage,standard deviation percentage"
     );

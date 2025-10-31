@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 
@@ -7,6 +8,7 @@ public class WorkItem
 {
     public required TypedSignal Signal { get; set; }
     public List<FileExtraction> Extractions { get; set; } = [];
+    public DataIndex Index { get; set; }
 
     public static WorkItem FromSignal(TypedSignal signal)
     {

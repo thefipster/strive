@@ -2,10 +2,9 @@
 {
     public enum DateRanges
     {
+        Unknown,
+        Session,
         Day,
-        Month,
-        Year,
-        AllTime,
-        Time,
+        Multi,
     }
 }

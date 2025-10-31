@@ -5,7 +5,7 @@ using LiteDB;
 
 namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories;
 
-public class FileIndexer : IFileIndexer
+public class FileIndexer : IIndexer<FileIndex, string>
 {
     private readonly ILiteCollection<FileIndex> _collection;
 

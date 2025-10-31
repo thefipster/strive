@@ -60,13 +60,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Activity
             series.Add(Parameters.Timestamp, timestampSeries);
             series.Add(Parameters.MetabolicRate, metsSeries);
 
-            var result = new FileExtraction(
-                Source,
-                filepath,
-                activity.Date,
-                DateRanges.Day,
-                series
-            );
+            var result = new FileExtraction(Source, filepath, activity.Date, DataKind.Day, series);
 
             results.Add(result);
             return results;
@@ -99,13 +93,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Activity
             series.Add(Parameters.Timestamp, timestampSeries);
             series.Add(Parameters.Steps, stepsSeries);
 
-            var result = new FileExtraction(
-                Source,
-                filepath,
-                activity.Date,
-                DateRanges.Day,
-                series
-            );
+            var result = new FileExtraction(Source, filepath, activity.Date, DataKind.Day, series);
 
             results.Add(result);
             return results;
@@ -124,7 +112,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Activity
                     Source,
                     filepath,
                     activity.Date,
-                    DateRanges.Day,
+                    DataKind.Day,
                     attributes
                 );
                 results.Add(result);

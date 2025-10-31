@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.LivePace;
 public class GoogleFitbitLivePaceClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitLivePace,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,steps,distance millimeters,altitude gain millimeters"
     );

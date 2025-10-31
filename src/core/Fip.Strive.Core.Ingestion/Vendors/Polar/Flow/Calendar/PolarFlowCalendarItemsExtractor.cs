@@ -40,7 +40,7 @@ public class PolarFlowCalendarItemsExtractor : IFileExtractor
                 Source,
                 filepath,
                 item.Timestamp.Date,
-                DateRanges.Day,
+                DataKind.Day,
                 attributes
             );
             result.Add(extraction);

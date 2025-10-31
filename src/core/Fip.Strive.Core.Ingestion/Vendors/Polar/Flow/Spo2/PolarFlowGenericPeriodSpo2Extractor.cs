@@ -30,7 +30,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Spo2
             if (spo2Test.Data == null)
                 throw new ExtractionException(filepath, "Couldn't find any SPO2 results.");
 
-            var result = new FileExtraction(Source, filepath, date.Value, DateRanges.Day);
+            var result = new FileExtraction(Source, filepath, date.Value, DataKind.Day);
             var testEvent = CreateTestEvent(spo2Test);
             result.Events.Add(testEvent);
             return [result];

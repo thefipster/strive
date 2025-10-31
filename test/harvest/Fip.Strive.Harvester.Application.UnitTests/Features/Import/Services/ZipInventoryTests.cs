@@ -12,7 +12,7 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Import.Services;
 
 public class ZipInventoryTests
 {
-    private readonly IZipIndexer _indexer;
+    private readonly IIndexer<ZipIndex, string> _indexer;
     private readonly IZipFileAccess _fileAccess;
     private readonly IFileHasher _hasher;
     private readonly ILogger<ZipInventory> _logger;
@@ -21,7 +21,7 @@ public class ZipInventoryTests
 
     public ZipInventoryTests()
     {
-        _indexer = Substitute.For<IZipIndexer>();
+        _indexer = Substitute.For<IIndexer<ZipIndex, string>>();
         _fileAccess = Substitute.For<IZipFileAccess>();
         _hasher = Substitute.For<IFileHasher>();
         _logger = Substitute.For<ILogger<ZipInventory>>();

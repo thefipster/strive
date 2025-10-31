@@ -44,7 +44,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Target
                 Filepath = probe.Filepath,
                 Source = Source,
                 Datetime = DateTime.Parse(date),
-                Datetype = DateRanges.Time,
+                Datetype = DateRanges.Session,
             };
         }
     }
