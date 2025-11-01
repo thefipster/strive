@@ -1,6 +1,6 @@
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 
-namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
+namespace Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 
 public interface IInventory
 {

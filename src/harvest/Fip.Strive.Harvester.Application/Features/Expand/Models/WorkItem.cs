@@ -7,7 +7,7 @@ public class WorkItem
 {
     public required ImportSignal Signal { get; init; }
     public string? OutputPath { get; set; }
-    public string? Hash { get; set; }
+    public FileIndex? Index { get; set; }
 
     public static WorkItem FromSignal(ImportSignal signal)
     {
@@ -16,14 +16,16 @@ public class WorkItem
 
     public FileIndex ToIndex(string hash)
     {
-        Hash = hash;
-        return new FileIndex
+        Index = new FileIndex
         {
-            Hash = Hash,
+            Hash = hash,
             ReferenceId = Signal.ReferenceId,
             SignalledAt = Signal.EmittedAt,
             SignalId = Signal.Id,
+            ParentId = Signal.Hash,
         };
+
+        return Index;
     }
 
     public FileSignal ToSignal(string filepath)
@@ -32,8 +34,10 @@ public class WorkItem
         {
             ReferenceId = Signal.ReferenceId,
             Hash =
-                Hash
-                ?? throw new InvalidOperationException("Cannot create FileSignal without hash"),
+                Index?.Hash
+                ?? throw new InvalidOperationException(
+                    $"Cannot create FileSignal without Index for file {filepath}."
+                ),
             Filepath = filepath,
         };
     }

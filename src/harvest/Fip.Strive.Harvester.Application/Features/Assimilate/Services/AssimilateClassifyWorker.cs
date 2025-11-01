@@ -7,7 +7,7 @@ using Fip.Strive.Harvester.Application.Features.Assimilate.Services.Contracts;
 namespace Fip.Strive.Harvester.Application.Features.Assimilate.Services;
 
 public class AssimilateClassifyWorker(IAssimilationService assimilator)
-    : QueueWorker(SignalTypes.FileSignal)
+    : QueueWorker(SignalTypes.TypedSignal)
 {
     public override async Task ProcessAsync(JobDetails job, CancellationToken ct)
     {

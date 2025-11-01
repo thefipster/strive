@@ -4,7 +4,7 @@ using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Core.Ingestion.Services.Contracts;
-using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Features.Assimilate.Models;
 using Fip.Strive.Harvester.Application.Features.Assimilate.Services.Contracts;
 using Microsoft.Extensions.Options;
@@ -95,6 +95,7 @@ public class AssimilationService(
             SourceFile = extraction.SourceFile,
             ReferenceId = work.Signal.ReferenceId,
             SignalledAt = work.Signal.EmittedAt,
+            ParentId = work.Signal.Hash,
             SignalId = work.Signal.Id,
         };
 

@@ -52,7 +52,7 @@ public partial class IndexesPage(
             false,
             state.Page,
             state.PageSize,
-            x => x.ReferenceId == _selectedZip.ReferenceId
+            x => x.ParentId == _selectedZip.Hash
         );
 
         var files = filePager.GetPaged(specs);
@@ -72,7 +72,7 @@ public partial class IndexesPage(
 
     private Task<TableData<DataIndex>> OnDataIndexRequested(TableState state, CancellationToken ct)
     {
-        if (_selectedZip == null)
+        if (_selectedFile == null)
             return Task.FromResult(new TableData<DataIndex> { Items = [], TotalItems = 0 });
 
         var specs = new PageSpecificationRequest<DataIndex>(
@@ -80,7 +80,7 @@ public partial class IndexesPage(
             false,
             state.Page,
             state.PageSize,
-            x => x.ReferenceId == _selectedZip.ReferenceId
+            x => x.ParentId == _selectedFile.Hash
         );
 
         var files = dataPager.GetPaged(specs);

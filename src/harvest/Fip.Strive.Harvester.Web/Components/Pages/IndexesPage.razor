@@ -1,6 +1,9 @@
-<Headline Text="Indexes" />
+@using Fip.Strive.Core.Domain.Schemas.Ingestion.Components
+@using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums
+<Headline Text="Indexes"/>
 
-<MudTable T="ZipIndex" Class="mb-5" Context="zip" Dense="true" Hover="true" ServerData="@OnZipIndexRequested" OnRowClick="@OnZipIndexRowClick">
+<MudTable T="ZipIndex" Class="mb-5" Context="zip" Dense="true" Hover="true" ServerData="@OnZipIndexRequested"
+          OnRowClick="@OnZipIndexRowClick">
     <ToolBarContent>
         <MudText Typo="Typo.h2">Imported Zips</MudText>
     </ToolBarContent>
@@ -14,14 +17,14 @@
     <ColGroup>
         <col Style="width: 200px;"/>
         <col Style="width: 200px;"/>
-        <col />
+        <col/>
         <col Style="width: 350px;"/>
         <col Style="width: 350px;"/>
     </ColGroup>
     <RowTemplate>
         <MudTd DataLabel="Signalled">@zip.SignalledAt</MudTd>
         <MudTd DataLabel="Hash">@zip.Hash</MudTd>
-        <MudTd DataLabel="File">@zip.Files.FirstOrDefault()</MudTd>
+        <MudTd DataLabel="File">@zip.Files.FirstOrDefault().Key</MudTd>
         <MudTd DataLabel="Signal">@zip.SignalId</MudTd>
         <MudTd DataLabel="Reference">@zip.ReferenceId</MudTd>
     </RowTemplate>
@@ -30,12 +33,13 @@
     </NoRecordsContent>
     <PagerContent>
         <MudTablePager/>
-    </PagerContent> 
+    </PagerContent>
 </MudTable>
 
 @if (_selectedZip != null)
 {
-    <MudTable @ref="_fileTable" T="FileIndex" Dense="true" Hover="true" Context="file" ServerData="@OnFileIndexRequested" OnRowClick="@OnFileIndexRowClick">
+    <MudTable @ref="_fileTable" T="FileIndex" Dense="true" Hover="true" Context="file"
+              ServerData="@OnFileIndexRequested" OnRowClick="@OnFileIndexRowClick">
         <ToolBarContent>
             <MudText Typo="Typo.h2">Files of @_selectedZip.Files.First().Key (@_selectedZip.Hash)</MudText>
         </ToolBarContent>
@@ -50,7 +54,7 @@
         <ColGroup>
             <col Style="width: 200px;"/>
             <col Style="width: 200px;"/>
-            <col />
+            <col/>
             <col Style="width: 500px;"/>
             <col Style="width: 350px;"/>
             <col Style="width: 350px;"/>
@@ -58,7 +62,7 @@
         <RowTemplate>
             <MudTd DataLabel="Signalled">@file.SignalledAt</MudTd>
             <MudTd DataLabel="Hash">@file.Hash</MudTd>
-            <MudTd DataLabel="File">@file.Files.FirstOrDefault()</MudTd>
+            <MudTd DataLabel="File">@file.Files.FirstOrDefault().Key</MudTd>
             <MudTd DataLabel="Signal">@file.Source</MudTd>
             <MudTd DataLabel="Signal">@file.SignalId</MudTd>
             <MudTd DataLabel="Reference">@file.ReferenceId</MudTd>
@@ -74,31 +78,44 @@
 
 @if (_selectedFile != null)
 {
-    <MudTable @ref="_dataTable" T="DataIndex" Dense="true" Hover="true" Context="data" ServerData="@OnDataIndexRequested">
+    <MudTable @ref="_dataTable" T="DataIndex" Dense="true" Hover="true" Context="data"
+              ServerData="@OnDataIndexRequested">
         <ToolBarContent>
             <MudText Typo="Typo.h2">Data of @_selectedFile.Files.First().Key (@_selectedFile.Hash)</MudText>
         </ToolBarContent>
         <HeaderContent>
             <MudTh>Signalled</MudTh>
             <MudTh>Hash</MudTh>
-            <MudTh>File</MudTh>
             <MudTh>Classification</MudTh>
+            <MudTh>Timestamp</MudTh>
+            <MudTh>Kind</MudTh>
             <MudTh>Signal</MudTh>
             <MudTh>Reference</MudTh>
         </HeaderContent>
         <ColGroup>
             <col Style="width: 200px;"/>
             <col Style="width: 200px;"/>
-            <col />
-            <col Style="width: 500px;"/>
+            <col/>
+            <col Style="width: 250px;"/>
+            <col Style="width: 250px;"/>
             <col Style="width: 350px;"/>
             <col Style="width: 350px;"/>
         </ColGroup>
         <RowTemplate>
             <MudTd DataLabel="Signalled">@data.SignalledAt</MudTd>
             <MudTd DataLabel="Hash">@data.Hash</MudTd>
-            <MudTd DataLabel="File">@data.Filepath</MudTd>
-            <MudTd DataLabel="Signal">@data.Source</MudTd>
+            <MudTd DataLabel="Source">@data.Source</MudTd>
+            <MudTd DataLabel="Timestamp">
+                @if (data.Kind == DataKind.Day)
+                {
+                    @data.Timestamp.ToString(DateHelper.UiDayFormat)
+                }
+                else
+                {
+                    @data.Timestamp.ToString(DateHelper.UiMinuteFormat)
+                }
+            </MudTd>
+            <MudTd DataLabel="Kind">@data.Kind</MudTd>
             <MudTd DataLabel="Signal">@data.SignalId</MudTd>
             <MudTd DataLabel="Reference">@data.ReferenceId</MudTd>
         </RowTemplate>

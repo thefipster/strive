@@ -8,9 +8,10 @@ public class FileIndex
     public required string Hash { get; set; }
     public Dictionary<string, DateTime> Files { get; set; } = new();
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime SignalledAt { get; set; }
-    public Guid SignalId { get; set; }
-    public Guid ReferenceId { get; set; }
+    public required DateTime SignalledAt { get; set; }
+    public required Guid SignalId { get; set; }
+    public required Guid ReferenceId { get; set; }
+    public required string ParentId { get; set; }
     public bool Classified { get; set; }
     public ClassificationResults ClassificationResult { get; set; }
     public string? ClassifierHash { get; set; }

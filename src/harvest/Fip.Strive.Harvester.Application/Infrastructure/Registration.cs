@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Fip.Strive.Harvester.Application.Infrastructure.Configs;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

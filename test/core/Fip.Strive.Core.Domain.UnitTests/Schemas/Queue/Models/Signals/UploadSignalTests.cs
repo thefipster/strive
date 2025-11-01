@@ -11,8 +11,9 @@ public class UploadSignalTests
     public void SerializingUploadSignal_WithBaseClass_ShouldSerializeFilepath()
     {
         var filepath = "/here/we/go";
+        var hash = "hash1234";
 
-        Signal signal = UploadSignal.From(filepath);
+        Signal signal = UploadSignal.From(filepath, hash);
         var job = signal.ToJobEntity();
 
         var uploadSignal = JsonSerializer.Deserialize<UploadSignal>(job.Payload!);
@@ -25,7 +26,8 @@ public class UploadSignalTests
     public void ToJobEntity_ShouldPreserveSignalMetadata()
     {
         var filepath = "/test/path";
-        var signal = UploadSignal.From(filepath);
+        var hash = "hash1234";
+        var signal = UploadSignal.From(filepath, hash);
 
         var job = signal.ToJobEntity();
 
@@ -39,7 +41,8 @@ public class UploadSignalTests
     public void ToJobEntity_ShouldRoundTripSuccessfully()
     {
         var filepath = "/another/test/path";
-        var originalSignal = UploadSignal.From(filepath);
+        var hash = "hash1234";
+        var originalSignal = UploadSignal.From(filepath, hash);
         var originalId = originalSignal.Id;
         var originalReferenceId = originalSignal.ReferenceId;
         var originalEmittedAt = originalSignal.EmittedAt;

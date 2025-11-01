@@ -15,7 +15,7 @@ public class ZipInventorySignaller(
     ILogger<ZipInventorySignaller> logger
 ) : IZipInventory
 {
-    private string _rootPath = config.Value.Path;
+    private readonly string _rootPath = config.Value.Path;
 
     public async Task<WorkItem> ImportAsync(UploadSignal signal, CancellationToken ct)
     {

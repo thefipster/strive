@@ -1,6 +1,6 @@
 using Fip.Strive.Harvester.Application.Core.Config.Models;
 
-namespace Fip.Strive.Harvester.Application.Infrastructure.Configs;
+namespace Fip.Strive.Harvester.Application.Core.Indexing;
 
 public class IndexConfig() : BaseConfig("Features:Index")
 {
