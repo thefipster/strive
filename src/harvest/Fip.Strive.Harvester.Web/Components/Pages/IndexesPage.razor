@@ -35,9 +35,9 @@
 
 @if (_selectedZip != null)
 {
-    <MudTable @ref="_fileTable" T="FileIndex" Dense="true" Hover="true" Context="file" ServerData="@OnFileIndexRequested">
+    <MudTable @ref="_fileTable" T="FileIndex" Dense="true" Hover="true" Context="file" ServerData="@OnFileIndexRequested" OnRowClick="@OnFileIndexRowClick">
         <ToolBarContent>
-            <MudText Typo="Typo.h2">@_selectedZip.Files.First().Key Files</MudText>
+            <MudText Typo="Typo.h2">Files of @_selectedZip.Files.First().Key (@_selectedZip.Hash)</MudText>
         </ToolBarContent>
         <HeaderContent>
             <MudTh>Signalled</MudTh>
@@ -62,6 +62,45 @@
             <MudTd DataLabel="Signal">@file.Source</MudTd>
             <MudTd DataLabel="Signal">@file.SignalId</MudTd>
             <MudTd DataLabel="Reference">@file.ReferenceId</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
+
+@if (_selectedFile != null)
+{
+    <MudTable @ref="_dataTable" T="DataIndex" Dense="true" Hover="true" Context="data" ServerData="@OnDataIndexRequested">
+        <ToolBarContent>
+            <MudText Typo="Typo.h2">Data of @_selectedFile.Files.First().Key (@_selectedFile.Hash)</MudText>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Signalled</MudTh>
+            <MudTh>Hash</MudTh>
+            <MudTh>File</MudTh>
+            <MudTh>Classification</MudTh>
+            <MudTh>Signal</MudTh>
+            <MudTh>Reference</MudTh>
+        </HeaderContent>
+        <ColGroup>
+            <col Style="width: 200px;"/>
+            <col Style="width: 200px;"/>
+            <col />
+            <col Style="width: 500px;"/>
+            <col Style="width: 350px;"/>
+            <col Style="width: 350px;"/>
+        </ColGroup>
+        <RowTemplate>
+            <MudTd DataLabel="Signalled">@data.SignalledAt</MudTd>
+            <MudTd DataLabel="Hash">@data.Hash</MudTd>
+            <MudTd DataLabel="File">@data.Filepath</MudTd>
+            <MudTd DataLabel="Signal">@data.Source</MudTd>
+            <MudTd DataLabel="Signal">@data.SignalId</MudTd>
+            <MudTd DataLabel="Reference">@data.ReferenceId</MudTd>
         </RowTemplate>
         <NoRecordsContent>
             <MudText>No matching records found</MudText>

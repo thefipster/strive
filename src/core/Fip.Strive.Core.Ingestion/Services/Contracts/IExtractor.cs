@@ -15,6 +15,4 @@ public interface IExtractor
         DataSources source,
         DateTime? date = null
     );
-
-    // TODO Add method to get extractor hash from IEnumerable<IFIleExtractor>
 }

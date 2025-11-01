@@ -1,5 +1,3 @@
-#nullable enable
-
 using Fip.Strive.Core.Ingestion.Contracts;
 using Fip.Strive.Core.Ingestion.Services.Contracts;
 using Microsoft.AspNetCore.Components;
@@ -9,7 +7,7 @@ namespace Fip.Strive.Harvester.Web.Components.Pages;
 [Route("/filehandler")]
 public partial class FileHandlerPage(IClassifier classifier, IExtractor extractor) : ComponentBase
 {
-    private Dictionary<IFileClassifier, IFileExtractor?>? _handlers;
+    private Dictionary<IFileClassifier, IFileExtractor?> _handlers = new();
 
     protected override void OnParametersSet()
     {

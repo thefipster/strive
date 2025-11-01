@@ -84,7 +84,6 @@ namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models
         public Dictionary<Parameters, List<string>> Series { get; set; }
 
         public List<UnifiedEvent> Events { get; set; } = new();
-        public int Version { get; set; }
 
         public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
 

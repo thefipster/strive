@@ -11,7 +11,6 @@ public class DataIndex
     public required DataSources Source { get; set; }
     public required string SourceFile { get; set; }
     public required Guid ReferenceId { get; set; }
-    public required int ExtractorVersion { get; set; }
     public required DateTime SignalledAt { get; set; }
     public required Guid SignalId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

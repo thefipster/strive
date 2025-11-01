@@ -1,4 +1,5 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
+using Fip.Strive.Core.Domain.Exceptions;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Options;
 namespace Fip.Strive.Harvester.Application.Features.Assimilate.Services;
 
 public class AssimilationService(
-    IExtractor extractor,
+    IExtractor extractors,
     IFileHasher hasher,
     IIndexer<DataIndex, string> indexer,
     IIndexer<FileIndex, string> files,
@@ -19,27 +20,52 @@ public class AssimilationService(
     IOptions<AssimilateConfig> config
 ) : IAssimilationService
 {
-    private string _rootPath = config.Value.Path;
+    private readonly string _rootPath = config.Value.Path;
 
     public async Task<WorkItem> ExtractFileAsync(TypedSignal signal, CancellationToken ct)
     {
         WorkItem work = WorkItem.FromSignal(signal);
 
-        work.Extractions = await extractor.ExtractAsync(
-            work.Signal.Filepath,
-            work.Signal.Source,
-            work.Signal.Timestamp
-        );
+        AppendExtractions(work);
         foreach (var extraction in work.Extractions)
-            await HandleExtraction(extraction, work, ct);
+            await WriteExtraction(extraction, work, ct);
 
-        var index = files.Find(signal.Hash);
-        // TODO Handle index
+        UpdateFileIndex(work);
 
         return work;
     }
 
-    private async Task HandleExtraction(
+    private void UpdateFileIndex(WorkItem work)
+    {
+        var index = files.Find(work.Signal.Hash);
+        if (index == null)
+            throw new ExtractionException(
+                work.Signal.Filepath,
+                $"No index found for hash {work.Signal.Hash}"
+            );
+
+        index.ExtractorVersion = work.Extractor!.ExtractorVersion;
+        index.LastExtractionAt = DateTime.UtcNow;
+        index.Extractions = work.Extractions.Count;
+        index.ExtractionMinDate = work.Extractions.Min(x => x.Timestamp);
+        index.ExtractionMaxDate = work.Extractions.Min(x => x.Timestamp);
+
+        files.Upsert(index);
+    }
+
+    private void AppendExtractions(WorkItem work)
+    {
+        work.Extractor = extractors.Find(work.Signal.Source);
+        if (work.Extractor == null)
+            throw new ExtractionException(
+                work.Signal.Filepath,
+                $"No extractor found for source {work.Signal.Source}"
+            );
+
+        work.Extractions = work.Extractor.Extract(work.Signal.Filepath, work.Signal.Timestamp);
+    }
+
+    private async Task WriteExtraction(
         FileExtraction extraction,
         WorkItem work,
         CancellationToken ct = default
@@ -70,7 +96,6 @@ public class AssimilationService(
             ReferenceId = work.Signal.ReferenceId,
             SignalledAt = work.Signal.EmittedAt,
             SignalId = work.Signal.Id,
-            ExtractorVersion = extraction.Version,
         };
 
         indexer.Upsert(work.Index);

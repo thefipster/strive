@@ -24,8 +24,6 @@ public class Extractor(IEnumerable<IFileExtractor> extractors) : IExtractor
             throw new ExtractionException(filepath, $"No extractor available for source {source}.");
 
         var extractions = extractor.Extract(filepath, date);
-        foreach (var extraction in extractions)
-            extraction.Version = extractor.ExtractorVersion;
 
         return Task.FromResult(extractions);
     }
