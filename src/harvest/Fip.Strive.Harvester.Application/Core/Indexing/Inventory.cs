@@ -21,14 +21,29 @@ public class Inventory : IInventory
 
     public void Upsert(DateEntry entry) => _collection.Upsert(entry);
 
-    public IEnumerable<DateEntry> Get(int year) => _collection.Find(x => x.Year == year);
+    public IEnumerable<int> GetYears() =>
+        _collection
+            .Query()
+            .Select(entry => entry.Year)
+            .ToEnumerable()
+            .Distinct()
+            .OrderBy(year => year);
 
-    public IEnumerable<DateEntry> Get(int year, int month) =>
-        _collection.Find(x => x.Year == year && x.Month == month);
+    public IEnumerable<DateEntry> GetEntries(int year) =>
+        _collection.Find(entry => entry.Year == year).OrderBy(entry => entry.Timestamp);
 
-    public IEnumerable<DateEntry> Get(int year, int month, int day) =>
-        _collection.Find(x => x.Year == year && x.Month == month && x.Day == day);
+    public IEnumerable<DateEntry> GetEntries(int year, int month) =>
+        _collection
+            .Find(entry => entry.Year == year && entry.Month == month)
+            .OrderBy(entry => entry.Timestamp);
 
-    public IEnumerable<DateEntry> Get(DateTime inclusiveStart, DateTime exclusiveEnd) =>
-        _collection.Find(x => x.Date >= inclusiveStart && x.Date < exclusiveEnd);
+    public IEnumerable<DateEntry> GetEntries(int year, int month, int day) =>
+        _collection
+            .Find(entry => entry.Year == year && entry.Month == month && entry.Day == day)
+            .OrderBy(entry => entry.Timestamp);
+
+    public IEnumerable<DateEntry> GetEntries(DateTime inclusiveStart, DateTime exclusiveEnd) =>
+        _collection
+            .Find(entry => entry.Date >= inclusiveStart && entry.Date < exclusiveEnd)
+            .OrderBy(entry => entry.Timestamp);
 }

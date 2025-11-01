@@ -6,11 +6,13 @@ public interface IInventory
 {
     public void Upsert(DateEntry entry);
 
-    public IEnumerable<DateEntry> Get(int year);
+    public IEnumerable<int> GetYears();
 
-    public IEnumerable<DateEntry> Get(int year, int month);
+    public IEnumerable<DateEntry> GetEntries(int year);
 
-    public IEnumerable<DateEntry> Get(int year, int month, int day);
+    public IEnumerable<DateEntry> GetEntries(int year, int month);
 
-    public IEnumerable<DateEntry> Get(DateTime inclusiveStart, DateTime exclusiveEnd);
+    public IEnumerable<DateEntry> GetEntries(int year, int month, int day);
+
+    public IEnumerable<DateEntry> GetEntries(DateTime inclusiveStart, DateTime exclusiveEnd);
 }
