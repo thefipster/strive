@@ -11,7 +11,7 @@ using MudBlazor;
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
 [Route("/queue")]
-public partial class QueuePage(IJobReader jobReader) : ComponentBase
+public partial class QueuePage(IJobReader jobReader, NavigationManager navigation) : ComponentBase
 {
     private bool _dialogVisible;
     private string _selectedError = string.Empty;
@@ -30,21 +30,15 @@ public partial class QueuePage(IJobReader jobReader) : ComponentBase
     private MudTable<JobDetails>? _activeTable;
     private MudTable<JobDetails>? _doneTable;
 
-    [Inject]
-    public required IDialogService DialogService { get; set; }
-
-    [Inject]
-    public required NavigationManager Navigation { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri($"/hubs/{QueueHub.HubName}"))
+            .WithUrl(navigation.ToAbsoluteUri($"/hubs/{QueueHub.HubName}"))
             .WithAutomaticReconnect()
             .Build();
 
         _queueEvents
-            .Buffer(count: 10)
+            .Buffer(count: 20)
             .Select(events => events.Last())
             .Subscribe(_ =>
             {
