@@ -38,7 +38,7 @@ public class RunGpsCsvClassifier : IFileClassifier
             Filepath = probe.Filepath,
             Source = Source,
             Datetime = date,
-            Datetype = DateRanges.Time,
+            Datetype = DateRanges.Session,
         };
     }
 }

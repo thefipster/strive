@@ -35,7 +35,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.SkinContact
             )
                 throw new ExtractionException(filepath, "Couldn't find any skin contact changes.");
 
-            var result = new FileExtraction(Source, filepath, date.Value.Date, DateRanges.Day);
+            var result = new FileExtraction(Source, filepath, date.Value.Date, DataKind.Day);
             result.Series.Add(Parameters.Timestamp, []);
             result.Series.Add(Parameters.DeviceWorn, []);
 

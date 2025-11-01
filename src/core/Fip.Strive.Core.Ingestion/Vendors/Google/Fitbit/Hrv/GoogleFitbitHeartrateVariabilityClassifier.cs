@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.Hrv;
 public class GoogleFitbitHeartrateVariabilityClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitHeartrateVariability,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,root mean square of successive differences milliseconds,standard deviation milliseconds"
     );

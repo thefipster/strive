@@ -63,7 +63,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.RunGps.CsvV2
                 Source,
                 filepath,
                 startDate,
-                DateRanges.Time,
+                DataKind.Session,
                 attributes,
                 series
             );

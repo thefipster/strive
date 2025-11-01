@@ -1,11 +1,11 @@
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
-using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using LiteDB;
 
-namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories;
+namespace Fip.Strive.Harvester.Application.Core.Indexing.Indexers;
 
-public class FileIndexer : IFileIndexer
+public class FileIndexer : IIndexer<FileIndex, string>
 {
     private readonly ILiteCollection<FileIndex> _collection;
 

@@ -4,4 +4,4 @@ using Fip.Strive.Core.Ingestion.Components;
 namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.Distance;
 
 public class GoogleFitbitDistanceClassifier()
-    : CsvClassifier(DataSources.GoogleFitbitDistance, DateRanges.Month, "timestamp,distance");
+    : CsvClassifier(DataSources.GoogleFitbitDistance, DateRanges.Multi, "timestamp,distance");

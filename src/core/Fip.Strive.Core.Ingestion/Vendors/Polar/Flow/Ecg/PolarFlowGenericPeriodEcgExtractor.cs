@@ -32,7 +32,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Ecg
             if (ecgTest.Data?.Samples == null || ecgTest.Data.Samples.Count == 0)
                 throw new ExtractionException(filepath, "Couldn't find any ecg samples.");
 
-            var result = new FileExtraction(Source, filepath, date.Value.Date, DateRanges.Day);
+            var result = new FileExtraction(Source, filepath, date.Value.Date, DataKind.Day);
 
             var testEvent = CreateTestEvent(ecgTest);
             result.Events.Add(testEvent);

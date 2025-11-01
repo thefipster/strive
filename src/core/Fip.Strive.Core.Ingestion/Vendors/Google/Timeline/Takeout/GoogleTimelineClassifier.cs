@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Timeline.Takeout;
 public class GoogleTimelineClassifier()
     : JsonClassifier(
         DataSources.GoogleTimeline,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         ["locations", "timestampMs", "latitudeE7", "longitudeE7"]
     );

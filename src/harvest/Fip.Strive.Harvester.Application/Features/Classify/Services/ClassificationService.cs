@@ -2,15 +2,18 @@ using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Core.Ingestion.Services.Contracts;
-using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Classify.Models;
 using Fip.Strive.Harvester.Application.Features.Classify.Services.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Classify.Services;
 
-public class ClassificationService(IFileIndexer indexer, IClassifier classifier, ISignalQueue queue)
-    : IScanner
+public class ClassificationService(
+    IIndexer<FileIndex, string> indexer,
+    IClassifier classifier,
+    ISignalQueue queue
+) : IScanner
 {
     public Task<WorkItem> ClassifyAsync(FileSignal signal, CancellationToken ct)
     {
@@ -55,8 +58,12 @@ public class ClassificationService(IFileIndexer indexer, IClassifier classifier,
         index.Classified = true;
         index.ClassificationResult = ClassificationResults.Classified;
 
-        var classification = work.Classifications.First(x => x.Classification != null);
+        var classification = work
+            .Classifications.Where(x => x.Classification != null)
+            .Select(x => x.Classification!)
+            .First();
         index.Source = classification.Source;
+        index.Timestamp = classification.Datetime;
         index.ClassfierVersion = classification.Version;
     }
 

@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.HeartNotify;
 public class GoogleFitbitHeartrateNotificationClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitHeartrateNotification,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,heart rate notification type,heart rate threshold beats per minute,heart rate trigger value beats per minute"
     );

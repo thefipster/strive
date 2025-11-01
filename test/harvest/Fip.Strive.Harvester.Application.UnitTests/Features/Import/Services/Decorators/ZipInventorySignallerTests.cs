@@ -15,7 +15,6 @@ public class ZipInventorySignallerTests
 {
     private readonly IZipInventory _component;
     private readonly ISignalQueue _queue;
-    private readonly IOptions<ImportConfig> _config;
     private readonly ILogger<ZipInventorySignaller> _logger;
     private readonly ZipInventorySignaller _sut;
     private readonly string _rootPath;
@@ -26,15 +25,15 @@ public class ZipInventorySignallerTests
         _queue = Substitute.For<ISignalQueue>();
         _logger = Substitute.For<ILogger<ZipInventorySignaller>>();
         _rootPath = @"C:\import";
-        _config = Options.Create(new ImportConfig { Path = _rootPath });
-        _sut = new ZipInventorySignaller(_component, _queue, _config, _logger);
+        var config = Options.Create(new ImportConfig { Path = _rootPath });
+        _sut = new ZipInventorySignaller(_component, _queue, config, _logger);
     }
 
     [Fact]
     public async Task ImportAsync_WhenWorkSkipIsFalse_ShouldEnqueueSignalAndReturnWork()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip", "hash1234");
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "test.zip";
         work.Skip = false;
@@ -61,7 +60,7 @@ public class ZipInventorySignallerTests
     public async Task ImportAsync_WhenWorkSkipIsTrue_ShouldNotEnqueueSignalAndLogInformation()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\duplicate.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\duplicate.zip", "hash1234");
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "duplicate.zip";
         work.Skip = true;
@@ -83,7 +82,7 @@ public class ZipInventorySignallerTests
     public async Task ImportAsync_ShouldCallComponentImportAsync()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip", "hash1234");
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "test.zip";
         work.Skip = false;
@@ -102,7 +101,7 @@ public class ZipInventorySignallerTests
     public async Task ImportAsync_WhenEnqueueing_ShouldCreateImportSignalWithCorrectFilepath()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\myfile.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\myfile.zip", "hash1234");
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "myfile.zip";
         work.Skip = false;
@@ -125,7 +124,7 @@ public class ZipInventorySignallerTests
     public async Task ImportAsync_WhenEnqueueing_ShouldInheritReferenceIdFromUploadSignal()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip", "hash1234");
         var expectedReferenceId = uploadSignal.ReferenceId;
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "test.zip";
@@ -149,7 +148,7 @@ public class ZipInventorySignallerTests
     public async Task ImportAsync_WhenEnqueueing_ShouldPassCancellationTokenToQueue()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip", "hash1234");
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "test.zip";
         work.Skip = false;
@@ -168,11 +167,10 @@ public class ZipInventorySignallerTests
     public async Task ImportAsync_WhenWorkSkipIsTrue_ShouldReturnWorkWithoutModification()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\known.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\known.zip", "hash1234");
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "known.zip";
         work.Skip = true;
-        work.Hash = "existinghash";
 
         _component.ImportAsync(uploadSignal, Arg.Any<CancellationToken>()).Returns(work);
 
@@ -182,7 +180,6 @@ public class ZipInventorySignallerTests
         // Assert
         result.ImportedPath.Should().Be("known.zip");
         result.Skip.Should().BeTrue();
-        result.Hash.Should().Be("existinghash");
     }
 
     [Fact]
@@ -193,7 +190,7 @@ public class ZipInventorySignallerTests
         var customConfig = Options.Create(new ImportConfig { Path = customRootPath });
         var customSut = new ZipInventorySignaller(_component, _queue, customConfig, _logger);
 
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip", "hash1234");
         var work = WorkItem.FromSignal(uploadSignal);
         work.ImportedPath = "test.zip";
         work.Skip = false;

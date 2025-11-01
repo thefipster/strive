@@ -35,7 +35,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Temperature
             )
                 throw new ExtractionException(filepath, "Couldn't find any temperature samples.");
 
-            var result = new FileExtraction(Source, filepath, date.Value, DateRanges.Day);
+            var result = new FileExtraction(Source, filepath, date.Value, DataKind.Day);
             result.Series.Add(Parameters.Timestamp, []);
             result.Series.Add(Parameters.Temperature, []);
 

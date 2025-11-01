@@ -2,7 +2,7 @@ using AwesomeAssertions;
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
-using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Services;
 using Microsoft.Extensions.Logging;
@@ -12,7 +12,7 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Import.Services;
 
 public class ZipInventoryTests
 {
-    private readonly IZipIndexer _indexer;
+    private readonly IIndexer<ZipIndex, string> _indexer;
     private readonly IZipFileAccess _fileAccess;
     private readonly IFileHasher _hasher;
     private readonly ILogger<ZipInventory> _logger;
@@ -21,11 +21,11 @@ public class ZipInventoryTests
 
     public ZipInventoryTests()
     {
-        _indexer = Substitute.For<IZipIndexer>();
+        _indexer = Substitute.For<IIndexer<ZipIndex, string>>();
         _fileAccess = Substitute.For<IZipFileAccess>();
         _hasher = Substitute.For<IFileHasher>();
         _logger = Substitute.For<ILogger<ZipInventory>>();
-        _sut = new ZipInventory(_indexer, _fileAccess, _hasher, _logger);
+        _sut = new ZipInventory(_indexer, _fileAccess, _logger);
         _testRootPath = Path.Combine(Path.GetTempPath(), $"ZipInventoryTests_{Guid.NewGuid()}");
     }
 
@@ -34,8 +34,8 @@ public class ZipInventoryTests
     {
         // Arrange
         var filepath = Path.Combine(_testRootPath, "newfile.zip");
-        var uploadSignal = UploadSignal.From(filepath);
         var hash = "newhash123";
+        var uploadSignal = UploadSignal.From(filepath, hash);
         var importedPath = "files/import/newfile.zip";
 
         _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
@@ -46,7 +46,6 @@ public class ZipInventoryTests
         var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
 
         // Assert
-        result.Hash.Should().Be(hash);
         result.ImportedPath.Should().Be(importedPath);
         result.Skip.Should().BeFalse();
         _indexer
@@ -58,12 +57,12 @@ public class ZipInventoryTests
     public async Task ImportAsync_WhenFileIsAlreadyIndexed_ShouldSkipAndDeleteFile()
     {
         // Arrange
+        var hash = "existinghash";
         var filepath = Path.Combine(_testRootPath, "duplicate.zip");
         Directory.CreateDirectory(_testRootPath);
         File.WriteAllText(filepath, "test content");
 
-        var uploadSignal = UploadSignal.From(filepath);
-        var hash = "existinghash";
+        var uploadSignal = UploadSignal.From(filepath, hash);
 
         var existingIndex = new ZipIndex
         {
@@ -84,7 +83,6 @@ public class ZipInventoryTests
 
             // Assert
             result.Skip.Should().BeTrue();
-            result.Hash.Should().Be(hash);
             File.Exists(filepath).Should().BeFalse();
             _fileAccess.DidNotReceive().Import(Arg.Any<string>());
             _indexer.DidNotReceive().Upsert(Arg.Any<ZipIndex>());
@@ -102,8 +100,8 @@ public class ZipInventoryTests
     {
         // Arrange
         var filepath = Path.Combine(_testRootPath, "anotherfile.zip");
-        var uploadSignal = UploadSignal.From(filepath);
         var hash = "samehash";
+        var uploadSignal = UploadSignal.From(filepath, hash);
 
         var existingIndex = new ZipIndex
         {
@@ -121,7 +119,6 @@ public class ZipInventoryTests
         var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
 
         // Assert
-        result.Hash.Should().Be(hash);
         result.Skip.Should().BeFalse();
         result.ImportedPath.Should().BeNull();
         _fileAccess.DidNotReceive().Import(Arg.Any<string>());
@@ -133,31 +130,12 @@ public class ZipInventoryTests
     }
 
     [Fact]
-    public async Task ImportAsync_ShouldHashFileWithCorrectPath()
-    {
-        // Arrange
-        var filepath = @"C:\temp\test.zip";
-        var uploadSignal = UploadSignal.From(filepath);
-        var cancellationToken = new CancellationToken();
-
-        _hasher.HashXx3Async(filepath, cancellationToken).Returns("somehash");
-        _indexer.Find(Arg.Any<string>()).Returns((ZipIndex?)null);
-        _fileAccess.Import(filepath).Returns(@"C:\import\test.zip");
-
-        // Act
-        await _sut.ImportAsync(uploadSignal, cancellationToken);
-
-        // Assert
-        await _hasher.Received(1).HashXx3Async(filepath, cancellationToken);
-    }
-
-    [Fact]
     public async Task ImportAsync_ShouldCreateWorkItemFromSignal()
     {
         // Arrange
         var filepath = @"C:\upload\myfile.zip";
-        var uploadSignal = UploadSignal.From(filepath);
         var hash = "hash123";
+        var uploadSignal = UploadSignal.From(filepath, hash);
 
         _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
         _indexer.Find(hash).Returns((ZipIndex?)null);
@@ -174,9 +152,9 @@ public class ZipInventoryTests
     public async Task ImportAsync_WhenIndexIsNull_ShouldCallFileAccessImport()
     {
         // Arrange
-        var filepath = @"C:\upload\newfile.zip";
-        var uploadSignal = UploadSignal.From(filepath);
         var hash = "newhash";
+        var filepath = @"C:\upload\newfile.zip";
+        var uploadSignal = UploadSignal.From(filepath, hash);
         var expectedImportPath = @"C:\import\newfile.zip";
 
         _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
@@ -195,8 +173,8 @@ public class ZipInventoryTests
     {
         // Arrange
         var filepath = "files/upload/test.zip";
-        var uploadSignal = UploadSignal.From(filepath);
         var hash = "testhash";
+        var uploadSignal = UploadSignal.From(filepath, hash);
 
         _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(hash);
         _indexer.Find(hash).Returns((ZipIndex?)null);
@@ -223,12 +201,12 @@ public class ZipInventoryTests
     public async Task ImportAsync_WhenFileIsIndexedWithDifferentCasing_ShouldStillSkip()
     {
         // Arrange
+        var hash = "hash";
         var filepath = Path.Combine(_testRootPath, "TestFile.ZIP");
         Directory.CreateDirectory(_testRootPath);
         File.WriteAllText(filepath, "content");
 
-        var uploadSignal = UploadSignal.From(filepath);
-        var hash = "hash";
+        var uploadSignal = UploadSignal.From(filepath, hash);
 
         var existingIndex = new ZipIndex
         {
@@ -255,24 +233,5 @@ public class ZipInventoryTests
             if (Directory.Exists(_testRootPath))
                 Directory.Delete(_testRootPath, true);
         }
-    }
-
-    [Fact]
-    public async Task ImportAsync_ShouldSetHashOnWorkItem()
-    {
-        // Arrange
-        var filepath = "files/upload/file.zip";
-        var uploadSignal = UploadSignal.From(filepath);
-        var expectedHash = "computedhash";
-
-        _hasher.HashXx3Async(filepath, Arg.Any<CancellationToken>()).Returns(expectedHash);
-        _indexer.Find(expectedHash).Returns((ZipIndex?)null);
-        _fileAccess.Import(filepath).Returns("files/import/file.zip");
-
-        // Act
-        var result = await _sut.ImportAsync(uploadSignal, CancellationToken.None);
-
-        // Assert
-        result.Hash.Should().Be(expectedHash);
     }
 }

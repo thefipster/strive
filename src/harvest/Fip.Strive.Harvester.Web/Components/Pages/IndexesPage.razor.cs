@@ -9,11 +9,14 @@ namespace Fip.Strive.Harvester.Web.Components.Pages;
 [Route("/indexes")]
 public partial class IndexesPage(
     ISpecificationReader<ZipIndex> zipPager,
-    ISpecificationReader<FileIndex> filePager
+    ISpecificationReader<FileIndex> filePager,
+    ISpecificationReader<DataIndex> dataPager
 ) : ComponentBase
 {
-    private ZipIndex? _selectedZip;
     private MudTable<FileIndex>? _fileTable;
+    private MudTable<DataIndex>? _dataTable;
+    private ZipIndex? _selectedZip;
+    private FileIndex? _selectedFile;
 
     private Task<TableData<ZipIndex>> OnZipIndexRequested(TableState state, CancellationToken ct)
     {
@@ -31,6 +34,14 @@ public partial class IndexesPage(
         );
     }
 
+    private void OnZipIndexRowClick(TableRowClickEventArgs<ZipIndex> obj)
+    {
+        _selectedZip = obj.Item;
+
+        if (_selectedZip != null)
+            _fileTable?.ReloadServerData();
+    }
+
     private Task<TableData<FileIndex>> OnFileIndexRequested(TableState state, CancellationToken ct)
     {
         if (_selectedZip == null)
@@ -41,7 +52,7 @@ public partial class IndexesPage(
             false,
             state.Page,
             state.PageSize,
-            x => x.ReferenceId == _selectedZip.ReferenceId
+            x => x.ParentId == _selectedZip.Hash
         );
 
         var files = filePager.GetPaged(specs);
@@ -51,10 +62,31 @@ public partial class IndexesPage(
         );
     }
 
-    private void OnZipIndexRowClick(TableRowClickEventArgs<ZipIndex> obj)
+    private void OnFileIndexRowClick(TableRowClickEventArgs<FileIndex> obj)
     {
-        _selectedZip = obj.Item;
-        if (_fileTable != null)
-            _fileTable.ReloadServerData();
+        _selectedFile = obj.Item;
+
+        if (_selectedFile != null)
+            _dataTable?.ReloadServerData();
+    }
+
+    private Task<TableData<DataIndex>> OnDataIndexRequested(TableState state, CancellationToken ct)
+    {
+        if (_selectedFile == null)
+            return Task.FromResult(new TableData<DataIndex> { Items = [], TotalItems = 0 });
+
+        var specs = new PageSpecificationRequest<DataIndex>(
+            x => x.SignalledAt,
+            false,
+            state.Page,
+            state.PageSize,
+            x => x.ParentId == _selectedFile.Hash
+        );
+
+        var files = dataPager.GetPaged(specs);
+
+        return Task.FromResult(
+            new TableData<DataIndex> { Items = files.Items, TotalItems = files.Total }
+        );
     }
 }

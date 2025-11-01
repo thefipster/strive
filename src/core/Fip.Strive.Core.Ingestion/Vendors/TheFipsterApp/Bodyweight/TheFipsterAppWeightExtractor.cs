@@ -34,7 +34,7 @@ public class TheFipsterAppWeightExtractor : IFileExtractor
                 DataSources.TheFipsterAppWeight,
                 filepath,
                 date,
-                DateRanges.Day
+                DataKind.Day
             );
             result.AddSeries(Parameters.Bodyweight);
             result.AddSeries(Parameters.Timestamp);

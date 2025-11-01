@@ -62,7 +62,7 @@ public class RunGpsCsvExrtractor : IFileExtractor
             Source,
             filepath,
             startDate,
-            DateRanges.Time,
+            DataKind.Session,
             attributes,
             series
         );

@@ -11,7 +11,7 @@ public class ImportSignalTests
     public void SerializingImportSignal_WithBaseClass_ShouldSerializeFilepath()
     {
         var filepath = "/import/path";
-        var uploadSignal = UploadSignal.From("/upload/path");
+        var uploadSignal = UploadSignal.From("/upload/path", "hash1234");
 
         Signal signal = ImportSignal.From(filepath, uploadSignal);
         var job = signal.ToJobEntity();
@@ -26,7 +26,7 @@ public class ImportSignalTests
     public void ToJobEntity_ShouldPreserveSignalMetadata()
     {
         var filepath = "/test/import";
-        var uploadSignal = UploadSignal.From("/test/upload");
+        var uploadSignal = UploadSignal.From("/test/upload", "hash1234");
         var signal = ImportSignal.From(filepath, uploadSignal);
 
         var job = signal.ToJobEntity();
@@ -41,7 +41,7 @@ public class ImportSignalTests
     public void ToJobEntity_ShouldRoundTripSuccessfully()
     {
         var filepath = "/another/import/path";
-        var uploadSignal = UploadSignal.From("/another/upload/path");
+        var uploadSignal = UploadSignal.From("/another/upload/path", "hash1234");
         var originalSignal = ImportSignal.From(filepath, uploadSignal);
         var originalId = originalSignal.Id;
         var originalReferenceId = originalSignal.ReferenceId;
@@ -61,7 +61,7 @@ public class ImportSignalTests
     [Fact]
     public void From_ShouldInheritReferenceIdFromOriginSignal()
     {
-        var uploadSignal = UploadSignal.From("/upload/path");
+        var uploadSignal = UploadSignal.From("/upload/path", "hash1234");
         var importSignal = ImportSignal.From("/import/path", uploadSignal);
 
         importSignal.ReferenceId.Should().Be(uploadSignal.ReferenceId);

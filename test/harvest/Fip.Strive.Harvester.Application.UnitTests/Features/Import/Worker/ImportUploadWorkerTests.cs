@@ -37,7 +37,7 @@ public class ImportUploadWorkerTests
     public async Task ProcessAsync_WithValidPayload_ShouldCallInventoryImportAsync()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip", "some-hash");
         var payload = JsonSerializer.Serialize(uploadSignal);
         var job = new JobDetails
         {
@@ -69,7 +69,8 @@ public class ImportUploadWorkerTests
     {
         // Arrange
         var expectedFilepath = @"C:\upload\myarchive.zip";
-        var uploadSignal = UploadSignal.From(expectedFilepath);
+        var expectedHash = "hash123";
+        var uploadSignal = UploadSignal.From(expectedFilepath, expectedHash);
         var payload = JsonSerializer.Serialize(uploadSignal);
         var job = new JobDetails
         {
@@ -91,6 +92,7 @@ public class ImportUploadWorkerTests
             .ImportAsync(
                 Arg.Is<UploadSignal>(s =>
                     s.Filepath == expectedFilepath
+                    && s.Hash == expectedHash
                     && s.Id == uploadSignal.Id
                     && s.ReferenceId == uploadSignal.ReferenceId
                 ),
@@ -192,7 +194,7 @@ public class ImportUploadWorkerTests
     public async Task ProcessAsync_ShouldPassCancellationTokenToInventory()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip");
+        var uploadSignal = UploadSignal.From(@"C:\upload\test.zip", "some-hash");
         var payload = JsonSerializer.Serialize(uploadSignal);
         var job = new JobDetails
         {
@@ -217,7 +219,7 @@ public class ImportUploadWorkerTests
     public async Task ProcessAsync_WithComplexUploadSignal_ShouldPreserveAllProperties()
     {
         // Arrange
-        var uploadSignal = UploadSignal.From(@"C:\complex\path\to\file.zip");
+        var uploadSignal = UploadSignal.From(@"C:\complex\path\to\file.zip", "some-hash");
         var originalId = uploadSignal.Id;
         var originalReferenceId = uploadSignal.ReferenceId;
         var originalEmittedAt = uploadSignal.EmittedAt;

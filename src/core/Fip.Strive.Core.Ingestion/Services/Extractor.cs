@@ -13,7 +13,7 @@ public class Extractor(IEnumerable<IFileExtractor> extractors) : IExtractor
 
     public IEnumerable<IFileExtractor> GetAll() => extractors;
 
-    public Task<List<FileExtraction>> Extract(
+    public Task<List<FileExtraction>> ExtractAsync(
         string filepath,
         DataSources source,
         DateTime? date = null

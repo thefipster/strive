@@ -2,8 +2,10 @@ using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Application;
 using Fip.Strive.Core.Ingestion;
 using Fip.Strive.Harvester.Application.Core.Config;
+using Fip.Strive.Harvester.Application.Core.Indexing;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
+using Fip.Strive.Harvester.Application.Features.Assimilate;
 using Fip.Strive.Harvester.Application.Features.Classify;
 using Fip.Strive.Harvester.Application.Features.Expand;
 using Fip.Strive.Harvester.Application.Features.Import;
@@ -23,21 +25,23 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        // Core
+        // System Core
         services.AddCoreServices();
         services.AddIngestionFeature();
 
-        // Shared
+        // Application Core
+        services.AddInfrastructureServices(configuration);
         services.AddConfigs(configuration);
         services.AddProxyFeature();
         services.AddQueueFeature();
-        services.AddInfrastructureServices(configuration);
+        services.AddIndexingFeature();
 
-        // Feature
+        // Application Features
         services.AddScheduleFeature(configuration);
         services.AddUploadFeature();
         services.AddImportFeature();
         services.AddExpandFeature();
         services.AddClassifyFeature();
+        services.AddAssimilateFeature();
     }
 }

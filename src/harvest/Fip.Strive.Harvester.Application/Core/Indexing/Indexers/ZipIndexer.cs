@@ -1,11 +1,11 @@
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
-using Fip.Strive.Harvester.Application.Core.Indexing.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using LiteDB;
 
-namespace Fip.Strive.Harvester.Application.Core.Indexing.Repositories;
+namespace Fip.Strive.Harvester.Application.Core.Indexing.Indexers;
 
-public class ZipIndexer : IZipIndexer
+public class ZipIndexer : IIndexer<ZipIndex, string>
 {
     private readonly ILiteCollection<ZipIndex> _collection;
 

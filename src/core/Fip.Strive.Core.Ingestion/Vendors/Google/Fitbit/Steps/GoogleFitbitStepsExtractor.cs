@@ -48,7 +48,7 @@ public class GoogleFitbitStepsExtractor : IFileExtractor
                 Source,
                 filepath,
                 day.Key,
-                DateRanges.Day,
+                DataKind.Day,
                 attributes,
                 series
             );

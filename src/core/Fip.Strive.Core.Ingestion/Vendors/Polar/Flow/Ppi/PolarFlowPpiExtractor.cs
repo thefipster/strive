@@ -27,7 +27,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.Ppi
                     DataSources.PolarFlowPpi,
                     filepath,
                     date.Date,
-                    DateRanges.Day
+                    DataKind.Day
                 );
                 var maxPulse = int.MinValue;
                 var minPulse = int.MaxValue;

@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Garmin.UdsFile;
 public class GarminUdsFileClassifier()
     : JsonClassifier(
         DataSources.GarminUdsFile,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         ["userProfilePK", "uuid", "calendarDate", "durationInMilliseconds", "totalKilocalories"],
         "calendarDate"
     );

@@ -23,6 +23,7 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Services
             {
                 ReferenceId = Guid.NewGuid(),
                 Filepath = @"C:\zips\archive.zip",
+                Hash = "hash1234",
             };
 
             var expectedWork = WorkItem.FromSignal(signal);
@@ -54,6 +55,7 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Services
             {
                 ReferenceId = Guid.NewGuid(),
                 Filepath = @"C:\zips\archive.zip",
+                Hash = "hash1234",
             };
 
             using var cts = new CancellationTokenSource();

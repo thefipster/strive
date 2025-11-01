@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Fip.Strive.Core.Domain.Extensions;
+using Fip.Strive.Core.Domain.Schemas.Ingestion.Components;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
 
 namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models
@@ -21,24 +22,24 @@ namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models
             DataSources source,
             string sourceFile,
             DateTime timestamp,
-            DateRanges range
+            DataKind kind
         )
             : this()
         {
             Source = source;
             SourceFile = sourceFile;
             Timestamp = timestamp;
-            Range = range;
+            Kind = kind;
         }
 
         public FileExtraction(
             DataSources source,
             string sourceFile,
             DateTime timestamp,
-            DateRanges range,
+            DataKind kind,
             Dictionary<Parameters, string> attributes
         )
-            : this(source, sourceFile, timestamp, range)
+            : this(source, sourceFile, timestamp, kind)
         {
             Attributes = attributes;
         }
@@ -47,10 +48,10 @@ namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models
             DataSources source,
             string sourceFile,
             DateTime timestamp,
-            DateRanges range,
+            DataKind kind,
             Dictionary<Parameters, List<string>> series
         )
-            : this(source, sourceFile, timestamp, range)
+            : this(source, sourceFile, timestamp, kind)
         {
             Series = series;
         }
@@ -59,39 +60,29 @@ namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models
             DataSources source,
             string sourceFile,
             DateTime timestamp,
-            DateRanges range,
+            DataKind kind,
             Dictionary<Parameters, string> attributes,
             Dictionary<Parameters, List<string>> series
         )
-            : this(source, sourceFile, timestamp, range, attributes)
+            : this(source, sourceFile, timestamp, kind, attributes)
         {
             Series = series;
         }
 
-        [JsonPropertyName("date")]
         public DateTime Timestamp { get; set; }
 
-        [JsonPropertyName("range")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public DateRanges Range { get; set; }
+        public DataKind Kind { get; set; }
 
-        [JsonPropertyName("source")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public DataSources Source { get; set; }
 
-        [JsonPropertyName("sourceFile")]
         public string SourceFile { get; set; }
 
-        [JsonPropertyName("hash")]
         public string Hash { get; set; }
 
-        [JsonPropertyName("attributes")]
         public Dictionary<Parameters, string> Attributes { get; set; }
 
-        [JsonPropertyName("series")]
         public Dictionary<Parameters, List<string>> Series { get; set; }
 
-        [JsonPropertyName("events")]
         public List<UnifiedEvent> Events { get; set; } = new();
 
         public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
@@ -107,17 +98,20 @@ namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models
         {
             var metrics = string.Join(
                 ",",
-                Attributes.OrderBy(kvp => kvp.Key).Select(kvp => $"{kvp.Key}:{kvp.Value}")
+                Attributes.OrderBy(x => x.Key).Select(x => x.ToString())
             );
 
             var series = string.Join(
                 ",",
-                Series
-                    .OrderBy(kvp => kvp.Key)
-                    .Select(kvp => $"{kvp.Key}:{string.Join(";", kvp.Value)}")
+                Series.OrderBy(x => x.Key).Select(x => $"{x.Key}:{string.Join(";", x.Value)}")
             );
 
-            var combined = metrics + "|" + series;
+            var events = string.Join(
+                ",",
+                Events.OrderBy(x => x.Timestamp).Select(x => x.ToString())
+            );
+
+            var combined = $"{metrics} | {series} | {events}";
             using var sha = SHA256.Create();
             return sha.ComputeHash(Encoding.UTF8.GetBytes(combined));
         }
@@ -132,8 +126,12 @@ namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models
         public string Write(string rootDir)
         {
             Hash = ToHashString();
-            var filename = $"{Timestamp.ToRangeString(Range)}-{Source}-{Hash}.json";
-            var path = Path.Combine(rootDir, Range.GetPath(Timestamp));
+            var filename = $"{Timestamp.ToRangeString(Kind)}-{Source}-{Hash}.json";
+            var datePath =
+                Kind == DataKind.Day
+                    ? Timestamp.ToString(DateHelper.DayFormat)
+                    : Timestamp.ToString(DateHelper.FsMillisecondFormat);
+            var path = Path.Combine(rootDir, datePath);
             var newFile = Path.Combine(path, filename);
             var json = JsonSerializer.Serialize(this);
 

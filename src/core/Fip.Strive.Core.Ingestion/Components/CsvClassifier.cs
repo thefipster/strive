@@ -39,7 +39,7 @@ public abstract class CsvClassifier(
         {
             Filepath = probe.Filepath,
             Source = Source,
-            Datetime = range != DateRanges.AllTime ? date : DateTime.MinValue,
+            Datetime = range != DateRanges.Multi ? date : DateTime.MinValue,
             Datetype = range,
         };
     }

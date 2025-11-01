@@ -30,7 +30,7 @@ public class PolarFlowSleepResultExtractor : IFileExtractor
                 DataSources.PolarFlowSleepResult,
                 filepath,
                 date,
-                DateRanges.Day
+                DataKind.Day
             );
 
             if (

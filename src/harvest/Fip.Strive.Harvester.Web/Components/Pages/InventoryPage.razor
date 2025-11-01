@@ -1,0 +1,88 @@
+<Headline Text="Inventory"></Headline>
+
+@if (_entries.Any())
+{
+    <MudStack Class="mb-5" Row="true">
+        @for (int i = _years.Min(); i <= DateTime.UtcNow.Year; i++)
+        {
+            var year = i;
+
+            @if (_years.Contains(year))
+            {
+                @if (year == _selectedYear)
+                {
+                    <MudButton Href="@($"/inventory?year={year}")"
+                               Variant="Variant.Outlined">
+                        @year
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton Href="@($"/inventory?year={year}")"
+                               Variant="Variant.Text">
+                        @year
+                    </MudButton>
+                }
+            }
+            else
+            {
+                <MudButton Variant="Variant.Text"
+                           Disabled=true>
+                    @year
+                </MudButton>
+            }
+        }
+    </MudStack>
+    
+    <MudStack>
+        @for (int i = 1; i <= 12; i++)
+        {
+            var month = i;
+
+            <MudStack Class="my-3" Row="true" Justify="Justify.SpaceBetween">
+                <MudText Style="width: 120px;">
+                    @CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month)
+                </MudText>
+
+                @for (int j = 1; j <= 31; j++)
+                {
+                    var day = j;
+
+                    <MudStack Row="true" Style="width: 50px;">
+                        @if (DateChecker.IsValidDate(_selectedYear, month, day))
+                        {
+                            var entries = _entries.Where(x => x.Year == _selectedYear && x.Month == month && x.Day == day).ToArray();
+
+                            @if (entries.Any(x => x.Kind == DataKind.Day) && entries.Any(x => x.Kind == DataKind.Session))
+                            {
+                                <MudBadge T="string" Color="Color.Secondary">
+                                    <MudText>@day</MudText>
+                                </MudBadge>
+                            }
+                            else if (entries.Any(x => x.Kind == DataKind.Day))
+                            {
+                                <MudBadge T="string" Color="Color.Info">
+                                    <MudText>@day</MudText>
+                                </MudBadge>
+                            }
+                            else if (entries.Any(x => x.Kind == DataKind.Session))
+                            {
+                                <MudBadge T="string" Color="Color.Primary">
+                                    <MudText>@day</MudText>
+                                </MudBadge>
+                            }
+                            else
+                            {
+                                <MudText>@day</MudText>
+                            }
+                        }
+                        else
+                        {
+                            <MudText></MudText>
+                        }
+                    </MudStack>
+                }
+            </MudStack>
+        }
+    </MudStack>
+}

@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Withings.BloodPressure;
 public class WithingsBloodPressureClassifier()
     : CsvClassifier(
         DataSources.WithingsBloodPressure,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         "Date,\"Heart rate\",Systolic,Diastolic,Comments",
         ",",
         0

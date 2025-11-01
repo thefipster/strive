@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Domain.Schemas.Ingestion.Components;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
 
 namespace Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
@@ -34,4 +35,7 @@ public class UnifiedEvent
     public DateTime Timestamp { get; set; }
     public Dictionary<Parameters, string> Values { get; set; } = new();
     public string? Message { get; set; }
+
+    public override string ToString() =>
+        $"{Timestamp.ToString(DateHelper.SecondFormat)} | {Type} | {Message} | {string.Join(", ", Values.Select(x => $"{x.Key}:{x.Value}"))}";
 }

@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.Respiration;
 public class GoogleFitbitRespiratoryRateClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitRespiratoryRate,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         "timestamp,breaths per minute"
     );

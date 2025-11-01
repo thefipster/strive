@@ -4,4 +4,4 @@ using Fip.Strive.Core.Ingestion.Components;
 namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.Weight;
 
 public class GoogleFitbitWeightClassifier()
-    : CsvClassifier(DataSources.GoogleFitbitWeight, DateRanges.AllTime, "timestamp,weight grams");
+    : CsvClassifier(DataSources.GoogleFitbitWeight, DateRanges.Multi, "timestamp,weight grams");

@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Polar.Flow.SleepWake;
 public class PolarFlowSleepWakeClassifier()
     : JsonClassifier(
         DataSources.PolarFlowSleepWake,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         ["night", "sleepWake", "sleepStateChanges", "sleepWakeStateChangeModels"],
         "night"
     );

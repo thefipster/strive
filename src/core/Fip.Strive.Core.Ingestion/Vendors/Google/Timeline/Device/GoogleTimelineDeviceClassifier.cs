@@ -6,7 +6,7 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Timeline.Device;
 public class GoogleTimelineDeviceClassifier()
     : JsonClassifier(
         DataSources.GoogleTimelineDevice,
-        DateRanges.AllTime,
+        DateRanges.Multi,
         ["semanticSegments", "startTime", "endTime", "timelinePath"],
         "startTime"
     );

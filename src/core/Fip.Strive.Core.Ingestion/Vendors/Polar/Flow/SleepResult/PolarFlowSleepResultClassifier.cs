@@ -43,7 +43,7 @@ public class PolarFlowSleepResultClassifier : IFileClassifier
             Filepath = probe.Filepath,
             Source = Source,
             Datetime = DateTime.Parse(date),
-            Datetype = DateRanges.AllTime,
+            Datetype = DateRanges.Multi,
         };
     }
 }

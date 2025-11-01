@@ -1,6 +1,6 @@
 <Headline Text="File Handler"/>
 
-@if (_handlers != null)
+@if (_handlers.Any())
 {
 
     <MudTable T="KeyValuePair<IFileClassifier, IFileExtractor?>" Items="_handlers" Dense="true" Hover="true" Context="source">

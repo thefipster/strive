@@ -7,7 +7,6 @@ public class WorkItem
 {
     public required UploadSignal Signal { get; init; }
     public string? ImportedPath { get; set; }
-    public string? Hash { get; set; }
     public string Filename => Path.GetFileName(Signal.Filepath);
     public ZipIndex? Index { get; set; }
     public bool Skip { get; set; }
@@ -19,12 +18,17 @@ public class WorkItem
 
     public ImportSignal ToSignal(string filepath)
     {
-        return new ImportSignal { ReferenceId = Signal.ReferenceId, Filepath = filepath };
+        return new ImportSignal
+        {
+            ReferenceId = Signal.ReferenceId,
+            Filepath = filepath,
+            Hash = Signal.Hash,
+        };
     }
 
     public ZipIndex ToIndex()
     {
-        if (string.IsNullOrWhiteSpace(Hash))
+        if (string.IsNullOrWhiteSpace(Signal.Hash))
             throw new InvalidOperationException(
                 "Cannot create ZipIndex when hash is null or empty."
             );
@@ -34,7 +38,7 @@ public class WorkItem
             SignalId = Signal.Id,
             ReferenceId = Signal.ReferenceId,
             SignalledAt = Signal.EmittedAt,
-            Hash = Hash,
+            Hash = Signal.Hash,
         };
 
         index.AddFile(Filename);

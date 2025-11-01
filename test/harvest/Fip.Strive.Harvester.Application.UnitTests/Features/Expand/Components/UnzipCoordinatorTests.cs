@@ -24,7 +24,10 @@ public class UnzipCoordinatorTests
         var unzipper = new UnzipCoordinator(options, zipExtractor, directoryService);
 
         var zipPath = Path.Combine("C:", "zips", "archive.zip");
-        var work = new WorkItem { Signal = new ImportSignal { Filepath = zipPath } };
+        var work = new WorkItem
+        {
+            Signal = new ImportSignal { Filepath = zipPath, Hash = "hash1234" },
+        };
 
         var expectedDirName = Path.GetFileNameWithoutExtension(zipPath);
         var expectedOutputPath = Path.Combine(targetRoot, expectedDirName);
@@ -54,7 +57,10 @@ public class UnzipCoordinatorTests
         var unzipper = new UnzipCoordinator(options, zipExtractor, directoryService);
 
         var zipPath = Path.Combine("temp", "zips", "archive.zip");
-        var work = new WorkItem { Signal = new ImportSignal { Filepath = zipPath } };
+        var work = new WorkItem
+        {
+            Signal = new ImportSignal { Filepath = zipPath, Hash = "hash1234" },
+        };
 
         // Act
         Action act = () => unzipper.Expand(work);
@@ -74,7 +80,10 @@ public class UnzipCoordinatorTests
         var directoryService = Substitute.For<IDirectoryService>();
 
         var zipPath = Path.Combine("temp", "zips", "archive.zip");
-        var work = new WorkItem { Signal = new ImportSignal { Filepath = zipPath } };
+        var work = new WorkItem
+        {
+            Signal = new ImportSignal { Filepath = zipPath, Hash = "hash1234" },
+        };
 
         var expectedOutputPath = Path.Combine(
             targetRoot,

@@ -66,6 +66,7 @@ namespace Fip.Strive.Core.Domain.UnitTests.Schemas.Index.Models
                 ReferenceId = Guid.NewGuid(),
                 EmittedAt = emitted,
                 Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+                Hash = "hash1234",
             };
             var hash = "zip-hash-abc";
 

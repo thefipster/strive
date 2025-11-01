@@ -6,6 +6,6 @@ namespace Fip.Strive.Core.Ingestion.Vendors.Google.Fitbit.Swim;
 public class GoogleFitbitSwimLengthClassifier()
     : CsvClassifier(
         DataSources.GoogleFitbitSwimLength,
-        DateRanges.Month,
+        DateRanges.Multi,
         "timestamp,lap time,stroke count,stroke type"
     );
