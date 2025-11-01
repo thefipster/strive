@@ -44,12 +44,17 @@ public class QueueRunner(
             try
             {
                 metrics.IncrementActiveWorkers();
+                logger.LogInformation(
+                    "Running job {JobId} in worker {WorkerId}.",
+                    job.Id,
+                    workerId
+                );
                 await RunJobAsync(ct, job);
             }
             catch (OperationCanceledException)
             {
                 await queue.MarkAsFailedAsync(job.Id, "Operation cancelled.", ct);
-                logger.LogInformation("Operation cancelled.");
+                logger.LogInformation("Operation cancelled in worker {WorkerId}.", workerId);
                 throw;
             }
             catch (Exception ex)

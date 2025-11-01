@@ -3,7 +3,7 @@
 
 <MudGrid>
     <MudItem xs="3" md="6" sm="12">
-        <MudTable @ref="_activeTable" T="JobDetails" Context="job" OnRowClick="@OnRowClicked" Dense="true" Hover="true" ServerData="@OnActiveRequested">
+        <MudTable @ref="_activeTable" T="JobDetails" Context="job" OnRowClick="@OnRowClicked" Hover="true" ServerData="@OnActiveRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Active Jobs</MudText>
             </ToolBarContent>
@@ -25,9 +25,6 @@
                 <MudTd DataLabel="Type">@job.Type</MudTd>
                 <MudTd DataLabel="Status">@job.Status</MudTd>
             </RowTemplate>
-            <NoRecordsContent>
-                <MudText>No matching records found</MudText>
-            </NoRecordsContent>
             <PagerContent>
                 <MudTablePager/>
             </PagerContent>
@@ -35,7 +32,7 @@
     </MudItem>
 
     <MudItem xs="3" md="6" sm="12">
-        <MudTable @ref="_doneTable" T="JobDetails" Context="job" Dense="true" Hover="true" OnRowClick="@OnRowClicked" ServerData="@OnDoneRequested">
+        <MudTable @ref="_doneTable" T="JobDetails" Context="job" Hover="true" OnRowClick="@OnRowClicked" ServerData="@OnDoneRequested">
             <ToolBarContent>
                 <MudText Typo="Typo.h2">Finished Jobs</MudText>
             </ToolBarContent>
@@ -60,18 +57,15 @@
                         @job.Status
                         @if (job.Status == JobStatus.Failed)
                         {
-                            <MudChip T="string" Class="pr-2" Color="Color.Error" Variant="Variant.Outlined" Size="Size.Small"></MudChip>
+                            <MudChip T="string" Class="pr-2" Color="Color.Error" Variant="Variant.Filled" Size="Size.Small"></MudChip>
                         }
                         else
                         {
-                            <MudChip T="string" Class="pr-2" Color="Color.Success" Variant="Variant.Outlined" Size="Size.Small"></MudChip>
+                            <MudChip T="string" Class="pr-2" Color="Color.Success" Variant="Variant.Filled" Size="Size.Small"></MudChip>
                         }
                     </MudStack>
                 </MudTd>
             </RowTemplate>
-            <NoRecordsContent>
-                <MudText>No matching records found</MudText>
-            </NoRecordsContent>
             <PagerContent>
                 <MudTablePager/>
             </PagerContent>

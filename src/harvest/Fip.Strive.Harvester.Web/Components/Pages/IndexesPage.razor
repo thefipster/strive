@@ -1,3 +1,4 @@
+@using Fip.Strive.Core.Domain.Schemas.Ingestion.Options
 <Headline Text="Indexes"/>
 
 <MudTable T="ZipIndex" Class="mb-5" Context="zip" Dense="true" Hover="true" ServerData="@OnZipIndexRequested"
@@ -13,11 +14,11 @@
         <MudTh>Reference</MudTh>
     </HeaderContent>
     <ColGroup>
-        <col Style="width: 200px;"/>
-        <col Style="width: 200px;"/>
+        <col Style="width: 190px;"/>
+        <col Style="width: 170px;"/>
         <col/>
-        <col Style="width: 350px;"/>
-        <col Style="width: 350px;"/>
+        <col Style="width: 320px;"/>
+        <col Style="width: 320px;"/>
     </ColGroup>
     <RowTemplate>
         <MudTd DataLabel="Signalled">@zip.SignalledAt</MudTd>
@@ -36,26 +37,40 @@
 
 @if (_selectedZip != null)
 {
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h2">Files of @_selectedZip.Files.First().Key (@_selectedZip.Hash)</MudText>
+        <MudSpacer />
+        <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
+            <MudSelectItem Value="ClassificationOptions.All">@ClassificationOptions.All</MudSelectItem>
+            <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem>
+            <MudSelectItem
+                Value="ClassificationOptions.Classified">@ClassificationOptions.Classified</MudSelectItem>
+            <MudSelectItem
+                Value="ClassificationOptions.Unclassified">@ClassificationOptions.Unclassified</MudSelectItem>
+            <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem>
+            @foreach (var option in ClassificationOptions.EnumItems)
+            {
+                <MudSelectItem Value="@option">@option</MudSelectItem>
+            }
+        </MudSelect>
+    </MudStack>
     <MudTable @ref="_fileTable" T="FileIndex" Dense="true" Hover="true" Context="file"
               ServerData="@OnFileIndexRequested" OnRowClick="@OnFileIndexRowClick">
-        <ToolBarContent>
-            <MudText Typo="Typo.h2">Files of @_selectedZip.Files.First().Key (@_selectedZip.Hash)</MudText>
-        </ToolBarContent>
         <HeaderContent>
-            <MudTh>Signalled</MudTh>
-            <MudTh>Hash</MudTh>
-            <MudTh>File</MudTh>
-            <MudTh>Classification</MudTh>
-            <MudTh>Signal</MudTh>
-            <MudTh>Reference</MudTh>
+                <MudTh>Signalled</MudTh>
+                <MudTh>Hash</MudTh>
+                <MudTh>File</MudTh>
+                <MudTh>Classification</MudTh>
+                <MudTh>Signal</MudTh>
+                <MudTh>Reference</MudTh>
         </HeaderContent>
         <ColGroup>
-            <col Style="width: 200px;"/>
-            <col Style="width: 200px;"/>
+            <col Style="width: 190px;"/>
+            <col Style="width: 170px;"/>
             <col/>
-            <col Style="width: 500px;"/>
-            <col Style="width: 350px;"/>
-            <col Style="width: 350px;"/>
+            <col Style="width: 300px;"/>
+            <col Style="width: 320px;"/>
+            <col Style="width: 320px;"/>
         </ColGroup>
         <RowTemplate>
             <MudTd DataLabel="Signalled">@file.SignalledAt</MudTd>
@@ -85,24 +100,25 @@
             <MudTh>Signalled</MudTh>
             <MudTh>Hash</MudTh>
             <MudTh>Classification</MudTh>
-            <MudTh>Timestamp</MudTh>
             <MudTh>Kind</MudTh>
+            <MudTh>Timestamp</MudTh>
             <MudTh>Signal</MudTh>
             <MudTh>Reference</MudTh>
         </HeaderContent>
         <ColGroup>
-            <col Style="width: 200px;"/>
-            <col Style="width: 200px;"/>
+            <col Style="width: 190px;"/>
+            <col Style="width: 170px;"/>
             <col/>
-            <col Style="width: 250px;"/>
-            <col Style="width: 250px;"/>
-            <col Style="width: 350px;"/>
-            <col Style="width: 350px;"/>
+            <col Style="width: 200px;"/>
+            <col Style="width: 300px;"/>
+            <col Style="width: 320px;"/>
+            <col Style="width: 320px;"/>
         </ColGroup>
         <RowTemplate>
             <MudTd DataLabel="Signalled">@data.SignalledAt</MudTd>
             <MudTd DataLabel="Hash">@data.Hash</MudTd>
             <MudTd DataLabel="Source">@data.Source</MudTd>
+            <MudTd DataLabel="Kind">@data.Kind</MudTd>
             <MudTd DataLabel="Timestamp">
                 @if (data.Kind == DataKind.Day)
                 {
@@ -113,7 +129,6 @@
                     @data.Timestamp.ToString(DateHelper.UiMinuteFormat)
                 }
             </MudTd>
-            <MudTd DataLabel="Kind">@data.Kind</MudTd>
             <MudTd DataLabel="Signal">@data.SignalId</MudTd>
             <MudTd DataLabel="Reference">@data.ReferenceId</MudTd>
         </RowTemplate>

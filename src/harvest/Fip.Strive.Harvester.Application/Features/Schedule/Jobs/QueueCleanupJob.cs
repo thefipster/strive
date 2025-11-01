@@ -16,7 +16,6 @@ public class QueueCleanupJob(
     {
         var configuredDeleteTime = DateTime.UtcNow.AddDays(config.Value.DeleteAfterDays * -1);
         var deleteCount = deleter.DeleteBefore(configuredDeleteTime);
-        //deleter.Rebuild();
 
         logger.LogInformation("Cleaned up queue, removed {QueueDeleteCount} jobs", deleteCount);
 

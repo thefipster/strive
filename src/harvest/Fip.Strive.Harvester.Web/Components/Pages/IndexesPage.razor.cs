@@ -1,4 +1,6 @@
 using Fip.Strive.Core.Domain.Schemas.Index.Models;
+using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
+using Fip.Strive.Core.Domain.Schemas.Ingestion.Options;
 using Fip.Strive.Harvester.Application.Infrastructure.Models;
 using Fip.Strive.Harvester.Application.Infrastructure.Repositories.Contracts;
 using Microsoft.AspNetCore.Components;
@@ -17,6 +19,7 @@ public partial class IndexesPage(
     private MudTable<DataIndex>? _dataTable;
     private ZipIndex? _selectedZip;
     private FileIndex? _selectedFile;
+    private string _selectedClassifierFilter = ClassificationOptions.All;
 
     private Task<TableData<ZipIndex>> OnZipIndexRequested(TableState state, CancellationToken ct)
     {
@@ -37,9 +40,16 @@ public partial class IndexesPage(
     private void OnZipIndexRowClick(TableRowClickEventArgs<ZipIndex> obj)
     {
         _selectedZip = obj.Item;
+        _selectedFile = null;
 
         if (_selectedZip != null)
             _fileTable?.ReloadServerData();
+    }
+
+    private void OnClassificationFilterChanged(string classification)
+    {
+        _selectedClassifierFilter = classification;
+        _fileTable?.ReloadServerData();
     }
 
     private Task<TableData<FileIndex>> OnFileIndexRequested(TableState state, CancellationToken ct)
@@ -47,13 +57,8 @@ public partial class IndexesPage(
         if (_selectedZip == null)
             return Task.FromResult(new TableData<FileIndex> { Items = [], TotalItems = 0 });
 
-        var specs = new PageSpecificationRequest<FileIndex>(
-            x => x.SignalledAt,
-            false,
-            state.Page,
-            state.PageSize,
-            x => x.ParentId == _selectedZip.Hash
-        );
+        var specs = CreateSpecifications(state, _selectedZip);
+        AppendClassificationFilter(specs);
 
         var files = filePager.GetPaged(specs);
 
@@ -76,7 +81,7 @@ public partial class IndexesPage(
             return Task.FromResult(new TableData<DataIndex> { Items = [], TotalItems = 0 });
 
         var specs = new PageSpecificationRequest<DataIndex>(
-            x => x.SignalledAt,
+            x => x.Timestamp,
             false,
             state.Page,
             state.PageSize,
@@ -88,5 +93,35 @@ public partial class IndexesPage(
         return Task.FromResult(
             new TableData<DataIndex> { Items = files.Items, TotalItems = files.Total }
         );
+    }
+
+    private PageSpecificationRequest<FileIndex> CreateSpecifications(TableState state, ZipIndex zip)
+    {
+        var specs = new PageSpecificationRequest<FileIndex>(
+            x => x.SignalledAt,
+            false,
+            state.Page,
+            state.PageSize,
+            x => x.ParentId == zip.Hash
+        );
+        return specs;
+    }
+
+    private void AppendClassificationFilter(PageSpecificationRequest<FileIndex> specs)
+    {
+        if (
+            !string.IsNullOrWhiteSpace(_selectedClassifierFilter)
+            && _selectedClassifierFilter != "All"
+        )
+        {
+            if (_selectedClassifierFilter == ClassificationOptions.Classified)
+                specs.AddFilter(x => x.Source != null);
+            else if (_selectedClassifierFilter == ClassificationOptions.Unclassified)
+                specs.AddFilter(x => x.Source == null);
+            else
+                specs.AddFilter(x =>
+                    x.Source == Enum.Parse<DataSources>(_selectedClassifierFilter)
+                );
+        }
     }
 }

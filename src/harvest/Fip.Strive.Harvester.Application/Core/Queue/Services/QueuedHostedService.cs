@@ -12,12 +12,12 @@ public class QueuedHostedService(
     IQueueWorkerFactory workerFactory
 ) : BackgroundService
 {
-    private List<IQueueRunner> _runners = [];
-    private List<Task> _workers = [];
+    private readonly List<IQueueRunner> _runners = [];
+    private readonly List<Task> _workers = [];
 
     public bool IsRunning => _runners.Any(x => x.IsRunning);
 
-    protected override Task ExecuteAsync(CancellationToken ct)
+    protected override async Task ExecuteAsync(CancellationToken ct)
     {
         logger.LogInformation("Queued hosted service started");
 
@@ -32,9 +32,8 @@ public class QueuedHostedService(
 
         _workers.Add(Task.Run(() => workerFactory.CreateReporter(metrics).RunAsync(ct), ct));
 
-        Task.WhenAll(_workers);
+        await Task.WhenAll(_workers);
 
         logger.LogInformation("Queued hosted service finished");
-        return Task.CompletedTask;
     }
 }
