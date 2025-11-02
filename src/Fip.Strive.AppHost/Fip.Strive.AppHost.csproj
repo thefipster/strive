@@ -10,6 +10,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj" />
+    <ProjectReference Include="..\portal\Fip.Strive.Portal.Web\Fip.Strive.Portal.Web.csproj" />
+    <ProjectReference Include="..\unify\Fip.Strive.Unifier.Web\Fip.Strive.Unifier.Web.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.Development.json">

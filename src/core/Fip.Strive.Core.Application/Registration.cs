@@ -7,7 +7,7 @@ namespace Fip.Strive.Core.Application;
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    public static void AddCoreServices(this IServiceCollection services)
+    public static void AddFeatureCoreServices(this IServiceCollection services)
     {
         services.AddFileSystemFeature();
     }

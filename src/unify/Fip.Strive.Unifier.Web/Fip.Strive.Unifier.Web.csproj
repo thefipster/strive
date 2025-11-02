@@ -4,6 +4,5 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj" />
-    <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
   </ItemGroup>
 </Project>

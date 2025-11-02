@@ -1,4 +1,7 @@
-namespace Fip.Strive.Harvester.Web.Setup.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
+
+namespace Fip.Strive.Core.Web.Setup;
 
 public static class ErrorHandlerRegistration
 {

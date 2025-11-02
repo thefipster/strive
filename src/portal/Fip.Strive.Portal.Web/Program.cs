@@ -1,7 +1,6 @@
 using Fip.Strive.Core.Web;
-using Fip.Strive.Harvester.Application;
-using Fip.Strive.Harvester.Web;
-using Fip.Strive.Harvester.Web.Components;
+using Fip.Strive.Portal.Web;
+using Fip.Strive.Portal.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -12,6 +11,5 @@ builder.Services.AddApplicationServices(configuration);
 var app = builder.Build();
 
 app.UseCoreServices<App>();
-app.UseApplicationServices();
 
 app.Run();
