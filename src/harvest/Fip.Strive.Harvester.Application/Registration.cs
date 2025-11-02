@@ -33,7 +33,7 @@ public static class Registration
         services.AddInfrastructureServices(configuration);
         services.AddConfigs(configuration);
         services.AddProxyFeature();
-        services.AddScheduleFeature(configuration);
+        services.AddScheduleFeature();
         services.AddQueueFeature();
         services.AddIndexingFeature();
 

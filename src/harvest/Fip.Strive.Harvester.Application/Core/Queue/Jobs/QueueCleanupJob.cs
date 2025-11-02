@@ -1,10 +1,12 @@
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
+using Fip.Strive.Harvester.Application.Core.Schedule;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quartz;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Jobs;
 
+[RegularIntervalJob(60)]
 public class QueueCleanupJob(
     IJobDeleter deleter,
     ILogger<QueueCleanupJob> logger,
