@@ -1,1 +1,13 @@
 ﻿<Headline Text="Home" />
+
+@if (_apps.Any())
+{
+    <MudGrid>
+        @foreach (var app in _apps)
+        {
+            <MudItem>
+                <AppTile App="@app"></AppTile>
+            </MudItem>
+        }
+    </MudGrid>
+}
