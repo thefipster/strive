@@ -62,6 +62,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6_Unify", "6_Unify", "{5C09
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Unifier.Web", "src\unify\Fip.Strive.Unifier.Web\Fip.Strive.Unifier.Web.csproj", "{8E480BE3-82BB-433F-8964-F7677C143933}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{788A63E3-D6AF-4058-945F-0BDC854679B0}"
+	ProjectSection(SolutionItems) = preProject
+		src\unify\Directory.Build.props = src\unify\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{7C6FF596-887B-4679-8DBE-8C7FB0FE07A5}"
+	ProjectSection(SolutionItems) = preProject
+		src\portal\Directory.Build.props = src\portal\Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -142,5 +152,7 @@ Global
 		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E} = {91B9CF1B-38AD-4EF8-84DC-88F722055C7B}
 		{B92474A2-924F-4B78-8613-4B401DE998DF} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{8E480BE3-82BB-433F-8964-F7677C143933} = {5C09624B-5701-4B2C-885D-92828FF794C9}
+		{788A63E3-D6AF-4058-945F-0BDC854679B0} = {5C09624B-5701-4B2C-885D-92828FF794C9}
+		{7C6FF596-887B-4679-8DBE-8C7FB0FE07A5} = {91B9CF1B-38AD-4EF8-84DC-88F722055C7B}
 	EndGlobalSection
 EndGlobal
