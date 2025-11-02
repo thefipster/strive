@@ -5,11 +5,11 @@ using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Indexing;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
+using Fip.Strive.Harvester.Application.Core.Schedule;
 using Fip.Strive.Harvester.Application.Features.Assimilate;
 using Fip.Strive.Harvester.Application.Features.Classify;
 using Fip.Strive.Harvester.Application.Features.Expand;
 using Fip.Strive.Harvester.Application.Features.Import;
-using Fip.Strive.Harvester.Application.Features.Schedule;
 using Fip.Strive.Harvester.Application.Features.Upload;
 using Fip.Strive.Harvester.Application.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -33,11 +33,11 @@ public static class Registration
         services.AddInfrastructureServices(configuration);
         services.AddConfigs(configuration);
         services.AddProxyFeature();
+        services.AddScheduleFeature();
         services.AddQueueFeature();
         services.AddIndexingFeature();
 
         // Application Features
-        services.AddScheduleFeature(configuration);
         services.AddUploadFeature();
         services.AddImportFeature();
         services.AddExpandFeature();

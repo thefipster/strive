@@ -2,8 +2,8 @@ using AwesomeAssertions;
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Features.Expand;
-using Fip.Strive.Harvester.Application.Features.Expand.Component;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
+using Fip.Strive.Harvester.Application.Features.Expand.Services;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
