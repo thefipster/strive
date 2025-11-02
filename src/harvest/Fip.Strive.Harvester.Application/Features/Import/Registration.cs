@@ -1,7 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Fip.Strive.Harvester.Application.Features.Import.Components;
-using Fip.Strive.Harvester.Application.Features.Import.Components.Contracts;
-using Fip.Strive.Harvester.Application.Features.Import.Components.Decorators;
 using Fip.Strive.Harvester.Application.Features.Import.Services;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Decorators;
@@ -17,7 +14,7 @@ public static class Registration
         services.AddScoped<IZipFileAccess, ZipFileAccess>();
         services.Decorate<IZipFileAccess, ZipFileAccessValidator>();
 
-        services.AddScoped<IZipInventory, ZipInventory>();
-        services.Decorate<IZipInventory, ZipInventorySignaller>();
+        services.AddScoped<IImportService, ImportService>();
+        services.Decorate<IImportService, ImportServiceSignaller>();
     }
 }
