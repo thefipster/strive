@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Harvester", "4_Harvester", "{748302E7-6E85-41B9-8BD5-FD46335848F6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_Harvester", "5_Harvester", "{748302E7-6E85-41B9-8BD5-FD46335848F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Web", "src\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj", "{72A6B8C2-5465-4652-B6D0-20706C156A2E}"
 EndProject
@@ -52,6 +52,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Ingestion", "src\core\Fip.Strive.Core.Ingestion\Fip.Strive.Core.Ingestion.csproj", "{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Portal", "4_Portal", "{91B9CF1B-38AD-4EF8-84DC-88F722055C7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Portal.Web", "src\portal\Fip.Strive.Portal.Web\Fip.Strive.Portal.Web.csproj", "{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Web", "src\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj", "{B92474A2-924F-4B78-8613-4B401DE998DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +108,14 @@ Global
 		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B92474A2-924F-4B78-8613-4B401DE998DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B92474A2-924F-4B78-8613-4B401DE998DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B92474A2-924F-4B78-8613-4B401DE998DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B92474A2-924F-4B78-8613-4B401DE998DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
@@ -117,5 +131,7 @@ Global
 		{C4FD9DCD-9908-4582-87F3-F0148D4312D9} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
+		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E} = {91B9CF1B-38AD-4EF8-84DC-88F722055C7B}
+		{B92474A2-924F-4B78-8613-4B401DE998DF} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 	EndGlobalSection
 EndGlobal

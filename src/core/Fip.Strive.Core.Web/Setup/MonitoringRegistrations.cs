@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
-namespace Fip.Strive.Harvester.Web.Setup.Infrastructure;
+namespace Fip.Strive.Core.Web.Setup;
 
 public static class MonitoringRegistrations
 {

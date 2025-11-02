@@ -1,27 +1,12 @@
 using System.Text.Json;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Fip.Strive.Harvester.Web.Setup.Infrastructure;
+namespace Fip.Strive.Core.Web.Extensions;
 
-public static class HealthCheckRegistration
+public static class HealthCheckResponseWriter
 {
-    public static void UseHealthChecks(this WebApplication app)
-    {
-        app.MapHealthChecks("/health", new HealthCheckOptions
-        {
-            Predicate = _ => true,
-            ResponseWriter = WriteJsonHealthResponse
-        });
-
-        app.MapHealthChecks("/health/queue", new HealthCheckOptions
-        {
-            Predicate = check => check.Tags.Contains("queue"),
-            ResponseWriter = WriteJsonHealthResponse
-        });
-    }
-
-    private static Task WriteJsonHealthResponse(HttpContext context, HealthReport report)
+    public static Task WriteJsonHealthResponse(HttpContext context, HealthReport report)
     {
         context.Response.ContentType = "application/json";
         var json = SerializeReport(report);

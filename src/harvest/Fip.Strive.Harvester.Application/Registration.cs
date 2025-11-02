@@ -26,7 +26,7 @@ public static class Registration
     )
     {
         // System Core
-        services.AddCoreServices();
+        services.AddFeatureCoreServices();
         services.AddIngestionFeature();
 
         // Application Core

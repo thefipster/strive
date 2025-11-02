@@ -1,8 +1,9 @@
-using Fip.Strive.Harvester.Web.Components;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using MudBlazor.Services;
 
-namespace Fip.Strive.Harvester.Web.Setup.Infrastructure;
+namespace Fip.Strive.Core.Web.Setup;
 
 public static class FrontendRegistrations
 {
@@ -15,8 +16,8 @@ public static class FrontendRegistrations
         });
     }
 
-    public static void UseFrontend(this WebApplication app)
+    public static void UseFrontend<TApp>(this WebApplication app)
     {
-        app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+        app.MapRazorComponents<TApp>().AddInteractiveServerRenderMode();
     }
 }

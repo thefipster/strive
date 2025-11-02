@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Fip.Strive.Harvester.Web.Setup.Infrastructure;
+namespace Fip.Strive.Core.Web.Setup;
 
 public static class CompressionRegistration
 {
