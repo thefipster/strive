@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_Harvester", "5_Harvester", "{748302E7-6E85-41B9-8BD5-FD46335848F6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_Harvest", "5_Harvest", "{748302E7-6E85-41B9-8BD5-FD46335848F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Web", "src\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj", "{72A6B8C2-5465-4652-B6D0-20706C156A2E}"
 EndProject
@@ -57,6 +57,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Portal.Web", "src\portal\Fip.Strive.Portal.Web\Fip.Strive.Portal.Web.csproj", "{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Web", "src\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj", "{B92474A2-924F-4B78-8613-4B401DE998DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6_Unify", "6_Unify", "{5C09624B-5701-4B2C-885D-92828FF794C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Unifier.Web", "src\unify\Fip.Strive.Unifier.Web\Fip.Strive.Unifier.Web.csproj", "{8E480BE3-82BB-433F-8964-F7677C143933}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +120,10 @@ Global
 		{B92474A2-924F-4B78-8613-4B401DE998DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B92474A2-924F-4B78-8613-4B401DE998DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B92474A2-924F-4B78-8613-4B401DE998DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E480BE3-82BB-433F-8964-F7677C143933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E480BE3-82BB-433F-8964-F7677C143933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E480BE3-82BB-433F-8964-F7677C143933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E480BE3-82BB-433F-8964-F7677C143933}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
@@ -133,5 +141,6 @@ Global
 		{BBEDDE8E-7EA2-4FCA-8C63-8F892AE5602A} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E} = {91B9CF1B-38AD-4EF8-84DC-88F722055C7B}
 		{B92474A2-924F-4B78-8613-4B401DE998DF} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
+		{8E480BE3-82BB-433F-8964-F7677C143933} = {5C09624B-5701-4B2C-885D-92828FF794C9}
 	EndGlobalSection
 EndGlobal

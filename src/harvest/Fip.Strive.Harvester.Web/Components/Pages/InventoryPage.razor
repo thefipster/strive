@@ -54,7 +54,7 @@
 
                             @if (entries.Any(x => x.Kind == DataKind.Day) && entries.Any(x => x.Kind == DataKind.Session))
                             {
-                                <MudBadge T="string" Color="Color.Secondary">
+                                <MudBadge Color="Color.Secondary">
                                     <MudButton Class="day-button"
                                                OnClick="@(() => OnDayClicked(_selectedYear, month, day))"
                                                Variant="Variant.Outlined" Size="Size.Medium">@day</MudButton>
@@ -62,7 +62,7 @@
                             }
                             else if (entries.Any(x => x.Kind == DataKind.Day))
                             {
-                                <MudBadge T="string" Color="Color.Info">
+                                <MudBadge Color="Color.Info">
                                     <MudButton Class="day-button"
                                                OnClick="@(() => OnDayClicked(_selectedYear, month, day))"
                                                Variant="Variant.Outlined" Size="Size.Small">@day</MudButton>
@@ -70,7 +70,7 @@
                             }
                             else if (entries.Any(x => x.Kind == DataKind.Session))
                             {
-                                <MudBadge T="string" Color="Color.Primary">
+                                <MudBadge Color="Color.Primary">
                                     <MudButton Class="day-button"
                                                OnClick="@(() => OnDayClicked(_selectedYear, month, day))"
                                                Variant="Variant.Outlined" Size="Size.Small">@day</MudButton>
@@ -78,7 +78,7 @@
                             }
                             else
                             {
-                                <MudBadge T="string" Color="Color.Transparent">
+                                <MudBadge Color="Color.Transparent">
                                     <MudButton Class="day-button"
                                                Variant="Variant.Text" Size="Size.Small">@day</MudButton>
                                 </MudBadge>
@@ -86,7 +86,7 @@
                         }
                         else
                         {
-                            <MudBadge T="string" Color="Color.Transparent">
+                            <MudBadge Color="Color.Transparent">
                                 <MudButton Class="day-button" Color="Color.Transparent"
                                            Variant="Variant.Text" Size="Size.Small"></MudButton>
                             </MudBadge>
