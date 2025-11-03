@@ -1,21 +1,24 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Fip.Strive.Core.Application.Features.Config.Models;
 using Fip.Strive.Core.Domain.Exceptions;
-using Fip.Strive.Harvester.Application.Core.Config.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Fip.Strive.Harvester.Application.Core.Config;
+namespace Fip.Strive.Core.Application.Features.Config;
 
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    public static void AddConfigs(this IServiceCollection services, IConfiguration configuration)
+    public static void AddConfigs<TApp>(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var baseType = typeof(BaseConfig);
 
         var configTypes = Assembly
-            .GetAssembly(baseType)
+            .GetAssembly(typeof(TApp))
             ?.GetTypes()
             .Where(t => !t.IsAbstract && baseType.IsAssignableFrom(t))
             .ToList();
@@ -37,7 +40,7 @@ public static class Registration
 
                 var generic = method.MakeGenericMethod(type);
                 var section = configuration.GetSection(instance.ConfigSectionName);
-                generic.Invoke(null, new object[] { services, section });
+                generic.Invoke(null, [services, section]);
             }
         }
     }

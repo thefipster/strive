@@ -4,5 +4,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj" />
+    <ProjectReference Include="..\Fip.Strive.Unifier.Application\Fip.Strive.Unifier.Application.csproj" />
   </ItemGroup>
 </Project>

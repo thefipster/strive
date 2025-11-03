@@ -1,4 +1,4 @@
-using Fip.Strive.Harvester.Application.Core.Config.Models;
+using Fip.Strive.Core.Application.Features.Config.Models;
 
 namespace Fip.Strive.Harvester.Application.Core.Indexing;
 

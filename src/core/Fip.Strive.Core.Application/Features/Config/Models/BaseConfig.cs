@@ -1,4 +1,4 @@
-namespace Fip.Strive.Harvester.Application.Core.Config.Models;
+namespace Fip.Strive.Core.Application.Features.Config.Models;
 
 public abstract class BaseConfig(string configSectionName)
 {

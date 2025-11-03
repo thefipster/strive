@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Application;
 using Fip.Strive.Core.Ingestion;
-using Fip.Strive.Harvester.Application.Core.Config;
 using Fip.Strive.Harvester.Application.Core.Indexing;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
@@ -17,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Harvester.Application;
 
+internal sealed class HarvesterApp;
+
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
@@ -26,12 +27,11 @@ public static class Registration
     )
     {
         // System Core
-        services.AddFeatureCoreServices();
+        services.AddCoreServices<HarvesterApp>(configuration);
         services.AddIngestionFeature();
 
         // Application Core
         services.AddInfrastructureServices(configuration);
-        services.AddConfigs(configuration);
         services.AddProxyFeature();
         services.AddScheduleFeature();
         services.AddQueueFeature();
