@@ -4,5 +4,5 @@ using Fip.Strive.Indexing.Domain;
 
 namespace Fip.Strive.Indexing.Application.Features.Pagers;
 
-public class ZipPager(IndexContext context)
-    : SpecificationReader<ZipIndex>(context.GetCollection<ZipIndex>());
+public class LiteZipPager(IndexLiteContext context)
+    : LiteSpecificationReader<ZipIndex>(context.GetCollection<ZipIndex>());

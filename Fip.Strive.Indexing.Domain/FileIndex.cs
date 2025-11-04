@@ -5,12 +5,14 @@ namespace Fip.Strive.Indexing.Domain;
 public class FileIndex
 {
     public required string Hash { get; set; }
-    public Dictionary<string, DateTime> Files { get; set; } = new();
+    public ICollection<FileHashed> Files { get; set; } = [];
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public required DateTime SignalledAt { get; set; }
     public required Guid SignalId { get; set; }
     public required Guid ReferenceId { get; set; }
     public required string ParentId { get; set; }
+
     public bool Classified { get; set; }
     public ClassificationResults ClassificationResult { get; set; }
     public string? ClassifierHash { get; set; }
@@ -24,11 +26,6 @@ public class FileIndex
     public DateTime? ExtractionMinDate { get; set; }
     public DateTime? ExtractionMaxDate { get; set; }
 
-    public void AddFile(string filename)
-    {
-        if (Files.ContainsKey(filename))
-            return;
-
-        Files.Add(filename, DateTime.UtcNow);
-    }
+    public virtual ZipIndex? Parent { get; set; }
+    public virtual ICollection<DataIndex> Children { get; set; } = [];
 }

@@ -4,5 +4,5 @@ using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Indexing.Application.Infrastructure.Lite.Contexts;
 
-public class IndexContext(IOptions<IndexConfig> config)
+public class IndexLiteContext(IOptions<LiteDbConfig> config)
     : LiteBaseContext(config.Value.DatabasePath, IndexerMapper.Mapper) { }

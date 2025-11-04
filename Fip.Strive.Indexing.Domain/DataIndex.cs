@@ -15,5 +15,8 @@ public class DataIndex
 
     public required DateTime SignalledAt { get; set; }
     public required Guid SignalId { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public virtual FileIndex? Parent { get; set; }
 }

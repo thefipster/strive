@@ -5,11 +5,11 @@ using LiteDB;
 
 namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
-public class DataIndexer : IIndexer<DataIndex, string>
+public class LiteDataIndexer : IIndexer<DataIndex, string>
 {
     private readonly ILiteCollection<DataIndex> _collection;
 
-    public DataIndexer(IndexContext context)
+    public LiteDataIndexer(IndexLiteContext context)
     {
         _collection = context.GetCollection<DataIndex>();
         _collection.EnsureIndex(x => x.Hash);

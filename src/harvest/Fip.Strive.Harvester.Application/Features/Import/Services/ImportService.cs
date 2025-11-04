@@ -32,7 +32,7 @@ public class ImportService(
 
     private bool FileIsIndexed(WorkItem work)
     {
-        return work.Index != null && work.Index.Files.ContainsKey(work.Filename);
+        return work.Index != null && work.Index.Files.Any(x => x.FileName == work.Filename);
     }
 
     private Task<WorkItem> RemoveAlreadyKnownFileAsync(WorkItem work)

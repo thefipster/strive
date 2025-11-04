@@ -28,8 +28,9 @@ public static class Registration
     {
         // System Core
         services.AddCoreServices<HarvesterApp>(configuration);
+        services.AddLiteDbInfrastructure();
+        //services.AddPostgresInfrastructure(configuration);
         services.AddIngestionFeature();
-        services.AddIndexingFeature();
 
         // Application Core
         services.AddInfrastructureServices();

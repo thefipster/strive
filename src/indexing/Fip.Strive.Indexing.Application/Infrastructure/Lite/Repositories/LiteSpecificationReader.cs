@@ -1,10 +1,10 @@
+using Fip.Strive.Core.Application.Infrastructure.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Requests.Paging;
-using Fip.Strive.Indexing.Application.Infrastructure.Lite.Repositories.Contracts;
 using LiteDB;
 
 namespace Fip.Strive.Indexing.Application.Infrastructure.Lite.Repositories;
 
-public class SpecificationReader<TEntity>(ILiteCollection<TEntity> collection)
+public class LiteSpecificationReader<TEntity>(ILiteCollection<TEntity> collection)
     : ISpecificationReader<TEntity>
 {
     public PagedResponse<TEntity> GetPaged(

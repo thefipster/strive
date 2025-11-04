@@ -3,6 +3,7 @@ using Fip.Strive.Harvester.Application.Features.Expand.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
 using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Indexing.Domain.Extensions;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Services;
 
@@ -21,7 +22,7 @@ public class FileHashGate(IIndexer<FileIndex, string> indexer, IFileHasher hashe
         if (index == null)
             index = work.ToIndex(hash);
 
-        index.AddFile(filename);
+        index.Files.Add(filename, hash);
         indexer.Upsert(index);
 
         return index;

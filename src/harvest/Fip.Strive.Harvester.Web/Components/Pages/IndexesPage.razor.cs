@@ -1,7 +1,7 @@
+using Fip.Strive.Core.Application.Infrastructure.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Options;
 using Fip.Strive.Core.Domain.Schemas.Requests.Paging;
-using Fip.Strive.Indexing.Application.Infrastructure.Lite.Repositories.Contracts;
 using Fip.Strive.Indexing.Domain;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;

@@ -5,11 +5,11 @@ using LiteDB;
 
 namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
-public class Inventory : IInventory
+public class LiteInventory : IInventory
 {
     private readonly ILiteCollection<DateEntry> _collection;
 
-    public Inventory(IndexContext context)
+    public LiteInventory(IndexLiteContext context)
     {
         _collection = context.GetCollection<DateEntry>();
 

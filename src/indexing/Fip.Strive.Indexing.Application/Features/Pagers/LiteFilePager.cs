@@ -4,5 +4,5 @@ using Fip.Strive.Indexing.Domain;
 
 namespace Fip.Strive.Indexing.Application.Features.Pagers;
 
-public class DataPager(IndexContext context)
-    : SpecificationReader<DataIndex>(context.GetCollection<DataIndex>());
+public class LiteFilePager(IndexLiteContext context)
+    : LiteSpecificationReader<FileIndex>(context.GetCollection<FileIndex>()) { }

@@ -5,11 +5,11 @@ using LiteDB;
 
 namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
-public class FileIndexer : IIndexer<FileIndex, string>
+public class LiteFileIndexer : IIndexer<FileIndex, string>
 {
     private readonly ILiteCollection<FileIndex> _collection;
 
-    public FileIndexer(IndexContext context)
+    public LiteFileIndexer(IndexLiteContext context)
     {
         _collection = context.GetCollection<FileIndex>();
         _collection.EnsureIndex(x => x.Hash);

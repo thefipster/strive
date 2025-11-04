@@ -5,11 +5,11 @@ using LiteDB;
 
 namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
-public class ZipIndexer : IIndexer<ZipIndex, string>
+public class LiteZipIndexer : IIndexer<ZipIndex, string>
 {
     private readonly ILiteCollection<ZipIndex> _collection;
 
-    public ZipIndexer(IndexContext context)
+    public LiteZipIndexer(IndexLiteContext context)
     {
         _collection = context.GetCollection<ZipIndex>();
         _collection.EnsureIndex(x => x.Hash);
