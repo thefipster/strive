@@ -3,7 +3,10 @@ namespace Fip.Strive.Core.Domain.Exceptions;
 public class ConfigurationException : Exception
 {
     public ConfigurationException(string message)
-        : base($"{message}") { }
+        : base(message) { }
+
+    public ConfigurationException(string message, Exception exception)
+        : base(message, exception) { }
 
     public ConfigurationException(string key, string message)
         : base($"{key}: {message}") { }

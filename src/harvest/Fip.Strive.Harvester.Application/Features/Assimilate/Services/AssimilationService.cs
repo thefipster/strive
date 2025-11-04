@@ -1,12 +1,12 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Core.Domain.Exceptions;
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Core.Ingestion.Services.Contracts;
-using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Features.Assimilate.Models;
 using Fip.Strive.Harvester.Application.Features.Assimilate.Services.Contracts;
+using Fip.Strive.Indexing.Application.Features.Contracts;
+using Fip.Strive.Indexing.Domain;
 using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Harvester.Application.Features.Assimilate.Services;

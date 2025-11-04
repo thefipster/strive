@@ -1,8 +1,8 @@
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
-using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
-using Fip.Strive.Harvester.Application.Infrastructure.Models;
-using Fip.Strive.Harvester.Application.Infrastructure.Repositories.Contracts;
+using Fip.Strive.Core.Domain.Schemas.Requests.Paging;
+using Fip.Strive.Indexing.Application.Features.Contracts;
+using Fip.Strive.Indexing.Application.Infrastructure.Lite.Repositories.Contracts;
+using Fip.Strive.Indexing.Domain;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

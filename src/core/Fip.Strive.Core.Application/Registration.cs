@@ -17,4 +17,9 @@ public static class Registration
         services.AddFileSystemFeature();
         services.AddConfigs<TApp>(configuration);
     }
+
+    public static void AddCoreServices(this IServiceCollection services)
+    {
+        services.AddFileSystemFeature();
+    }
 }

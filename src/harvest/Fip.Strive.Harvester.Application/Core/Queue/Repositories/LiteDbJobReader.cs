@@ -1,8 +1,8 @@
 using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
 using Fip.Strive.Core.Domain.Schemas.Queue.Models;
+using Fip.Strive.Core.Domain.Schemas.Requests.Paging;
 using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
-using Fip.Strive.Harvester.Application.Infrastructure.Models;
 
 namespace Fip.Strive.Harvester.Application.Core.Queue.Repositories;
 

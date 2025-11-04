@@ -1,7 +1,7 @@
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
+using Fip.Strive.Indexing.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Services.Decorators;

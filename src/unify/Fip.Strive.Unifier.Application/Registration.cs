@@ -15,7 +15,7 @@ public static class Registration
     )
     {
         // System Core
-        services.AddCoreServices<UnifierApp>(configuration);
+        services.AddCoreServices();
 
         // Application Core
 

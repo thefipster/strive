@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Application;
 using Fip.Strive.Core.Ingestion;
-using Fip.Strive.Harvester.Application.Core.Indexing;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
 using Fip.Strive.Harvester.Application.Core.Schedule;
@@ -11,6 +10,7 @@ using Fip.Strive.Harvester.Application.Features.Expand;
 using Fip.Strive.Harvester.Application.Features.Import;
 using Fip.Strive.Harvester.Application.Features.Upload;
 using Fip.Strive.Harvester.Application.Infrastructure;
+using Fip.Strive.Indexing.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,13 +29,13 @@ public static class Registration
         // System Core
         services.AddCoreServices<HarvesterApp>(configuration);
         services.AddIngestionFeature();
+        services.AddIndexingFeature();
 
         // Application Core
-        services.AddInfrastructureServices(configuration);
+        services.AddInfrastructureServices();
         services.AddProxyFeature();
         services.AddScheduleFeature();
         services.AddQueueFeature();
-        services.AddIndexingFeature();
 
         // Application Features
         services.AddUploadFeature();
