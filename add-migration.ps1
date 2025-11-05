@@ -1,0 +1,1 @@
+dotnet ef migrations add InitialCreate -p .\src\indexing\Fip.Strive.Indexing.Application -s .\src\harvest\Fip.Strive.Harvester.Web -c IndexPgContext -o Infrastructure/Postgres/Migrations
