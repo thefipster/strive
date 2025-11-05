@@ -18,12 +18,12 @@ public class FileHashGate(IIndexer<FileIndex, string> indexer, IFileHasher hashe
         var filename = Path.GetFileName(filepath);
         var hash = await hasher.HashXx3Async(filepath, ct);
 
-        var index = indexer.Find(hash);
+        var index = await indexer.FindAsync(hash);
         if (index == null)
             index = work.ToIndex(hash);
 
         index.Files.Add(filename, hash);
-        indexer.Upsert(index);
+        await indexer.UpsertAsync(index);
 
         return index;
     }

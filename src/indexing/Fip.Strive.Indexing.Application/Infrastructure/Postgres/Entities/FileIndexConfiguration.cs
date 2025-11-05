@@ -29,12 +29,6 @@ public class FileIndexConfiguration : IEntityTypeConfiguration<FileIndex>
         builder.Property(x => x.ClassificationResult).IsRequired();
 
         builder
-            .HasMany(x => x.Files)
-            .WithOne()
-            .HasForeignKey(x => x.Hash)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder
             .HasOne(x => x.Parent)
             .WithMany(x => x.Children)
             .HasForeignKey(x => x.ParentId)

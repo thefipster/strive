@@ -16,7 +16,15 @@ public class LiteFileIndexer : IIndexer<FileIndex, string>
         _collection.EnsureIndex(x => x.ReferenceId);
     }
 
-    public FileIndex? Find(string hash) => _collection.FindById(hash);
+    public Task<FileIndex?> FindAsync(string hash)
+    {
+        var index = _collection.FindById(hash);
+        return Task.FromResult<FileIndex?>(index);
+    }
 
-    public void Upsert(FileIndex index) => _collection.Upsert(index);
+    public Task UpsertAsync(FileIndex index)
+    {
+        _collection.Upsert(index);
+        return Task.CompletedTask;
+    }
 }

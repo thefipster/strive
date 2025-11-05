@@ -4,7 +4,7 @@ public class ZipIndex
 {
     public required string Hash { get; set; }
 
-    public ICollection<FileHashed> Files { get; set; } = [];
+    public ICollection<ZipHashed> Files { get; set; } = [];
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

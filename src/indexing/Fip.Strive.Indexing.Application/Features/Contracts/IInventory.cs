@@ -4,15 +4,18 @@ namespace Fip.Strive.Indexing.Application.Features.Contracts;
 
 public interface IInventory
 {
-    public void Upsert(DateEntry entry);
+    public Task UpsertAsync(DateEntry entry);
 
-    public IEnumerable<int> GetYears();
+    public Task<IEnumerable<int>> GetYearsAsync();
 
-    public IEnumerable<DateEntry> GetEntries(int year);
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(int year);
 
-    public IEnumerable<DateEntry> GetEntries(int year, int month);
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(int year, int month);
 
-    public IEnumerable<DateEntry> GetEntries(int year, int month, int day);
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(int year, int month, int day);
 
-    public IEnumerable<DateEntry> GetEntries(DateTime inclusiveStart, DateTime exclusiveEnd);
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(
+        DateTime inclusiveStart,
+        DateTime exclusiveEnd
+    );
 }

@@ -21,17 +21,5 @@ public class ZipIndexConfiguration : IEntityTypeConfiguration<ZipIndex>
         builder.Property(x => x.SignalledAt).IsRequired();
 
         builder.Property(x => x.SignalId).IsRequired();
-
-        builder
-            .HasMany(x => x.Files)
-            .WithOne()
-            .HasForeignKey(x => x.Hash)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder
-            .HasMany(x => x.Files)
-            .WithOne()
-            .HasForeignKey(x => x.Hash)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

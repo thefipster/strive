@@ -24,12 +24,12 @@ public partial class InventoryPage(IInventory inventory, ISpecificationReader<Da
     [SupplyParameterFromQuery]
     public int? Year { get; set; }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        _years = inventory.GetYears().ToList();
+        _years = (await inventory.GetYearsAsync()).ToList();
         _selectedYear = Year ?? (_years.Count != 0 ? _years[^1] : DateTime.Now.Year);
 
-        _entries = inventory.GetEntries(_selectedYear).ToList();
+        _entries = (await inventory.GetEntriesAsync(_selectedYear)).ToList();
     }
 
     private void OnDayClicked(int year, int month, int day)

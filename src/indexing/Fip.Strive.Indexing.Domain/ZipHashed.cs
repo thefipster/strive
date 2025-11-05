@@ -12,5 +12,5 @@ public class ZipHashed
 
     public DateTime IndexedAt { get; set; }
 
-    public virtual ZipIndex? Zip { get; set; } = null!;
+    public virtual ZipIndex? Zip { get; set; }
 }

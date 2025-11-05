@@ -16,7 +16,15 @@ public class LiteZipIndexer : IIndexer<ZipIndex, string>
         _collection.EnsureIndex(x => x.ReferenceId);
     }
 
-    public ZipIndex? Find(string hash) => _collection.FindById(hash);
+    public Task<ZipIndex?> FindAsync(string hash)
+    {
+        var result = _collection.FindById(hash);
+        return Task.FromResult<ZipIndex?>(result);
+    }
 
-    public void Upsert(ZipIndex index) => _collection.Upsert(index);
+    public Task UpsertAsync(ZipIndex index)
+    {
+        _collection.Upsert(index);
+        return Task.CompletedTask;
+    }
 }

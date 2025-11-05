@@ -17,7 +17,7 @@ public class ImportService(
     {
         var work = WorkItem.FromSignal(signal);
 
-        work.Index = indexer.Find(work.Signal.Hash);
+        work.Index = await indexer.FindAsync(work.Signal.Hash);
         if (FileIsIndexed(work))
             return await RemoveAlreadyKnownFileAsync(work);
 
@@ -25,7 +25,7 @@ public class ImportService(
             work.ImportedPath = fileAccess.Import(work.Signal.Filepath);
 
         var index = work.ToIndex();
-        indexer.Upsert(index);
+        await indexer.UpsertAsync(index);
 
         return work;
     }

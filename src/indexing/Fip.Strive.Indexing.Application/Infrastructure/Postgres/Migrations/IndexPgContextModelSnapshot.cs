@@ -110,9 +110,6 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("FileHash")
-                        .HasColumnType("text");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -125,8 +122,6 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FileHash");
 
                     b.HasIndex("Hash");
 
@@ -218,12 +213,9 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                     b.Property<DateTime>("IndexedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("ZipHash")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ZipHash");
+                    b.HasIndex("Hash");
 
                     b.ToTable("ZipsHashed");
                 });
@@ -266,19 +258,9 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.FileHashed", b =>
                 {
                     b.HasOne("Fip.Strive.Indexing.Domain.FileIndex", "File")
-                        .WithMany()
-                        .HasForeignKey("FileHash");
-
-                    b.HasOne("Fip.Strive.Indexing.Domain.FileIndex", null)
                         .WithMany("Files")
                         .HasForeignKey("Hash")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fip.Strive.Indexing.Domain.ZipIndex", null)
-                        .WithMany("Files")
-                        .HasForeignKey("Hash")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("File");
@@ -298,8 +280,10 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.ZipHashed", b =>
                 {
                     b.HasOne("Fip.Strive.Indexing.Domain.ZipIndex", "Zip")
-                        .WithMany()
-                        .HasForeignKey("ZipHash");
+                        .WithMany("Files")
+                        .HasForeignKey("Hash")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Zip");
                 });

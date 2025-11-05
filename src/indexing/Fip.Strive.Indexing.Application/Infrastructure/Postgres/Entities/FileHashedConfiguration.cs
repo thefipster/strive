@@ -11,5 +11,12 @@ public class FileHashedConfiguration : IEntityTypeConfiguration<FileHashed>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Hash).IsRequired();
+
+        builder
+            .HasOne(x => x.File)
+            .WithMany(x => x.Files)
+            .HasForeignKey(x => x.Hash)
+            .HasPrincipalKey(x => x.Hash)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

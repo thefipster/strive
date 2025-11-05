@@ -7,28 +7,40 @@ namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
 public class PgZipIndexer(IndexPgContext context) : IIndexer<ZipIndex, string>
 {
-    public ZipIndex? Find(string hash) => context.Zips.Find(hash);
+    public async Task<ZipIndex?> FindAsync(string hash) => await context.Zips.FindAsync(hash);
 
-    public void Upsert(ZipIndex index)
+    public async Task UpsertAsync(ZipIndex index)
     {
         var existing = context.Zips.Include(z => z.Files).FirstOrDefault(z => z.Hash == index.Hash);
 
         if (existing == null)
-            Insert(index);
+            await InsertAsync(index);
         else
-            Update(index, existing);
-
-        context.SaveChanges();
+            await UpdateAsync(index, existing);
     }
 
-    private void Insert(ZipIndex index) => context.Zips.Add(index);
+    private async Task InsertAsync(ZipIndex index)
+    {
+        var files = index.Files.ToArray();
+        index.Files.Clear();
 
-    private void Update(ZipIndex index, ZipIndex existing)
+        context.Zips.Add(index);
+        await context.SaveChangesAsync();
+
+        foreach (var file in files)
+            index.Files.Add(file);
+
+        await context.SaveChangesAsync();
+    }
+
+    private async Task UpdateAsync(ZipIndex index, ZipIndex existing)
     {
         context.Entry(existing).CurrentValues.SetValues(index);
 
         existing.Files.Clear();
         foreach (var file in index.Files)
             existing.Files.Add(file);
+
+        await context.SaveChangesAsync();
     }
 }

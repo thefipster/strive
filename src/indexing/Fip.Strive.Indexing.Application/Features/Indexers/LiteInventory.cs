@@ -19,31 +19,60 @@ public class LiteInventory : IInventory
         _collection.EnsureIndex(x => x.Date);
     }
 
-    public void Upsert(DateEntry entry) => _collection.Upsert(entry);
+    public Task UpsertAsync(DateEntry entry)
+    {
+        _collection.Upsert(entry);
+        return Task.CompletedTask;
+    }
 
-    public IEnumerable<int> GetYears() =>
-        _collection
+    public Task<IEnumerable<int>> GetYearsAsync()
+    {
+        var result = _collection
             .Query()
             .Select(entry => entry.Year)
             .ToEnumerable()
             .Distinct()
             .OrderBy(year => year);
 
-    public IEnumerable<DateEntry> GetEntries(int year) =>
-        _collection.Find(entry => entry.Year == year).OrderBy(entry => entry.Timestamp);
+        return Task.FromResult<IEnumerable<int>>(result);
+    }
 
-    public IEnumerable<DateEntry> GetEntries(int year, int month) =>
-        _collection
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(int year)
+    {
+        var result = _collection
+            .Find(entry => entry.Year == year)
+            .OrderBy(entry => entry.Timestamp);
+
+        return Task.FromResult<IEnumerable<DateEntry>>(result);
+    }
+
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(int year, int month)
+    {
+        var result = _collection
             .Find(entry => entry.Year == year && entry.Month == month)
             .OrderBy(entry => entry.Timestamp);
 
-    public IEnumerable<DateEntry> GetEntries(int year, int month, int day) =>
-        _collection
+        return Task.FromResult<IEnumerable<DateEntry>>(result);
+    }
+
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(int year, int month, int day)
+    {
+        var result = _collection
             .Find(entry => entry.Year == year && entry.Month == month && entry.Day == day)
             .OrderBy(entry => entry.Timestamp);
 
-    public IEnumerable<DateEntry> GetEntries(DateTime inclusiveStart, DateTime exclusiveEnd) =>
-        _collection
+        return Task.FromResult<IEnumerable<DateEntry>>(result);
+    }
+
+    public Task<IEnumerable<DateEntry>> GetEntriesAsync(
+        DateTime inclusiveStart,
+        DateTime exclusiveEnd
+    )
+    {
+        var result = _collection
             .Find(entry => entry.Date >= inclusiveStart && entry.Date < exclusiveEnd)
             .OrderBy(entry => entry.Timestamp);
+
+        return Task.FromResult<IEnumerable<DateEntry>>(result);
+    }
 }

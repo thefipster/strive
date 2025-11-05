@@ -85,17 +85,17 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Hash = table.Column<string>(type: "text", nullable: false),
                     FileName = table.Column<string>(type: "text", nullable: false),
-                    IndexedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ZipHash = table.Column<string>(type: "text", nullable: true)
+                    IndexedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ZipsHashed", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ZipsHashed_Zips_ZipHash",
-                        column: x => x.ZipHash,
+                        name: "FK_ZipsHashed_Zips_Hash",
+                        column: x => x.Hash,
                         principalTable: "Zips",
-                        principalColumn: "Hash");
+                        principalColumn: "Hash",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -133,29 +133,17 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Hash = table.Column<string>(type: "text", nullable: false),
                     FileName = table.Column<string>(type: "text", nullable: false),
-                    IndexedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    FileHash = table.Column<string>(type: "text", nullable: true)
+                    IndexedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FilesHashed", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_FilesHashed_Files_FileHash",
-                        column: x => x.FileHash,
-                        principalTable: "Files",
-                        principalColumn: "Hash");
-                    table.ForeignKey(
                         name: "FK_FilesHashed_Files_Hash",
                         column: x => x.Hash,
                         principalTable: "Files",
                         principalColumn: "Hash",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FilesHashed_Zips_Hash",
-                        column: x => x.Hash,
-                        principalTable: "Zips",
-                        principalColumn: "Hash",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -177,11 +165,6 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                 name: "IX_Files_ReferenceId",
                 table: "Files",
                 column: "ReferenceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FilesHashed_FileHash",
-                table: "FilesHashed",
-                column: "FileHash");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FilesHashed_Hash",
@@ -214,9 +197,9 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                 column: "ReferenceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ZipsHashed_ZipHash",
+                name: "IX_ZipsHashed_Hash",
                 table: "ZipsHashed",
-                column: "ZipHash");
+                column: "Hash");
         }
 
         /// <inheritdoc />

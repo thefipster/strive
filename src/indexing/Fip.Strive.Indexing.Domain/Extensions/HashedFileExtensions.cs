@@ -13,4 +13,16 @@ public static class HashedFileExtensions
 
         files.Add(file);
     }
+
+    public static void Add(this ICollection<ZipHashed> files, string path, string hash)
+    {
+        var file = new ZipHashed
+        {
+            FileName = path,
+            IndexedAt = DateTime.UtcNow,
+            Hash = hash,
+        };
+
+        files.Add(file);
+    }
 }

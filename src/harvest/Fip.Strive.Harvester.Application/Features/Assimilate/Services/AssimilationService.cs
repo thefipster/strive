@@ -30,14 +30,14 @@ public class AssimilationService(
         foreach (var extraction in work.Extractions)
             await WriteExtraction(extraction, work, ct);
 
-        UpdateFileIndex(work);
+        await UpdateFileIndexAsync(work);
 
         return work;
     }
 
-    private void UpdateFileIndex(WorkItem work)
+    private async Task UpdateFileIndexAsync(WorkItem work)
     {
-        var index = files.Find(work.Signal.Hash);
+        var index = await files.FindAsync(work.Signal.Hash);
         if (index == null)
             throw new ExtractionException(
                 work.Signal.Filepath,
@@ -47,10 +47,10 @@ public class AssimilationService(
         index.ExtractorVersion = work.Extractor!.ExtractorVersion;
         index.LastExtractionAt = DateTime.UtcNow;
         index.Extractions = work.Extractions.Count;
-        index.ExtractionMinDate = work.Extractions.Min(x => x.Timestamp);
-        index.ExtractionMaxDate = work.Extractions.Min(x => x.Timestamp);
+        index.ExtractionMinDate = work.Extractions.Min(x => x.Timestamp).ToUniversalTime();
+        index.ExtractionMaxDate = work.Extractions.Min(x => x.Timestamp).ToUniversalTime();
 
-        files.Upsert(index);
+        await files.UpsertAsync(index);
     }
 
     private void AppendExtractions(WorkItem work)
@@ -90,7 +90,7 @@ public class AssimilationService(
             Hash = hash,
             Filepath = filepath,
             Kind = extraction.Kind,
-            Timestamp = extraction.Timestamp,
+            Timestamp = extraction.Timestamp.ToUniversalTime(),
             Source = extraction.Source,
             SourceFile = extraction.SourceFile,
             ReferenceId = work.Signal.ReferenceId,
@@ -99,12 +99,12 @@ public class AssimilationService(
             SignalId = work.Signal.Id,
         };
 
-        indexer.Upsert(work.Index);
+        await indexer.UpsertAsync(work.Index);
     }
 
     private void SaveInventory(FileExtraction extraction)
     {
         var dateEntry = new DateEntry { Kind = extraction.Kind, Timestamp = extraction.Timestamp };
-        inventory.Upsert(dateEntry);
+        inventory.UpsertAsync(dateEntry);
     }
 }

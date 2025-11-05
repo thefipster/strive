@@ -6,24 +6,25 @@ namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
 public class PgFileIndexer(IndexPgContext context) : IIndexer<FileIndex, string>
 {
-    public FileIndex? Find(string hash) => context.Files.Find(hash);
+    public async Task<FileIndex?> FindAsync(string hash) => await context.Files.FindAsync(hash);
 
-    public void Upsert(FileIndex index)
+    public async Task UpsertAsync(FileIndex index)
     {
         var existing = context.Files.FirstOrDefault(f => f.Hash == index.Hash);
 
         if (existing == null)
-            Insert(index);
+            await InsertAsync(index);
         else
-            Update(index, existing);
+            await UpdateAsync(index, existing);
 
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
-    private void Insert(FileIndex index) => context.Files.Add(index);
+    private async Task InsertAsync(FileIndex index) => await context.Files.AddAsync(index);
 
-    private void Update(FileIndex index, FileIndex existing)
+    private Task UpdateAsync(FileIndex index, FileIndex existing)
     {
         context.Entry(existing).CurrentValues.SetValues(index);
+        return Task.CompletedTask;
     }
 }

@@ -23,9 +23,9 @@ public class ClassificationService(
         return ReportClassification(work, ct);
     }
 
-    private Task<WorkItem> ReportClassification(WorkItem work, CancellationToken ct = default)
+    private async Task<WorkItem> ReportClassification(WorkItem work, CancellationToken ct = default)
     {
-        work.Index = GetIndex(work);
+        work.Index = await GetIndex(work);
         AppendBasicClassificationInfo(work.Index);
 
         if (UniqueClassification(work))
@@ -40,9 +40,9 @@ public class ClassificationService(
         if (MultipleClassifications(work))
             work.Index.ClassificationResult = ClassificationResults.Overclassified;
 
-        indexer.Upsert(work.Index);
+        await indexer.UpsertAsync(work.Index);
 
-        return Task.FromResult(work);
+        return work;
     }
 
     private void EmitSignal(WorkItem work, CancellationToken ct)
@@ -63,13 +63,13 @@ public class ClassificationService(
             .Select(x => x.Classification!)
             .First();
         index.Source = classification.Source;
-        index.Timestamp = classification.Datetime;
+        index.Timestamp = classification.Datetime.ToUniversalTime();
         index.ClassfierVersion = classification.Version;
     }
 
-    private FileIndex GetIndex(WorkItem work)
+    private async Task<FileIndex> GetIndex(WorkItem work)
     {
-        var index = indexer.Find(work.Signal.Hash);
+        var index = await indexer.FindAsync(work.Signal.Hash);
         if (index == null)
             throw new InvalidOperationException("Index not found.");
 

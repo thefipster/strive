@@ -16,7 +16,15 @@ public class LiteDataIndexer : IIndexer<DataIndex, string>
         _collection.EnsureIndex(x => x.ReferenceId);
     }
 
-    public DataIndex? Find(string hash) => _collection.FindById(hash);
+    public Task<DataIndex?> FindAsync(string hash)
+    {
+        var index = _collection.FindById(hash);
+        return Task.FromResult<DataIndex?>(index);
+    }
 
-    public void Upsert(DataIndex index) => _collection.Upsert(index);
+    public Task UpsertAsync(DataIndex index)
+    {
+        _collection.Upsert(index);
+        return Task.CompletedTask;
+    }
 }

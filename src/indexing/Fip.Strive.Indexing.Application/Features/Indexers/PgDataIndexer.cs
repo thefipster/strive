@@ -1,29 +1,31 @@
 using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
 using Fip.Strive.Indexing.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
 public class PgDataIndexer(IndexPgContext context) : IIndexer<DataIndex, string>
 {
-    public DataIndex? Find(string hash) => context.Data.Find(hash);
+    public async Task<DataIndex?> FindAsync(string hash) => await context.Data.FindAsync(hash);
 
-    public void Upsert(DataIndex index)
+    public async Task UpsertAsync(DataIndex index)
     {
-        var existing = context.Data.FirstOrDefault(d => d.Hash == index.Hash);
+        var existing = await context.Data.FirstOrDefaultAsync(d => d.Hash == index.Hash);
 
         if (existing == null)
-            Insert(index);
+            await InsertAsync(index);
         else
-            Update(index, existing);
+            await UpdateAsync(index, existing);
 
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 
-    private void Insert(DataIndex index) => context.Data.Add(index);
+    private async Task InsertAsync(DataIndex index) => await context.Data.AddAsync(index);
 
-    private void Update(DataIndex index, DataIndex existing)
+    private Task UpdateAsync(DataIndex index, DataIndex existing)
     {
         context.Entry(existing).CurrentValues.SetValues(index);
+        return Task.CompletedTask;
     }
 }

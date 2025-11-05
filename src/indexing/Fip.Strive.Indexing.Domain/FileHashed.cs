@@ -12,5 +12,5 @@ public class FileHashed
 
     public DateTime IndexedAt { get; set; }
 
-    public virtual FileIndex? File { get; set; } = null!;
+    public virtual FileIndex? File { get; set; }
 }
