@@ -9,7 +9,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
 </Project>

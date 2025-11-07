@@ -1,11 +1,11 @@
 using Fip.Strive.Core.Ingestion.Domain.Enums;
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Classify.Models;
 using Fip.Strive.Harvester.Application.Features.Classify.Services.Contracts;
 using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Domain;
 using Fip.Strive.Ingestion.Application.Services.Contracts;
+using Fip.Strive.Queue.Application.Components.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Classify.Services;
 

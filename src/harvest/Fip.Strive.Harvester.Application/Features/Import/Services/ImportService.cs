@@ -1,6 +1,6 @@
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Features.Import.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
+using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Domain;
 using Microsoft.Extensions.Logging;

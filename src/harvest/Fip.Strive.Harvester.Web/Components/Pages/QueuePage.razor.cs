@@ -1,9 +1,9 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models;
 using Fip.Strive.Harvester.Application.Core.Hubs;
-using Fip.Strive.Harvester.Application.Core.Queue.Repositories.Contracts;
+using Fip.Strive.Queue.Application.Repositories.Contracts;
+using Fip.Strive.Queue.Domain.Enums;
+using Fip.Strive.Queue.Domain.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;

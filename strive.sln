@@ -41,8 +41,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D8ABB662
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Tests.UnitTests", "test\core\Fip.Strive.Core.Tests.UnitTests\Fip.Strive.Core.Tests.UnitTests.csproj", "{8FEA1A12-0AFE-42D3-A4C1-94AA2AA75C04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Domain.UnitTests", "test\core\Fip.Strive.Core.Domain.UnitTests\Fip.Strive.Core.Domain.UnitTests.csproj", "{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{C4FD9DCD-9908-4582-87F3-F0148D4312D9}"
 	ProjectSection(SolutionItems) = preProject
 		src\harvest\Directory.Build.props = src\harvest\Directory.Build.props
@@ -50,13 +48,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{C4FD9DCD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Application", "src\core\Fip.Strive.Core.Application\Fip.Strive.Core.Application.csproj", "{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Portal", "4_Portal", "{91B9CF1B-38AD-4EF8-84DC-88F722055C7B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_Portal", "5_Portal", "{91B9CF1B-38AD-4EF8-84DC-88F722055C7B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Portal.Web", "src\portal\Fip.Strive.Portal.Web\Fip.Strive.Portal.Web.csproj", "{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Web", "src\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj", "{B92474A2-924F-4B78-8613-4B401DE998DF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6_Unify", "6_Unify", "{5C09624B-5701-4B2C-885D-92828FF794C9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5_Unify", "5_Unify", "{5C09624B-5701-4B2C-885D-92828FF794C9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Unifier.Web", "src\unify\Fip.Strive.Unifier.Web\Fip.Strive.Unifier.Web.csproj", "{8E480BE3-82BB-433F-8964-F7677C143933}"
 EndProject
@@ -72,7 +70,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{7C6FF596
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Unifier.Application", "src\unify\Fip.Strive.Unifier.Application\Fip.Strive.Unifier.Application.csproj", "{46157816-B238-4C4A-AA23-A8934D2CC2DF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_Indexing", "3_Indexing", "{BB6A16AA-0CEF-471E-B3AA-BC12688CBEBE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Indexing", "4_Indexing", "{BB6A16AA-0CEF-471E-B3AA-BC12688CBEBE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Application", "src\indexing\Fip.Strive.Indexing.Application\Fip.Strive.Indexing.Application.csproj", "{94BDADDC-4493-4701-852D-4BC20AB6C256}"
 EndProject
@@ -80,13 +78,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Domain"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Migrator", "src\indexing\Fip.Strive.Indexing.Migrator\Fip.Strive.Indexing.Migrator.csproj", "{14673839-FC12-48B5-A703-456DEA027024}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_Ingestion", "3_Ingestion", "{761ECD08-C06A-4480-B360-D0ADA9CAFC92}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Ingestion", "4_Ingestion", "{761ECD08-C06A-4480-B360-D0ADA9CAFC92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Ingestion.Application", "src\ingestion\Fip.Strive.Ingestion.Application\Fip.Strive.Ingestion.Application.csproj", "{1D645966-40D1-4574-ABD5-3A97EAC5D088}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Ingestion.Domain", "src\ingestion\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj", "{BD500295-A385-4313-BB91-B8C029F49830}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Domain", "src\harvest\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj", "{C67FD15D-1BDB-4F6B-BF0A-68D7A00C9955}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4_Queue", "4_Queue", "{D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Application", "src\queue\Fip.Strive.Queue.Application\Fip.Strive.Queue.Application.csproj", "{9D0CC762-90CE-44FB-8780-C0E91632A628}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Domain", "src\queue\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj", "{898DECC6-9456-45C9-914A-14498F8BAD8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Application.UnitTests", "test\queue\Fip.Strive.Queue.Application.UnitTests\Fip.Strive.Queue.Application.UnitTests.csproj", "{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C6175912-D625-4070-827D-5E91D30D75D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,10 +134,6 @@ Global
 		{8FEA1A12-0AFE-42D3-A4C1-94AA2AA75C04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FEA1A12-0AFE-42D3-A4C1-94AA2AA75C04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FEA1A12-0AFE-42D3-A4C1-94AA2AA75C04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -174,6 +178,18 @@ Global
 		{C67FD15D-1BDB-4F6B-BF0A-68D7A00C9955}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C67FD15D-1BDB-4F6B-BF0A-68D7A00C9955}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C67FD15D-1BDB-4F6B-BF0A-68D7A00C9955}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D0CC762-90CE-44FB-8780-C0E91632A628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D0CC762-90CE-44FB-8780-C0E91632A628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D0CC762-90CE-44FB-8780-C0E91632A628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D0CC762-90CE-44FB-8780-C0E91632A628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{898DECC6-9456-45C9-914A-14498F8BAD8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{898DECC6-9456-45C9-914A-14498F8BAD8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{898DECC6-9456-45C9-914A-14498F8BAD8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{898DECC6-9456-45C9-914A-14498F8BAD8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
@@ -185,7 +201,6 @@ Global
 		{48599587-53A9-4A8E-805A-9D4D58FD976D} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{D8ABB662-711D-4D09-A55C-91752495B6D5} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{8FEA1A12-0AFE-42D3-A4C1-94AA2AA75C04} = {D8ABB662-711D-4D09-A55C-91752495B6D5}
-		{771A4B4C-50BD-4EDE-BCB7-1D990204A9FD} = {D8ABB662-711D-4D09-A55C-91752495B6D5}
 		{C4FD9DCD-9908-4582-87F3-F0148D4312D9} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
 		{25A175A0-B792-4E2F-9A3B-1FA654EC5ECE} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{79DBF313-4C4A-40B1-8B32-1B293DEB2E7E} = {91B9CF1B-38AD-4EF8-84DC-88F722055C7B}
@@ -200,5 +215,9 @@ Global
 		{1D645966-40D1-4574-ABD5-3A97EAC5D088} = {761ECD08-C06A-4480-B360-D0ADA9CAFC92}
 		{BD500295-A385-4313-BB91-B8C029F49830} = {761ECD08-C06A-4480-B360-D0ADA9CAFC92}
 		{C67FD15D-1BDB-4F6B-BF0A-68D7A00C9955} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
+		{9D0CC762-90CE-44FB-8780-C0E91632A628} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{898DECC6-9456-45C9-914A-14498F8BAD8D} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{C6175912-D625-4070-827D-5E91D30D75D6} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA} = {C6175912-D625-4070-827D-5E91D30D75D6}
 	EndGlobalSection
 EndGlobal

@@ -21,6 +21,11 @@
     <ProjectReference Include="..\..\indexing\Fip.Strive.Indexing.Application\Fip.Strive.Indexing.Application.csproj" />
     <ProjectReference Include="..\..\ingestion\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj" />
     <ProjectReference Include="..\..\ingestion\Fip.Strive.Ingestion.Application\Fip.Strive.Ingestion.Application.csproj" />
+    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Application\Fip.Strive.Queue.Application.csproj" />
+    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
     <ProjectReference Include="..\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Queue\" />
   </ItemGroup>
 </Project>

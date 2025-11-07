@@ -1,8 +1,6 @@
-using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
+namespace Fip.Strive.Harvester.Domain.Signals;
 
-namespace Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
-
-public class UploadSignal() : Signal(SignalTypes.UploadSignal)
+public class UploadSignal() : EnumSignal(SignalTypes.UploadSignal)
 {
     public required string Filepath { get; set; }
     public required string Hash { get; set; }
