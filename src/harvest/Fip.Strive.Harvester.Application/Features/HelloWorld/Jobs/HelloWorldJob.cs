@@ -1,7 +1,7 @@
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Hubs;
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Core.Schedule;
+using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Queue.Application.Components.Contracts;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Quartz;

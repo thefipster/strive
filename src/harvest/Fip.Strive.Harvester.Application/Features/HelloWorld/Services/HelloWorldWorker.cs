@@ -1,15 +1,14 @@
-using Fip.Strive.Core.Domain.Schemas.Queue.Enums;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Core.Hubs;
-using Fip.Strive.Harvester.Application.Core.Queue.Components;
+using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Queue.Application.Components;
+using Fip.Strive.Queue.Domain.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace Fip.Strive.Harvester.Application.Features.HelloWorld.Services;
 
 public class HelloWorldWorker(ILogger<HelloWorldWorker> logger, IHubContext<HelloWorldHub> hub)
-    : QueueWorker(SignalTypes.HelloWorldSignal)
+    : QueueWorker((int)SignalTypes.HelloWorldSignal)
 {
     public override async Task ProcessAsync(JobDetails job, CancellationToken ct)
     {

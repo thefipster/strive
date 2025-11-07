@@ -1,5 +1,6 @@
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
+using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Indexing.Domain.Extensions;
 
 namespace Fip.Strive.Harvester.Application.Features.Import.Models;
 
@@ -41,7 +42,7 @@ public class WorkItem
             Hash = Signal.Hash,
         };
 
-        index.AddFile(Filename);
+        index.Files.Add(Filename, Signal.Hash);
 
         return index;
     }

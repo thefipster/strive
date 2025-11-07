@@ -7,15 +7,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj" />
+    <ProjectReference Include="..\indexing\Fip.Strive.Indexing.Migrator\Fip.Strive.Indexing.Migrator.csproj" />
     <ProjectReference Include="..\portal\Fip.Strive.Portal.Web\Fip.Strive.Portal.Web.csproj" />
     <ProjectReference Include="..\unify\Fip.Strive.Unifier.Web\Fip.Strive.Unifier.Web.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="appsettings.Development.json">
-      <DependentUpon>appsettings.json</DependentUpon>
-    </None>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
+using Fip.Strive.Indexing.Domain;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
 

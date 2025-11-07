@@ -1,9 +1,8 @@
-using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
-using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
+using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Indexing.Application.Features.Contracts;
+using Fip.Strive.Indexing.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace Fip.Strive.Harvester.Application.Features.Import.Services;
@@ -18,7 +17,7 @@ public class ImportService(
     {
         var work = WorkItem.FromSignal(signal);
 
-        work.Index = indexer.Find(work.Signal.Hash);
+        work.Index = await indexer.FindAsync(work.Signal.Hash);
         if (FileIsIndexed(work))
             return await RemoveAlreadyKnownFileAsync(work);
 
@@ -26,14 +25,14 @@ public class ImportService(
             work.ImportedPath = fileAccess.Import(work.Signal.Filepath);
 
         var index = work.ToIndex();
-        indexer.Upsert(index);
+        await indexer.UpsertAsync(index);
 
         return work;
     }
 
     private bool FileIsIndexed(WorkItem work)
     {
-        return work.Index != null && work.Index.Files.ContainsKey(work.Filename);
+        return work.Index != null && work.Index.Files.Any(x => x.FileName == work.Filename);
     }
 
     private Task<WorkItem> RemoveAlreadyKnownFileAsync(WorkItem work)

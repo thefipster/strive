@@ -103,28 +103,4 @@ public class VerticalSliceTests
     //         }
     //     }
     // }
-
-    [Fact]
-    public void Infrastructure_Should_Not_Depend_On_Features()
-    {
-        Types()
-            .That()
-            .ResideInNamespace(InfrastructureNamespace)
-            .Should()
-            .NotDependOnAny(Types().That().ResideInNamespace(FeaturesNamespace).As("Features"))
-            .Because("Infrastructure should not depend on Features")
-            .Check(Architecture);
-    }
-
-    [Fact]
-    public void Infrastructure_Should_Not_Depend_On_Core()
-    {
-        Types()
-            .That()
-            .ResideInNamespace(InfrastructureNamespace)
-            .Should()
-            .NotDependOnAny(Types().That().ResideInNamespace(CoreNamespace).As("Features"))
-            .Because("Infrastructure should not depend on Core")
-            .Check(Architecture);
-    }
 }

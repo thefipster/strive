@@ -1,5 +1,5 @@
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Features.Classify.Models;
+using Fip.Strive.Harvester.Domain.Signals;
 
 namespace Fip.Strive.Harvester.Application.Features.Classify.Services.Contracts;
 

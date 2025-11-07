@@ -1,8 +1,8 @@
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
-using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
-using Fip.Strive.Harvester.Application.Infrastructure.Models;
-using Fip.Strive.Harvester.Application.Infrastructure.Repositories.Contracts;
+using Fip.Strive.Core.Application.Infrastructure.Contracts;
+using Fip.Strive.Core.Domain.Schemas.Requests.Paging;
+using Fip.Strive.Indexing.Application.Features.Contracts;
+using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Ingestion.Domain.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -24,12 +24,12 @@ public partial class InventoryPage(IInventory inventory, ISpecificationReader<Da
     [SupplyParameterFromQuery]
     public int? Year { get; set; }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        _years = inventory.GetYears().ToList();
+        _years = (await inventory.GetYearsAsync()).ToList();
         _selectedYear = Year ?? (_years.Count != 0 ? _years[^1] : DateTime.Now.Year);
 
-        _entries = inventory.GetEntries(_selectedYear).ToList();
+        _entries = (await inventory.GetEntriesAsync(_selectedYear)).ToList();
     }
 
     private void OnDayClicked(int year, int month, int day)

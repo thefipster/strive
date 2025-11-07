@@ -1,7 +1,7 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
 using Fip.Strive.Harvester.Application.Features.Upload.Services.Contracts;
+using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Queue.Application.Components.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Upload.Services.Decorators;
 

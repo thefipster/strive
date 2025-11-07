@@ -1,11 +1,11 @@
-using Fip.Strive.Core.Domain.Schemas.Index.Models;
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
-using Fip.Strive.Core.Ingestion.Services.Contracts;
-using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
-using Fip.Strive.Harvester.Application.Core.Queue.Components.Contracts;
+using Fip.Strive.Core.Ingestion.Domain.Enums;
 using Fip.Strive.Harvester.Application.Features.Classify.Models;
 using Fip.Strive.Harvester.Application.Features.Classify.Services.Contracts;
+using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Indexing.Application.Features.Contracts;
+using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Ingestion.Application.Services.Contracts;
+using Fip.Strive.Queue.Application.Components.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Classify.Services;
 
@@ -23,9 +23,9 @@ public class ClassificationService(
         return ReportClassification(work, ct);
     }
 
-    private Task<WorkItem> ReportClassification(WorkItem work, CancellationToken ct = default)
+    private async Task<WorkItem> ReportClassification(WorkItem work, CancellationToken ct = default)
     {
-        work.Index = GetIndex(work);
+        work.Index = await GetIndex(work);
         AppendBasicClassificationInfo(work.Index);
 
         if (UniqueClassification(work))
@@ -40,9 +40,9 @@ public class ClassificationService(
         if (MultipleClassifications(work))
             work.Index.ClassificationResult = ClassificationResults.Overclassified;
 
-        indexer.Upsert(work.Index);
+        await indexer.UpsertAsync(work.Index);
 
-        return Task.FromResult(work);
+        return work;
     }
 
     private void EmitSignal(WorkItem work, CancellationToken ct)
@@ -63,13 +63,13 @@ public class ClassificationService(
             .Select(x => x.Classification!)
             .First();
         index.Source = classification.Source;
-        index.Timestamp = classification.Datetime;
+        index.Timestamp = classification.Datetime.ToUniversalTime();
         index.ClassfierVersion = classification.Version;
     }
 
-    private FileIndex GetIndex(WorkItem work)
+    private async Task<FileIndex> GetIndex(WorkItem work)
     {
-        var index = indexer.Find(work.Signal.Hash);
+        var index = await indexer.FindAsync(work.Signal.Hash);
         if (index == null)
             throw new InvalidOperationException("Index not found.");
 

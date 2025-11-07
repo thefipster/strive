@@ -1,4 +1,5 @@
-@using Fip.Strive.Core.Domain.Schemas.Ingestion.Options
+@using Fip.Strive.Ingestion.Domain.Options
+
 <Headline Text="Indexes"/>
 
 <MudTable T="ZipIndex" Class="mb-5" Context="zip" Dense="true" Hover="true" ServerData="@OnZipIndexRequested"
@@ -23,7 +24,7 @@
     <RowTemplate>
         <MudTd DataLabel="Signalled">@zip.SignalledAt</MudTd>
         <MudTd DataLabel="Hash">@zip.Hash</MudTd>
-        <MudTd DataLabel="File">@zip.Files.FirstOrDefault().Key</MudTd>
+        <MudTd DataLabel="File">@zip.Files.FirstOrDefault()?.FileName</MudTd>
         <MudTd DataLabel="Signal">@zip.SignalId</MudTd>
         <MudTd DataLabel="Reference">@zip.ReferenceId</MudTd>
     </RowTemplate>
@@ -38,7 +39,7 @@
 @if (_selectedZip != null)
 {
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h2">Files of @_selectedZip.Files.First().Key (@_selectedZip.Hash)</MudText>
+        <MudText Typo="Typo.h2">Files of @_selectedZip.Files.First().FileName (@_selectedZip.Hash)</MudText>
         <MudSpacer />
         <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged">
             <MudSelectItem Value="ClassificationOptions.All">@ClassificationOptions.All</MudSelectItem>
@@ -75,7 +76,7 @@
         <RowTemplate>
             <MudTd DataLabel="Signalled">@file.SignalledAt</MudTd>
             <MudTd DataLabel="Hash">@file.Hash</MudTd>
-            <MudTd DataLabel="File">@file.Files.FirstOrDefault().Key</MudTd>
+            <MudTd DataLabel="File">@file.Files.FirstOrDefault()?.FileName</MudTd>
             <MudTd DataLabel="Signal">@file.Source</MudTd>
             <MudTd DataLabel="Signal">@file.SignalId</MudTd>
             <MudTd DataLabel="Reference">@file.ReferenceId</MudTd>
@@ -94,7 +95,7 @@
     <MudTable @ref="_dataTable" T="DataIndex" Dense="true" Hover="true" Context="data"
               ServerData="@OnDataIndexRequested">
         <ToolBarContent>
-            <MudText Typo="Typo.h2">Data of @_selectedFile.Files.First().Key (@_selectedFile.Hash)</MudText>
+            <MudText Typo="Typo.h2">Data of @_selectedFile.Files.First().FileName (@_selectedFile.Hash)</MudText>
         </ToolBarContent>
         <HeaderContent>
             <MudTh>Signalled</MudTh>
