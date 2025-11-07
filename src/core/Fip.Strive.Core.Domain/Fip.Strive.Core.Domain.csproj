@@ -1,8 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyVersion>0.1.0</AssemblyVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="HashifyNET" />
-  </ItemGroup>
-</Project>

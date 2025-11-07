@@ -7,8 +7,6 @@
     <PackageReference Include="Scrutor" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
-    <ProjectReference Include="..\..\core\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
     <ProjectReference Include="..\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -6,7 +6,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Fip.Strive.Core.Domain\Fip.Strive.Core.Domain.csproj" />
-  </ItemGroup>
 </Project>
