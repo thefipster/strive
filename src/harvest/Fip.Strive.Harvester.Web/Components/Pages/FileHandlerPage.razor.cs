@@ -1,5 +1,5 @@
-using Fip.Strive.Core.Ingestion.Contracts;
-using Fip.Strive.Core.Ingestion.Services.Contracts;
+using Fip.Strive.Ingestion.Application.Contracts;
+using Fip.Strive.Ingestion.Application.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;

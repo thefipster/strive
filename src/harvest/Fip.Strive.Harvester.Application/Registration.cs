@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Fip.Strive.Core.Application;
-using Fip.Strive.Core.Ingestion;
 using Fip.Strive.Harvester.Application.Core.Proxy;
 using Fip.Strive.Harvester.Application.Core.Queue;
 using Fip.Strive.Harvester.Application.Core.Schedule;
@@ -11,6 +10,7 @@ using Fip.Strive.Harvester.Application.Features.Import;
 using Fip.Strive.Harvester.Application.Features.Upload;
 using Fip.Strive.Harvester.Application.Infrastructure;
 using Fip.Strive.Indexing.Application;
+using Fip.Strive.Ingestion.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

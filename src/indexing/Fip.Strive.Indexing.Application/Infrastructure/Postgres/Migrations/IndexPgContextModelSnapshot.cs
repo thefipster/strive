@@ -57,13 +57,13 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.DataIndex", b =>
                 {
-                    b.Property<string>("Hash")
+                    b.Property<string>("Filepath")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Filepath")
+                    b.Property<string>("Hash")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -93,7 +93,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("Hash");
+                    b.HasKey("Filepath");
 
                     b.HasIndex("ParentId");
 

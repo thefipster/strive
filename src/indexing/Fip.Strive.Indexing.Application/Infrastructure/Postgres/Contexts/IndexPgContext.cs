@@ -1,5 +1,5 @@
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Ingestion.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
@@ -18,6 +18,13 @@ public class IndexPgContext : DbContext
     public DbSet<DataIndex> Data => Set<DataIndex>();
 
     public DbSet<DateEntry> Inventory => Set<DateEntry>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        // TODO make this configurable
+        optionsBuilder.EnableDetailedErrors();
+        optionsBuilder.EnableSensitiveDataLogging();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

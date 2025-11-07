@@ -1,6 +1,6 @@
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
+using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Ingestion.Domain.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Classify.Models;
 

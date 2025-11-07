@@ -20,20 +20,22 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.AddDbContext<IndexPgContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("strive-harvester-index"))
+        services.AddDbContext<IndexPgContext>(
+            options =>
+                options.UseNpgsql(configuration.GetConnectionString("strive-harvester-index")),
+            ServiceLifetime.Transient
         );
 
-        services.AddScoped<IIndexer<ZipIndex, string>, PgZipIndexer>();
-        services.AddScoped<ISpecificationReader<ZipIndex>, PgZipPager>();
+        services.AddTransient<IIndexer<ZipIndex, string>, PgZipIndexer>();
+        services.AddTransient<ISpecificationReader<ZipIndex>, PgZipPager>();
 
-        services.AddScoped<IIndexer<FileIndex, string>, PgFileIndexer>();
-        services.AddScoped<ISpecificationReader<FileIndex>, PgFilePager>();
+        services.AddTransient<IIndexer<FileIndex, string>, PgFileIndexer>();
+        services.AddTransient<ISpecificationReader<FileIndex>, PgFilePager>();
 
-        services.AddScoped<IIndexer<DataIndex, string>, PgDataIndexer>();
-        services.AddScoped<ISpecificationReader<DataIndex>, PgDataPager>();
+        services.AddTransient<IIndexer<DataIndex, string>, PgDataIndexer>();
+        services.AddTransient<ISpecificationReader<DataIndex>, PgDataPager>();
 
-        services.AddScoped<IInventory, PgInventory>();
+        services.AddTransient<IInventory, PgInventory>();
     }
 
     public static void AddLiteDbInfrastructure(this IServiceCollection services)

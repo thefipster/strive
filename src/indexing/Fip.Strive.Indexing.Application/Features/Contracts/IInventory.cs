@@ -1,4 +1,4 @@
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
+using Fip.Strive.Ingestion.Domain.Models;
 
 namespace Fip.Strive.Indexing.Application.Features.Contracts;
 

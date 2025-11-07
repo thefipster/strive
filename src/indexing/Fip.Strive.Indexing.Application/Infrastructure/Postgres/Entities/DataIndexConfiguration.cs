@@ -8,7 +8,7 @@ public class DataIndexConfiguration : IEntityTypeConfiguration<DataIndex>
 {
     public void Configure(EntityTypeBuilder<DataIndex> builder)
     {
-        builder.HasKey(x => x.Hash);
+        builder.HasKey(x => x.Filepath);
 
         builder.HasIndex(x => x.ReferenceId);
 
@@ -19,10 +19,10 @@ public class DataIndexConfiguration : IEntityTypeConfiguration<DataIndex>
         builder.Property(x => x.ParentId);
 
         builder
-            .HasOne(x => x.Parent)
-            .WithMany(x => x.Children)
-            .HasForeignKey(x => x.ParentId)
-            .HasPrincipalKey(x => x.Hash)
+            .HasOne(data => data.Parent)
+            .WithMany(file => file.Children)
+            .HasForeignKey(data => data.ParentId)
+            .HasPrincipalKey(file => file.Hash)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

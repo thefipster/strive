@@ -1,4 +1,5 @@
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Enums;
+using Fip.Strive.Core.Ingestion.Domain.Enums;
+using Fip.Strive.Ingestion.Domain.Enums;
 
 namespace Fip.Strive.Indexing.Domain;
 

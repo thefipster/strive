@@ -1,6 +1,6 @@
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
+using Fip.Strive.Ingestion.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fip.Strive.Indexing.Application.Features.Indexers;
@@ -9,14 +9,29 @@ public class PgInventory(IndexPgContext context) : IInventory
 {
     public async Task UpsertAsync(DateEntry entry)
     {
-        var existing = await context.Inventory.FindAsync(entry.Date);
+        await using var transaction = await context.Database.BeginTransactionAsync();
 
-        if (existing == null)
-            await context.Inventory.AddAsync(entry);
-        else
-            context.Entry(existing).CurrentValues.SetValues(entry);
+        try
+        {
+            var existing = await context.Inventory.FirstOrDefaultAsync(e => e.Date == entry.Date);
 
-        await context.SaveChangesAsync();
+            if (existing == null)
+            {
+                await context.Inventory.AddAsync(entry);
+            }
+            else
+            {
+                context.Entry(existing).CurrentValues.SetValues(entry);
+            }
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<IEnumerable<int>> GetYearsAsync() =>

@@ -1,10 +1,10 @@
 // ReSharper disable AccessToDisposedClosure
 
 using AwesomeAssertions;
-using Fip.Strive.Core.Domain.Schemas.Queue.Models.Signals;
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Services;
 using Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
+using Fip.Strive.Harvester.Domain.Signals;
 using NSubstitute;
 
 namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Services
@@ -65,7 +65,7 @@ namespace Fip.Strive.Harvester.Application.UnitTests.Features.Expand.Services
                 .When(x =>
                     x.Expand(Arg.Any<WorkItem>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                 )
-                .Do(ci => throw new OperationCanceledException(cts.Token));
+                .Do(_ => throw new OperationCanceledException(cts.Token));
 
             // Act
             Func<Task> act = async () => await service.UnpackZipFileAsync(signal, cts.Token);

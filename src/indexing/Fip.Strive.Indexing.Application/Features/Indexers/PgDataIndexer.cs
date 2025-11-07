@@ -7,11 +7,12 @@ namespace Fip.Strive.Indexing.Application.Features.Indexers;
 
 public class PgDataIndexer(IndexPgContext context) : IIndexer<DataIndex, string>
 {
-    public async Task<DataIndex?> FindAsync(string hash) => await context.Data.FindAsync(hash);
+    public async Task<DataIndex?> FindAsync(string hash) =>
+        await context.Data.AsNoTracking().FirstOrDefaultAsync(data => data.Hash == hash);
 
     public async Task UpsertAsync(DataIndex index)
     {
-        var existing = await context.Data.FirstOrDefaultAsync(d => d.Hash == index.Hash);
+        var existing = await context.Data.FirstOrDefaultAsync(data => data.Hash == index.Hash);
 
         if (existing == null)
             await InsertAsync(index);

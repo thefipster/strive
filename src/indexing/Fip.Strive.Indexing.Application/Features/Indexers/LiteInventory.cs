@@ -1,6 +1,6 @@
-using Fip.Strive.Core.Domain.Schemas.Ingestion.Models;
 using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Application.Infrastructure.Lite.Contexts;
+using Fip.Strive.Ingestion.Domain.Models;
 using LiteDB;
 
 namespace Fip.Strive.Indexing.Application.Features.Indexers;

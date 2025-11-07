@@ -13,7 +13,7 @@ public class PgFilePager(IndexPgContext context) : ISpecificationReader<FileInde
         CancellationToken ct = default
     )
     {
-        var query = context.Files.Include(x => x.Files).AsQueryable();
+        var query = context.Files.AsNoTracking().Include(x => x.Files).AsQueryable();
 
         foreach (var filter in specifications.Filters)
             query = query.Where(filter);
