@@ -6,9 +6,10 @@
     <PackageReference Include="Scrutor" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\Fip.Strive.Core.Application\Fip.Strive.Core.Application.csproj" />
     <ProjectReference Include="..\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
     <ProjectReference Include="..\Fip.Strive.Queue.Storage.Contracts\Fip.Strive.Queue.Storage.Contracts.csproj" />
-    <ProjectReference Include="..\Fip.Strive.Queue.Storage.Lite\Fip.Strive.Queue.Storage.Contracts.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repositories\Contracts\" />
   </ItemGroup>
 </Project>

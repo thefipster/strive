@@ -1,5 +1,5 @@
-using Fip.Strive.Queue.Application.Repositories.Contracts;
 using Fip.Strive.Queue.Domain.Models;
+using Fip.Strive.Queue.Storage.Contracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

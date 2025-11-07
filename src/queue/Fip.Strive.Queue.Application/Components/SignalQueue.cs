@@ -1,13 +1,13 @@
 using System.Collections.Concurrent;
 using Fip.Strive.Queue.Application.Components.Contracts;
-using Fip.Strive.Queue.Application.Repositories.Contracts;
 using Fip.Strive.Queue.Domain.Enums;
 using Fip.Strive.Queue.Domain.Models;
+using Fip.Strive.Queue.Storage.Contracts;
 using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Queue.Application.Components;
 
-public class LiteDbSignalQueue : ISignalQueue, IDisposable
+public class SignalQueue : ISignalQueue, IDisposable
 {
     private readonly IJobControl _jobs;
     private readonly IOptions<QueueConfig> _config;
@@ -16,7 +16,7 @@ public class LiteDbSignalQueue : ISignalQueue, IDisposable
     private bool QueueShouldBeRefilled =>
         _queue.Count < _config.Value.QueueCountLimit - _config.Value.QueueBatchSize;
 
-    public LiteDbSignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
+    public SignalQueue(IJobControl jobs, IOptions<QueueConfig> config)
     {
         _config = config;
 

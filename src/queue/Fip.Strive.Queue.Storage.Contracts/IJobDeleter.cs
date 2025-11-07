@@ -1,4 +1,4 @@
-namespace Fip.Strive.Queue.Application.Repositories.Contracts;
+namespace Fip.Strive.Queue.Storage.Contracts;
 
 public interface IJobDeleter
 {

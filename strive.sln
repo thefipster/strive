@@ -113,6 +113,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{97E91264
 		src\indexing\Directory.Build.props = src\indexing\Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Lite", "src\queue\Fip.Strive.Queue.Storage.Lite\Fip.Strive.Queue.Storage.Lite.csproj", "{D4A67326-7363-4B54-A31B-5A1F43ECC05A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Contracts", "src\queue\Fip.Strive.Queue.Storage.Contracts\Fip.Strive.Queue.Storage.Contracts.csproj", "{DE1A88AE-8514-477E-8072-8AAF5E680012}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Memory", "src\queue\Fip.Strive.Queue.Storage.Memory\Fip.Strive.Queue.Storage.Memory.csproj", "{0C23E750-A26C-449D-9DD9-5B803132C420}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +209,18 @@ Global
 		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2BF7AB6-230D-4307-9D1B-CBB7B1E3DFEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A67326-7363-4B54-A31B-5A1F43ECC05A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A67326-7363-4B54-A31B-5A1F43ECC05A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A67326-7363-4B54-A31B-5A1F43ECC05A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A67326-7363-4B54-A31B-5A1F43ECC05A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE1A88AE-8514-477E-8072-8AAF5E680012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE1A88AE-8514-477E-8072-8AAF5E680012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE1A88AE-8514-477E-8072-8AAF5E680012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE1A88AE-8514-477E-8072-8AAF5E680012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C23E750-A26C-449D-9DD9-5B803132C420}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C23E750-A26C-449D-9DD9-5B803132C420}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C23E750-A26C-449D-9DD9-5B803132C420}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C23E750-A26C-449D-9DD9-5B803132C420}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
@@ -240,5 +258,8 @@ Global
 		{0DDCCE8F-C8AE-4306-9D5F-D5E84BB8D7EB} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
 		{F0DA503C-2E86-41BF-8770-7FBE5FB2EEC4} = {761ECD08-C06A-4480-B360-D0ADA9CAFC92}
 		{97E91264-DFBA-4BCE-97CA-300EB31A3839} = {BB6A16AA-0CEF-471E-B3AA-BC12688CBEBE}
+		{D4A67326-7363-4B54-A31B-5A1F43ECC05A} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{DE1A88AE-8514-477E-8072-8AAF5E680012} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{0C23E750-A26C-449D-9DD9-5B803132C420} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
 	EndGlobalSection
 EndGlobal

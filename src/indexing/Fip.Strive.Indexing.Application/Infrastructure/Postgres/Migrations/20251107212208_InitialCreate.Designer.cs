@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(IndexPgContext))]
-    [Migration("20251106211308_InitialCreate")]
+    [Migration("20251107212208_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,43 +20,11 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("ingestion-index")
                 .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Fip.Strive.Core.Domain.Schemas.Ingestion.Models.DateEntry", b =>
-                {
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Day")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Kind")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Date");
-
-                    b.HasIndex("Day");
-
-                    b.HasIndex("Month");
-
-                    b.HasIndex("Timestamp");
-
-                    b.HasIndex("Year");
-
-                    b.ToTable("Inventory");
-                });
 
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.DataIndex", b =>
                 {
@@ -102,7 +70,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
                     b.HasIndex("ReferenceId");
 
-                    b.ToTable("Data");
+                    b.ToTable("Data", "ingestion-index");
                 });
 
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.FileHashed", b =>
@@ -128,7 +96,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
                     b.HasIndex("Hash");
 
-                    b.ToTable("FilesHashed");
+                    b.ToTable("FilesHashed", "ingestion-index");
                 });
 
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.FileIndex", b =>
@@ -194,7 +162,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
                     b.HasIndex("ReferenceId");
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", "ingestion-index");
                 });
 
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.ZipHashed", b =>
@@ -220,7 +188,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
                     b.HasIndex("Hash");
 
-                    b.ToTable("ZipsHashed");
+                    b.ToTable("ZipsHashed", "ingestion-index");
                 });
 
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.ZipIndex", b =>
@@ -244,7 +212,40 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
                     b.HasIndex("ReferenceId");
 
-                    b.ToTable("Zips");
+                    b.ToTable("Zips", "ingestion-index");
+                });
+
+            modelBuilder.Entity("Fip.Strive.Ingestion.Domain.Models.DateEntry", b =>
+                {
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Date");
+
+                    b.HasIndex("Day");
+
+                    b.HasIndex("Month");
+
+                    b.HasIndex("Timestamp");
+
+                    b.HasIndex("Year");
+
+                    b.ToTable("Inventory", "ingestion-index");
                 });
 
             modelBuilder.Entity("Fip.Strive.Indexing.Domain.DataIndex", b =>

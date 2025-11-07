@@ -1,8 +1,8 @@
-using Fip.Strive.Queue.Application.Contexts;
 using Fip.Strive.Queue.Domain.Models;
+using Fip.Strive.Queue.Storage.Lite.Contexts;
 using LiteDB;
 
-namespace Fip.Strive.Queue.Application.Repositories;
+namespace Fip.Strive.Queue.Storage.Lite.Repositories;
 
 public class LiteDbBaseJobRepository
 {

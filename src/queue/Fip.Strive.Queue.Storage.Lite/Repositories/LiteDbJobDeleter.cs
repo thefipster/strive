@@ -1,7 +1,7 @@
-using Fip.Strive.Queue.Application.Contexts;
-using Fip.Strive.Queue.Application.Repositories.Contracts;
+using Fip.Strive.Queue.Storage.Contracts;
+using Fip.Strive.Queue.Storage.Lite.Contexts;
 
-namespace Fip.Strive.Queue.Application.Repositories;
+namespace Fip.Strive.Queue.Storage.Lite.Repositories;
 
 public class LiteDbJobDeleter(SignalQueueContext context)
     : LiteDbBaseJobRepository(context),

@@ -12,8 +12,12 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "ingestion-index");
+
             migrationBuilder.CreateTable(
                 name: "Inventory",
+                schema: "ingestion-index",
                 columns: table => new
                 {
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -30,6 +34,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Zips",
+                schema: "ingestion-index",
                 columns: table => new
                 {
                     Hash = table.Column<string>(type: "text", nullable: false),
@@ -45,6 +50,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Files",
+                schema: "ingestion-index",
                 columns: table => new
                 {
                     Hash = table.Column<string>(type: "text", nullable: false),
@@ -72,6 +78,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                     table.ForeignKey(
                         name: "FK_Files_Zips_ParentId",
                         column: x => x.ParentId,
+                        principalSchema: "ingestion-index",
                         principalTable: "Zips",
                         principalColumn: "Hash",
                         onDelete: ReferentialAction.Restrict);
@@ -79,6 +86,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ZipsHashed",
+                schema: "ingestion-index",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -93,6 +101,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                     table.ForeignKey(
                         name: "FK_ZipsHashed_Zips_Hash",
                         column: x => x.Hash,
+                        principalSchema: "ingestion-index",
                         principalTable: "Zips",
                         principalColumn: "Hash",
                         onDelete: ReferentialAction.Restrict);
@@ -100,6 +109,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Data",
+                schema: "ingestion-index",
                 columns: table => new
                 {
                     Filepath = table.Column<string>(type: "text", nullable: false),
@@ -120,6 +130,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                     table.ForeignKey(
                         name: "FK_Data_Files_ParentId",
                         column: x => x.ParentId,
+                        principalSchema: "ingestion-index",
                         principalTable: "Files",
                         principalColumn: "Hash",
                         onDelete: ReferentialAction.Restrict);
@@ -127,6 +138,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
             migrationBuilder.CreateTable(
                 name: "FilesHashed",
+                schema: "ingestion-index",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -141,6 +153,7 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
                     table.ForeignKey(
                         name: "FK_FilesHashed_Files_Hash",
                         column: x => x.Hash,
+                        principalSchema: "ingestion-index",
                         principalTable: "Files",
                         principalColumn: "Hash",
                         onDelete: ReferentialAction.Restrict);
@@ -148,56 +161,67 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_Data_ParentId",
+                schema: "ingestion-index",
                 table: "Data",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Data_ReferenceId",
+                schema: "ingestion-index",
                 table: "Data",
                 column: "ReferenceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Files_ParentId",
+                schema: "ingestion-index",
                 table: "Files",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Files_ReferenceId",
+                schema: "ingestion-index",
                 table: "Files",
                 column: "ReferenceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FilesHashed_Hash",
+                schema: "ingestion-index",
                 table: "FilesHashed",
                 column: "Hash");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventory_Day",
+                schema: "ingestion-index",
                 table: "Inventory",
                 column: "Day");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventory_Month",
+                schema: "ingestion-index",
                 table: "Inventory",
                 column: "Month");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventory_Timestamp",
+                schema: "ingestion-index",
                 table: "Inventory",
                 column: "Timestamp");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventory_Year",
+                schema: "ingestion-index",
                 table: "Inventory",
                 column: "Year");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Zips_ReferenceId",
+                schema: "ingestion-index",
                 table: "Zips",
                 column: "ReferenceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ZipsHashed_Hash",
+                schema: "ingestion-index",
                 table: "ZipsHashed",
                 column: "Hash");
         }
@@ -206,22 +230,28 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Data");
+                name: "Data",
+                schema: "ingestion-index");
 
             migrationBuilder.DropTable(
-                name: "FilesHashed");
+                name: "FilesHashed",
+                schema: "ingestion-index");
 
             migrationBuilder.DropTable(
-                name: "Inventory");
+                name: "Inventory",
+                schema: "ingestion-index");
 
             migrationBuilder.DropTable(
-                name: "ZipsHashed");
+                name: "ZipsHashed",
+                schema: "ingestion-index");
 
             migrationBuilder.DropTable(
-                name: "Files");
+                name: "Files",
+                schema: "ingestion-index");
 
             migrationBuilder.DropTable(
-                name: "Zips");
+                name: "Zips",
+                schema: "ingestion-index");
         }
     }
 }

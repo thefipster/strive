@@ -1,10 +1,10 @@
-using Fip.Strive.Queue.Application.Contexts;
 using Fip.Strive.Queue.Domain.Models;
+using Fip.Strive.Queue.Storage.Lite.Contexts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Fip.Strive.Queue.Application.Health;
+namespace Fip.Strive.Queue.Storage.Lite.Health;
 
-public class JobHealthCheck(SignalQueueContext queueContext) : IHealthCheck
+public class DatabaseHealthCheck(SignalQueueContext queueContext) : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
