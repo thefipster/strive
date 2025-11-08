@@ -11,6 +11,7 @@ using Fip.Strive.Indexing.Application;
 using Fip.Strive.Ingestion.Application;
 using Fip.Strive.Queue.Application;
 using Fip.Strive.Queue.Storage.Lite;
+using Fip.Strive.Queue.Storage.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,7 +36,7 @@ public static class Registration
         // Application Core
         services.AddProxyFeature();
         services.AddScheduleFeature();
-        services.AddQueueFeature<HarvesterApp>().WithLiteDbStorage();
+        services.AddQueueFeature<HarvesterApp>().WithInMemoryStorage();
 
         // Application Features
         services.AddUploadFeature();

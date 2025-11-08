@@ -16,7 +16,7 @@ public static class Registration
 
         services.AddSingleton<MemoryQueueContext>();
 
-        services.AddScoped<IJobControl, MemoryJobControl>();
+        services.AddSingleton<IJobControl, MemoryJobControl>();
         services.AddScoped<IJobReader, MemoryJobReader>();
         services.AddScoped<IJobDeleter, MemoryJobDeleter>();
 
