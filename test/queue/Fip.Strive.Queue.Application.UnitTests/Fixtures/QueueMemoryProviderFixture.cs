@@ -35,6 +35,8 @@ public class QueueMemoryProviderFixture : IDisposable
 
         services.AddSingleton(Options.Create(new QueueConfig()));
 
+        services.AddSingleton<JobControlFactory>();
+
         services.AddSingleton<MemoryQueueContext>();
         services.AddSingleton<IJobControl, MemoryJobControl>();
 
