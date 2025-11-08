@@ -7,12 +7,15 @@
         <MudText Typo="Typo.h6" Class="ml-4">Harvester</MudText>
     </MudLink>
     <MudSpacer/>
-    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Style="width: 250px;">
+    <MudStack Row="true" Justify="Justify.Center" Spacing="3" AlignItems="AlignItems.Center">
+        <MudIcon Icon="@Icons.Material.Rounded.Login"/>
+        <MudText>@_queueIn / s</MudText>
+        <MudText>|</MudText>
         <MudIcon Icon="@Icons.Material.Rounded.Pending"/>
         <MudText>@_queueCount</MudText>
         <MudText>|</MudText>
-        <MudIcon Icon="@Icons.Material.Rounded.Timer"/>
-        <MudText>@_queueRate / s</MudText>
+        <MudText>@_queueOut / s</MudText>
+        <MudIcon Icon="@Icons.Material.Rounded.Logout"/>
     </MudStack>
     <MudSpacer/>
     <NavMenu/>

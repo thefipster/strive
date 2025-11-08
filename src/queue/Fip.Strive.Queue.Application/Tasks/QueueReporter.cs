@@ -33,7 +33,7 @@ public class QueueReporter(
             {
                 var count = queue.Count;
                 var rate = metrics.GetProcessingRate();
-                if (count != 0 || lastCount != 0 || rate > 0.1)
+                if (count != 0 || lastCount != 0 || rate > 0.05)
                 {
                     await ReportAsync();
                     finalized = false;

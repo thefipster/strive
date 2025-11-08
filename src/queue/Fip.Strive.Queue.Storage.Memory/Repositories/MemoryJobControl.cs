@@ -5,9 +5,18 @@ using Fip.Strive.Queue.Storage.Memory.Contexts;
 
 namespace Fip.Strive.Queue.Storage.Memory.Repositories;
 
-public class MemoryJobControl(MemoryQueueContext context) : IJobControl
+public class MemoryJobControl(MemoryQueueContext context, QueueMetrics metrics) : IJobControl
 {
-    public void Insert(JobDetails job) => context.Jobs.Add(job);
+    public void Insert(JobDetails job)
+    {
+        context.Jobs.Add(job);
+
+        var jobCount = GetOpenJobsCount();
+        metrics.SetJobCount(jobCount);
+    }
+
+    public int GetOpenJobsCount() =>
+        context.Jobs.Count(x => x.Status == JobStatus.Pending || x.Status == JobStatus.Stored);
 
     public IEnumerable<JobDetails> GetStored(int count)
     {

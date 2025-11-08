@@ -36,7 +36,7 @@ public static class Registration
         // Application Core
         services.AddProxyFeature();
         services.AddScheduleFeature();
-        services.AddQueueFeature<HarvesterApp>().WithInMemoryStorage();
+        services.AddQueueFeature<HarvesterApp>(configuration).WithLiteDbStorage();
 
         // Application Features
         services.AddUploadFeature();
