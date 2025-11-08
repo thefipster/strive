@@ -6,7 +6,6 @@ public interface IJobControl : IDisposable
 {
     void Insert(JobDetails job);
     IEnumerable<JobDetails> GetStored(int count);
-    IEnumerable<JobDetails> GetCompleted(int count);
     void MarkAsStarted(Guid id);
     void MarkAsSuccess(Guid id);
     void MarkAsFailed(Guid id, string message);

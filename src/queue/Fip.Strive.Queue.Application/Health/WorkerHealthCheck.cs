@@ -1,23 +1,17 @@
 using Fip.Strive.Queue.Application.Services;
+using Fip.Strive.Queue.Application.Services.Contracts;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Fip.Strive.Queue.Application.Health;
 
-public class WorkerHealthCheck : IHealthCheck
+public class WorkerHealthCheck(IProcessingService queueService) : IHealthCheck
 {
-    private readonly QueuedHostedService _queueService;
-
-    public WorkerHealthCheck(QueuedHostedService queueService)
-    {
-        _queueService = queueService;
-    }
-
     public Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,
         CancellationToken cancellationToken = default
     )
     {
-        var status = _queueService.IsRunning;
+        var status = queueService.IsRunning;
 
         if (status)
             return Task.FromResult(HealthCheckResult.Healthy("Workers running."));

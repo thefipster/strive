@@ -1,7 +1,7 @@
 using Fip.Strive.Harvester.Application.Features.Import.Models;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
 using Fip.Strive.Harvester.Domain.Signals;
-using Fip.Strive.Queue.Application.Components.Contracts;
+using Fip.Strive.Queue.Application.Services.Contracts;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -9,7 +9,7 @@ namespace Fip.Strive.Harvester.Application.Features.Import.Services.Decorators;
 
 public class ImportServiceSignaller(
     IImportService component,
-    ISignalQueue queue,
+    IQueueService queue,
     IOptions<ImportConfig> config,
     ILogger<ImportServiceSignaller> logger
 ) : IImportService

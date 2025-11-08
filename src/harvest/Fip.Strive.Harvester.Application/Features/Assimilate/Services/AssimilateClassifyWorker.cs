@@ -1,6 +1,7 @@
 using Fip.Strive.Harvester.Application.Features.Assimilate.Services.Contracts;
 using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Queue.Application.Components;
+using Fip.Strive.Queue.Application.Tasks;
 using Fip.Strive.Queue.Domain.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Assimilate.Services;

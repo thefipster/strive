@@ -18,14 +18,15 @@ public static class Registration
         services.AddSingleton<SignalQueueContext>();
 
         services.AddSingleton<IJobControl, LiteDbJobControl>();
-
         services.AddScoped<IJobReader, LiteDbJobReader>();
-
         services.AddScoped<IJobDeleter, LiteDbJobDeleter>();
 
         services
             .AddHealthChecks()
-            .AddCheck<DatabaseHealthCheck>("Queue_Storage", tags: new[] { "queue", "storage" });
+            .AddCheck<DatabaseHealthCheck>(
+                "Queue_LiteDb_Storage",
+                tags: new[] { "queue", "storage", "litedb" }
+            );
 
         return builder;
     }

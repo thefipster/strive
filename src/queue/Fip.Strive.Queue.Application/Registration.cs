@@ -1,11 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
-using Fip.Strive.Queue.Application.Components;
-using Fip.Strive.Queue.Application.Components.Contracts;
-using Fip.Strive.Queue.Application.Contracts;
 using Fip.Strive.Queue.Application.Health;
 using Fip.Strive.Queue.Application.Services;
+using Fip.Strive.Queue.Application.Services.Contracts;
+using Fip.Strive.Queue.Application.Tasks.Contracts;
 using Fip.Strive.Queue.Domain;
+using Fip.Strive.Queue.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
+using TaskFactory = Fip.Strive.Queue.Application.Services.TaskFactory;
 
 namespace Fip.Strive.Queue.Application;
 
@@ -14,26 +15,24 @@ public static class Registration
 {
     public static QueueFeatureBuilder AddQueueFeature<TApp>(this IServiceCollection services)
     {
-        var storageProvider = new QueueFeatureBuilder(services);
-
         services.Scan(scan =>
             scan.FromAssemblyOf<TApp>()
-                .AddClasses(classes => classes.AssignableTo<ISignalQueueWorker>())
+                .AddClasses(classes => classes.AssignableTo<IQueueWorker>())
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
 
-        services.AddSingleton<QueuedHostedService>();
-        services.AddHostedService(sp => sp.GetRequiredService<QueuedHostedService>());
+        services.AddHostedService<HostedService>();
 
-        services.AddSingleton<ISignalQueue, SignalQueue>();
-
-        services.AddSingleton<IQueueWorkerFactory, QueueWorkerFactory>();
+        services.AddSingleton<QueueMetrics>();
+        services.AddSingleton<ITaskFactory, TaskFactory>();
+        services.AddSingleton<IQueueService, QueueService>();
+        services.AddSingleton<IProcessingService, ProcessingService>();
 
         services
             .AddHealthChecks()
-            .AddCheck<WorkerHealthCheck>("Queue_Workers", tags: new[] { "queue", "workers" });
+            .AddCheck<WorkerHealthCheck>("Queue_Workers", tags: ["queue", "workers"]);
 
-        return storageProvider;
+        return new QueueFeatureBuilder(services);
     }
 }

@@ -1,13 +1,13 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Harvester.Application.Features.Upload.Services.Contracts;
 using Fip.Strive.Harvester.Domain.Signals;
-using Fip.Strive.Queue.Application.Components.Contracts;
+using Fip.Strive.Queue.Application.Services.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Upload.Services.Decorators;
 
 public class UploadServiceSignaller(
     IUploadService component,
-    ISignalQueue queue,
+    IQueueService queue,
     IFileHasher hasher
 ) : IUploadService
 {

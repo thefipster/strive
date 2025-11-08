@@ -44,12 +44,6 @@ public class LiteDbJobControl : IJobControl
         return jobs;
     }
 
-    public IEnumerable<JobDetails> GetCompleted(int count) =>
-        _collection
-            .Find(x => x.Status == JobStatus.Failed || x.Status == JobStatus.Succeeded)
-            .OrderBy(x => x.FinishedAt)
-            .Take(count);
-
     public void MarkAsStarted(Guid id)
     {
         var job = _collection.FindOne(x => x.Id == id);

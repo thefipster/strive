@@ -1,26 +1,30 @@
-﻿using Fip.Strive.Queue.Application.Components;
-using Fip.Strive.Queue.Application.Services;
-using Fip.Strive.Queue.Domain.Models;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
+﻿using AwesomeAssertions;
+using Fip.Strive.Queue.Application.UnitTests.Components;
+using Fip.Strive.Queue.Application.UnitTests.Fixtures;
 
 namespace Fip.Strive.Queue.Application.UnitTests;
 
-public class QueuedHostedServiceTests
+public class QueuedHostedServiceTests(QueueMemoryProviderFixture fixture)
+    : IClassFixture<QueueMemoryProviderFixture>
 {
     [Fact]
-    public void Test1()
+    public async Task EnqueueTestSignal_WithRegisteredTestWorker_ResultsInSucceededJob()
     {
-        var services = new ServiceCollection();
-        services.AddScoped<TestQueueWorker>();
-        var provider = services.BuildServiceProvider();
+        // Arrange
+        var expectedNumber = 42;
 
-        var factory = new QueueWorkerFactory(provider);
+        var ops = fixture.Service;
+        var queue = fixture.Queue;
+        var worker = fixture.Worker;
 
-        var config = Options.Create<QueueConfig>(new QueueConfig());
-        var logger = NullLogger<QueuedHostedService>.Instance;
+        _ = Task.Run(() => ops.ExecuteAsync(CancellationToken.None));
+        await Task.Delay(100);
 
-        var queue = new QueuedHostedService(config, logger, factory);
+        // Act
+        await queue.EnqueueAsync(new TestSignal(expectedNumber), CancellationToken.None);
+        await Task.Delay(100);
+
+        // Assert
+        worker.Number.Should().Be(expectedNumber);
     }
 }
