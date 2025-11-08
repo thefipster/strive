@@ -1,17 +1,13 @@
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using Fip.Strive.Harvester.Application.Core.Hubs;
-using Fip.Strive.Queue.Application.Repositories.Contracts;
 using Fip.Strive.Queue.Domain.Enums;
 using Fip.Strive.Queue.Domain.Models;
+using Fip.Strive.Queue.Storage.Contracts;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
 
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
 [Route("/queue")]
-public partial class QueuePage(IJobReader jobReader, NavigationManager navigation) : ComponentBase
+public partial class QueuePage(IServiceScopeFactory scopeFactory) : ComponentBase
 {
     private bool _dialogVisible;
     private string _selectedError = string.Empty;
@@ -25,38 +21,44 @@ public partial class QueuePage(IJobReader jobReader, NavigationManager navigatio
         CloseOnEscapeKey = true,
     };
 
-    private HubConnection? _hubConnection;
-    private readonly Subject<int> _queueEvents = new();
     private MudTable<JobDetails>? _activeTable;
     private MudTable<JobDetails>? _doneTable;
 
-    protected override async Task OnInitializedAsync()
-    {
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(navigation.ToAbsoluteUri($"/hubs/{QueueHub.HubName}"))
-            .WithAutomaticReconnect()
-            .Build();
+    private PeriodicTimer? _timer;
+    private CancellationTokenSource? _cts;
 
-        _queueEvents
-            .Buffer(count: 20)
-            .Select(events => events.Last())
-            .Subscribe(_ =>
+    protected override void OnInitialized()
+    {
+        _cts = new CancellationTokenSource();
+        _timer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
+        _ = RunUpdateLookAsync(_cts.Token);
+    }
+
+    private async Task RunUpdateLookAsync(CancellationToken ct)
+    {
+        try
+        {
+            while (
+                !ct.IsCancellationRequested
+                && _timer is not null
+                && await _timer.WaitForNextTickAsync(ct)
+            )
             {
                 _activeTable?.ReloadServerData();
                 _doneTable?.ReloadServerData();
-                InvokeAsync(StateHasChanged);
-            });
 
-        _hubConnection.On<int, int, double>(
-            QueueHub.QueueReportMethodName,
-            (count, _, _) => _queueEvents.OnNext(count)
-        );
-
-        await _hubConnection.StartAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // ignore
+        }
     }
 
     private Task<TableData<JobDetails>> OnActiveRequested(TableState state, CancellationToken ct)
     {
+        var jobReader = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IJobReader>();
         var result = jobReader.GetJobs(
             state.Page,
             state.PageSize,
@@ -71,6 +73,7 @@ public partial class QueuePage(IJobReader jobReader, NavigationManager navigatio
 
     private Task<TableData<JobDetails>> OnDoneRequested(TableState state, CancellationToken ct)
     {
+        var jobReader = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IJobReader>();
         var result = jobReader.GetJobs(
             state.Page,
             state.PageSize,

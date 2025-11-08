@@ -1,0 +1,14 @@
+using Fip.Strive.Queue.Domain.Models;
+
+namespace Fip.Strive.Queue.Storage.Contracts;
+
+public interface IJobControl
+{
+    void Insert(JobDetails job);
+    IEnumerable<JobDetails> GetStored(int count);
+    void MarkAsStarted(Guid id);
+    void MarkAsSuccess(Guid id);
+    void MarkAsFailed(Guid id, string message);
+    void MarkAsFailed(Guid id, string message, Exception ex);
+    void Reset();
+}

@@ -1,12 +1,21 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder.AddPostgres("postgres").WithPgAdmin();
-var indexdb = postgres.AddDatabase("strive-harvester-index");
+
+var harvesterDatabase = postgres.AddDatabase("strive-harvester");
 
 var indexMigrator = builder
     .AddProject<Projects.Fip_Strive_Indexing_Migrator>("strive-harvester-index-migrator")
-    .WithReference(indexdb)
-    .WaitFor(indexdb);
+    .WithReference(harvesterDatabase)
+    .WaitFor(harvesterDatabase);
+
+var queueMigrator = builder
+    .AddProject<Projects.Fip_Strive_Queue_Storage_Postgres_Migrator>(
+        "strive-harvester-queue-migrator"
+    )
+    .WithReference(harvesterDatabase)
+    .WaitFor(harvesterDatabase)
+    .WaitFor(indexMigrator);
 
 var unifierWeb = builder
     .AddProject<Projects.Fip_Strive_Unifier_Web>("strive-unifier-webapp")
@@ -16,10 +25,11 @@ var harvesterWeb = builder
     .AddProject<Projects.Fip_Strive_Harvester_Web>("strive-harvester-webapp")
     .WithHttpHealthCheck("/health")
     .WithHttpHealthCheck("/health/queue")
-    .WithReference(indexdb)
-    .WaitForCompletion(indexMigrator);
+    .WithReference(harvesterDatabase)
+    .WaitForCompletion(indexMigrator)
+    .WaitForCompletion(queueMigrator);
 
-var portalWeb = builder
+builder
     .AddProject<Projects.Fip_Strive_Portal_Web>("strive-portal-webapp")
     .WithHttpHealthCheck("/health")
     .WithReference(unifierWeb)

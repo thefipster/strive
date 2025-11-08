@@ -1,14 +1,14 @@
 using Fip.Strive.Harvester.Application.Features.Expand.Models;
 using Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
 using Fip.Strive.Indexing.Domain;
-using Fip.Strive.Queue.Application.Components.Contracts;
+using Fip.Strive.Queue.Application.Services.Contracts;
 using Microsoft.Extensions.Logging;
 
 namespace Fip.Strive.Harvester.Application.Features.Expand.Services.Decorators;
 
 public class FileHashGateSignalled(
     IFileHashGate component,
-    ISignalQueue queue,
+    IQueueService queue,
     ILogger<FileHashGateSignalled> logger
 ) : IFileHashGate
 {

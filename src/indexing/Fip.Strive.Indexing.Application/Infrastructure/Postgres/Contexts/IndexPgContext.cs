@@ -6,6 +6,8 @@ namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
 
 public class IndexPgContext : DbContext
 {
+    public const string SchemaName = "ingestion-index";
+
     public IndexPgContext(DbContextOptions<IndexPgContext> options)
         : base(options) { }
 
@@ -21,7 +23,6 @@ public class IndexPgContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // TODO make this configurable
         optionsBuilder.EnableDetailedErrors();
         optionsBuilder.EnableSensitiveDataLogging();
     }
@@ -30,6 +31,7 @@ public class IndexPgContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasDefaultSchema(SchemaName);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(IndexPgContext).Assembly);
     }
 }

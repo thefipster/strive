@@ -1,7 +1,7 @@
 using Fip.Strive.Harvester.Application.Core.Hubs;
 using Fip.Strive.Harvester.Application.Core.Schedule;
 using Fip.Strive.Harvester.Domain.Signals;
-using Fip.Strive.Queue.Application.Components.Contracts;
+using Fip.Strive.Queue.Application.Services.Contracts;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Quartz;
@@ -11,7 +11,7 @@ namespace Fip.Strive.Harvester.Application.Features.HelloWorld.Jobs;
 [RegularIntervalJob(5)]
 public class HelloWorldJob(
     ILogger<HelloWorldJob> logger,
-    ISignalQueue queue,
+    IQueueService queue,
     IHubContext<HelloWorldHub> hub
 ) : IJob
 {

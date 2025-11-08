@@ -21,8 +21,7 @@ public static class Registration
     )
     {
         services.AddDbContext<IndexPgContext>(
-            options =>
-                options.UseNpgsql(configuration.GetConnectionString("strive-harvester-index")),
+            options => options.UseNpgsql(configuration.GetConnectionString("strive-harvester")),
             ServiceLifetime.Transient
         );
 

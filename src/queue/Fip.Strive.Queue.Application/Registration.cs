@@ -1,46 +1,51 @@
 using System.Diagnostics.CodeAnalysis;
-using Fip.Strive.Queue.Application.Components;
-using Fip.Strive.Queue.Application.Components.Contracts;
-using Fip.Strive.Queue.Application.Contexts;
-using Fip.Strive.Queue.Application.Contracts;
 using Fip.Strive.Queue.Application.Health;
-using Fip.Strive.Queue.Application.Repositories;
-using Fip.Strive.Queue.Application.Repositories.Contracts;
 using Fip.Strive.Queue.Application.Services;
+using Fip.Strive.Queue.Application.Services.Contracts;
+using Fip.Strive.Queue.Application.Services.Decorators;
+using Fip.Strive.Queue.Application.Tasks.Contracts;
+using Fip.Strive.Queue.Domain;
+using Fip.Strive.Queue.Domain.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TaskFactory = Fip.Strive.Queue.Application.Services.TaskFactory;
 
 namespace Fip.Strive.Queue.Application;
 
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    public static void AddQueueFeature<TApp>(this IServiceCollection services)
+    public static QueueFeatureBuilder AddQueueFeature<TApp>(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
+        services.Configure<QueueConfig>(configuration);
+
         services.Scan(scan =>
             scan.FromAssemblyOf<TApp>()
-                .AddClasses(classes => classes.AssignableTo<ISignalQueueWorker>())
+                .AddClasses(classes => classes.AssignableTo<IQueueWorker>())
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
 
-        services.AddSingleton<SignalQueueContext>();
+        services.AddHostedService<HostedService>();
 
-        services.AddSingleton<QueuedHostedService>();
-        services.AddHostedService(sp => sp.GetRequiredService<QueuedHostedService>());
+        services.AddSingleton<QueueMetrics>();
 
-        services.AddSingleton<ISignalQueue, LiteDbSignalQueue>();
+        services.AddSingleton<JobControlFactory>();
 
-        services.AddSingleton<IQueueWorkerFactory, QueueWorkerFactory>();
+        services.AddSingleton<ITaskFactory, TaskFactory>();
 
-        services.AddSingleton<IJobControl, LiteDbJobControl>();
+        services.AddSingleton<IQueueService, QueueService>();
+        services.Decorate<IQueueService, ThreadSafeQueue>();
 
-        services.AddScoped<IJobReader, LiteDbJobReader>();
-
-        services.AddScoped<IJobDeleter, LiteDbJobDeleter>();
+        services.AddSingleton<IProcessingService, ProcessingService>();
 
         services
             .AddHealthChecks()
-            .AddCheck<WorkerHealthCheck>("Queue_Workers", tags: new[] { "queue", "workers" })
-            .AddCheck<JobHealthCheck>("Queue_Storage", tags: new[] { "queue", "storage" });
+            .AddCheck<WorkerHealthCheck>("Queue_Workers", tags: ["queue", "workers"]);
+
+        return new QueueFeatureBuilder(services);
     }
 }

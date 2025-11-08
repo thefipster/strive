@@ -5,14 +5,14 @@ using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Domain;
 using Fip.Strive.Ingestion.Application.Services.Contracts;
-using Fip.Strive.Queue.Application.Components.Contracts;
+using Fip.Strive.Queue.Application.Services.Contracts;
 
 namespace Fip.Strive.Harvester.Application.Features.Classify.Services;
 
 public class ClassificationService(
     IIndexer<FileIndex, string> indexer,
     IClassifier classifier,
-    ISignalQueue queue
+    IQueueService queue
 ) : IScanner
 {
     public Task<WorkItem> ClassifyAsync(FileSignal signal, CancellationToken ct)

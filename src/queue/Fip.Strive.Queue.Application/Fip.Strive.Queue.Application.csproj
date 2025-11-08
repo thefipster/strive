@@ -1,9 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" />
@@ -13,5 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Application\Fip.Strive.Core.Application.csproj" />
     <ProjectReference Include="..\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
+    <ProjectReference Include="..\Fip.Strive.Queue.Storage.Contracts\Fip.Strive.Queue.Storage.Contracts.csproj" />
+    <ProjectReference Include="..\Fip.Strive.Queue.Storage.Lite\Fip.Strive.Queue.Storage.Lite.csproj" />
   </ItemGroup>
 </Project>

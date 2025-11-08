@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
+﻿using Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +9,7 @@ Console.WriteLine("Migrator starting for indexing.");
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddDbContext<IndexPgContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("strive-harvester-index"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("strive-harvester"))
 );
 
 var app = builder.Build();

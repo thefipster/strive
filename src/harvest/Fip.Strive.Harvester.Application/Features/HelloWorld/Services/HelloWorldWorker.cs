@@ -1,6 +1,6 @@
 using Fip.Strive.Harvester.Application.Core.Hubs;
 using Fip.Strive.Harvester.Domain.Signals;
-using Fip.Strive.Queue.Application.Components;
+using Fip.Strive.Queue.Application.Tasks;
 using Fip.Strive.Queue.Domain.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
