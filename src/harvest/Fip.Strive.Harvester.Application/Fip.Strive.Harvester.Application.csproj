@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
     <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Storage.Lite\Fip.Strive.Queue.Storage.Lite.csproj" />
     <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Storage.Memory\Fip.Strive.Queue.Storage.Memory.csproj" />
+    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Storage.Postgres\Fip.Strive.Queue.Storage.Postgres.csproj" />
     <ProjectReference Include="..\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj" />
   </ItemGroup>
 </Project>

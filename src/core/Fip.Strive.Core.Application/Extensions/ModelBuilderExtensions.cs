@@ -1,7 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
-namespace Fip.Strive.Indexing.Application.Infrastructure.Postgres.Extensions;
+namespace Fip.Strive.Core.Application.Extensions;
 
 public static class ModelBuilderExtensions
 {

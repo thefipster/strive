@@ -82,9 +82,4 @@ public class MemoryJobControl(MemoryQueueContext context, QueueMetrics metrics) 
         foreach (var job in jobs)
             job.Status = JobStatus.Stored;
     }
-
-    public void Dispose()
-    {
-        context.Jobs.Clear();
-    }
 }

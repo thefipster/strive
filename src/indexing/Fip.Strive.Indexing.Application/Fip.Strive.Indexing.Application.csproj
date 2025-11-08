@@ -9,6 +9,7 @@
     <ProjectReference Include="..\Fip.Strive.Indexing.Domain\Fip.Strive.Indexing.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Infrastructure\Postgres\Extensions\" />
     <Folder Include="Infrastructure\Postgres\Migrations\" />
   </ItemGroup>
 </Project>

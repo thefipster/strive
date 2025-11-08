@@ -6,9 +6,7 @@ using Fip.Strive.Queue.Storage.Lite.Contexts;
 
 namespace Fip.Strive.Queue.Storage.Lite.Repositories;
 
-public class LiteDbJobReader(SignalQueueContext context)
-    : LiteDbBaseJobRepository(context),
-        IJobReader
+public class LiteJobReader(LiteQueueContext context) : LiteDbBaseJobRepository(context), IJobReader
 {
     public PagedResponse<JobDetails> GetUpcommingJobs(int page, int size)
     {

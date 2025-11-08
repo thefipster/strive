@@ -1,14 +1,14 @@
-﻿using Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
+﻿using Fip.Strive.Queue.Storage.Postgres.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-Console.WriteLine("Migrator starting for indexing.");
+Console.WriteLine("Migrator starting for postgres queue schema.");
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddDbContext<IndexPgContext>(options =>
+builder.Services.AddDbContext<PostgresQueueContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("strive-harvester"))
 );
 
@@ -16,8 +16,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<IndexPgContext>();
+    var db = scope.ServiceProvider.GetRequiredService<PostgresQueueContext>();
     db.Database.Migrate();
 }
 
-Console.WriteLine("Migrations applied successfully to indexing!");
+Console.WriteLine("Migrations applied successfully for postgres queue schema.!");

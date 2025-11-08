@@ -33,6 +33,8 @@ public static class Registration
 
         services.AddSingleton<QueueMetrics>();
 
+        services.AddSingleton<JobControlFactory>();
+
         services.AddSingleton<ITaskFactory, TaskFactory>();
 
         services.AddSingleton<IQueueService, QueueService>();

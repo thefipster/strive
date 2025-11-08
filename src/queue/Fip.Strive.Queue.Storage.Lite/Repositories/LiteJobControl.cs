@@ -6,13 +6,13 @@ using LiteDB;
 
 namespace Fip.Strive.Queue.Storage.Lite.Repositories;
 
-public class LiteDbJobControl : IJobControl
+public class LiteJobControl : IJobControl
 {
-    private readonly SignalQueueContext _context;
+    private readonly LiteQueueContext _context;
     private readonly ILiteCollection<JobDetails> _collection;
     private bool _disposed;
 
-    public LiteDbJobControl(SignalQueueContext context)
+    public LiteJobControl(LiteQueueContext context)
     {
         _context = context;
 
@@ -98,11 +98,5 @@ public class LiteDbJobControl : IJobControl
             }
             _disposed = true;
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

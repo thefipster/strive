@@ -7,9 +7,9 @@ namespace Fip.Strive.Queue.Storage.Lite.Repositories;
 public class LiteDbBaseJobRepository
 {
     protected readonly ILiteCollection<JobDetails> Collection;
-    private readonly SignalQueueContext _context;
+    private readonly LiteQueueContext _context;
 
-    public LiteDbBaseJobRepository(SignalQueueContext context)
+    public LiteDbBaseJobRepository(LiteQueueContext context)
     {
         _context = context;
 

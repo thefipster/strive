@@ -7,7 +7,7 @@ using MudBlazor;
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
 [Route("/queue")]
-public partial class QueuePage(IJobReader jobReader) : ComponentBase
+public partial class QueuePage(IServiceScopeFactory scopeFactory) : ComponentBase
 {
     private bool _dialogVisible;
     private string _selectedError = string.Empty;
@@ -58,6 +58,7 @@ public partial class QueuePage(IJobReader jobReader) : ComponentBase
 
     private Task<TableData<JobDetails>> OnActiveRequested(TableState state, CancellationToken ct)
     {
+        var jobReader = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IJobReader>();
         var result = jobReader.GetJobs(
             state.Page,
             state.PageSize,
@@ -72,6 +73,7 @@ public partial class QueuePage(IJobReader jobReader) : ComponentBase
 
     private Task<TableData<JobDetails>> OnDoneRequested(TableState state, CancellationToken ct)
     {
+        var jobReader = scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IJobReader>();
         var result = jobReader.GetJobs(
             state.Page,
             state.PageSize,

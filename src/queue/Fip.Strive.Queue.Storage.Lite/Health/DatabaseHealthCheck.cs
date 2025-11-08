@@ -4,7 +4,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Fip.Strive.Queue.Storage.Lite.Health;
 
-public class DatabaseHealthCheck(SignalQueueContext queueContext) : IHealthCheck
+public class DatabaseHealthCheck(LiteQueueContext queueContext) : IHealthCheck
 {
     public Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,

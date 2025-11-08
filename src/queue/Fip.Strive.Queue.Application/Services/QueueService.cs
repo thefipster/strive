@@ -2,30 +2,33 @@ using System.Collections.Concurrent;
 using Fip.Strive.Queue.Application.Services.Contracts;
 using Fip.Strive.Queue.Domain.Enums;
 using Fip.Strive.Queue.Domain.Models;
-using Fip.Strive.Queue.Storage.Contracts;
 using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Queue.Application.Services;
 
-public class QueueService : IQueueService, IDisposable
+public class QueueService : IQueueService
 {
-    private readonly IJobControl _jobs;
     private readonly IOptions<QueueConfig> _config;
     private readonly ConcurrentQueue<JobDetails> _queue = new();
     private readonly QueueMetrics _metrics;
+    private readonly JobControlFactory _jobFactory;
 
     private bool QueueShouldBeRefilled =>
         _queue.Count < _config.Value.QueueCountLimit - _config.Value.QueueBatchSize;
 
     public bool IsReady { get; private set; }
 
-    public QueueService(IJobControl jobs, IOptions<QueueConfig> config, QueueMetrics metrics)
+    public QueueService(
+        IOptions<QueueConfig> config,
+        QueueMetrics metrics,
+        JobControlFactory jobFactory
+    )
     {
         _config = config;
         _metrics = metrics;
 
-        _jobs = jobs;
-        _jobs.Reset();
+        _jobFactory = jobFactory;
+        _jobFactory.GetScoped().Reset();
 
         IsReady = true;
     }
@@ -35,7 +38,7 @@ public class QueueService : IQueueService, IDisposable
     public Task EnqueueAsync(Signal signal, CancellationToken ct = default)
     {
         var job = signal.ToJobEntity();
-        _jobs.Insert(job);
+        _jobFactory.GetScoped().Insert(job);
 
         if (_config.Value.QueueCountLimit > _queue.Count)
         {
@@ -58,19 +61,19 @@ public class QueueService : IQueueService, IDisposable
 
     public Task MarkAsStartedAsync(Guid jobId, CancellationToken ct = default)
     {
-        _jobs.MarkAsStarted(jobId);
+        _jobFactory.GetScoped().MarkAsStarted(jobId);
         return Task.CompletedTask;
     }
 
     public Task MarkAsSuccessAsync(Guid jobId, CancellationToken ct = default)
     {
-        _jobs.MarkAsSuccess(jobId);
+        _jobFactory.GetScoped().MarkAsSuccess(jobId);
         return Task.CompletedTask;
     }
 
     public Task MarkAsFailedAsync(Guid jobId, string reason, CancellationToken ct = default)
     {
-        _jobs.MarkAsFailed(jobId, reason);
+        _jobFactory.GetScoped().MarkAsFailed(jobId, reason);
         return Task.CompletedTask;
     }
 
@@ -81,23 +84,21 @@ public class QueueService : IQueueService, IDisposable
         CancellationToken ct = default
     )
     {
-        _jobs.MarkAsFailed(jobId, reason, ex);
+        _jobFactory.GetScoped().MarkAsFailed(jobId, reason, ex);
         return Task.CompletedTask;
     }
-
-    public void Dispose() => _jobs.Dispose();
 
     private Task<JobDetails?> TryDequeueStartedJobAsync()
     {
         if (_queue.TryDequeue(out var job))
-            _jobs.MarkAsStarted(job.Id);
+            _jobFactory.GetScoped().MarkAsStarted(job.Id);
 
         return Task.FromResult(job);
     }
 
     private void RefillQueue()
     {
-        var storedJobs = _jobs.GetStored(_config.Value.QueueBatchSize);
+        var storedJobs = _jobFactory.GetScoped().GetStored(_config.Value.QueueBatchSize);
 
         foreach (var job in storedJobs)
             Enqueue(job);

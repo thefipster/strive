@@ -15,11 +15,11 @@ public static class Registration
     {
         var services = builder.Services;
 
-        services.AddSingleton<SignalQueueContext>();
+        services.AddSingleton<LiteQueueContext>();
 
-        services.AddSingleton<IJobControl, LiteDbJobControl>();
-        services.AddScoped<IJobReader, LiteDbJobReader>();
-        services.AddScoped<IJobDeleter, LiteDbJobDeleter>();
+        services.AddSingleton<IJobControl, LiteJobControl>();
+        services.AddScoped<IJobReader, LiteJobReader>();
+        services.AddScoped<IJobDeleter, LiteJobDeleter>();
 
         services
             .AddHealthChecks()

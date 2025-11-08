@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_Files", "1_Files", "{AABA
 		Readme.md = Readme.md
 		.github\workflows\strive.yml = .github\workflows\strive.yml
 		make.ps1 = make.ps1
+		add-indexing-migration.ps1 = add-indexing-migration.ps1
+		add-queue-migration.ps1 = add-queue-migration.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3_Core", "3_Core", "{FB3A030B-304D-4593-8AD3-7E38A1DB9B86}"
@@ -119,6 +121,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Memory", "src\queue\Fip.Strive.Queue.Storage.Memory\Fip.Strive.Queue.Storage.Memory.csproj", "{0C23E750-A26C-449D-9DD9-5B803132C420}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Postgres", "src\queue\Fip.Strive.Queue.Storage.Postgres\Fip.Strive.Queue.Storage.Postgres.csproj", "{EB72FAA2-D75E-4213-9AEB-EEE21CF032A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Postgres.Migrator", "src\queue\Fip.Strive.Queue.Storage.Postgres.Migrator\Fip.Strive.Queue.Storage.Postgres.Migrator.csproj", "{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +227,14 @@ Global
 		{0C23E750-A26C-449D-9DD9-5B803132C420}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C23E750-A26C-449D-9DD9-5B803132C420}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C23E750-A26C-449D-9DD9-5B803132C420}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB72FAA2-D75E-4213-9AEB-EEE21CF032A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB72FAA2-D75E-4213-9AEB-EEE21CF032A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB72FAA2-D75E-4213-9AEB-EEE21CF032A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB72FAA2-D75E-4213-9AEB-EEE21CF032A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
@@ -261,5 +275,7 @@ Global
 		{D4A67326-7363-4B54-A31B-5A1F43ECC05A} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
 		{DE1A88AE-8514-477E-8072-8AAF5E680012} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
 		{0C23E750-A26C-449D-9DD9-5B803132C420} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{EB72FAA2-D75E-4213-9AEB-EEE21CF032A3} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
 	EndGlobalSection
 EndGlobal
