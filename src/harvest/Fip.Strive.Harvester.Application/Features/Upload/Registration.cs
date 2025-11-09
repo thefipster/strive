@@ -11,8 +11,8 @@ public static class Registration
 {
     public static void AddUploadFeature(this IServiceCollection services)
     {
-        services.AddTransient<IUploadService, UploadService>();
-        services.Decorate<IUploadService, UploadServiceValidator>();
-        services.Decorate<IUploadService, UploadServiceSignaller>();
+        services.AddScoped<IUploadService, UploadService>();
+        services.Decorate<IUploadService, UploadValidation>();
+        services.Decorate<IUploadService, UploadEmission>();
     }
 }

@@ -4,7 +4,7 @@ namespace Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 
 public interface IDirectoryService
 {
-    void CreateDirectory(string path);
+    void Create(string path);
 
     IEnumerable<string> EnumerateAllFiles(string path);
 

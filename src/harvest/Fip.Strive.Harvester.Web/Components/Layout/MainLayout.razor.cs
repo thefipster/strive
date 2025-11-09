@@ -15,6 +15,7 @@ public partial class MainLayout
             H2 = new H2Typography { FontSize = "2rem" },
             H3 = new H3Typography { FontSize = "1.6rem" },
             H4 = new H4Typography { FontSize = "1.3rem" },
+            Body1 = new Body1Typography { FontSize = "1rem" },
         },
     };
 

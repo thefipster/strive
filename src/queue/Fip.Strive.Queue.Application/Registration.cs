@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Fip.Strive.Core.Application.Features.Config;
 using Fip.Strive.Queue.Application.Health;
 using Fip.Strive.Queue.Application.Services;
 using Fip.Strive.Queue.Application.Services.Contracts;
@@ -12,6 +13,8 @@ using TaskFactory = Fip.Strive.Queue.Application.Services.TaskFactory;
 
 namespace Fip.Strive.Queue.Application;
 
+internal sealed class QueueFeature;
+
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
@@ -20,7 +23,7 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.Configure<QueueConfig>(configuration);
+        services.AddConfigs<QueueConfig>(configuration);
 
         services.Scan(scan =>
             scan.FromAssemblyOf<TApp>()

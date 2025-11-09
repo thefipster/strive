@@ -5,7 +5,9 @@ var postgres = builder.AddPostgres("postgres").WithPgAdmin();
 var harvesterDatabase = postgres.AddDatabase("strive-harvester");
 
 var indexMigrator = builder
-    .AddProject<Projects.Fip_Strive_Indexing_Migrator>("strive-harvester-index-migrator")
+    .AddProject<Projects.Fip_Strive_Indexing_Storage_Postgres_Migrator>(
+        "strive-harvester-index-migrator"
+    )
     .WithReference(harvesterDatabase)
     .WaitFor(harvesterDatabase);
 

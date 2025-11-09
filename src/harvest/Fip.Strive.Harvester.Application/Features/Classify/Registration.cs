@@ -8,6 +8,6 @@ public static class Registration
 {
     public static void AddClassifyFeature(this IServiceCollection services)
     {
-        services.AddScoped<IScanner, ClassificationService>();
+        services.AddScoped<IClassifyService, ClassifyService>();
     }
 }

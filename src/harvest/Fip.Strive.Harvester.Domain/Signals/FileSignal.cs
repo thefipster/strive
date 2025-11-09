@@ -4,4 +4,5 @@ public class FileSignal() : EnumSignal(SignalTypes.FileSignal)
 {
     public required string Filepath { get; set; }
     public required string Hash { get; set; }
+    public required string ParentFilepath { get; set; }
 }

@@ -29,8 +29,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2_Docs", "2_Docs", "{142678
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{81B23DB6-9714-457F-8BEB-74011CB5405B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Application.UnitTests", "test\harvest\Fip.Strive.Harvester.Application.UnitTests\Fip.Strive.Harvester.Application.UnitTests.csproj", "{FB6542FC-100E-4DD8-B3E8-505C49632B86}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.AppHost", "src\Fip.Strive.AppHost\Fip.Strive.AppHost.csproj", "{C7257019-2F1F-478E-93E7-5B425599CE78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Application.ArchitectureTests", "test\harvest\Fip.Strive.Harvester.Application.ArchitectureTests\Fip.Strive.Harvester.Application.ArchitectureTests.csproj", "{594EB166-DCE4-4959-9F89-3C07855EE41F}"
@@ -76,7 +74,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Applica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Domain", "src\indexing\Fip.Strive.Indexing.Domain\Fip.Strive.Indexing.Domain.csproj", "{838A60DF-42C8-4921-B9C6-20EFBB9DD0CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Migrator", "src\indexing\Fip.Strive.Indexing.Migrator\Fip.Strive.Indexing.Migrator.csproj", "{14673839-FC12-48B5-A703-456DEA027024}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Storage.Postgres.Migrator", "src\indexing\Fip.Strive.Indexing.Storage.Postgres.Migrator\Fip.Strive.Indexing.Storage.Postgres.Migrator.csproj", "{14673839-FC12-48B5-A703-456DEA027024}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ingestion", "Ingestion", "{761ECD08-C06A-4480-B360-D0ADA9CAFC92}"
 EndProject
@@ -87,6 +85,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Domain", "src\harvest\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj", "{C67FD15D-1BDB-4F6B-BF0A-68D7A00C9955}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Queue", "Queue", "{D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}"
+	ProjectSection(SolutionItems) = preProject
+		QueueFeatureBuilder.cs = QueueFeatureBuilder.cs
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Application", "src\queue\Fip.Strive.Queue.Application\Fip.Strive.Queue.Application.csproj", "{9D0CC762-90CE-44FB-8780-C0E91632A628}"
 EndProject
@@ -125,6 +126,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Po
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Queue.Storage.Postgres.Migrator", "src\queue\Fip.Strive.Queue.Storage.Postgres.Migrator\Fip.Strive.Queue.Storage.Postgres.Migrator.csproj", "{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Storage.Postgres", "src\indexing\Fip.Strive.Indexing.Storage.Postgres\Fip.Strive.Indexing.Storage.Postgres.csproj", "{0735A49B-FC1A-457D-8049-AE353198A560}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Storage.Lite", "src\indexing\Fip.Strive.Indexing.Storage.Lite\Fip.Strive.Indexing.Storage.Lite.csproj", "{12A35C29-02E4-4C17-94FF-8E1EE2199E2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Indexing.Storage.Contracts", "src\indexing\Fip.Strive.Indexing.Storage.Contracts\Fip.Strive.Indexing.Storage.Contracts.csproj", "{AD38B01C-CDFD-467E-B17F-35E5881E2633}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,10 +146,6 @@ Global
 		{42E61C7C-83F1-4E40-B3C8-8E588CAA4C48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42E61C7C-83F1-4E40-B3C8-8E588CAA4C48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42E61C7C-83F1-4E40-B3C8-8E588CAA4C48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB6542FC-100E-4DD8-B3E8-505C49632B86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB6542FC-100E-4DD8-B3E8-505C49632B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB6542FC-100E-4DD8-B3E8-505C49632B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB6542FC-100E-4DD8-B3E8-505C49632B86}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C7257019-2F1F-478E-93E7-5B425599CE78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C7257019-2F1F-478E-93E7-5B425599CE78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7257019-2F1F-478E-93E7-5B425599CE78}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -235,12 +238,23 @@ Global
 		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0735A49B-FC1A-457D-8049-AE353198A560}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0735A49B-FC1A-457D-8049-AE353198A560}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0735A49B-FC1A-457D-8049-AE353198A560}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0735A49B-FC1A-457D-8049-AE353198A560}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12A35C29-02E4-4C17-94FF-8E1EE2199E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12A35C29-02E4-4C17-94FF-8E1EE2199E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12A35C29-02E4-4C17-94FF-8E1EE2199E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12A35C29-02E4-4C17-94FF-8E1EE2199E2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD38B01C-CDFD-467E-B17F-35E5881E2633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD38B01C-CDFD-467E-B17F-35E5881E2633}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD38B01C-CDFD-467E-B17F-35E5881E2633}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD38B01C-CDFD-467E-B17F-35E5881E2633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
 		{42E61C7C-83F1-4E40-B3C8-8E588CAA4C48} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
 		{81B23DB6-9714-457F-8BEB-74011CB5405B} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
-		{FB6542FC-100E-4DD8-B3E8-505C49632B86} = {81B23DB6-9714-457F-8BEB-74011CB5405B}
 		{594EB166-DCE4-4959-9F89-3C07855EE41F} = {81B23DB6-9714-457F-8BEB-74011CB5405B}
 		{48599587-53A9-4A8E-805A-9D4D58FD976D} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
 		{D8ABB662-711D-4D09-A55C-91752495B6D5} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
@@ -277,5 +291,8 @@ Global
 		{0C23E750-A26C-449D-9DD9-5B803132C420} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
 		{EB72FAA2-D75E-4213-9AEB-EEE21CF032A3} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
 		{0D7F65C7-A23F-4184-B056-E0F2C0E80EF6} = {D1E0562D-635D-4A82-8AF2-7CEAE9E1EBCE}
+		{0735A49B-FC1A-457D-8049-AE353198A560} = {BB6A16AA-0CEF-471E-B3AA-BC12688CBEBE}
+		{12A35C29-02E4-4C17-94FF-8E1EE2199E2D} = {BB6A16AA-0CEF-471E-B3AA-BC12688CBEBE}
+		{AD38B01C-CDFD-467E-B17F-35E5881E2633} = {BB6A16AA-0CEF-471E-B3AA-BC12688CBEBE}
 	EndGlobalSection
 EndGlobal

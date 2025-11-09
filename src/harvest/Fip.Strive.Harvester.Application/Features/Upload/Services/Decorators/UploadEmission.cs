@@ -1,0 +1,29 @@
+using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
+using Fip.Strive.Harvester.Application.Features.Upload.Services.Contracts;
+using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Queue.Application.Services.Contracts;
+
+namespace Fip.Strive.Harvester.Application.Features.Upload.Services.Decorators;
+
+public class UploadEmission(IUploadService component, IQueueService queue, IFileHasher hasher)
+    : IUploadService
+{
+    public event EventHandler<int>? ProgressChanged
+    {
+        add => component.ProgressChanged += value;
+        remove => component.ProgressChanged -= value;
+    }
+
+    public void SetReportInterval(TimeSpan interval) => component.SetReportInterval(interval);
+
+    public async Task<string> SaveUploadAsync(string filename, Stream stream, CancellationToken ct)
+    {
+        var filepath = await component.SaveUploadAsync(filename, stream, ct);
+        var hash = await hasher.HashXx3Async(filepath, ct);
+        var signal = UploadSignal.From(filepath, hash);
+
+        await queue.EnqueueAsync(signal, ct);
+
+        return filepath;
+    }
+}

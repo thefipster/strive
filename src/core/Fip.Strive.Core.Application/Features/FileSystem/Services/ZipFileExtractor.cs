@@ -7,7 +7,7 @@ namespace Fip.Strive.Core.Application.Features.FileSystem.Services;
 [ExcludeFromCodeCoverage]
 public class ZipFileExtractor : IZipExtractor
 {
-    public void ExtractToDirectory(string zipPath, string destinationPath, bool overwrite)
+    public void Unzip(string zipPath, string destinationPath, bool overwrite)
     {
         ZipFile.ExtractToDirectory(zipPath, destinationPath, overwrite);
     }

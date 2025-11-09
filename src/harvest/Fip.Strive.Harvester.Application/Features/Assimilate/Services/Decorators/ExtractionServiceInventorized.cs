@@ -1,6 +1,8 @@
 using Fip.Strive.Harvester.Application.Features.Assimilate.Models;
 using Fip.Strive.Harvester.Application.Features.Assimilate.Services.Contracts;
-using Fip.Strive.Indexing.Application.Features.Contracts;
+using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Indexing.Domain.Models;
+using Fip.Strive.Indexing.Storage.Contracts;
 using Fip.Strive.Ingestion.Domain.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Assimilate.Services.Decorators;

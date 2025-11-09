@@ -11,10 +11,9 @@ public static class Registration
 {
     public static void AddImportFeature(this IServiceCollection services)
     {
-        services.AddScoped<IZipFileAccess, ZipFileAccess>();
-        services.Decorate<IZipFileAccess, ZipFileAccessValidator>();
-
         services.AddScoped<IImportService, ImportService>();
-        services.Decorate<IImportService, ImportServiceSignaller>();
+        services.Decorate<IImportService, ZipEmission>();
+        services.Decorate<IImportService, ZipValidation>();
+        services.Decorate<IImportService, ZipIndexing>();
     }
 }

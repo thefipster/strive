@@ -8,10 +8,9 @@ using Fip.Strive.Harvester.Application.Features.Expand;
 using Fip.Strive.Harvester.Application.Features.Import;
 using Fip.Strive.Harvester.Application.Features.Upload;
 using Fip.Strive.Indexing.Application;
+using Fip.Strive.Indexing.Storage.Postgres;
 using Fip.Strive.Ingestion.Application;
 using Fip.Strive.Queue.Application;
-using Fip.Strive.Queue.Storage.Lite;
-using Fip.Strive.Queue.Storage.Memory;
 using Fip.Strive.Queue.Storage.Postgres;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,13 +29,12 @@ public static class Registration
     {
         // System Core
         services.AddCoreServices<HarvesterApp>(configuration);
-        //services.AddLiteDbInfrastructure();
-        services.AddPostgresInfrastructure(configuration);
         services.AddIngestionFeature();
 
         // Application Core
         services.AddProxyFeature();
         services.AddScheduleFeature();
+        services.AddIndexingFeature(configuration).WithPostgresStorage();
         services.AddQueueFeature<HarvesterApp>(configuration).WithPostgresStorage(configuration);
 
         // Application Features

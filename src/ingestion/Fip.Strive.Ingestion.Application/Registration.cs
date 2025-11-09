@@ -23,7 +23,7 @@ public static class Registration
                 .WithScopedLifetime()
         );
 
-        services.AddScoped<IClassifier, Classifier>();
+        services.AddScoped<IClassificationService, ClassificationService>();
         services.AddScoped<IExtractor, Extractor>();
     }
 }
