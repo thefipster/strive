@@ -4,7 +4,7 @@ using Fip.Strive.Ingestion.Domain.Models;
 
 namespace Fip.Strive.Ingestion.Application.Services.Contracts;
 
-public interface IExtractor
+public interface IExtractionService
 {
     IEnumerable<IFileExtractor> GetAll();
 

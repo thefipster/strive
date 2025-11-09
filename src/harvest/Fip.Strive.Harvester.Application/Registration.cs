@@ -34,7 +34,7 @@ public static class Registration
         // Application Core
         services.AddProxyFeature();
         services.AddScheduleFeature();
-        services.AddIndexingFeature(configuration).WithPostgresStorage();
+        services.AddIndexingFeature(configuration);
         services.AddQueueFeature<HarvesterApp>(configuration).WithPostgresStorage(configuration);
 
         // Application Features

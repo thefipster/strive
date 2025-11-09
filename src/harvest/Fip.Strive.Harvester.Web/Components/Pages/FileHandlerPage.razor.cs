@@ -7,7 +7,7 @@ namespace Fip.Strive.Harvester.Web.Components.Pages;
 [Route("/filehandler")]
 public partial class FileHandlerPage(
     IClassificationService classificationService,
-    IExtractor extractor
+    IExtractionService extractionService
 ) : ComponentBase
 {
     private Dictionary<IFileClassifier, IFileExtractor?> _handlers = new();
@@ -15,7 +15,7 @@ public partial class FileHandlerPage(
     protected override void OnParametersSet()
     {
         var classifiers = classificationService.GetAll().ToArray();
-        var extractors = extractor.GetAll().ToArray();
+        var extractors = extractionService.GetAll().ToArray();
 
         var map = new Dictionary<IFileClassifier, IFileExtractor?>();
 

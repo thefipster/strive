@@ -1,10 +1,10 @@
 using Fip.Strive.Indexing.Application.Contexts;
+using Fip.Strive.Indexing.Application.Repositories.Contracts;
 using Fip.Strive.Indexing.Domain.Models;
-using Fip.Strive.Indexing.Storage.Contracts;
 
 namespace Fip.Strive.Indexing.Application.Repositories;
 
-public class AssimilateRepository(AssimilateContext context) : IIndexerV2<AssimilateIndexV2, string>
+public class AssimilateRepository(AssimilateContext context) : IAssimilateRepository
 {
     public Task<bool> ExistsAsync(string hash)
     {
@@ -12,12 +12,25 @@ public class AssimilateRepository(AssimilateContext context) : IIndexerV2<Assimi
         return Task.FromResult(result);
     }
 
+    public Task<AssimilateIndexV2?> FindAsync(string hash)
+    {
+        var result = context.Assimilations.FirstOrDefault(x => x.Hash == hash);
+        return Task.FromResult(result);
+    }
+
     public Task SetAsync(AssimilateIndexV2 index)
     {
-        if (context.Assimilations.Any(x => x.Filepath == index.Filepath))
-            throw new InvalidOperationException("File already exists.");
+        var existing = context.Assimilations.FirstOrDefault(x => x.Hash == index.Hash);
 
-        context.Assimilations.Add(index);
+        if (existing == null)
+            context.Assimilations.Add(index);
+        else
+        {
+            existing.Source = index.Source;
+            existing.Version = index.Version;
+            existing.Filepath = index.Filepath;
+        }
+
         return Task.CompletedTask;
     }
 }

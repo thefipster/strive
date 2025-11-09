@@ -6,7 +6,7 @@ using Fip.Strive.Ingestion.Domain.Models;
 
 namespace Fip.Strive.Ingestion.Application.Services;
 
-public class Extractor(IEnumerable<IFileExtractor> extractors) : IExtractor
+public class ExtractionService(IEnumerable<IFileExtractor> extractors) : IExtractionService
 {
     public IFileExtractor? Find(DataSources source) =>
         extractors.FirstOrDefault(x => x.Source == source);

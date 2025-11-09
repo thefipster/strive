@@ -5,7 +5,7 @@ using Fip.Strive.Queue.Domain.Models;
 
 namespace Fip.Strive.Harvester.Application.Features.Assimilate.Services;
 
-public class AssimilateClassifyWorker(IAssimilationService assimilator)
+public class AssimilateWorker(IAssimilateService assimilator)
     : QueueWorker((int)SignalTypes.TypedSignal)
 {
     public override async Task ProcessAsync(JobDetails job, CancellationToken ct)

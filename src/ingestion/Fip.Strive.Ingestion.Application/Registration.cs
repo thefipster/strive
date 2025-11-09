@@ -24,6 +24,6 @@ public static class Registration
         );
 
         services.AddScoped<IClassificationService, ClassificationService>();
-        services.AddScoped<IExtractor, Extractor>();
+        services.AddScoped<IExtractionService, ExtractionService>();
     }
 }

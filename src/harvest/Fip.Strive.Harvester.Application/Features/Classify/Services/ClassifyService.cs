@@ -1,6 +1,6 @@
 using Fip.Strive.Harvester.Application.Features.Classify.Services.Contracts;
 using Fip.Strive.Harvester.Domain.Signals;
-using Fip.Strive.Indexing.Application.Repositories;
+using Fip.Strive.Indexing.Application.Repositories.Contracts;
 using Fip.Strive.Indexing.Domain.Models;
 using Fip.Strive.Ingestion.Application.Services.Contracts;
 using Fip.Strive.Queue.Application.Services.Contracts;
@@ -8,8 +8,8 @@ using Fip.Strive.Queue.Application.Services.Contracts;
 namespace Fip.Strive.Harvester.Application.Features.Classify.Services;
 
 public class ClassifyService(
-    FileRepository files,
-    TypeRepository types,
+    IFileRepository files,
+    ITypeRepository types,
     IClassificationService classificationService,
     IQueueService queue
 ) : IClassifyService

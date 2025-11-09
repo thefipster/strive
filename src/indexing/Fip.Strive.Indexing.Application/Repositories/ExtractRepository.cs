@@ -14,10 +14,25 @@ public class ExtractRepository(ExtractContext context) : IIndexerV2<ExtractIndex
 
     public Task SetAsync(ExtractIndexV2 index)
     {
-        if (context.Extractions.Any(x => x.Filepath == index.Filepath))
-            throw new InvalidOperationException("File already exists.");
+        var existing = context.Extractions.FirstOrDefault(x => x.Hash == index.Hash);
 
-        context.Extractions.Add(index);
+        if (existing == null)
+            Insert(index);
+        else
+            Update(index, existing);
+
         return Task.CompletedTask;
+    }
+
+    private void Insert(ExtractIndexV2 index) => context.Extractions.Add(index);
+
+    private void Update(ExtractIndexV2 index, ExtractIndexV2 existing)
+    {
+        existing.ParentHash = index.ParentHash;
+        existing.Filepath = index.Filepath;
+        existing.ParentFilepath = index.ParentFilepath;
+        existing.Source = index.Source;
+        existing.Kind = index.Kind;
+        existing.Timestamp = index.Timestamp;
     }
 }

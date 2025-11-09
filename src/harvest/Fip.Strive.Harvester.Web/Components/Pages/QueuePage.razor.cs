@@ -30,7 +30,7 @@ public partial class QueuePage(IServiceScopeFactory scopeFactory) : ComponentBas
     protected override void OnInitialized()
     {
         _cts = new CancellationTokenSource();
-        _timer = new PeriodicTimer(TimeSpan.FromMilliseconds(1000));
+        _timer = new PeriodicTimer(TimeSpan.FromMilliseconds(5000));
         _ = RunUpdateLookAsync(_cts.Token);
     }
 
