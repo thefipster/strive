@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.1" />
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.2" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <UserSecretsId>578399fb-5d96-472c-b416-a1ee0cff38fb</UserSecretsId>
@@ -8,6 +8,8 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj" />

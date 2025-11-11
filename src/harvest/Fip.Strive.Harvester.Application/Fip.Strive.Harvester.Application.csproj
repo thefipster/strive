@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Quartz.Extensions.Hosting" />
+    <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="Scrutor" />
   </ItemGroup>
   <ItemGroup>

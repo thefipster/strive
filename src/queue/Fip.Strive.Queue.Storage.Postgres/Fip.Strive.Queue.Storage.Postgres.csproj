@@ -1,9 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
     <ProjectReference Include="..\Fip.Strive.Queue.Storage.Contracts\Fip.Strive.Queue.Storage.Contracts.csproj" />

@@ -19,6 +19,13 @@ var queueMigrator = builder
     .WaitFor(harvesterDatabase)
     .WaitFor(indexMigrator);
 
+var redis = builder.AddRedis("redis").WithDataVolume().WithRedisInsight();
+
+var rabbitUser = builder.AddParameter("RabbitUser");
+var rabbitPass = builder.AddParameter("RabbitPassword", true);
+
+var rabbit = builder.AddRabbitMQ("rabbitmq", rabbitUser, rabbitPass).WithManagementPlugin();
+
 var unifierWeb = builder
     .AddProject<Projects.Fip_Strive_Unifier_Web>("strive-unifier-webapp")
     .WithHttpHealthCheck("/health");
@@ -28,10 +35,11 @@ var harvesterWeb = builder
     .WithHttpHealthCheck("/health")
     .WithHttpHealthCheck("/health/queue")
     .WithReference(harvesterDatabase)
+    .WithReference(rabbit)
     .WaitForCompletion(indexMigrator)
     .WaitForCompletion(queueMigrator);
 
-builder
+var portalWeb = builder
     .AddProject<Projects.Fip_Strive_Portal_Web>("strive-portal-webapp")
     .WithHttpHealthCheck("/health")
     .WithReference(unifierWeb)

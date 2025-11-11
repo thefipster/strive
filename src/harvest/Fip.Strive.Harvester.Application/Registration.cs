@@ -38,7 +38,7 @@ public static class Registration
         services.AddQueueFeature<HarvesterApp>(configuration).WithPostgresStorage(configuration);
 
         // Application Features
-        services.AddUploadFeature();
+        services.AddUploadFeature(configuration);
         services.AddImportFeature();
         services.AddExpandFeature();
         services.AddClassifyFeature();
