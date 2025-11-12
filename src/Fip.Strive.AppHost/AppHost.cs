@@ -45,4 +45,11 @@ var portalWeb = builder
     .WithReference(unifierWeb)
     .WithReference(harvesterWeb);
 
+var pipelineZipGate = builder
+    .AddProject<Projects.Fip_Strive_Harvester_Pipeline_ZipGate_Cli>(
+        "strive-harvester-pipeline-zipgate"
+    )
+    .WithReference(rabbit)
+    .WaitForStart(harvesterWeb);
+
 builder.Build().Run();
