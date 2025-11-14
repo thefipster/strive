@@ -135,6 +135,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipeline", "Pipeline", "{E9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Cli", "src\core\Fip.Strive.Core.Cli\Fip.Strive.Core.Cli.csproj", "{809A8E09-97FD-46DC-8D31-581CD4E59A99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Pipeline.Migrator", "src\harvest\Fip.Strive.Harvester.Pipeline.Migrator\Fip.Strive.Harvester.Pipeline.Migrator.csproj", "{15B08A23-BF37-448B-B16B-B99898DA1864}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -261,6 +263,10 @@ Global
 		{809A8E09-97FD-46DC-8D31-581CD4E59A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{809A8E09-97FD-46DC-8D31-581CD4E59A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{809A8E09-97FD-46DC-8D31-581CD4E59A99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15B08A23-BF37-448B-B16B-B99898DA1864}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B08A23-BF37-448B-B16B-B99898DA1864}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B08A23-BF37-448B-B16B-B99898DA1864}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B08A23-BF37-448B-B16B-B99898DA1864}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{72A6B8C2-5465-4652-B6D0-20706C156A2E} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
@@ -308,5 +314,6 @@ Global
 		{E90F5E30-9B2E-4569-AEC4-DA91148F61FF} = {748302E7-6E85-41B9-8BD5-FD46335848F6}
 		{C500F8D5-15F3-419B-8B8A-27C31AE07B4C} = {E90F5E30-9B2E-4569-AEC4-DA91148F61FF}
 		{809A8E09-97FD-46DC-8D31-581CD4E59A99} = {FB3A030B-304D-4593-8AD3-7E38A1DB9B86}
+		{15B08A23-BF37-448B-B16B-B99898DA1864} = {E90F5E30-9B2E-4569-AEC4-DA91148F61FF}
 	EndGlobalSection
 EndGlobal

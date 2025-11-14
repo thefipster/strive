@@ -26,6 +26,13 @@ var rabbitPass = builder.AddParameter("RabbitPassword", true);
 
 var rabbit = builder.AddRabbitMQ("rabbitmq", rabbitUser, rabbitPass).WithManagementPlugin();
 
+var harvestPipelineMigrator = builder
+    .AddProject<Projects.Fip_Strive_Harvester_Pipeline_Migrator>(
+        "strive-harvester-pipeline-migrator"
+    )
+    .WithReference(rabbit)
+    .WaitFor(rabbit);
+
 var unifierWeb = builder
     .AddProject<Projects.Fip_Strive_Unifier_Web>("strive-unifier-webapp")
     .WithHttpHealthCheck("/health");
@@ -36,6 +43,7 @@ var harvesterWeb = builder
     .WithHttpHealthCheck("/health/queue")
     .WithReference(harvesterDatabase)
     .WithReference(rabbit)
+    .WaitForCompletion(harvestPipelineMigrator)
     .WaitForCompletion(indexMigrator)
     .WaitForCompletion(queueMigrator);
 
@@ -50,6 +58,9 @@ var pipelineZipGate = builder
         "strive-harvester-pipeline-zipgate"
     )
     .WithReference(rabbit)
-    .WaitForStart(harvesterWeb);
+    .WithReference(redis)
+    .WaitForCompletion(harvestPipelineMigrator)
+    .WaitFor(rabbit)
+    .WaitFor(redis);
 
 builder.Build().Run();

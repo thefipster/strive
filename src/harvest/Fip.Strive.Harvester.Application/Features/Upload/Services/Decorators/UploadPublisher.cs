@@ -14,6 +14,8 @@ public class UploadPublisher(
     IFileHasher hasher
 ) : IUploadService
 {
+    private readonly DirectExchange _exchange = new UploadExchange();
+
     public event EventHandler<int>? ProgressChanged
     {
         add => component.ProgressChanged += value;
@@ -31,14 +33,14 @@ public class UploadPublisher(
         await using var channel = await connection.CreateChannelAsync(cancellationToken: ct);
 
         await channel.ExchangeDeclareAsync(
-            QueueDeclarations.Upload.Exchange,
+            _exchange.Exchange,
             ExchangeType.Direct,
             durable: true,
             cancellationToken: ct
         );
 
         await channel.QueueDeclareAsync(
-            QueueDeclarations.Upload.Queue,
+            _exchange.Queue,
             durable: true,
             exclusive: false,
             autoDelete: false,
@@ -46,9 +48,9 @@ public class UploadPublisher(
         );
 
         await channel.QueueBindAsync(
-            QueueDeclarations.Upload.Queue,
-            QueueDeclarations.Upload.Exchange,
-            QueueDeclarations.Upload.Route,
+            _exchange.Queue,
+            _exchange.Exchange,
+            _exchange.Route,
             cancellationToken: ct
         );
 
@@ -57,14 +59,7 @@ public class UploadPublisher(
         var body = Encoding.UTF8.GetBytes(message);
         var props = new BasicProperties();
 
-        await channel.BasicPublishAsync(
-            QueueDeclarations.Upload.Exchange,
-            QueueDeclarations.Upload.Route,
-            true,
-            props,
-            body,
-            ct
-        );
+        await channel.BasicPublishAsync(_exchange.Exchange, _exchange.Route, true, props, body, ct);
 
         return filepath;
     }

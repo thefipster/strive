@@ -12,6 +12,7 @@
     <PackageReference Include="Aspire.Hosting.Redis" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\harvest\Fip.Strive.Harvester.Pipeline.Migrator\Fip.Strive.Harvester.Pipeline.Migrator.csproj" />
     <ProjectReference Include="..\harvest\Fip.Strive.Harvester.Pipeline.ZipGate.Cli\Fip.Strive.Harvester.Pipeline.ZipGate.Cli.csproj" />
     <ProjectReference Include="..\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj" />
     <ProjectReference Include="..\indexing\Fip.Strive.Indexing.Storage.Postgres.Migrator\Fip.Strive.Indexing.Storage.Postgres.Migrator.csproj" />
