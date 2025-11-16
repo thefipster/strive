@@ -21,7 +21,7 @@ public static class Registration
         var services = builder.Services;
 
         services.AddDbContext<PostgresQueueContext>(
-            options => options.UseNpgsql(configuration.GetConnectionString("strive-harvester")),
+            options => options.UseNpgsql(configuration.GetConnectionString("strive-harvester-database")),
             ServiceLifetime.Transient
         );
 

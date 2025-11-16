@@ -1,4 +1,5 @@
 using Fip.Strive.Harvester.Domain.Defaults;
+using Fip.Strive.Harvester.Domain.Signals;
 using RabbitMQ.Client;
 
 namespace Fip.Strive.Harvester.Pipeline.Migrator;
@@ -10,9 +11,7 @@ public class Migrator(IConnectionFactory factory)
         var connection = await factory.CreateConnectionAsync(ct);
         var channel = await connection.CreateChannelAsync(cancellationToken: ct);
 
-        List<DirectExchange> exchanges = [new UploadExchange(), new ImportExchange()];
-
-        foreach (var exchange in exchanges)
+        foreach (var exchange in HarvestPipelineExchange.All)
             await EnsureDirectExchange(exchange, channel, ct);
     }
 

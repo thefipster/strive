@@ -6,6 +6,7 @@ public enum SignalTypes
     HelloWorldSignal,
     UploadSignal,
     ImportSignal,
+    ScanSignal,
     FileSignal,
     TypedSignal,
 }

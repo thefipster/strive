@@ -14,7 +14,9 @@ public class UploadPublisher(
     IFileHasher hasher
 ) : IUploadService
 {
-    private readonly DirectExchange _exchange = new UploadExchange();
+    private readonly DirectExchange _exchange = HarvestPipelineExchange.New(
+        SignalTypes.UploadSignal
+    );
 
     public event EventHandler<int>? ProgressChanged
     {

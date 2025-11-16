@@ -10,10 +10,10 @@ Console.WriteLine("Harvester Indexing - Migrator starting...");
 var builder = Host.CreateApplicationBuilder(args);
 var configuration = builder.Configuration;
 
-var connection = configuration.GetConnectionString("strive-harvester");
+var connection = configuration.GetConnectionString("strive-harvester-database");
 
 if (string.IsNullOrWhiteSpace(connection))
-    throw new ConfigurationException("RabbitMQ connection string is missing.");
+    throw new ConfigurationException("Postgres connection string is missing.");
 
 builder.Services.AddDbContext<IndexPgContext>(options => options.UseNpgsql(connection));
 

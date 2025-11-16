@@ -7,7 +7,7 @@ namespace Fip.Strive.Harvester.Application.Features.Expand.Services;
 
 public class ExpandService(
     IOptions<ExpandConfig> config,
-    IZipExtractor extractor,
+    IZipService service,
     IDirectoryService directory,
     IFileEmitter enumerator
 ) : IExpandService
@@ -22,7 +22,7 @@ public class ExpandService(
         var outputPath = Path.Combine(_rootPath, filename);
 
         directory.Create(outputPath);
-        extractor.Unzip(filepath, outputPath, _overwrite);
+        service.Unzip(filepath, outputPath, _overwrite);
         enumerator.ScanFolderAsync(outputPath, signal, ct);
 
         return Task.FromResult(outputPath);
