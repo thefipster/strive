@@ -12,11 +12,13 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
         RedisListAccess redisList,
         ZipInserter zipRepo,
         FileInserter fileRepo,
+        SourceInserter sourceRepo,
         ILogger<Service> logger
     ) : BackgroundService
     {
         private const string ZipList = IndexDeclarations.ZipDirtyListKey;
         private const string FileList = IndexDeclarations.FileDirtyListKey;
+        private const string SourceList = IndexDeclarations.SourceDirtyListKey;
 
         private readonly IDatabase _db = redis.GetDatabase();
 
@@ -36,8 +38,9 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
             {
                 await Task.Delay(TimeSpan.FromSeconds(10), ct);
 
-                await SyncZips(ct);
-                await SyncFiles(ct);
+                await SyncIndexes<ZipIndex>(ZipList, zipRepo.BulkInsert, ct);
+                await SyncIndexes<FileInstance>(FileList, fileRepo.BulkInsert, ct);
+                await SyncIndexes<SourceIndex>(SourceList, sourceRepo.BulkInsert, ct);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {
@@ -49,18 +52,15 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
             }
         }
 
-        private async Task SyncZips(CancellationToken ct)
+        private async Task SyncIndexes<TItem>(
+            string list,
+            Func<CancellationToken, List<TItem>, Task<int>> inserter,
+            CancellationToken ct
+        )
         {
-            var zips = await redisList.RightPopAll<ZipIndex>(_db, ZipList);
-            var zipCount = await zipRepo.InsertZipsToPostgres(ct, zips);
-            logger.LogInformation("Added {NewZipCount} Zips.", zipCount);
-        }
-
-        private async Task SyncFiles(CancellationToken ct)
-        {
-            var files = await redisList.RightPopAll<FileInstance>(_db, FileList);
-            var fileCount = await fileRepo.InsertFilesToPostgres(ct, files);
-            logger.LogInformation("Added {NewFileCount} Files.", fileCount);
+            var items = await redisList.RightPopAll<TItem>(_db, list);
+            var count = inserter(ct, items);
+            logger.LogInformation("Synced {SyncCount} items from {SyncList}.", count, list);
         }
     }
 }

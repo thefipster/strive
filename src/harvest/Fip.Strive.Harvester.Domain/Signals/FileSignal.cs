@@ -8,6 +8,8 @@ public class FileSignal() : EnumSignal(SignalTypes.FileSignal)
     public required string Hash { get; set; }
     public required string ParentFilepath { get; set; }
 
+    public string ToJson() => JsonSerializer.Serialize(this);
+
     public static FileSignal From(string filepath, string hash, ScanSignal signal) =>
         new FileSignal
         {
@@ -17,5 +19,7 @@ public class FileSignal() : EnumSignal(SignalTypes.FileSignal)
             ReferenceId = signal.ReferenceId,
         };
 
-    public string ToJson() => JsonSerializer.Serialize(this);
+    public static FileSignal From(string inMessage) =>
+        JsonSerializer.Deserialize<FileSignal>(inMessage)
+        ?? throw new InvalidOperationException("Invalid message");
 }

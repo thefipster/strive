@@ -8,7 +8,7 @@ public class ZipIndexConfig : IEntityTypeConfiguration<ZipIndex>
 {
     public void Configure(EntityTypeBuilder<ZipIndex> builder)
     {
-        builder.HasKey(x => x.Filename);
+        builder.HasKey(x => x.Filepath);
         builder.HasIndex(x => x.Hash);
     }
 }

@@ -2,6 +2,7 @@
 {
     public enum DataSources
     {
+        NoSource = 0,
         PolarProTrainerHrm = 1001,
         PolarProTrainerPdd = 1002,
         RunGpsCsvV1 = 2001,

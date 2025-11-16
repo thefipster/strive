@@ -12,6 +12,7 @@ public static class Dependencies
         builder.Services.AddSingleton<RedisListAccess>();
         builder.Services.AddSingleton<ZipInserter>();
         builder.Services.AddSingleton<FileInserter>();
+        builder.Services.AddSingleton<SourceInserter>();
         builder.Services.AddSingleton<Service>();
         builder.Services.AddHostedService<Service>();
     }

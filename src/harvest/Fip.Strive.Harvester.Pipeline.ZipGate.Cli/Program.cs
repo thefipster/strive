@@ -7,7 +7,6 @@ Console.WriteLine("Harvester Pipeline - Zip Gate init");
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddDefaults();
 
 builder.AddRabbit();
 builder.AddRedis();

@@ -39,7 +39,6 @@ public class ClassifyService(
             Hash = index.Hash,
             Source = index.Source,
             Filepath = index.Filepath,
-            Timestamp = DateTime.MinValue,
         };
 
         await queue.EnqueueAsync(signal);

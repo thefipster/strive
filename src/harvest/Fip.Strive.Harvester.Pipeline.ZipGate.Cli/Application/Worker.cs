@@ -25,7 +25,7 @@ public class Worker(
         SignalTypes.ImportSignal
     );
 
-    public async Task ProcessAsync(string inMessage, CancellationToken cancellationToken)
+    public async Task ProcessAsync(string inMessage, CancellationToken ct)
     {
         logger.LogDebug($"Worker received message: {inMessage}");
 
@@ -60,7 +60,7 @@ public class Worker(
     private async Task PublishHash(UploadSignal inSignal)
     {
         await indexer.SetHashAsync(
-            new ZipIndex { Filename = inSignal.Filepath, Hash = inSignal.Hash }
+            new ZipIndex { Filepath = inSignal.Filepath, Hash = inSignal.Hash }
         );
     }
 

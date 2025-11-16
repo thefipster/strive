@@ -7,6 +7,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\host\Fip.Strive.ServiceDefaults\Fip.Strive.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
     <ProjectReference Include="..\Fip.Strive.Harvester.Pipeline.Core\Fip.Strive.Harvester.Pipeline.Core.csproj" />
   </ItemGroup>

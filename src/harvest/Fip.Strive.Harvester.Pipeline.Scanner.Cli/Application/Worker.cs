@@ -5,7 +5,6 @@ using Fip.Strive.Harvester.Domain.Indexes;
 using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Harvester.Pipeline.Scanner.Cli.Services;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Harvester.Pipeline.Scanner.Cli.Application;
 
@@ -14,13 +13,10 @@ public class Worker(
     IDirectoryService directory,
     IFileHasher hasher,
     IScanIndexer checker,
-    IOptions<Config> config,
     ILogger<Worker> logger
 ) : IProcessor
 {
     private readonly DirectExchange _exchange = HarvestPipelineExchange.New(SignalTypes.FileSignal);
-
-    private readonly string _unzipPath = config.Value.Path;
 
     public async Task ProcessAsync(string inMessage, CancellationToken ct)
     {
@@ -50,9 +46,7 @@ public class Worker(
 
     private async Task PublishFile(string file, string hash, ScanSignal inSignal)
     {
-        var relativePath = file.Replace(_unzipPath, string.Empty);
-
-        var instance = FileInstance.From(relativePath, hash, inSignal);
+        var instance = FileInstance.From(file, hash, inSignal);
         await checker.SetFileAsync(instance);
     }
 }

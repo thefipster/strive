@@ -14,6 +14,6 @@ public class FileInstance
         {
             Filepath = file,
             Hash = hash,
-            ParentFilepath = Path.GetFileName(inSignal.ZipPath),
+            ParentFilepath = inSignal.ZipPath,
         };
 }

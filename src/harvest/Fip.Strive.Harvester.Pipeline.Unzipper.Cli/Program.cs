@@ -6,7 +6,7 @@ Console.WriteLine("Harvester Pipeline - Unzipper init");
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.AddDefaults();
+builder.AddServiceDefaults();
 
 builder.AddRabbit();
 

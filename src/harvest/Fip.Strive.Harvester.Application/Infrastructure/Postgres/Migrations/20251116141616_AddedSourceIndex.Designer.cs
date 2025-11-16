@@ -3,6 +3,7 @@ using System;
 using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Fip.Strive.Harvester.Application.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(IndexContext))]
-    partial class IndexContextModelSnapshot : ModelSnapshot
+    [Migration("20251116141616_AddedSourceIndex")]
+    partial class AddedSourceIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

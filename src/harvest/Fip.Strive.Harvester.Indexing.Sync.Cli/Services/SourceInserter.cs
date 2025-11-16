@@ -4,30 +4,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Services;
 
-public class FileInserter(IDbContextFactory<IndexContext> dbContextFactory)
+public class SourceInserter(IDbContextFactory<IndexContext> dbContextFactory)
 {
-    public async Task<int> BulkInsert(CancellationToken ct, List<FileInstance> items)
+    public async Task<int> BulkInsert(CancellationToken ct, List<SourceIndex> items)
     {
         if (items.Count == 0)
             return 0;
 
         await using var ctx = await dbContextFactory.CreateDbContextAsync(ct);
 
-        var incomingKeys = items.Select(index => index.Filepath).Distinct().ToArray();
+        var incomingKeys = items.Select(index => index.Hash).Distinct().ToArray();
 
         var existingKeys = await ctx
-            .Files.AsNoTracking()
-            .Where(z => incomingKeys.Contains(z.Filepath))
-            .Select(z => z.Filepath)
+            .Sources.AsNoTracking()
+            .Where(z => incomingKeys.Contains(z.Hash))
+            .Select(z => z.Hash)
             .ToListAsync(ct);
 
         var existing = new HashSet<string>(existingKeys, StringComparer.Ordinal);
 
-        var toInsert = items.Where(i => !existing.Contains(i.Filepath)).ToList();
+        var toInsert = items.Where(i => !existing.Contains(i.Hash)).ToList();
         if (toInsert.Count == 0)
             return 0;
 
-        ctx.Files.AddRange(toInsert);
+        ctx.Sources.AddRange(toInsert);
         await ctx.SaveChangesAsync(ct);
 
         return toInsert.Count;

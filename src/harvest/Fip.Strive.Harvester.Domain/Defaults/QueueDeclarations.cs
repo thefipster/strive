@@ -26,6 +26,7 @@ public class HarvestPipelineExchange : DirectExchange
             SignalTypes.ImportSignal => new HarvestPipelineExchange("import"),
             SignalTypes.ScanSignal => new HarvestPipelineExchange("scanner"),
             SignalTypes.FileSignal => new HarvestPipelineExchange("files"),
+            SignalTypes.TypedSignal => new HarvestPipelineExchange("source"),
             _ => throw new NotSupportedException(
                 $"Signal type {signal} is not supported in harvest pipeline."
             ),
@@ -38,6 +39,7 @@ public class HarvestPipelineExchange : DirectExchange
             New(SignalTypes.ImportSignal),
             New(SignalTypes.ScanSignal),
             New(SignalTypes.FileSignal),
+            New(SignalTypes.TypedSignal),
         ];
 
     public override string Exchange { get; }

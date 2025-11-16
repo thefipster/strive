@@ -1,4 +1,7 @@
-using Fip.Strive.AppHost;
+using Fip.Strive.AppHost.Extensions;
+
+const string zipsPath = @"E:\strive\data\imports\zips";
+const string filesPath = @"E:\strive\data\imports\files";
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -8,63 +11,80 @@ var password = builder.AddParameter("Password", true);
 
 var rabbit = builder.AddRabbitMQ("rabbitmq", user, password).WithManagementPlugin(8080);
 var postgres = builder.AddPostgres("postgres").WithPgAdmin(pg => pg.WithHostPort(8081));
-var redis = builder
-    .AddRedis("redis")
-    .WithDataVolume()
-    .WithRedisInsight(ri => ri.WithHostPort(8082));
+var redis = builder.AddRedis("redis").WithRedisInsight(ri => ri.WithHostPort(8082));
 
 // Databases
 var harvesterDatabase = postgres.AddDatabase("strive-harvester-database");
 
 // Migrations
 // Postgres Index Schema
-var indexMigrator = builder.AddHarvestIndexMigrator(
+var indexMigrator = builder.AddDependentResource<Projects.Fip_Strive_Harvester_Indexing_Migrator>(
     "strive-harvester-index-migrator",
-    harvesterDatabase
+    [harvesterDatabase]
 );
 
 // Postgres Queue Schema
-var queueMigrator = builder.AddHarvestQueueMigrator(
-    "strive-harvester-queue-migrator",
-    harvesterDatabase
-);
+var queueMigrator =
+    builder.AddDependentResource<Projects.Fip_Strive_Queue_Storage_Postgres_Migrator>(
+        "strive-harvester-queue-migrator",
+        [harvesterDatabase]
+    );
 
 // Rabbit Pipeline Exchanges
-var pipelineMigrator = builder.AddHarvestPipelineMigrator(
-    "strive-harvester-pipeline-migrator",
-    rabbit
-);
+var pipelineMigrator =
+    builder.AddDependentResource<Projects.Fip_Strive_Harvester_Pipeline_Migrator>(
+        "strive-harvester-pipeline-migrator",
+        [rabbit]
+    );
 
 // Pipeline
 // Import unique zips
-var pipelineZipGate = builder.AddHarvestPipelineZipGateStage(
-    "strive-harvester-pipeline-zipgate",
-    rabbit,
-    redis,
-    pipelineMigrator
-);
+var pipelineZipGate =
+    builder.AddDependentResourceWithSequence<Projects.Fip_Strive_Harvester_Pipeline_ZipGate_Cli>(
+        "strive-harvester-pipeline-zipgate",
+        new Dictionary<string, string>
+        {
+            { "Worker:Path", zipsPath },
+            { "Worker:Overwrite", "true" },
+        },
+        [rabbit, redis],
+        [pipelineMigrator, indexMigrator]
+    );
 
 // Unzip
-var pipelineUnzipper = builder.AddHarvestPipelineUnzipperStage(
-    "strive-harvester-pipeline-unzipper",
-    rabbit,
-    pipelineMigrator
-);
+var pipelineUnzipper =
+    builder.AddDependentResourceWithSequence<Projects.Fip_Strive_Harvester_Pipeline_Unzipper_Cli>(
+        "strive-harvester-pipeline-unzipper",
+        new Dictionary<string, string>
+        {
+            { "Worker:Path", filesPath },
+            { "Worker:Overwrite", "true" },
+        },
+        [rabbit],
+        [pipelineMigrator, indexMigrator]
+    );
 
 // Scan unique files
-var pipelineScanner = builder.AddHarvestPipelineScannerStage(
-    "strive-harvester-pipeline-scanner",
-    rabbit,
-    redis,
-    pipelineMigrator
-);
+var pipelineScanner =
+    builder.AddDependentResourceWithSequence<Projects.Fip_Strive_Harvester_Pipeline_Scanner_Cli>(
+        "strive-harvester-pipeline-scanner",
+        [rabbit, redis],
+        [pipelineMigrator, indexMigrator]
+    );
+
+var pipelineClassifier =
+    builder.AddDependentResourceWithSequence<Projects.Fip_Strive_Harvester_Pipeline_Classify_Cli>(
+        "strive-harvester-pipeline-classify",
+        new Dictionary<string, string> { { "Worker:Path", filesPath } },
+        [rabbit, redis],
+        [pipelineMigrator, indexMigrator]
+    );
 
 // Synchronizer
 // Sync redis indexes to postgres
-var indexingSyncer = builder.AddHarvestIndexingSyncer(
+var indexingSyncer = builder.AddDependentResource<Projects.Fip_Strive_Harvester_Indexing_Sync_Cli>(
     "strive-harvester-indexing-syncer",
-    redis,
-    harvesterDatabase
+    [redis, harvesterDatabase]
 );
 
 // Webapps
@@ -74,6 +94,7 @@ var harvesterWeb = builder
     .WithHttpHealthCheck("/health/queue")
     .WithReference(harvesterDatabase)
     .WithReference(rabbit)
+    .WithReference(redis)
     .WaitForCompletion(pipelineMigrator)
     .WaitForCompletion(indexMigrator)
     .WaitForCompletion(queueMigrator);

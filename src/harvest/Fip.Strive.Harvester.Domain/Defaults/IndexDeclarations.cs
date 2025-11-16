@@ -7,4 +7,6 @@ public static class IndexDeclarations
 
     public const string FileHashSetKey = "strive:harvest:index:file";
     public const string FileDirtyListKey = "strive:harvest:index_dirty:file";
+
+    public const string SourceDirtyListKey = "strive:harvest:index_dirty:source";
 }

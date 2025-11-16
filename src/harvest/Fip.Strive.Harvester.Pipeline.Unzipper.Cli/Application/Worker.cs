@@ -19,7 +19,7 @@ public class Worker(
 
     private readonly DirectExchange _exchange = HarvestPipelineExchange.New(SignalTypes.ScanSignal);
 
-    public async Task ProcessAsync(string inMessage, CancellationToken cancellationToken)
+    public async Task ProcessAsync(string inMessage, CancellationToken ct)
     {
         logger.LogDebug($"Worker received message: {inMessage}");
 
