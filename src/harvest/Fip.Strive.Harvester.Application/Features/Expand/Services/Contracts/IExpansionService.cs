@@ -1,9 +1,0 @@
-using Fip.Strive.Harvester.Application.Features.Expand.Models;
-using Fip.Strive.Harvester.Domain.Signals;
-
-namespace Fip.Strive.Harvester.Application.Features.Expand.Services.Contracts;
-
-public interface IExpansionService
-{
-    Task<WorkItem> UnpackZipFileAsync(ImportSignal signal, CancellationToken ct);
-}

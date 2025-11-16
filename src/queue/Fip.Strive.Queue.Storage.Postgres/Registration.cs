@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Fip.Strive.Core.Application.Extensions;
 using Fip.Strive.Queue.Domain;
 using Fip.Strive.Queue.Storage.Contracts;
 using Fip.Strive.Queue.Storage.Postgres.Contexts;
@@ -20,7 +21,7 @@ public static class Registration
         var services = builder.Services;
 
         services.AddDbContext<PostgresQueueContext>(
-            options => options.UseNpgsql(configuration.GetConnectionString("strive-harvester")),
+            options => options.UseNpgsql(configuration.GetConnectionString("strive-harvester-database")),
             ServiceLifetime.Transient
         );
 

@@ -7,7 +7,7 @@ namespace Fip.Strive.Core.Application.Features.FileSystem.Services;
 [ExcludeFromCodeCoverage]
 public class DirectoryService : IDirectoryService
 {
-    public void CreateDirectory(string path) => Directory.CreateDirectory(path);
+    public void Create(string path) => Directory.CreateDirectory(path);
 
     public IEnumerable<string> EnumerateAllFiles(string path) =>
         Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories);

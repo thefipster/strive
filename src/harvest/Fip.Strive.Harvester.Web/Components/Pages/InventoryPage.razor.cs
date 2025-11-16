@@ -1,7 +1,8 @@
 using Fip.Strive.Core.Application.Infrastructure.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Requests.Paging;
-using Fip.Strive.Indexing.Application.Features.Contracts;
 using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Indexing.Domain.Models;
+using Fip.Strive.Indexing.Storage.Contracts;
 using Fip.Strive.Ingestion.Domain.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;

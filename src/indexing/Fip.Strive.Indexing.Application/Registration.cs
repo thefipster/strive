@@ -1,55 +1,43 @@
 using System.Diagnostics.CodeAnalysis;
-using Fip.Strive.Core.Application.Infrastructure.Contracts;
-using Fip.Strive.Indexing.Application.Features.Contracts;
-using Fip.Strive.Indexing.Application.Features.Indexers;
-using Fip.Strive.Indexing.Application.Features.Pagers;
-using Fip.Strive.Indexing.Application.Infrastructure.Lite.Contexts;
-using Fip.Strive.Indexing.Application.Infrastructure.Postgres.Contexts;
+using Fip.Strive.Indexing.Application.Contexts;
+using Fip.Strive.Indexing.Application.Repositories;
+using Fip.Strive.Indexing.Application.Repositories.Contracts;
 using Fip.Strive.Indexing.Domain;
-using Microsoft.EntityFrameworkCore;
+using Fip.Strive.Indexing.Domain.Models;
+using Fip.Strive.Indexing.Storage.Contracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fip.Strive.Indexing.Application;
 
+internal sealed class IndexingFeature;
+
 [ExcludeFromCodeCoverage]
 public static class Registration
 {
-    public static void AddPostgresInfrastructure(
+    public static IndexingFeatureBuilder AddIndexingFeature(
         this IServiceCollection services,
         IConfiguration configuration
     )
     {
-        services.AddDbContext<IndexPgContext>(
-            options => options.UseNpgsql(configuration.GetConnectionString("strive-harvester")),
-            ServiceLifetime.Transient
-        );
+        services.AddSingleton<AssimilateContext>();
+        services.AddScoped<IAssimilateRepository, AssimilateRepository>();
 
-        services.AddTransient<IIndexer<ZipIndex, string>, PgZipIndexer>();
-        services.AddTransient<ISpecificationReader<ZipIndex>, PgZipPager>();
+        services.AddSingleton<FileContext>();
+        services.AddScoped<IFileRepository, FileRepository>();
 
-        services.AddTransient<IIndexer<FileIndex, string>, PgFileIndexer>();
-        services.AddTransient<ISpecificationReader<FileIndex>, PgFilePager>();
+        services.AddSingleton<TypeContext>();
+        services.AddScoped<ITypeRepository, TypeRepository>();
 
-        services.AddTransient<IIndexer<DataIndex, string>, PgDataIndexer>();
-        services.AddTransient<ISpecificationReader<DataIndex>, PgDataPager>();
+        services.AddSingleton<ExtractContext>();
+        services.AddScoped<IIndexerV2<ExtractIndexV2, string>, ExtractRepository>();
 
-        services.AddTransient<IInventory, PgInventory>();
-    }
+        services.AddSingleton<ZipContext>();
+        services.AddScoped<IIndexerV2<ZipIndexV2, string>, ZipRepository>();
 
-    public static void AddLiteDbInfrastructure(this IServiceCollection services)
-    {
-        services.AddSingleton<IndexLiteContext>();
+        services.AddSingleton<InventoryContext>();
+        services.AddScoped<IInventory, Inventory>();
 
-        services.AddScoped<IIndexer<ZipIndex, string>, LiteZipIndexer>();
-        services.AddScoped<ISpecificationReader<ZipIndex>, LiteZipPager>();
-
-        services.AddScoped<IIndexer<FileIndex, string>, LiteFileIndexer>();
-        services.AddScoped<ISpecificationReader<FileIndex>, LiteFilePager>();
-
-        services.AddScoped<IIndexer<DataIndex, string>, LiteDataIndexer>();
-        services.AddScoped<ISpecificationReader<DataIndex>, LiteDataPager>();
-
-        services.AddScoped<IInventory, LiteInventory>();
+        return new IndexingFeatureBuilder(services, configuration);
     }
 }

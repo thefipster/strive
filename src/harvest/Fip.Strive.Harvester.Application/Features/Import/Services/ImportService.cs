@@ -1,50 +1,29 @@
-using Fip.Strive.Harvester.Application.Features.Import.Models;
+using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Harvester.Application.Features.Import.Services.Contracts;
 using Fip.Strive.Harvester.Domain.Signals;
-using Fip.Strive.Indexing.Application.Features.Contracts;
-using Fip.Strive.Indexing.Domain;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Harvester.Application.Features.Import.Services;
 
 public class ImportService(
-    IIndexer<ZipIndex, string> indexer,
-    IZipFileAccess fileAccess,
-    ILogger<ImportService> logger
+    IOptions<ImportConfig> config,
+    IDirectoryService directory,
+    IFileService fileService
 ) : IImportService
 {
-    public async Task<WorkItem> ProcessUploadAsync(UploadSignal signal, CancellationToken ct)
+    private readonly string _rootPath = config.Value.Path;
+    private readonly bool _overwrite = config.Value.Overwrite;
+
+    public Task<string?> MoveZipAsync(UploadSignal signal, CancellationToken ct = default)
     {
-        var work = WorkItem.FromSignal(signal);
+        directory.Create(_rootPath);
 
-        work.Index = await indexer.FindAsync(work.Signal.Hash);
-        if (FileIsIndexed(work))
-            return await RemoveAlreadyKnownFileAsync(work);
+        string fileName = Path.GetFileName(signal.Filepath);
+        string destinationPath = Path.Combine(_rootPath, fileName);
 
-        if (work.Index == null)
-            work.ImportedPath = fileAccess.Import(work.Signal.Filepath);
+        fileService.Copy(signal.Filepath, destinationPath, overwrite: _overwrite);
+        fileService.Delete(signal.Filepath);
 
-        var index = work.ToIndex();
-        await indexer.UpsertAsync(index);
-
-        return work;
-    }
-
-    private bool FileIsIndexed(WorkItem work)
-    {
-        return work.Index != null && work.Index.Files.Any(x => x.FileName == work.Filename);
-    }
-
-    private Task<WorkItem> RemoveAlreadyKnownFileAsync(WorkItem work)
-    {
-        logger.LogInformation(
-            "File {UploadFile} is already imported and will be deleted.",
-            work.Filename
-        );
-
-        work.Skip = true;
-        File.Delete(work.Signal.Filepath);
-
-        return Task.FromResult(work);
+        return Task.FromResult(destinationPath)!;
     }
 }

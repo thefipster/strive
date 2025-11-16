@@ -1,3 +1,5 @@
+using Fip.Strive.Indexing.Domain.Models;
+
 namespace Fip.Strive.Indexing.Domain.Extensions;
 
 public static class HashedFileExtensions

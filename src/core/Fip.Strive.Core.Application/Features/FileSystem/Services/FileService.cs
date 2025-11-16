@@ -6,8 +6,19 @@ namespace Fip.Strive.Core.Application.Features.FileSystem.Services;
 [ExcludeFromCodeCoverage]
 public class FileService : IFileService
 {
-    public void Copy(string uploadPath, string destinationPath, bool overwrite = false) =>
-        File.Copy(uploadPath, destinationPath, overwrite);
+    public void Copy(string sourceFilepath, string destinationFilepath, bool overwrite = false)
+    {
+        var directory = Path.GetDirectoryName(destinationFilepath);
 
-    public void Delete(string uploadPath) => File.Delete(uploadPath);
+        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
+
+        File.Copy(sourceFilepath, destinationFilepath, overwrite);
+    }
+
+    public void Delete(string filepath)
+    {
+        if (File.Exists(filepath))
+            File.Delete(filepath);
+    }
 }

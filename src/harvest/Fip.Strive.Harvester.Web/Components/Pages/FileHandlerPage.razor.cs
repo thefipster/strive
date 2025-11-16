@@ -5,14 +5,17 @@ using Microsoft.AspNetCore.Components;
 namespace Fip.Strive.Harvester.Web.Components.Pages;
 
 [Route("/filehandler")]
-public partial class FileHandlerPage(IClassifier classifier, IExtractor extractor) : ComponentBase
+public partial class FileHandlerPage(
+    IClassificationService classificationService,
+    IExtractionService extractionService
+) : ComponentBase
 {
     private Dictionary<IFileClassifier, IFileExtractor?> _handlers = new();
 
     protected override void OnParametersSet()
     {
-        var classifiers = classifier.GetAll().ToArray();
-        var extractors = extractor.GetAll().ToArray();
+        var classifiers = classificationService.GetAll().ToArray();
+        var extractors = extractionService.GetAll().ToArray();
 
         var map = new Dictionary<IFileClassifier, IFileExtractor?>();
 

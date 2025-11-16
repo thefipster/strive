@@ -1,6 +1,7 @@
 using Fip.Strive.Core.Application.Infrastructure.Contracts;
 using Fip.Strive.Core.Domain.Schemas.Requests.Paging;
 using Fip.Strive.Indexing.Domain;
+using Fip.Strive.Indexing.Domain.Models;
 using Fip.Strive.Ingestion.Domain.Enums;
 using Fip.Strive.Ingestion.Domain.Options;
 using Microsoft.AspNetCore.Components;

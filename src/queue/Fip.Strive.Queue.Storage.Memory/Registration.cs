@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Fip.Strive.Core.Application.Extensions;
 using Fip.Strive.Queue.Domain;
 using Fip.Strive.Queue.Storage.Contracts;
 using Fip.Strive.Queue.Storage.Memory.Contexts;

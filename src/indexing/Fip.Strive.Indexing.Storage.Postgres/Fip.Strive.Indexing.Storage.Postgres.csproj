@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fip.Strive.Indexing.Domain\Fip.Strive.Indexing.Domain.csproj" />
+    <ProjectReference Include="..\Fip.Strive.Indexing.Storage.Contracts\Fip.Strive.Indexing.Storage.Contracts.csproj" />
+  </ItemGroup>
+</Project>

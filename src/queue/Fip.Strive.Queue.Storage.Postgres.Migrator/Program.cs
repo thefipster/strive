@@ -9,7 +9,7 @@ Console.WriteLine("Migrator starting for postgres queue schema.");
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddDbContext<PostgresQueueContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("strive-harvester"))
+    options.UseNpgsql(builder.Configuration.GetConnectionString("strive-harvester-database"))
 );
 
 var app = builder.Build();

@@ -16,6 +16,6 @@ public static class Registration
 
         services.AddScoped<IFileHasher, FileHasher>();
 
-        services.AddScoped<IZipExtractor, ZipFileExtractor>();
+        services.AddScoped<IZipService, ZipService>();
     }
 }

@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Fip.Strive.Harvester.Domain.Signals;
 
 public class UploadSignal() : EnumSignal(SignalTypes.UploadSignal)
@@ -7,4 +9,8 @@ public class UploadSignal() : EnumSignal(SignalTypes.UploadSignal)
 
     public static UploadSignal From(string filepath, string hash) =>
         new UploadSignal { Filepath = filepath, Hash = hash };
+
+    public static UploadSignal FromMessage(string message) =>
+        JsonSerializer.Deserialize<UploadSignal>(message)
+        ?? throw new InvalidOperationException("Invalid message");
 }

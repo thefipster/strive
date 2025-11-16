@@ -16,4 +16,4 @@ if (-not $MigrationName) {
     exit 1
 }
 
-dotnet ef migrations add "$MigrationName" -p .\src\indexing\Fip.Strive.Indexing.Application -s .\src\harvest\Fip.Strive.Harvester.Web -c IndexPgContext -o Infrastructure/Postgres/Migrations
+dotnet ef migrations add "$MigrationName" -p .\src\harvest\Fip.Strive.Harvester.Application -s .\src\harvest\Fip.Strive.Harvester.Indexing.Migrator -c IndexContext -o Infrastructure/Postgres/Migrations
