@@ -4,6 +4,7 @@ using Fip.Strive.Harvester.Domain.Defaults;
 using Fip.Strive.Harvester.Domain.Indexes;
 using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Ingestion.Application.Services.Contracts;
+using Fip.Strive.Ingestion.Domain.Enums;
 using Fip.Strive.Ingestion.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -37,7 +38,8 @@ public class Worker(
 
         var source = await PublishClassification(result, inSignal);
 
-        await PublishSignal(source, inSignal);
+        if (source.Source != DataSources.NoSource)
+            await PublishSignal(source, inSignal);
     }
 
     private async Task PublishFile(FileSignal inSignal)

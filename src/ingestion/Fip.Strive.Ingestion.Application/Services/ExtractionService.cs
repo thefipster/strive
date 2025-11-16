@@ -13,7 +13,7 @@ public class ExtractionService(IEnumerable<IFileExtractor> extractors) : IExtrac
 
     public IEnumerable<IFileExtractor> GetAll() => extractors;
 
-    public Task<List<FileExtraction>> ExtractAsync(
+    public Task<ExtractionResponse> ExtractAsync(
         string filepath,
         DataSources source,
         DateTime? date = null
@@ -25,6 +25,12 @@ public class ExtractionService(IEnumerable<IFileExtractor> extractors) : IExtrac
 
         var extractions = extractor.Extract(filepath, date);
 
-        return Task.FromResult(extractions);
+        var response = new ExtractionResponse
+        {
+            Extractions = extractions,
+            Version = extractor.ExtractorVersion,
+        };
+
+        return Task.FromResult(response);
     }
 }

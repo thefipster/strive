@@ -10,5 +10,9 @@ public interface IExtractionService
 
     IFileExtractor? Find(DataSources source);
 
-    Task<List<FileExtraction>> ExtractAsync(string filepath, DataSources source, DateTime? date);
+    Task<ExtractionResponse> ExtractAsync(
+        string filepath,
+        DataSources source,
+        DateTime? date = null
+    );
 }

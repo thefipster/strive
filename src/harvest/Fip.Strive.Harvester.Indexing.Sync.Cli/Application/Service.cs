@@ -13,12 +13,16 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
         ZipInserter zipRepo,
         FileInserter fileRepo,
         SourceInserter sourceRepo,
+        ExtractInserter extractRepo,
+        DataInserter dataRepo,
         ILogger<Service> logger
     ) : BackgroundService
     {
         private const string ZipList = IndexDeclarations.ZipDirtyListKey;
         private const string FileList = IndexDeclarations.FileDirtyListKey;
         private const string SourceList = IndexDeclarations.SourceDirtyListKey;
+        private const string ExtractList = IndexDeclarations.ExtractDirtyListKey;
+        private const string DataList = IndexDeclarations.DataDirtyListKey;
 
         private readonly IDatabase _db = redis.GetDatabase();
 
@@ -41,6 +45,8 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
                 await SyncIndexes<ZipIndex>(ZipList, zipRepo.BulkInsert, ct);
                 await SyncIndexes<FileInstance>(FileList, fileRepo.BulkInsert, ct);
                 await SyncIndexes<SourceIndex>(SourceList, sourceRepo.BulkInsert, ct);
+                await SyncIndexes<ExtractIndex>(ExtractList, extractRepo.BulkInsert, ct);
+                await SyncIndexes<DataIndex>(DataList, dataRepo.BulkInsert, ct);
             }
             catch (OperationCanceledException) when (ct.IsCancellationRequested)
             {

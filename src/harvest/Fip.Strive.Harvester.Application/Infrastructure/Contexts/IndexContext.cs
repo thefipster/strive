@@ -13,6 +13,8 @@ public class IndexContext : DbContext
     public DbSet<ZipIndex> Zips => Set<ZipIndex>();
     public DbSet<FileInstance> Files => Set<FileInstance>();
     public DbSet<SourceIndex> Sources => Set<SourceIndex>();
+    public DbSet<ExtractIndex> Extracts => Set<ExtractIndex>();
+    public DbSet<DataIndex> Data => Set<DataIndex>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

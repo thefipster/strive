@@ -13,6 +13,8 @@ public static class Dependencies
         builder.Services.AddSingleton<ZipInserter>();
         builder.Services.AddSingleton<FileInserter>();
         builder.Services.AddSingleton<SourceInserter>();
+        builder.Services.AddSingleton<ExtractInserter>();
+        builder.Services.AddSingleton<DataInserter>();
         builder.Services.AddSingleton<Service>();
         builder.Services.AddHostedService<Service>();
     }

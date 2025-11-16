@@ -1,6 +1,11 @@
+using Fip.Strive.Core.Application.Features.FileSystem.Services;
+using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
+using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Core.PubSub;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
+using Fip.Strive.Harvester.Domain.Indexes;
 using Fip.Strive.Harvester.Pipeline.Assimilate.Cli.Application;
+using Fip.Strive.Harvester.Pipeline.Assimilate.Cli.Services;
 using Fip.Strive.Ingestion.Application;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +19,9 @@ public static class Inject
         builder.Services.AddIngestionFeature();
 
         builder.Services.AddSingleton<IPubSubClient, PubSubClient>();
+        builder.Services.AddSingleton<IFileHasher, FileHasher>();
+        builder.Services.AddSingleton<ISetNameIndex<DataIndex>, DataIndexWriter>();
+        builder.Services.AddSingleton<ISetHashIndex<ExtractIndex>, ExtractIndexWriter>();
         builder.Services.AddSingleton<IProcessor, Worker>();
         builder.Services.AddSingleton<Service>();
         builder.Services.AddHostedService<Service>();

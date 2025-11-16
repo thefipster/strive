@@ -116,10 +116,7 @@ public class FileExtraction
     {
         Hash = ToHashString();
         var filename = $"{Timestamp.ToRangeString(Kind)}-{Source}-{Hash}.json";
-        var datePath =
-            Kind == DataKind.Day
-                ? Timestamp.ToString(DateHelper.DayFormat)
-                : Timestamp.ToString(DateHelper.FsMillisecondFormat);
+        var datePath = Timestamp.GetPath(Kind);
         var path = Path.Combine(rootDir, datePath);
         var newFile = Path.Combine(path, filename);
         var json = JsonSerializer.Serialize(this);

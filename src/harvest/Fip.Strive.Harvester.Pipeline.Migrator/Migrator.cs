@@ -1,5 +1,4 @@
 using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Signals;
 using RabbitMQ.Client;
 
 namespace Fip.Strive.Harvester.Pipeline.Migrator;

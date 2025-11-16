@@ -2,6 +2,7 @@ using Fip.Strive.AppHost.Extensions;
 
 const string zipsPath = @"E:\strive\data\imports\zips";
 const string filesPath = @"E:\strive\data\imports\files";
+const string dataPath = @"E:\strive\data\imports\data";
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -80,11 +81,20 @@ var pipelineClassifier =
         [pipelineMigrator, indexMigrator]
     );
 
+var pipelineAssimilator =
+    builder.AddDependentResourceWithSequence<Projects.Fip_Strive_Harvester_Pipeline_Assimilate_Cli>(
+        "strive-harvester-pipeline-assimilate",
+        new Dictionary<string, string> { { "Worker:Path", dataPath } },
+        [rabbit, redis],
+        [pipelineMigrator, indexMigrator]
+    );
+
 // Synchronizer
 // Sync redis indexes to postgres
 var indexingSyncer = builder.AddDependentResource<Projects.Fip_Strive_Harvester_Indexing_Sync_Cli>(
     "strive-harvester-indexing-syncer",
-    [redis, harvesterDatabase]
+    [redis, harvesterDatabase],
+    [indexMigrator]
 );
 
 // Webapps

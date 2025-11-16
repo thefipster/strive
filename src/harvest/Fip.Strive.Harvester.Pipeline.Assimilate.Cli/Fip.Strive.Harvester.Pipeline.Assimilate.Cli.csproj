@@ -6,9 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\host\Fip.Strive.ServiceDefaults\Fip.Strive.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
     <ProjectReference Include="..\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj" />
