@@ -5,6 +5,7 @@ using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
 using Fip.Strive.Harvester.Domain.Indexes;
 using Fip.Strive.Harvester.Domain.Signals;
 using Fip.Strive.Ingestion.Application.Services.Contracts;
+using Fip.Strive.Ingestion.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -25,6 +26,18 @@ public class Worker(
     {
         logger.LogDebug($"Worker received message: {inMessage}");
 
+        try
+        {
+            await TryPerformAsync(inMessage, ct);
+        }
+        catch (ExtractionException)
+        {
+            // ignored for now
+        }
+    }
+
+    private async Task TryPerformAsync(string inMessage, CancellationToken ct)
+    {
         var inSignal = TypedSignal.From(inMessage);
 
         var response = await extractor.ExtractAsync(inSignal.Filepath, inSignal.Source);

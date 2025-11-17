@@ -65,7 +65,7 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
         )
         {
             var items = await redisList.RightPopAll<TItem>(_db, list);
-            var count = inserter(ct, items);
+            var count = await inserter(ct, items);
             logger.LogInformation("Synced {SyncCount} items from {SyncList}.", count, list);
         }
     }

@@ -10,7 +10,7 @@ public static class IndexDeclarations
 
     public const string SourceDirtyListKey = "strive:harvest:index_dirty:source";
 
-    public const string ExtractDirtyListKey = "strive:harvest:index_dirty:source";
+    public const string ExtractDirtyListKey = "strive:harvest:index_dirty:extract";
 
-    public const string DataDirtyListKey = "strive:harvest:index_dirty:source";
+    public const string DataDirtyListKey = "strive:harvest:index_dirty:data";
 }
