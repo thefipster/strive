@@ -24,13 +24,6 @@ var indexMigrator = builder.AddDependentResource<Projects.Fip_Strive_Harvester_I
     [harvesterDatabase]
 );
 
-// Postgres Queue Schema
-var queueMigrator =
-    builder.AddDependentResource<Projects.Fip_Strive_Queue_Storage_Postgres_Migrator>(
-        "strive-harvester-queue-migrator",
-        [harvesterDatabase]
-    );
-
 // Rabbit Pipeline Exchanges
 var pipelineMigrator =
     builder.AddDependentResource<Projects.Fip_Strive_Harvester_Pipeline_Migrator>(
@@ -100,14 +93,11 @@ var indexingSyncer = builder.AddDependentResource<Projects.Fip_Strive_Harvester_
 // Webapps
 var harvesterWeb = builder
     .AddProject<Projects.Fip_Strive_Harvester_Web>("strive-harvester-webapp")
-    .WithHttpHealthCheck("/health")
-    .WithHttpHealthCheck("/health/queue")
     .WithReference(harvesterDatabase)
     .WithReference(rabbit)
     .WithReference(redis)
     .WaitForCompletion(pipelineMigrator)
-    .WaitForCompletion(indexMigrator)
-    .WaitForCompletion(queueMigrator);
+    .WaitForCompletion(indexMigrator);
 
 // var unifierWeb = builder
 //     .AddProject<Projects.Fip_Strive_Unifier_Web>("strive-unifier-webapp")

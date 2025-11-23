@@ -6,6 +6,7 @@ public interface IPubSubClient
 {
     Task SubscribeAsync(
         DirectExchange exchange,
+        DirectExchange quarantine,
         Func<string, CancellationToken, Task> processor,
         CancellationToken ct
     );

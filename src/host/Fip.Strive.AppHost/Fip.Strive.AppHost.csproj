@@ -22,7 +22,6 @@
     <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.ZipGate.Cli\Fip.Strive.Harvester.Pipeline.ZipGate.Cli.csproj" />
     <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj" />
     <ProjectReference Include="..\..\portal\Fip.Strive.Portal.Web\Fip.Strive.Portal.Web.csproj" />
-    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Storage.Postgres.Migrator\Fip.Strive.Queue.Storage.Postgres.Migrator.csproj" />
     <ProjectReference Include="..\..\unify\Fip.Strive.Unifier.Web\Fip.Strive.Unifier.Web.csproj" />
   </ItemGroup>
 </Project>

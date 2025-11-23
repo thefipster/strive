@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Fip.Strive.Core.Application.Features.PubSub.Models;
 using Fip.Strive.Queue.Application.Services.Contracts;
 using Fip.Strive.Queue.Domain.Enums;
 using Fip.Strive.Queue.Domain.Models;

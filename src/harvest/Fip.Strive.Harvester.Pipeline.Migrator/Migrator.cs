@@ -10,6 +10,8 @@ public class Migrator(IConnectionFactory factory)
         var connection = await factory.CreateConnectionAsync(ct);
         var channel = await connection.CreateChannelAsync(cancellationToken: ct);
 
+        await EnsureDirectExchange(HarvestPipelineExchange.Quarantine, channel, ct);
+
         foreach (var exchange in HarvestPipelineExchange.All)
             await EnsureDirectExchange(exchange, channel, ct);
     }

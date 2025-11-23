@@ -12,12 +12,13 @@ public class Service(IPubSubClient client, IProcessor processor, ILogger<Service
     private readonly DirectExchange _exchange = HarvestPipelineExchange.New(
         SignalTypes.UploadSignal
     );
+    private readonly DirectExchange _quarantine = HarvestPipelineExchange.Quarantine;
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
         logger.LogInformation("Harvester Pipeline ZipGate started.");
 
-        await client.SubscribeAsync(_exchange, processor.ProcessAsync, ct);
+        await client.SubscribeAsync(_exchange, _quarantine, processor.ProcessAsync, ct);
         await Task.Delay(Timeout.InfiniteTimeSpan, ct);
 
         logger.LogInformation("Harvester Pipeline ZipGate finished.");

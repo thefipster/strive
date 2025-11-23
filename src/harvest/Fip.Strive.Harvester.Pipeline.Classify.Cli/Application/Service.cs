@@ -10,12 +10,13 @@ public class Service(IPubSubClient client, IProcessor processor, ILogger<Service
     : BackgroundService
 {
     private readonly DirectExchange _exchange = HarvestPipelineExchange.New(SignalTypes.FileSignal);
+    private readonly DirectExchange _quarantine = HarvestPipelineExchange.Quarantine;
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
         logger.LogInformation("Harvester Pipeline Classify started.");
 
-        await client.SubscribeAsync(_exchange, processor.ProcessAsync, ct);
+        await client.SubscribeAsync(_exchange, _quarantine, processor.ProcessAsync, ct);
         await Task.Delay(Timeout.InfiniteTimeSpan, ct);
 
         logger.LogInformation("Harvester Pipeline Classify finished.");

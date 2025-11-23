@@ -14,44 +14,18 @@ public class PubSubClient(IConnectionFactory factory, ILogger<PubSubClient> logg
 
     public async Task SubscribeAsync(
         DirectExchange exchange,
+        DirectExchange quarantine,
         Func<string, CancellationToken, Task> processor,
         CancellationToken ct
     )
     {
-        if (_connection == null || _channel == null)
-            await ConnectAsync();
+        var channel = await EnsureChannelAsync();
+        var consumer = new AsyncEventingBasicConsumer(channel);
 
-        if (_connection == null || _channel == null)
-            return;
-
-        var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.ReceivedAsync += async (_, ea) =>
-        {
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
+            await TryReceiveAsync(exchange, quarantine, processor, ct, ea, channel);
 
-            try
-            {
-                await processor(message, ct);
-                await _channel.BasicAckAsync(
-                    ea.DeliveryTag,
-                    multiple: false,
-                    cancellationToken: ct
-                );
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(
-                    ex,
-                    "Error processing message {Message} from {Queue}",
-                    message,
-                    exchange.Queue
-                );
-                await _channel.BasicNackAsync(ea.DeliveryTag, false, true, ct);
-            }
-        };
-
-        await _channel.BasicConsumeAsync(
+        await channel.BasicConsumeAsync(
             exchange.Queue,
             autoAck: false,
             consumer,
@@ -59,10 +33,43 @@ public class PubSubClient(IConnectionFactory factory, ILogger<PubSubClient> logg
         );
     }
 
+    private async Task TryReceiveAsync(
+        DirectExchange exchange,
+        DirectExchange quarantine,
+        Func<string, CancellationToken, Task> processor,
+        CancellationToken ct,
+        BasicDeliverEventArgs ea,
+        IChannel channel
+    )
+    {
+        var body = ea.Body.ToArray();
+        var message = Encoding.UTF8.GetString(body);
+
+        try
+        {
+            await processor(message, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Error processing message {Message} from {Queue}",
+                message,
+                exchange.Queue
+            );
+
+            await PublishAsync(message, quarantine);
+        }
+        finally
+        {
+            await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: ct);
+        }
+    }
+
     public async Task PublishAsync(string message, DirectExchange exchange)
     {
         if (_connection == null || _channel == null)
-            await ConnectAsync();
+            await EnsureChannelAsync();
 
         if (_connection == null || _channel == null)
             return;
@@ -73,10 +80,15 @@ public class PubSubClient(IConnectionFactory factory, ILogger<PubSubClient> logg
         await _channel.BasicPublishAsync(exchange.Exchange, exchange.Route, true, props, body);
     }
 
-    private async Task ConnectAsync()
+    private async Task<IChannel> EnsureChannelAsync()
     {
         _connection = await factory.CreateConnectionAsync();
         _channel = await _connection.CreateChannelAsync();
+
+        if (_connection == null || _channel == null)
+            throw new InvalidOperationException("Could not create RabbitMQ channel");
+
+        return _channel;
     }
 
     public async ValueTask DisposeAsync()
