@@ -15,7 +15,7 @@ public static class Dependencies
         builder.Services.AddSingleton<FileRepository>();
         builder.Services.AddSingleton<SourceInserter>();
         builder.Services.AddSingleton<ExtractInserter>();
-        builder.Services.AddSingleton<DataInserter>();
+        builder.Services.AddSingleton<DataRepository>();
         builder.Services.AddSingleton<Service>();
         builder.Services.AddHostedService<Service>();
     }

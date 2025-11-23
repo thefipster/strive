@@ -1,88 +1,117 @@
 @using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data
-<Headline Text="Indexing" />
+<Headline Text="Indexing"/>
 
-<MudTable T="ZipIndex" Class="mb-5" Context="zip" Dense="true" Hover="true" ServerData="@OnZipIndexRequested"
-          OnRowClick="@OnZipIndexRowClick">
-    <ToolBarContent>
-        <MudText Typo="Typo.h2">Imported Zip Archives</MudText>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Created</MudTh>
-        <MudTh>Hash</MudTh>
-        <MudTh>File</MudTh>
-    </HeaderContent>
-    <ColGroup>
-        <col Style="width: 250px;"/>
-        <col Style="width: 250px;"/>
-        <col/>
-    </ColGroup>
-    <RowTemplate>
-        <MudTd DataLabel="Signalled">@zip.CreatedAt</MudTd>
-        <MudTd DataLabel="Signal">@zip.Hash</MudTd>
-        <MudTd DataLabel="Hash">@zip.Filepath</MudTd>
-    </RowTemplate>
-    <PagerContent>
-        <MudTablePager/>
-    </PagerContent>
-</MudTable>
+<MudGrid>
+    <MudItem lg="12" xl="2">
+        <MudTable T="ZipIndex" Class="mb-5" Context="zip" Dense="true" Hover="true" ServerData="@OnZipIndexRequested"
+                  OnRowClick="@OnZipIndexRowClick">
+            <ToolBarContent>
+                <MudText Typo="Typo.h3">Zips</MudText>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>File</MudTh>
+            </HeaderContent>
+            <ColGroup>
+                <col Style="width: 250px;"/>
+                <col/>
+            </ColGroup>
+            <RowTemplate>
+                <MudTd DataLabel="Hash">@Path.GetFileNameWithoutExtension(zip.Filepath)</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager/>
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+    @if (_selectedZip != null)
+    {
+        <MudItem lg="12" xl="5">
+            @* <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged"> *@
+            @*     <MudSelectItem Value="ClassificationOptions.All">@ClassificationOptions.All</MudSelectItem> *@
+            @*     <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem> *@
+            @*     <MudSelectItem *@
+            @*         Value="ClassificationOptions.Classified">@ClassificationOptions.Classified</MudSelectItem> *@
+            @*     <MudSelectItem *@
+            @*         Value="ClassificationOptions.Unclassified">@ClassificationOptions.Unclassified</MudSelectItem> *@
+            @*     <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem> *@
+            @*     @foreach (var option in ClassificationOptions.EnumItems) *@
+            @*     { *@
+            @*         <MudSelectItem Value="@option">@option</MudSelectItem> *@
+            @*     } *@
+            @* </MudSelect> *@
+            <MudTable @ref="_fileTable" T="FileInstance" Class="mb-5" Dense="true" Hover="true" Context="file"
+                      ServerData="@OnFileIndexRequested" OnRowClick="@OnFileIndexRowClick">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h3">@Path.GetFileNameWithoutExtension(_selectedZip.Filepath)
+                    </MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>File</MudTh>
+                    <MudTh>Source</MudTh>
+                    <MudTh>Extract</MudTh>
+                </HeaderContent>
+                <ColGroup>
+                    <col/>
+                    <col Style="width: 300px;"/>
+                    <col Style="width: 100px;"/>
+                </ColGroup>
+                <RowTemplate>
+                    <MudTd DataLabel="Signal">@Path.GetFileNameWithoutExtension(file.Filepath)</MudTd>
+                    <MudTd DataLabel="Source">
+                        @if (file.Source != null)
+                        {
+                            @file.Source.Source
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Extract">
+                        @if (file.Extract != null)
+                        {
+                            @($"v{file.Extract.Version}")
+                        }
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No matching records found</MudText>
+                </NoRecordsContent>
+                <PagerContent>
+                    <MudTablePager/>
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+    }
+    @if (_selectedFile != null)
+    {
+        <MudItem lg="12" xl="5">
+            <MudTable @ref="_dataTable" T="DataIndex" Dense="true" Hover="true" Context="data"
+                      ServerData="@OnDataIndexRequested">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h3">@Path.GetFileName(_selectedFile.Filepath)
+                    </MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>File</MudTh>
+                    <MudTh>Source</MudTh>
+                </HeaderContent>
+                <ColGroup>
+                    <col/>
+                    <col Style="width: 400px;"/>
+                </ColGroup>
+                <RowTemplate>
+                    <MudTd DataLabel="File">@Path.GetFileName(data.Filepath)</MudTd>
+                    <MudTd DataLabel="Source">@data.Source</MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>No matching records found</MudText>
+                </NoRecordsContent>
+                <PagerContent>
+                    <MudTablePager/>
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+    }
+</MudGrid>
 
-@if (_selectedZip != null)
-{
-    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-        <MudText Typo="Typo.h2">Files of @Path.GetFileName(_selectedZip.Filepath) (@_selectedZip.Hash)</MudText>
-        <MudSpacer />
-        @* <MudSelect T="string" Label="Classification" ValueChanged="@OnClassificationFilterChanged"> *@
-        @*     <MudSelectItem Value="ClassificationOptions.All">@ClassificationOptions.All</MudSelectItem> *@
-        @*     <MudSelectItem Disabled="true" Value="@("General-Topic")">General</MudSelectItem> *@
-        @*     <MudSelectItem *@
-        @*         Value="ClassificationOptions.Classified">@ClassificationOptions.Classified</MudSelectItem> *@
-        @*     <MudSelectItem *@
-        @*         Value="ClassificationOptions.Unclassified">@ClassificationOptions.Unclassified</MudSelectItem> *@
-        @*     <MudSelectItem Disabled="true" Value="@("Special-Topic")">Special</MudSelectItem> *@
-        @*     @foreach (var option in ClassificationOptions.EnumItems) *@
-        @*     { *@
-        @*         <MudSelectItem Value="@option">@option</MudSelectItem> *@
-        @*     } *@
-        @* </MudSelect> *@
-    </MudStack>
-    <MudTable @ref="_fileTable" T="FileInstance" Dense="true" Hover="true" Context="file"
-              ServerData="@OnFileIndexRequested" OnRowClick="@OnFileIndexRowClick">
-        <HeaderContent>
-            <MudTh>Created</MudTh>
-            <MudTh>Hash</MudTh>
-            <MudTh>File</MudTh>
-            <MudTh>Source</MudTh>
-            <MudTh>Extract</MudTh>
-        </HeaderContent>
-        <ColGroup>
-            <col Style="width: 250px;"/>
-            <col Style="width: 250px;"/>
-            <col/>
-            <col Style="width: 300px;"/>
-            <col Style="width: 100px;"/>
-        </ColGroup>
-        <RowTemplate>
-            <MudTd DataLabel="Signalled">@file.CreatedAt</MudTd>
-            <MudTd DataLabel="Hash">@file.Hash</MudTd>
-            <MudTd DataLabel="Signal">@file.Filepath</MudTd>
-            <MudTd DataLabel="Source">
-                @if (file.Source != null)
-                {
-                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@file.Source.Source</MudChip>
-                }
-            </MudTd>
-            <MudTd DataLabel="Extract">
-                @if (file.Extract != null)
-                {
-                    <MudChip T="string" Variant="Variant.Outlined" Color="Color.Primary">@($"v{file.Extract.Version}")</MudChip>
-                }
-            </MudTd>
-        </RowTemplate>
-        <NoRecordsContent>
-            <MudText>No matching records found</MudText>
-        </NoRecordsContent>
-        <PagerContent>
-            <MudTablePager/>
-        </PagerContent>
-    </MudTable>
-}
+
+
+
+

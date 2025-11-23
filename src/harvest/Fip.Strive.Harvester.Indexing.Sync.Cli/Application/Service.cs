@@ -15,7 +15,7 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
         FileRepository fileRepo,
         SourceInserter sourceRepo,
         ExtractInserter extractRepo,
-        DataInserter dataRepo,
+        DataRepository dataRepo,
         ILogger<Service> logger
     ) : BackgroundService
     {
