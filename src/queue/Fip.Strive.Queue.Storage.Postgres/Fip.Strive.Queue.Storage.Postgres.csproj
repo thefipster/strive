@@ -1,9 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
-    <ProjectReference Include="..\Fip.Strive.Queue.Storage.Contracts\Fip.Strive.Queue.Storage.Contracts.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
-  </ItemGroup>
-</Project>
