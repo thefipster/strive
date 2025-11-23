@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Quartz.Extensions.Hosting" />
     <PackageReference Include="RabbitMQ.Client" />
@@ -23,6 +24,8 @@
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Application\Fip.Strive.Core.Application.csproj" />
     <ProjectReference Include="..\..\ingestion\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj" />
     <ProjectReference Include="..\..\ingestion\Fip.Strive.Ingestion.Application\Fip.Strive.Ingestion.Application.csproj" />
-    <ProjectReference Include="..\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\Indexing\Migrations\" />
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@ using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Core.PubSub;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
-using Fip.Strive.Harvester.Domain.Indexes;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data;
 using Fip.Strive.Harvester.Pipeline.Assimilate.Cli.Application;
 using Fip.Strive.Harvester.Pipeline.Assimilate.Cli.Services;
 using Fip.Strive.Ingestion.Application;

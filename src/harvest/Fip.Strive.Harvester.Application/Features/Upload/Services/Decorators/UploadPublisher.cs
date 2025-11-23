@@ -1,8 +1,8 @@
 using System.Text;
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
+using Fip.Strive.Harvester.Application.Core.Signals;
+using Fip.Strive.Harvester.Application.Defaults;
 using Fip.Strive.Harvester.Application.Features.Upload.Services.Contracts;
-using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Signals;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 

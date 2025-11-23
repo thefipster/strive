@@ -1,3 +1,4 @@
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Repositories;
 using Fip.Strive.Harvester.Indexing.Sync.Cli.Application;
 using Fip.Strive.Harvester.Indexing.Sync.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,8 +11,8 @@ public static class Dependencies
     public static void AddServices(this HostApplicationBuilder builder)
     {
         builder.Services.AddSingleton<RedisListAccess>();
-        builder.Services.AddSingleton<ZipInserter>();
-        builder.Services.AddSingleton<FileInserter>();
+        builder.Services.AddSingleton<ZipRepository>();
+        builder.Services.AddSingleton<FileRepository>();
         builder.Services.AddSingleton<SourceInserter>();
         builder.Services.AddSingleton<ExtractInserter>();
         builder.Services.AddSingleton<DataInserter>();

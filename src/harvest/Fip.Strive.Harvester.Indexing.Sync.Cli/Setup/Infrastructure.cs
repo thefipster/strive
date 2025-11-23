@@ -1,5 +1,5 @@
 using Fip.Strive.Core.Domain.Exceptions;
-using Fip.Strive.Harvester.Application.Infrastructure.Contexts;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

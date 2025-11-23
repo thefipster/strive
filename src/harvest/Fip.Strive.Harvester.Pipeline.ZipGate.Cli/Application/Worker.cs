@@ -2,9 +2,9 @@ using System.Text.Json;
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
-using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Indexes;
-using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Harvester.Application.Core.Signals;
+using Fip.Strive.Harvester.Application.Defaults;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -30,38 +30,34 @@ public class Worker(
         logger.LogDebug($"Worker received message: {inMessage}");
 
         var inSignal = UploadSignal.FromMessage(inMessage);
+        var destination = GetImportPath(inSignal);
 
         if (!await indexer.HashExistsAsync(inSignal.Hash))
-            await ImportFile(inSignal);
+            await ImportFileAsync(destination, inSignal);
 
         file.Delete(inSignal.Filepath);
 
-        await indexer.SetFileAsync(ZipIndex.FromSignal(inSignal));
+        await indexer.SetFileAsync(ZipIndex.FromSignal(inSignal, destination));
     }
 
-    private async Task ImportFile(UploadSignal inSignal)
-    {
-        var destination = CopyFile(inSignal);
-
-        await PublishHash(inSignal);
-        await PublishSignal(destination, inSignal);
-    }
-
-    private string CopyFile(UploadSignal inSignal)
+    private string GetImportPath(UploadSignal inSignal)
     {
         var filename = Path.GetFileName(inSignal.Filepath);
         var destination = Path.Combine(_importPath, filename);
-
-        file.Copy(inSignal.Filepath, destination, _overwrite);
-
         return destination;
     }
 
-    private async Task PublishHash(UploadSignal inSignal)
+    private async Task ImportFileAsync(string destination, UploadSignal inSignal)
     {
-        await indexer.SetHashAsync(
-            new ZipIndex { Filepath = inSignal.Filepath, Hash = inSignal.Hash }
-        );
+        file.Copy(inSignal.Filepath, destination, _overwrite);
+
+        await PublishHash(destination, inSignal);
+        await PublishSignal(destination, inSignal);
+    }
+
+    private async Task PublishHash(string destination, UploadSignal inSignal)
+    {
+        await indexer.SetHashAsync(new ZipIndex { Filepath = destination, Hash = inSignal.Hash });
     }
 
     private async Task PublishSignal(string destination, UploadSignal inSignal)

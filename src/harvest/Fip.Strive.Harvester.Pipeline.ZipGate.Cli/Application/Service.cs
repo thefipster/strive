@@ -1,6 +1,6 @@
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
-using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Harvester.Application.Core.Signals;
+using Fip.Strive.Harvester.Application.Defaults;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

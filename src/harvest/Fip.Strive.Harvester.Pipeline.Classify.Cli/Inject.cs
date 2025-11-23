@@ -1,7 +1,7 @@
 using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
 using Fip.Strive.Harvester.Application.Core.PubSub;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
-using Fip.Strive.Harvester.Domain.Indexes;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data;
 using Fip.Strive.Harvester.Pipeline.Classify.Cli.Application;
 using Fip.Strive.Harvester.Pipeline.Classify.Cli.Services;
 using Fip.Strive.Ingestion.Application;

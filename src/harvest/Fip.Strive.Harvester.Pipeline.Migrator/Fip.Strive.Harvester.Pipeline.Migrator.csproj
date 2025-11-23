@@ -7,6 +7,6 @@
     <PackageReference Include="RabbitMQ.Client" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj" />
+    <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
   </ItemGroup>
 </Project>

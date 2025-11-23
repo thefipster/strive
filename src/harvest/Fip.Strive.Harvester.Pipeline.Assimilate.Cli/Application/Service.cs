@@ -1,6 +1,6 @@
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
-using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Harvester.Application.Core.Signals;
+using Fip.Strive.Harvester.Application.Defaults;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +12,7 @@ public class Service(IPubSubClient client, IProcessor processor, ILogger<Service
     private readonly DirectExchange _exchange = HarvestPipelineExchange.New(
         SignalTypes.TypedSignal
     );
-    
+
     private readonly DirectExchange _quarantine = HarvestPipelineExchange.Quarantine;
 
     protected override async Task ExecuteAsync(CancellationToken ct)

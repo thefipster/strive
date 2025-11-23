@@ -1,6 +1,6 @@
 using System.Text;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
-using Fip.Strive.Harvester.Domain.Defaults;
+using Fip.Strive.Harvester.Application.Defaults;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

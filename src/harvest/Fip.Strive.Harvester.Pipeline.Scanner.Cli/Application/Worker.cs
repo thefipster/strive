@@ -1,8 +1,8 @@
 using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
-using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Indexes;
-using Fip.Strive.Harvester.Domain.Signals;
+using Fip.Strive.Harvester.Application.Core.Signals;
+using Fip.Strive.Harvester.Application.Defaults;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data;
 using Fip.Strive.Harvester.Pipeline.Scanner.Cli.Services;
 using Microsoft.Extensions.Logging;
 

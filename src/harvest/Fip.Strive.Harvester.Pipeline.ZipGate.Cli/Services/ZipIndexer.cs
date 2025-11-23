@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Fip.Strive.Harvester.Application.Core.Indexing.Contracts;
-using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Indexes;
+using Fip.Strive.Harvester.Application.Defaults;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data;
 using StackExchange.Redis;
 
 namespace Fip.Strive.Harvester.Pipeline.ZipGate.Cli.Services;

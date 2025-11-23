@@ -1,5 +1,6 @@
-﻿using Fip.Strive.Harvester.Domain.Defaults;
-using Fip.Strive.Harvester.Domain.Indexes;
+﻿using Fip.Strive.Harvester.Application.Defaults;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data;
+using Fip.Strive.Harvester.Application.Infrastructure.Indexing.Repositories;
 using Fip.Strive.Harvester.Indexing.Sync.Cli.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,8 +11,8 @@ namespace Fip.Strive.Harvester.Indexing.Sync.Cli.Application
     public class Service(
         IConnectionMultiplexer redis,
         RedisListAccess redisList,
-        ZipInserter zipRepo,
-        FileInserter fileRepo,
+        ZipRepository zipRepo,
+        FileRepository fileRepo,
         SourceInserter sourceRepo,
         ExtractInserter extractRepo,
         DataInserter dataRepo,

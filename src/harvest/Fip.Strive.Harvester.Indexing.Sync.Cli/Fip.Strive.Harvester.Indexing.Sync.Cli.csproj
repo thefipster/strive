@@ -10,7 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
-    <ProjectReference Include="..\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
