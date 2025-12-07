@@ -14,7 +14,6 @@ public class DataIndex
     public required bool IsDay { get; set; }
     public required DateTime Timestamp { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public virtual ExtractIndex? Index { get; set; }
 
     public string ToJson() => JsonSerializer.Serialize(this);
 

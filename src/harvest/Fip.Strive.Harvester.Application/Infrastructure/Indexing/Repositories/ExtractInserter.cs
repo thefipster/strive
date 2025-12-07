@@ -3,18 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fip.Strive.Harvester.Application.Infrastructure.Indexing.Repositories;
 
-public class ExtractInserter(IDbContextFactory<IndexContext> dbContextFactory)
+public class ExtractInserter(IndexContext context)
 {
     public async Task<int> BulkInsert(CancellationToken ct, List<ExtractIndex> items)
     {
         if (items.Count == 0)
             return 0;
 
-        await using var ctx = await dbContextFactory.CreateDbContextAsync(ct);
-
         var incomingKeys = items.Select(index => index.Hash).Distinct().ToArray();
 
-        var existingKeys = await ctx
+        var existingKeys = await context
             .Extracts.AsNoTracking()
             .Where(z => incomingKeys.Contains(z.Hash))
             .Select(z => z.Hash)
@@ -26,8 +24,8 @@ public class ExtractInserter(IDbContextFactory<IndexContext> dbContextFactory)
         if (toInsert.Count == 0)
             return 0;
 
-        ctx.Extracts.AddRange(toInsert);
-        await ctx.SaveChangesAsync(ct);
+        context.Extracts.AddRange(toInsert);
+        await context.SaveChangesAsync(ct);
 
         return toInsert.Count;
     }

@@ -27,6 +27,9 @@ public class IndexContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.HasDefaultSchema(SchemaName);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(IndexContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(IndexContext).Assembly,
+            t => t.Namespace != null && t.Namespace.Contains(".Indexing.")
+        );
     }
 }

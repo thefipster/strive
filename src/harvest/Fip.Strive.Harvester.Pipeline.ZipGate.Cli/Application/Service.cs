@@ -9,10 +9,10 @@ namespace Fip.Strive.Harvester.Pipeline.ZipGate.Cli.Application;
 public class Service(IPubSubClient client, IProcessor processor, ILogger<Service> logger)
     : BackgroundService
 {
+    private readonly DirectExchange _quarantine = HarvestPipelineExchange.Quarantine;
     private readonly DirectExchange _exchange = HarvestPipelineExchange.New(
         SignalTypes.UploadSignal
     );
-    private readonly DirectExchange _quarantine = HarvestPipelineExchange.Quarantine;
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {

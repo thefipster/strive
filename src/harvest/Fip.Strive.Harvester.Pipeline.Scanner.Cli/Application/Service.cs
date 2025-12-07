@@ -9,8 +9,8 @@ namespace Fip.Strive.Harvester.Pipeline.Scanner.Cli.Application;
 public class Service(IPubSubClient client, IProcessor processor, ILogger<Service> logger)
     : BackgroundService
 {
-    private readonly DirectExchange _exchange = HarvestPipelineExchange.New(SignalTypes.ScanSignal);
     private readonly DirectExchange _quarantine = HarvestPipelineExchange.Quarantine;
+    private readonly DirectExchange _exchange = HarvestPipelineExchange.New(SignalTypes.ScanSignal);
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {

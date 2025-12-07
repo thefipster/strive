@@ -58,16 +58,8 @@
                 <RowTemplate>
                     <MudTd DataLabel="Signal">@Path.GetFileNameWithoutExtension(file.Filepath)</MudTd>
                     <MudTd DataLabel="Source">
-                        @if (file.Source != null)
-                        {
-                            @file.Source.Source
-                        }
                     </MudTd>
                     <MudTd DataLabel="Extract">
-                        @if (file.Extract != null)
-                        {
-                            @($"v{file.Extract.Version}")
-                        }
                     </MudTd>
                 </RowTemplate>
                 <NoRecordsContent>

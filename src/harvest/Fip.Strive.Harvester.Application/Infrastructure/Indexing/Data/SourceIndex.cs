@@ -13,7 +13,6 @@ public class SourceIndex
     public DataSources Source { get; set; }
     public int Version { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public virtual FileInstance? File { get; set; }
 
     public string ToJson() => JsonSerializer.Serialize(this);
 

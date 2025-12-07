@@ -60,8 +60,6 @@ namespace Fip.Strive.Harvester.Application.Infrastructure.Indexing.Migrations
 
                     b.HasIndex("ParentFilepath");
 
-                    b.HasIndex("ParentHash");
-
                     b.HasIndex("Source");
 
                     b.HasIndex("Timestamp");
@@ -177,29 +175,6 @@ namespace Fip.Strive.Harvester.Application.Infrastructure.Indexing.Migrations
                     b.ToTable("Zips", "harvester-indexer");
                 });
 
-            modelBuilder.Entity("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.DataIndex", b =>
-                {
-                    b.HasOne("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.ExtractIndex", "Index")
-                        .WithMany("Data")
-                        .HasForeignKey("ParentHash")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Index");
-                });
-
-            modelBuilder.Entity("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.ExtractIndex", b =>
-                {
-                    b.HasOne("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.FileInstance", "File")
-                        .WithOne("Extract")
-                        .HasForeignKey("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.ExtractIndex", "Hash")
-                        .HasPrincipalKey("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.FileInstance", "Hash")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("File");
-                });
-
             modelBuilder.Entity("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.FileInstance", b =>
                 {
                     b.HasOne("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.ZipIndex", "ParentZip")
@@ -209,30 +184,6 @@ namespace Fip.Strive.Harvester.Application.Infrastructure.Indexing.Migrations
                         .IsRequired();
 
                     b.Navigation("ParentZip");
-                });
-
-            modelBuilder.Entity("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.SourceIndex", b =>
-                {
-                    b.HasOne("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.FileInstance", "File")
-                        .WithOne("Source")
-                        .HasForeignKey("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.SourceIndex", "Hash")
-                        .HasPrincipalKey("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.FileInstance", "Hash")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("File");
-                });
-
-            modelBuilder.Entity("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.ExtractIndex", b =>
-                {
-                    b.Navigation("Data");
-                });
-
-            modelBuilder.Entity("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.FileInstance", b =>
-                {
-                    b.Navigation("Extract");
-
-                    b.Navigation("Source");
                 });
 
             modelBuilder.Entity("Fip.Strive.Harvester.Application.Infrastructure.Indexing.Data.ZipIndex", b =>

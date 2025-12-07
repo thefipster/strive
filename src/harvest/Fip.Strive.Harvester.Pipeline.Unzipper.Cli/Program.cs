@@ -1,14 +1,15 @@
-﻿using Fip.Strive.Harvester.Pipeline.Core;
+﻿using Fip.Strive.Harvester.Application.Infrastructure;
 using Fip.Strive.Harvester.Pipeline.Unzipper.Cli;
 using Microsoft.Extensions.Hosting;
 
 Console.WriteLine("Harvester Pipeline - Unzipper init");
 
 var builder = Host.CreateApplicationBuilder(args);
+var configuration = builder.Configuration;
 
 builder.AddServiceDefaults();
 
-builder.AddRabbit();
+builder.Services.AddRabbit(configuration);
 
 builder.AddOptions();
 builder.AddServices();

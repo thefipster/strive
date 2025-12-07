@@ -3,18 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fip.Strive.Harvester.Application.Infrastructure.Indexing.Repositories;
 
-public class SourceInserter(IDbContextFactory<IndexContext> dbContextFactory)
+public class SourceInserter(IndexContext context)
 {
     public async Task<int> BulkInsert(CancellationToken ct, List<SourceIndex> items)
     {
         if (items.Count == 0)
             return 0;
 
-        await using var ctx = await dbContextFactory.CreateDbContextAsync(ct);
-
         var incomingKeys = items.Select(index => index.Hash).Distinct().ToArray();
 
-        var existingKeys = await ctx
+        var existingKeys = await context
             .Sources.AsNoTracking()
             .Where(z => incomingKeys.Contains(z.Hash))
             .Select(z => z.Hash)
@@ -26,8 +24,8 @@ public class SourceInserter(IDbContextFactory<IndexContext> dbContextFactory)
         if (toInsert.Count == 0)
             return 0;
 
-        ctx.Sources.AddRange(toInsert);
-        await ctx.SaveChangesAsync(ct);
+        context.Sources.AddRange(toInsert);
+        await context.SaveChangesAsync(ct);
 
         return toInsert.Count;
     }

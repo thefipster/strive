@@ -2,7 +2,7 @@ using Fip.Strive.Harvester.Application.Defaults;
 
 namespace Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
 
-public interface IPubSubClient
+public interface IPubSubClient : IAsyncDisposable
 {
     Task SubscribeAsync(
         DirectExchange exchange,
@@ -12,6 +12,4 @@ public interface IPubSubClient
     );
 
     Task PublishAsync(string message, DirectExchange exchange);
-
-    ValueTask DisposeAsync();
 }

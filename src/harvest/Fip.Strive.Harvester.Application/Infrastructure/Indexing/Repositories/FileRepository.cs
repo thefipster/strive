@@ -79,8 +79,6 @@ public class FileRepository(IndexContext context) : IFileRepository
         var count = await query.CountAsync(ct);
 
         var items = await query
-            .Include(x => x.Source)
-            .Include(x => x.Extract)
             .OrderByDescending(z => z.CreatedAt)
             .Skip(pageNumber * pageSize)
             .Take(pageSize)

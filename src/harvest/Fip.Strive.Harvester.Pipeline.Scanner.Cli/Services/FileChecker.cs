@@ -14,6 +14,8 @@ public class FileChecker(IConnectionMultiplexer redis) : IScanIndexer
 
     public async Task SetFileAsync(FileInstance entry)
     {
+        await _db.SetAddAsync(IndexDeclarations.FileHashSetKey, entry.Hash);
+
         var json = JsonSerializer.Serialize(entry);
         await _db.ListLeftPushAsync(IndexDeclarations.FileDirtyListKey, json);
     }

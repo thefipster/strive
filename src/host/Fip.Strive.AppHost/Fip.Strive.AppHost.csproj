@@ -12,11 +12,13 @@
     <PackageReference Include="Aspire.Hosting.Redis" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Migrator\Fip.Strive.Harvester.Indexing.Migrator.csproj" />
-    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Sync.Cli\Fip.Strive.Harvester.Indexing.Sync.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Migrator.Cli\Fip.Strive.Harvester.Indexing.Migrator.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Collector.Cli\Fip.Strive.Harvester.Indexing.Collector.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Primer.Cli\Fip.Strive.Harvester.Indexing.Primer.Cli.csproj" />
     <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Assimilate.Cli\Fip.Strive.Harvester.Pipeline.Assimilate.Cli.csproj" />
     <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Classify.Cli\Fip.Strive.Harvester.Pipeline.Classify.Cli.csproj" />
-    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Migrator\Fip.Strive.Harvester.Pipeline.Migrator.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Migrator.Cli\Fip.Strive.Harvester.Pipeline.Migrator.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Sanitizer.Cli\Fip.Strive.Harvester.Pipeline.Sanitizer.Cli.csproj" />
     <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Scanner.Cli\Fip.Strive.Harvester.Pipeline.Scanner.Cli.csproj" />
     <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Unzipper.Cli\Fip.Strive.Harvester.Pipeline.Unzipper.Cli.csproj" />
     <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.ZipGate.Cli\Fip.Strive.Harvester.Pipeline.ZipGate.Cli.csproj" />

@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1_Files", "1_Files", "{AABA
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		add-indexing-migration.ps1 = add-indexing-migration.ps1
-		add-queue-migration.ps1 = add-queue-migration.ps1
+		add-pipeline-migration.ps1 = add-pipeline-migration.ps1
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		make.ps1 = make.ps1
@@ -92,19 +92,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pipeline", "Pipeline", "{E9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Core.Cli", "src\core\Fip.Strive.Core.Cli\Fip.Strive.Core.Cli.csproj", "{809A8E09-97FD-46DC-8D31-581CD4E59A99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Pipeline.Migrator", "src\harvest\Fip.Strive.Harvester.Pipeline.Migrator\Fip.Strive.Harvester.Pipeline.Migrator.csproj", "{15B08A23-BF37-448B-B16B-B99898DA1864}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Pipeline.Migrator.Cli", "src\harvest\Fip.Strive.Harvester.Pipeline.Migrator.Cli\Fip.Strive.Harvester.Pipeline.Migrator.Cli.csproj", "{15B08A23-BF37-448B-B16B-B99898DA1864}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Indexing", "Indexing", "{792E3139-2AC7-4EBA-93BC-567295D937BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Indexing.Sync.Cli", "src\harvest\Fip.Strive.Harvester.Indexing.Sync.Cli\Fip.Strive.Harvester.Indexing.Sync.Cli.csproj", "{4A3FD940-AED8-452B-923F-284EBF03C264}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Indexing.Collector.Cli", "src\harvest\Fip.Strive.Harvester.Indexing.Collector.Cli\Fip.Strive.Harvester.Indexing.Collector.Cli.csproj", "{4A3FD940-AED8-452B-923F-284EBF03C264}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6_Host", "6_Host", "{66D60E99-2F79-4A28-A76C-445AD1E6EF87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.ServiceDefaults", "src\host\Fip.Strive.ServiceDefaults\Fip.Strive.ServiceDefaults.csproj", "{9BE399F1-AEDE-4151-93EF-F432EF7F143B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Indexing.Migrator", "src\harvest\Fip.Strive.Harvester.Indexing.Migrator\Fip.Strive.Harvester.Indexing.Migrator.csproj", "{A1894DCB-A9A1-4CF2-B906-B980405C4940}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Pipeline.Core", "src\harvest\Fip.Strive.Harvester.Pipeline.Core\Fip.Strive.Harvester.Pipeline.Core.csproj", "{0DCEF4A4-BA9D-4365-BC50-CEF3990EB3E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Indexing.Migrator.Cli", "src\harvest\Fip.Strive.Harvester.Indexing.Migrator.Cli\Fip.Strive.Harvester.Indexing.Migrator.Cli.csproj", "{A1894DCB-A9A1-4CF2-B906-B980405C4940}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Pipeline.Unzipper.Cli", "src\harvest\Fip.Strive.Harvester.Pipeline.Unzipper.Cli\Fip.Strive.Harvester.Pipeline.Unzipper.Cli.csproj", "{DE700889-72A1-4E5D-8CB4-AA4D519B372F}"
 EndProject
@@ -119,6 +117,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{79FE0C61-0056-4C31-8462-54E07D95A773}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Ingestion.Application.UnitTests", "test\ingestion\Fip.Strive.Ingestion.Application.UnitTests\Fip.Strive.Ingestion.Application.UnitTests.csproj", "{B5524089-73D3-43CE-B8C7-112315AAE894}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Indexing.Primer.Cli", "src\harvest\Fip.Strive.Harvester.Indexing.Primer.Cli\Fip.Strive.Harvester.Indexing.Primer.Cli.csproj", "{A0F8FAD5-B9A6-45C9-9AD1-C15FCC1099F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fip.Strive.Harvester.Pipeline.Sanitizer.Cli", "src\harvest\Fip.Strive.Harvester.Pipeline.Sanitizer.Cli\Fip.Strive.Harvester.Pipeline.Sanitizer.Cli.csproj", "{27B6D377-5DED-4F02-B269-6B68DC870E74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -202,10 +204,6 @@ Global
 		{A1894DCB-A9A1-4CF2-B906-B980405C4940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1894DCB-A9A1-4CF2-B906-B980405C4940}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1894DCB-A9A1-4CF2-B906-B980405C4940}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0DCEF4A4-BA9D-4365-BC50-CEF3990EB3E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0DCEF4A4-BA9D-4365-BC50-CEF3990EB3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0DCEF4A4-BA9D-4365-BC50-CEF3990EB3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0DCEF4A4-BA9D-4365-BC50-CEF3990EB3E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DE700889-72A1-4E5D-8CB4-AA4D519B372F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE700889-72A1-4E5D-8CB4-AA4D519B372F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE700889-72A1-4E5D-8CB4-AA4D519B372F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -226,6 +224,14 @@ Global
 		{B5524089-73D3-43CE-B8C7-112315AAE894}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5524089-73D3-43CE-B8C7-112315AAE894}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5524089-73D3-43CE-B8C7-112315AAE894}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0F8FAD5-B9A6-45C9-9AD1-C15FCC1099F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0F8FAD5-B9A6-45C9-9AD1-C15FCC1099F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0F8FAD5-B9A6-45C9-9AD1-C15FCC1099F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0F8FAD5-B9A6-45C9-9AD1-C15FCC1099F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27B6D377-5DED-4F02-B269-6B68DC870E74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27B6D377-5DED-4F02-B269-6B68DC870E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27B6D377-5DED-4F02-B269-6B68DC870E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27B6D377-5DED-4F02-B269-6B68DC870E74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -261,7 +267,6 @@ Global
 		{C7257019-2F1F-478E-93E7-5B425599CE78} = {66D60E99-2F79-4A28-A76C-445AD1E6EF87}
 		{9BE399F1-AEDE-4151-93EF-F432EF7F143B} = {66D60E99-2F79-4A28-A76C-445AD1E6EF87}
 		{A1894DCB-A9A1-4CF2-B906-B980405C4940} = {792E3139-2AC7-4EBA-93BC-567295D937BB}
-		{0DCEF4A4-BA9D-4365-BC50-CEF3990EB3E0} = {E90F5E30-9B2E-4569-AEC4-DA91148F61FF}
 		{3B4E9A1A-A603-4969-9EF0-D7DE8D70F48A} = {E90F5E30-9B2E-4569-AEC4-DA91148F61FF}
 		{FC7091E9-5B3C-4C79-B88E-DCCF4466B6A2} = {3B4E9A1A-A603-4969-9EF0-D7DE8D70F48A}
 		{DE700889-72A1-4E5D-8CB4-AA4D519B372F} = {3B4E9A1A-A603-4969-9EF0-D7DE8D70F48A}
@@ -270,6 +275,8 @@ Global
 		{58FE3195-3518-43C1-9037-4DC431893C23} = {3B4E9A1A-A603-4969-9EF0-D7DE8D70F48A}
 		{79FE0C61-0056-4C31-8462-54E07D95A773} = {761ECD08-C06A-4480-B360-D0ADA9CAFC92}
 		{B5524089-73D3-43CE-B8C7-112315AAE894} = {79FE0C61-0056-4C31-8462-54E07D95A773}
+		{A0F8FAD5-B9A6-45C9-9AD1-C15FCC1099F5} = {792E3139-2AC7-4EBA-93BC-567295D937BB}
+		{27B6D377-5DED-4F02-B269-6B68DC870E74} = {E90F5E30-9B2E-4569-AEC4-DA91148F61FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46811040-8B24-4BF4-AB28-F9D632961267}

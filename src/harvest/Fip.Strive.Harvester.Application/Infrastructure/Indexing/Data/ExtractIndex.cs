@@ -12,8 +12,6 @@ public class ExtractIndex
 
     public int Version { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public virtual FileInstance? File { get; set; }
-    public virtual ICollection<DataIndex> Data { get; set; } = [];
 
     public static ExtractIndex From(int version, TypedSignal inSignal) =>
         new ExtractIndex

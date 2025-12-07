@@ -12,6 +12,5 @@ public class ExtractInstanceConfig : IEntityTypeConfiguration<ExtractIndex>
         builder.HasIndex(x => x.Filepath);
         builder.HasIndex(x => x.Source);
         builder.HasIndex(x => x.Version);
-        builder.HasMany(x => x.Data).WithOne(x => x.Index).HasForeignKey(x => x.ParentHash);
     }
 }

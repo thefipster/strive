@@ -11,10 +11,6 @@ public class FileInstance
 
     public virtual ZipIndex? ParentZip { get; set; }
 
-    public virtual SourceIndex? Source { get; set; }
-
-    public virtual ExtractIndex? Extract { get; set; }
-
     public static FileInstance From(string file, string hash, ScanSignal inSignal) =>
         new FileInstance
         {

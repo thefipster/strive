@@ -14,7 +14,6 @@ namespace Fip.Strive.Harvester.Pipeline.Classify.Cli.Application;
 public class Worker(
     IPubSubClient client,
     IClassificationService classifier,
-    ISetHashIndex<FileIndex> fileIndexer,
     ISetNameIndex<SourceIndex> sourceIndexer,
     IOptions<Config> config,
     ILogger<Worker> logger
@@ -32,20 +31,12 @@ public class Worker(
 
         var inSignal = FileSignal.From(inMessage);
 
-        await PublishFile(inSignal);
-
         var result = classifier.Classify(inSignal.Filepath, ct);
 
         var source = await PublishClassification(result, inSignal);
 
         if (source.Source != DataSources.NoSource)
             await PublishSignal(source, inSignal);
-    }
-
-    private async Task PublishFile(FileSignal inSignal)
-    {
-        var index = FileIndex.From(inSignal);
-        await fileIndexer.SetHashAsync(index);
     }
 
     private async Task<SourceIndex> PublishClassification(

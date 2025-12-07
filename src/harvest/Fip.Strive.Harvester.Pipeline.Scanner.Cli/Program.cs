@@ -1,15 +1,16 @@
-﻿using Fip.Strive.Harvester.Pipeline.Core;
+﻿using Fip.Strive.Harvester.Application.Infrastructure;
 using Fip.Strive.Harvester.Pipeline.Scanner.Cli;
 using Microsoft.Extensions.Hosting;
 
 Console.WriteLine("Harvester Pipeline - Scanner init");
 
 var builder = Host.CreateApplicationBuilder(args);
+var configuration = builder.Configuration;
 
 builder.AddServiceDefaults();
 
-builder.AddRabbit();
-builder.AddRedis();
+builder.Services.AddRabbit(configuration);
+builder.Services.AddRedis(configuration);
 
 builder.AddOptions();
 builder.AddServices();

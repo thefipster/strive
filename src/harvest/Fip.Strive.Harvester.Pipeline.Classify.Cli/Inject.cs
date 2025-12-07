@@ -17,7 +17,6 @@ public static class Inject
         builder.Services.AddIngestionFeature();
 
         builder.Services.AddSingleton<IPubSubClient, PubSubClient>();
-        builder.Services.AddSingleton<ISetHashIndex<FileIndex>, FileHashWriter>();
         builder.Services.AddSingleton<ISetNameIndex<SourceIndex>, SourceHashWriter>();
         builder.Services.AddSingleton<IProcessor, Worker>();
         builder.Services.AddSingleton<Service>();
