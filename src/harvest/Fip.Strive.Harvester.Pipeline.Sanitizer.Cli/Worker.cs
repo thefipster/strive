@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
+using Fip.Strive.Harvester.Application.Core.PubSub.Models;
 using Fip.Strive.Harvester.Application.Defaults;
 using Fip.Strive.Harvester.Application.Infrastructure.Pipeline;
 using Fip.Strive.Harvester.Application.Infrastructure.Pipeline.Data;
@@ -15,7 +16,7 @@ public class Worker(ISubClient client, ILogger<Worker> logger, IServiceScopeFact
 {
     private readonly DirectExchange _quarantine = HarvestPipelineExchange.Quarantine;
 
-    private readonly ConcurrentQueue<string> _buffer = new();
+    private readonly ConcurrentQueue<QuarantinedMessage> _buffer = new();
     private readonly SemaphoreSlim _signal = new(0, int.MaxValue);
 
     protected override async Task ExecuteAsync(CancellationToken ct)
@@ -40,18 +41,15 @@ public class Worker(ISubClient client, ILogger<Worker> logger, IServiceScopeFact
         {
             while (!ct.IsCancellationRequested)
             {
-                // wait up to 10s for at least one message
                 await _signal.WaitAsync(TimeSpan.FromSeconds(10), ct);
 
-                // drain queue
-                var batch = new List<string>(capacity: 1024);
+                var batch = new List<QuarantinedMessage>();
                 while (_buffer.TryDequeue(out var msg))
                     batch.Add(msg);
 
                 if (batch.Count == 0)
                     continue;
 
-                // write batch
                 using var scope = scopeFactory.CreateScope();
                 var context = scope.ServiceProvider.GetRequiredService<PipelineContext>();
 
@@ -74,7 +72,7 @@ public class Worker(ISubClient client, ILogger<Worker> logger, IServiceScopeFact
         catch (OperationCanceledException)
         {
             // graceful shutdown: flush remaining messages
-            var remaining = new List<string>();
+            var remaining = new List<QuarantinedMessage>();
             while (_buffer.TryDequeue(out var msg))
                 remaining.Add(msg);
 
@@ -98,8 +96,14 @@ public class Worker(ISubClient client, ILogger<Worker> logger, IServiceScopeFact
 
     private Task ClientOnMessageReceived(string message, CancellationToken ct)
     {
-        _buffer.Enqueue(message);
+        var payload = QuarantinedMessage.FromJson(message);
+
+        if (payload is null)
+            return Task.CompletedTask;
+
+        _buffer.Enqueue(payload);
         _ = _signal.Release();
+
         return Task.CompletedTask;
     }
 }

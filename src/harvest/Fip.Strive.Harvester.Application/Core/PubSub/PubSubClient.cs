@@ -1,6 +1,8 @@
 using System.Text;
+using System.Text.Json;
 using Fip.Strive.Harvester.Application.Core.PubSub.Contracts;
 using Fip.Strive.Harvester.Application.Core.PubSub.Models;
+using Fip.Strive.Harvester.Application.Core.Signals;
 using Fip.Strive.Harvester.Application.Defaults;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -59,7 +61,8 @@ public class PubSubClient(IConnectionFactory factory, ILogger<PubSubClient> logg
                 exchange.Queue
             );
 
-            var error = QuarantinedMessage.From(message, ex);
+            var signal = JsonSerializer.Deserialize<Signal>(message);
+            var error = QuarantinedMessage.From(message, signal, ex);
             var errorMsg = error.ToJson();
 
             await PublishAsync(errorMsg, quarantine);
