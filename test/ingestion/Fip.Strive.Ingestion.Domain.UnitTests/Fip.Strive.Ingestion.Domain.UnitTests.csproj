@@ -16,6 +16,6 @@
     <Using Include="Xunit" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\ingestion\Fip.Strive.Ingestion.Application\Fip.Strive.Ingestion.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\ingestion\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj" />
   </ItemGroup>
 </Project>

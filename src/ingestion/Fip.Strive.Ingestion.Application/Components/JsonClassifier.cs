@@ -44,7 +44,7 @@ public abstract class JsonClassifier(
         {
             Filepath = probe.Filepath,
             Source = Source,
-            Datetime = range != DateRanges.Multi ? date : DateTime.MinValue,
+            Datetime = range != DateRanges.Multi ? date : null,
             Datetype = range,
         };
     }

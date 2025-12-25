@@ -64,6 +64,18 @@ public class FileExtraction
         Series = series;
     }
 
+    public FileExtraction(
+        DataSources source,
+        string sourceFile,
+        DateTime timestamp,
+        DataKind kind,
+        List<UnifiedEvent> events
+    )
+        : this(source, sourceFile, timestamp, kind)
+    {
+        Events = events;
+    }
+
     public DateTime Timestamp { get; set; }
 
     public DataKind Kind { get; set; }

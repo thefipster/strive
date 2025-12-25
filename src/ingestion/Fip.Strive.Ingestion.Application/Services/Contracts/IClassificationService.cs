@@ -6,7 +6,7 @@ namespace Fip.Strive.Ingestion.Application.Services.Contracts;
 
 public interface IClassificationService
 {
-    List<ClassificationResult> Classify(string filepath, CancellationToken ct);
+    List<ClassificationResult> Classify(string filepath, CancellationToken ct = default);
 
     IFileClassifier? Find(DataSources source);
 
