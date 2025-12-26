@@ -102,6 +102,9 @@ public class FileExtraction
     public void AddAttribute(Parameters parameter, double value) =>
         AddAttribute(parameter, value.ToString(CultureInfo.InvariantCulture));
 
+    public void AddAttribute(Parameters parameter, DateTime value) =>
+        AddAttribute(parameter, value.ToString(DateHelper.SecondFormat));
+
     public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
 
     public static Dictionary<Parameters, string> EmptyAttributes => new();

@@ -35,15 +35,10 @@ public class PolarFlowSleepResultClassifier : IFileClassifier
                 "Couldn't find required properties."
             );
 
-        var date = values["night"];
-        if (string.IsNullOrWhiteSpace(date))
-            throw new ClassificationException(probe.Filepath, Source, "Couldn't find date value.");
-
         return new ImportClassification
         {
             Filepath = probe.Filepath,
             Source = Source,
-            Datetime = DateTime.Parse(date),
             Datetype = DateRanges.Multi,
         };
     }
