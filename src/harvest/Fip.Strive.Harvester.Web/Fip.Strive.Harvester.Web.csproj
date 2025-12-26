@@ -3,13 +3,13 @@
     <NoWarn>$(NoWarn);CS8669</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj" />
-    <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj" />
+    <ProjectReference Include="..\Fip.Strive.Harvester.Application\Fip.Strive.Harvester.Application.csproj" />
   </ItemGroup>
 </Project>
