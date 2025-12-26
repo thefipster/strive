@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Fip.Strive.Core.Ingestion.Domain.Enums;
@@ -64,6 +65,18 @@ public class FileExtraction
         Series = series;
     }
 
+    public FileExtraction(
+        DataSources source,
+        string sourceFile,
+        DateTime timestamp,
+        DataKind kind,
+        List<UnifiedEvent> events
+    )
+        : this(source, sourceFile, timestamp, kind)
+    {
+        Events = events;
+    }
+
     public DateTime Timestamp { get; set; }
 
     public DataKind Kind { get; set; }
@@ -80,10 +93,16 @@ public class FileExtraction
 
     public List<UnifiedEvent> Events { get; set; } = new();
 
-    public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
-
     public void AddAttribute(Parameters parameter, string value) =>
         Attributes.Add(parameter, value);
+
+    public void AddAttribute(Parameters parameter, long value) =>
+        AddAttribute(parameter, value.ToString());
+
+    public void AddAttribute(Parameters parameter, double value) =>
+        AddAttribute(parameter, value.ToString(CultureInfo.InvariantCulture));
+
+    public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
 
     public static Dictionary<Parameters, string> EmptyAttributes => new();
 
@@ -116,10 +135,7 @@ public class FileExtraction
     {
         Hash = ToHashString();
         var filename = $"{Timestamp.ToRangeString(Kind)}-{Source}-{Hash}.json";
-        var datePath =
-            Kind == DataKind.Day
-                ? Timestamp.ToString(DateHelper.DayFormat)
-                : Timestamp.ToString(DateHelper.FsMillisecondFormat);
+        var datePath = Timestamp.GetPath(Kind);
         var path = Path.Combine(rootDir, datePath);
         var newFile = Path.Combine(path, filename);
         var json = JsonSerializer.Serialize(this);

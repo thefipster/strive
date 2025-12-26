@@ -9,13 +9,12 @@ public static class Registration
 {
     public static void AddIngestionFeature(this IServiceCollection services)
     {
-        services.Scan(scan =>
-            scan.FromAssembliesOf(typeof(IFileClassifier))
-                .AddClasses(classes => classes.AssignableTo<IFileClassifier>())
-                .AsImplementedInterfaces()
-                .WithScopedLifetime()
-        );
+        services.AddClassificationFeature();
+        services.AddExtractionFeature();
+    }
 
+    public static void AddExtractionFeature(this IServiceCollection services)
+    {
         services.Scan(scan =>
             scan.FromAssembliesOf(typeof(IFileExtractor))
                 .AddClasses(classes => classes.AssignableTo<IFileExtractor>())
@@ -23,7 +22,18 @@ public static class Registration
                 .WithScopedLifetime()
         );
 
-        services.AddScoped<IClassifier, Classifier>();
-        services.AddScoped<IExtractor, Extractor>();
+        services.AddScoped<IExtractionService, ExtractionService>();
+    }
+
+    public static void AddClassificationFeature(this IServiceCollection services)
+    {
+        services.Scan(scan =>
+            scan.FromAssembliesOf(typeof(IFileClassifier))
+                .AddClasses(classes => classes.AssignableTo<IFileClassifier>())
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
+
+        services.AddScoped<IClassificationService, ClassificationService>();
     }
 }

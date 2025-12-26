@@ -8,6 +8,5 @@ public class TheFipsterAppWeightClassifier()
     : JsonClassifier(
         DataSources.TheFipsterAppWeight,
         DateRanges.Multi,
-        ["Weight", "Reason", "Date"],
-        "Date"
+        ["Weight", "Reason", "Date"]
     );

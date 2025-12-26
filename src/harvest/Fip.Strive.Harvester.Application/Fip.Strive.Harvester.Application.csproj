@@ -4,6 +4,7 @@
     <PackageReference Include="LiteDB" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
@@ -12,19 +13,21 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Quartz.Extensions.Hosting" />
+    <PackageReference Include="RabbitMQ.Client" />
     <PackageReference Include="Scrutor" />
+    <PackageReference Include="StackExchange.Redis" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\Fip.Strive.Core.Application\Fip.Strive.Core.Application.csproj" />
-    <ProjectReference Include="..\..\indexing\Fip.Strive.Indexing.Application\Fip.Strive.Indexing.Application.csproj" />
     <ProjectReference Include="..\..\ingestion\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj" />
     <ProjectReference Include="..\..\ingestion\Fip.Strive.Ingestion.Application\Fip.Strive.Ingestion.Application.csproj" />
-    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Application\Fip.Strive.Queue.Application.csproj" />
-    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
-    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Storage.Lite\Fip.Strive.Queue.Storage.Lite.csproj" />
-    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Storage.Memory\Fip.Strive.Queue.Storage.Memory.csproj" />
-    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Storage.Postgres\Fip.Strive.Queue.Storage.Postgres.csproj" />
-    <ProjectReference Include="..\Fip.Strive.Harvester.Domain\Fip.Strive.Harvester.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\Indexing\Migrations\" />
+    <Folder Include="Infrastructure\Pipeline\Migrations\" />
+    <Folder Include="Infrastructure\Pipeline\Repositories\" />
   </ItemGroup>
 </Project>

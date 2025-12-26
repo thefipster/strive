@@ -25,10 +25,10 @@ public class TheFipsterAppWeightExtractor : IFileExtractor
         if (weights.Count == 0)
             throw new ExtractionException(filepath, "No weights found.");
 
-        var dailyWeights = weights.GroupBy(x => x.Date.Date);
+        var dateGroups = weights.GroupBy(x => x.Timestamp.UtcDateTime.Date);
         var results = new List<FileExtraction>();
 
-        foreach (var group in dailyWeights)
+        foreach (var group in dateGroups)
         {
             var date = group.Key;
             var result = new FileExtraction(
@@ -42,7 +42,7 @@ public class TheFipsterAppWeightExtractor : IFileExtractor
 
             foreach (var item in group)
             {
-                var timestamp = item.Date;
+                var timestamp = item.Timestamp;
                 var weight = item.Weight.ToString(CultureInfo.InvariantCulture);
 
                 result.Series[Parameters.Bodyweight].Add(weight);
@@ -52,7 +52,7 @@ public class TheFipsterAppWeightExtractor : IFileExtractor
 
                 var weightEvent = new UnifiedEvent(
                     EventTypes.Bodyweight,
-                    timestamp,
+                    timestamp.UtcDateTime,
                     item.Reason,
                     Parameters.Bodyweight,
                     weight

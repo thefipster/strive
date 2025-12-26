@@ -1,3 +1,4 @@
+using Fip.Strive.Core.Application.Features.PubSub.Models;
 using Fip.Strive.Queue.Domain.Models;
 
 namespace Fip.Strive.Queue.Application.UnitTests.Components;

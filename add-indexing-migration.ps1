@@ -11,9 +11,9 @@ if (-not $MigrationName -and $args.Count -gt 0) {
 if (-not $MigrationName) {
     Write-Host "Error: Migration name not supplied." -ForegroundColor Red
     Write-Host ""
-    Write-Host "Usage: .\add-migration.ps1 <MigrationName>"
-    Write-Host "Example: .\add-migration.ps1 InitialCreate"
+    Write-Host "Usage: .\add-indexing-migration.ps1 <MigrationName>"
+    Write-Host "Example: .\add-indexing-migration.ps1 InitialCreate"
     exit 1
 }
 
-dotnet ef migrations add "$MigrationName" -p .\src\indexing\Fip.Strive.Indexing.Application -s .\src\harvest\Fip.Strive.Harvester.Web -c IndexPgContext -o Infrastructure/Postgres/Migrations
+dotnet ef migrations add "$MigrationName" -p .\src\harvest\Fip.Strive.Harvester.Application -s .\src\harvest\Fip.Strive.Harvester.Indexing.Migrator.Cli -c IndexContext -o Infrastructure/Indexing/Migrations

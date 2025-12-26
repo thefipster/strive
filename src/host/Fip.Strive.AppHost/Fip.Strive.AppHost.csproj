@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.5.2" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>578399fb-5d96-472c-b416-a1ee0cff38fb</UserSecretsId>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Migrator.Cli\Fip.Strive.Harvester.Indexing.Migrator.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Collector.Cli\Fip.Strive.Harvester.Indexing.Collector.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Indexing.Primer.Cli\Fip.Strive.Harvester.Indexing.Primer.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Assimilate.Cli\Fip.Strive.Harvester.Pipeline.Assimilate.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Classify.Cli\Fip.Strive.Harvester.Pipeline.Classify.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Migrator.Cli\Fip.Strive.Harvester.Pipeline.Migrator.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Sanitizer.Cli\Fip.Strive.Harvester.Pipeline.Sanitizer.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Scanner.Cli\Fip.Strive.Harvester.Pipeline.Scanner.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.Unzipper.Cli\Fip.Strive.Harvester.Pipeline.Unzipper.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Pipeline.ZipGate.Cli\Fip.Strive.Harvester.Pipeline.ZipGate.Cli.csproj" />
+    <ProjectReference Include="..\..\harvest\Fip.Strive.Harvester.Web\Fip.Strive.Harvester.Web.csproj" />
+    <ProjectReference Include="..\..\portal\Fip.Strive.Portal.Web\Fip.Strive.Portal.Web.csproj" />
+    <ProjectReference Include="..\..\unify\Fip.Strive.Unifier.Web\Fip.Strive.Unifier.Web.csproj" />
+  </ItemGroup>
+</Project>

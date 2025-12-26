@@ -2,6 +2,7 @@
 {
     public enum DataSources
     {
+        NoSource = 0,
         PolarProTrainerHrm = 1001,
         PolarProTrainerPdd = 1002,
         RunGpsCsvV1 = 2001,
@@ -54,6 +55,7 @@
         GoogleFitbitWeight = 6027,
         GoogleFitbitCaloriesHeartrateZone = 6028,
         TheFipsterAppWeight = 7001,
+        TheFipsterAppPlog = 7002,
         WithingsBloodPressure = 8001,
         WithingsOther = 8002,
         WithingsSignal = 8003,

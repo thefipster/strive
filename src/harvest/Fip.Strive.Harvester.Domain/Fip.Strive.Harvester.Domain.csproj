@@ -1,6 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <ItemGroup>
-    <ProjectReference Include="..\..\ingestion\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj" />
-    <ProjectReference Include="..\..\queue\Fip.Strive.Queue.Domain\Fip.Strive.Queue.Domain.csproj" />
-  </ItemGroup>
-</Project>

@@ -8,7 +8,7 @@ namespace Fip.Strive.Core.Ingestion.Domain.Extensions
         public static string GetPath(this DateTime date, DataKind kind) =>
             kind switch
             {
-                DataKind.Day => $"{date:yyyy}_{date:MM}_{date:dd}",
+                DataKind.Day => $"{date:yyyy}\\{date:MM}\\{date:dd}",
                 DataKind.Session => $"{date:yyyy}\\{date:MM}\\{date:dd}\\{date:HH_mm}",
                 _ => string.Empty,
             };

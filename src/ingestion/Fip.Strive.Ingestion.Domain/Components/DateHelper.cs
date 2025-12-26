@@ -26,6 +26,22 @@ public static class DateHelper
         return DateTime.Parse(value);
     }
 
+    public static DateTime GetUtcDateFromGermanLocalTime(
+        int year,
+        int month,
+        int day,
+        int hour,
+        int minute = 0,
+        int second = 0
+    )
+    {
+        var localDateTime = new DateTime(year, month, day, hour, minute, second);
+        var germanTimeZone = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+        var offset = germanTimeZone.GetUtcOffset(localDateTime);
+        var germanTimeWithOffset = new DateTimeOffset(localDateTime, offset);
+        return germanTimeWithOffset.UtcDateTime;
+    }
+
     public static string FsMillisecondFormat => "yyyy-MM-ddTHH-mm-ss-fff";
     public static string MillisecondFormat => "yyyy-MM-ddTHH:mm:ss.fff";
     public static string SecondFormat => "s";
