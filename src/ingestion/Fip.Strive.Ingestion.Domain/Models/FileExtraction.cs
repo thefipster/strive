@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Fip.Strive.Core.Ingestion.Domain.Enums;
@@ -92,10 +93,16 @@ public class FileExtraction
 
     public List<UnifiedEvent> Events { get; set; } = new();
 
-    public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
-
     public void AddAttribute(Parameters parameter, string value) =>
         Attributes.Add(parameter, value);
+
+    public void AddAttribute(Parameters parameter, long value) =>
+        AddAttribute(parameter, value.ToString());
+
+    public void AddAttribute(Parameters parameter, double value) =>
+        AddAttribute(parameter, value.ToString(CultureInfo.InvariantCulture));
+
+    public void AddSeries(Parameters parameter) => Series.Add(parameter, []);
 
     public static Dictionary<Parameters, string> EmptyAttributes => new();
 

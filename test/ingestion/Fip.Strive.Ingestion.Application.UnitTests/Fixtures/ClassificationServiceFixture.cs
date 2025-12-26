@@ -8,7 +8,7 @@ namespace Fip.Strive.Ingestion.Application.UnitTests.Fixtures;
 public class ClassificationServiceFixture : IAsyncLifetime
 {
     private readonly ServiceProvider _serviceProvider;
-    public IClassificationService ClassificationService { get; private set; }
+    public IClassificationService Service { get; private set; }
 
     public ClassificationServiceFixture()
     {
@@ -19,7 +19,7 @@ public class ClassificationServiceFixture : IAsyncLifetime
 
         _serviceProvider = services.BuildServiceProvider();
 
-        ClassificationService = _serviceProvider.GetRequiredService<IClassificationService>();
+        Service = _serviceProvider.GetRequiredService<IClassificationService>();
     }
 
     public Task InitializeAsync()

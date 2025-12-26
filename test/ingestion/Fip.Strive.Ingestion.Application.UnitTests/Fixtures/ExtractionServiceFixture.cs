@@ -8,7 +8,7 @@ namespace Fip.Strive.Ingestion.Application.UnitTests.Fixtures;
 public class ExtractionServiceFixture : IAsyncLifetime
 {
     private readonly ServiceProvider _serviceProvider;
-    public IExtractionService ExtractionService { get; private set; }
+    public IExtractionService Service { get; private set; }
 
     public ExtractionServiceFixture()
     {
@@ -19,7 +19,7 @@ public class ExtractionServiceFixture : IAsyncLifetime
 
         _serviceProvider = services.BuildServiceProvider();
 
-        ExtractionService = _serviceProvider.GetRequiredService<IExtractionService>();
+        Service = _serviceProvider.GetRequiredService<IExtractionService>();
     }
 
     public Task InitializeAsync()

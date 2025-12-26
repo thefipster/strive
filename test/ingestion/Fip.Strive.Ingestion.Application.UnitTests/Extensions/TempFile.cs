@@ -1,3 +1,5 @@
+using Fip.Strive.Ingestion.Domain.Components;
+
 namespace Fip.Strive.Ingestion.Application.UnitTests.Extensions;
 
 public sealed class TempFile : IDisposable
@@ -8,6 +10,8 @@ public sealed class TempFile : IDisposable
     {
         Filepath = path;
     }
+
+    public FileProbe GetProbe() => new(Filepath);
 
     public void Dispose()
     {

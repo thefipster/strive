@@ -1,4 +1,4 @@
-namespace Fip.Strive.Ingestion.Application.UnitTests.Data.TheFipsterApp;
+namespace Fip.Strive.Ingestion.Application.UnitTests.Vendors.TheFipsterApp.Plog;
 
 public class TheFipsterAppPlogTestData
 {
