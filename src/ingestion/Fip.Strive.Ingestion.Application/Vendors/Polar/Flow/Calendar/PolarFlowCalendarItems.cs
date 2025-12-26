@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Fip.Strive.Core.Application.Converter;
 using Fip.Strive.Ingestion.Application.Vendors.Polar.Flow.Models;
 
 namespace Fip.Strive.Ingestion.Application.Vendors.Polar.Flow.Calendar;
@@ -51,5 +52,6 @@ public class Weight
     public double Value { get; set; }
 
     [JsonPropertyName("date")]
+    [JsonConverter(typeof(UtcDateTimeConverter))]
     public DateTime Timestamp { get; set; }
 }

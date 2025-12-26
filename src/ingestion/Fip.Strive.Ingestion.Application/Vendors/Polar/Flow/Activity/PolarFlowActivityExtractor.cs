@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Fip.Strive.Core.Ingestion.Domain.Enums;
 using Fip.Strive.Ingestion.Application.Contracts;
 using Fip.Strive.Ingestion.Domain.Components;
@@ -117,12 +116,18 @@ public class PolarFlowActivityExtractor(ILogger<PolarFlowActivityExtractor> logg
         var result = new FileExtraction(Source, filepath, activityDate, DataKind.Day);
         result.AddSeries(Parameters.Timestamp);
         result.AddSeries(Parameters.Steps);
+        int count = 0;
 
         foreach (var sample in samples)
         {
-            var timestamp = activityDate.AddSeconds(sample.LocalTime.TotalSeconds);
+            var timestamp = sample.LocalTime.HasValue
+                ? activityDate.AddSeconds(sample.LocalTime.Value.TotalSeconds)
+                : activityDate.Add(TimeSpan.FromMinutes(count));
+
             result.Series[Parameters.Timestamp].Add(timestamp.ToString(DateHelper.SecondFormat));
             result.Series[Parameters.Steps].Add(((int)sample.Value).ToString());
+
+            count++;
         }
 
         return result;
@@ -137,12 +142,18 @@ public class PolarFlowActivityExtractor(ILogger<PolarFlowActivityExtractor> logg
         var result = new FileExtraction(Source, filepath, activityDate, DataKind.Day);
         result.AddSeries(Parameters.Timestamp);
         result.AddSeries(Parameters.MetabolicRate);
+        int count = 0;
 
         foreach (var sample in samples)
         {
-            var timestamp = activityDate.AddSeconds(sample.LocalTime.TotalSeconds);
+            var timestamp = sample.LocalTime.HasValue
+                ? activityDate.AddSeconds(sample.LocalTime.Value.TotalSeconds)
+                : activityDate.Add(TimeSpan.FromSeconds(count * 30));
+
             result.Series[Parameters.Timestamp].Add(timestamp.ToString(DateHelper.SecondFormat));
             result.Series[Parameters.MetabolicRate].Add(((int)sample.Value).ToString());
+
+            count++;
         }
 
         return result;

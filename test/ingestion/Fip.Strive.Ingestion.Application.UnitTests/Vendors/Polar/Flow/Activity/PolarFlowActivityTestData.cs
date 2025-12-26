@@ -52,11 +52,17 @@ public class PolarFlowActivityTestData
             ""mets"": [
               {
                 ""value"": 0.875
+              },
+              {
+                ""value"": 1.2
               }
             ],
             ""steps"": [
               {
                 ""value"": 12
+              },
+              {
+                ""value"": 5
               }
             ],
             ""metSources"": [

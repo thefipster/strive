@@ -2,14 +2,14 @@ using AwesomeAssertions;
 using Fip.Strive.Core.Ingestion.Domain.Enums;
 using Fip.Strive.Ingestion.Application.UnitTests.Extensions;
 using Fip.Strive.Ingestion.Application.UnitTests.Fixtures;
-using Fip.Strive.Ingestion.Application.Vendors.TheFipsterApp.Bodyweight;
-using Fip.Strive.Ingestion.Domain.Components;
+using Fip.Strive.Ingestion.Application.UnitTests.Vendors.Polar.Flow.Activity;
+using Fip.Strive.Ingestion.Application.Vendors.Polar.Flow.Activity;
+using Fip.Strive.Ingestion.Application.Vendors.Polar.Flow.Calendar;
 using Fip.Strive.Ingestion.Domain.Enums;
-using DateHelper = Fip.Strive.Ingestion.Application.UnitTests.Extensions.DateHelper;
 
-namespace Fip.Strive.Ingestion.Application.UnitTests.Vendors.TheFipsterApp.Bodyweight;
+namespace Fip.Strive.Ingestion.Application.UnitTests.Vendors.Polar.Flow.Calendar;
 
-public class TheFipsterAppWeightTests(
+public class PolarFlowCalendarTests(
     ExtractionServiceFixture extractionFixture,
     ClassificationServiceFixture classificationFixture
 ) : IClassFixture<ClassificationServiceFixture>, IClassFixture<ExtractionServiceFixture>
@@ -18,12 +18,12 @@ public class TheFipsterAppWeightTests(
     public void Classify_WithInstance_Classifies()
     {
         // Arrange
-        var classifier = new TheFipsterAppWeightClassifier();
+        var classifier = new PolarFlowCalendarItemsClassifier();
         using var file = TempFile.Create(
-            TheFipsterAppWeightTestData.WeightJsonWithOneEntry,
-            TheFipsterAppWeightTestData.Extension
+            PolarFlowCalendarTestData.File,
+            PolarFlowCalendarTestData.Extension
         );
-        var probe = new FileProbe(file.Filepath);
+        var probe = file.GetProbe();
 
         // Act
         var result = classifier.Classify(probe);
@@ -31,7 +31,7 @@ public class TheFipsterAppWeightTests(
         // Assert
         result.Should().NotBeNull();
         result.Filepath.Should().Be(file.Filepath);
-        result.Source.Should().Be(DataSources.TheFipsterAppWeight);
+        result.Source.Should().Be(DataSources.PolarFlowCalendarItems);
         result.Datetype.Should().Be(DateRanges.Multi);
         result.Datetime.Should().BeNull();
     }
@@ -41,8 +41,8 @@ public class TheFipsterAppWeightTests(
     {
         // Arrange
         using var file = TempFile.Create(
-            TheFipsterAppWeightTestData.WeightJsonWithOneEntry,
-            TheFipsterAppWeightTestData.Extension
+            PolarFlowCalendarTestData.File,
+            PolarFlowCalendarTestData.Extension
         );
 
         // Act
@@ -52,25 +52,23 @@ public class TheFipsterAppWeightTests(
         results.Should().NotBeNull();
         results.Should().NotBeEmpty();
         results.Where(x => x.IsMatch).Should().HaveCount(1);
-        results.First(x => x.IsMatch).Source.Should().Be(DataSources.TheFipsterAppWeight);
+        results.First(x => x.IsMatch).Source.Should().Be(DataSources.PolarFlowCalendarItems);
     }
 
     [Fact]
     public async Task Extract_WithService_HasTimestamp()
     {
         // Arrange
-        var expectedDate = DateHelper.ParseDateAsUtc("2025-10-23");
-        var expectedEvent = new DateTime(2025, 10, 23, 10, 34, 56, DateTimeKind.Utc);
-
+        var expectedDate = DateHelper.ParseDateAsUtc("2016-07-09");
         using var file = TempFile.Create(
-            TheFipsterAppWeightTestData.WeightJsonWithOneEntry,
-            TheFipsterAppWeightTestData.Extension
+            PolarFlowCalendarTestData.File,
+            PolarFlowCalendarTestData.Extension
         );
 
         // Act
         var results = await extractionFixture.Service.ExtractAsync(
             file.Filepath,
-            DataSources.TheFipsterAppWeight
+            DataSources.PolarFlowCalendarItems
         );
 
         // Assert
@@ -78,11 +76,9 @@ public class TheFipsterAppWeightTests(
 
         results.Extractions.Should().NotBeNull();
         results.Extractions.Should().HaveCount(1);
-        results.Extractions.First().Kind.Should().Be(DataKind.Day);
         results.Extractions.First().Timestamp.Should().Be(expectedDate);
 
-        results.Extractions.First().Events.Should().NotBeNull();
-        results.Extractions.First().Events.Should().HaveCount(1);
-        results.Extractions.First().Events.First().Timestamp.Should().Be(expectedEvent);
+        results.Extractions.First().Attributes.Should().NotBeNull();
+        results.Extractions.First().Attributes.Should().HaveCount(1);
     }
 }

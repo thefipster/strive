@@ -3,9 +3,7 @@ using Fip.Strive.Core.Ingestion.Domain.Enums;
 using Fip.Strive.Ingestion.Application.UnitTests.Extensions;
 using Fip.Strive.Ingestion.Application.UnitTests.Fixtures;
 using Fip.Strive.Ingestion.Application.Vendors.Polar.Flow.Activity;
-using Fip.Strive.Ingestion.Domain.Components;
 using Fip.Strive.Ingestion.Domain.Enums;
-using DateHelper = Fip.Strive.Ingestion.Application.UnitTests.Extensions.DateHelper;
 
 namespace Fip.Strive.Ingestion.Application.UnitTests.Vendors.Polar.Flow.Activity;
 
@@ -24,11 +22,11 @@ public class PolarFlowActivityTests(
     )
     {
         // Arrange
-        var expectedDate = DateHelper.ParseDate(expectedDateString);
+        var expectedDate = DateHelper.ParseDateAsUtc(expectedDateString);
         var classifier = new PolarFlowActivityClassifier();
 
         using var file = TempFile.Create(fileContent, PolarFlowActivityTestData.Extension);
-        var probe = new FileProbe(file.Filepath);
+        var probe = file.GetProbe();
 
         // Act
         var result = classifier.Classify(probe);
@@ -70,7 +68,7 @@ public class PolarFlowActivityTests(
     )
     {
         // Arrange
-        var expectedDate = DateHelper.ParseDate(dateString);
+        var expectedDate = DateHelper.ParseDateAsUtc(dateString);
         using var file = TempFile.Create(fileContent, PolarFlowActivityTestData.Extension);
 
         // Act
@@ -85,7 +83,89 @@ public class PolarFlowActivityTests(
         results.Extractions.Should().NotBeNull();
         results.Extractions.Should().HaveCount(extractionCount);
 
-        results.Extractions.First().Kind.Should().Be(DataKind.Day);
-        results.Extractions.First().Timestamp.Should().Be(expectedDate);
+        results.Extractions.Select(x => x.Kind).Should().OnlyContain(x => x == DataKind.Day);
+        results.Extractions.Select(x => x.Timestamp).Should().OnlyContain(x => x == expectedDate);
+    }
+
+    [Fact]
+    public async Task ExtractVariant1_WithTimeInfo_HasTimestamp()
+    {
+        // Arrange
+        var expectedDate = DateHelper.ParseDateAsUtc("2014-10-27");
+        var expectedStepsTime = "2014-10-27 08:11:30Z";
+        var expectedMetsTime = "2014-10-27 08:10:30Z";
+
+        var fileContent = PolarFlowActivityTestData.FileVariant1;
+        using var file = TempFile.Create(fileContent, PolarFlowActivityTestData.Extension);
+
+        // Act
+        var results = await extractionFixture.Service.ExtractAsync(
+            file.Filepath,
+            DataSources.PolarFlowActivity
+        );
+
+        // Assert
+        results.Should().NotBeNull();
+
+        results.Extractions.Should().NotBeNull();
+        results.Extractions.Should().HaveCount(3);
+
+        results.Extractions.Select(x => x.Kind).Should().OnlyContain(x => x == DataKind.Day);
+        results.Extractions.Select(x => x.Timestamp).Should().OnlyContain(x => x == expectedDate);
+
+        results
+            .Extractions.First(x => x.Series.Keys.Contains(Parameters.Steps))
+            .Series[Parameters.Timestamp]
+            .First()
+            .Should()
+            .Be(expectedStepsTime);
+
+        results
+            .Extractions.First(x => x.Series.Keys.Contains(Parameters.MetabolicRate))
+            .Series[Parameters.Timestamp]
+            .First()
+            .Should()
+            .Be(expectedMetsTime);
+    }
+
+    [Fact]
+    public async Task ExtractVariant2_WithNoTimeInfo_HasTimestamp()
+    {
+        // Arrange
+        var expectedDate = DateHelper.ParseDateAsUtc("2016-05-09");
+        var expectedStepsTime = "2016-05-09 00:01:00Z";
+        var expectedMetsTime = "2016-05-09 00:00:30Z";
+
+        var fileContent = PolarFlowActivityTestData.FileVariant2;
+        using var file = TempFile.Create(fileContent, PolarFlowActivityTestData.Extension);
+
+        // Act
+        var results = await extractionFixture.Service.ExtractAsync(
+            file.Filepath,
+            DataSources.PolarFlowActivity
+        );
+
+        // Assert
+        results.Should().NotBeNull();
+
+        results.Extractions.Should().NotBeNull();
+        results.Extractions.Should().HaveCount(2);
+
+        results.Extractions.Select(x => x.Kind).Should().OnlyContain(x => x == DataKind.Day);
+        results.Extractions.Select(x => x.Timestamp).Should().OnlyContain(x => x == expectedDate);
+
+        results
+            .Extractions.First(x => x.Series.Keys.Contains(Parameters.Steps))
+            .Series[Parameters.Timestamp]
+            .Last()
+            .Should()
+            .Be(expectedStepsTime);
+
+        results
+            .Extractions.First(x => x.Series.Keys.Contains(Parameters.MetabolicRate))
+            .Series[Parameters.Timestamp]
+            .Last()
+            .Should()
+            .Be(expectedMetsTime);
     }
 }

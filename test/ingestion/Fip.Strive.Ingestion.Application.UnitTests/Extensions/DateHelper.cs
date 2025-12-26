@@ -2,7 +2,7 @@ namespace Fip.Strive.Ingestion.Application.UnitTests.Extensions;
 
 public class DateHelper
 {
-    public static DateTime ParseDate(string dateString)
+    public static DateTime ParseDateAsUtc(string dateString)
     {
         return DateTime.Parse(
             dateString,

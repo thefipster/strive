@@ -57,7 +57,7 @@ public class TheFipsterAppPlogTests(
     public async Task Extract_WithService_HasTimestamp()
     {
         // Arrange
-        var expectedDate = DateHelper.ParseDate("2025-11-03");
+        var expectedDate = DateHelper.ParseDateAsUtc("2025-11-03");
         var expectedEvent = new DateTime(2025, 11, 3, 7, 50, 0, DateTimeKind.Utc);
 
         using var file = TempFile.Create(
@@ -76,8 +76,8 @@ public class TheFipsterAppPlogTests(
 
         results.Extractions.Should().NotBeNull();
         results.Extractions.Should().HaveCount(1);
-        results.Extractions.First().Kind.Should().Be(DataKind.Day);
-        results.Extractions.First().Timestamp.Should().Be(expectedDate);
+        results.Extractions.Select(x => x.Kind).Should().OnlyContain(x => x == DataKind.Day);
+        results.Extractions.Select(x => x.Timestamp).Should().OnlyContain(x => x == expectedDate);
 
         results.Extractions.First().Events.Should().NotBeNull();
         results.Extractions.First().Events.Should().HaveCount(1);

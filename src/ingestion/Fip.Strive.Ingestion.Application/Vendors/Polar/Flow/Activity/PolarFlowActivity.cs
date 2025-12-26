@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Fip.Strive.Core.Application.Converter;
 using Fip.Strive.Ingestion.Application.Vendors.Polar.Flow.Models;
 
 namespace Fip.Strive.Ingestion.Application.Vendors.Polar.Flow.Activity;
@@ -9,6 +10,7 @@ public class PolarFlowActivity
     public required string ExportVersion { get; set; }
 
     [JsonPropertyName("date")]
+    [JsonConverter(typeof(UtcDateTimeConverter))]
     public DateTime Date { get; set; }
 
     [JsonPropertyName("summary")]
@@ -36,7 +38,7 @@ public class StepSamples
 public class Met
 {
     [JsonPropertyName("localTime")]
-    public TimeSpan LocalTime { get; set; }
+    public TimeSpan? LocalTime { get; set; }
 
     [JsonPropertyName("value")]
     public double Value { get; set; }
