@@ -7,6 +7,8 @@ public class UploadSignal() : EnumSignal(SignalTypes.UploadSignal)
     public required string Filepath { get; set; }
     public required string Hash { get; set; }
 
+    public string ToJson() => JsonSerializer.Serialize(this);
+
     public static UploadSignal From(string filepath, string hash) =>
         new UploadSignal { Filepath = filepath, Hash = hash };
 

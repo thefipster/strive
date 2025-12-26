@@ -9,7 +9,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Fip.Strive.Ingestion.Domain\Fip.Strive.Ingestion.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Vendors\" />
-  </ItemGroup>
 </Project>

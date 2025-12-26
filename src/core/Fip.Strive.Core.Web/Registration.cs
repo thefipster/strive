@@ -12,7 +12,7 @@ public static class Registration
         IConfiguration configuration
     )
     {
-        services.AddCompression(configuration);
+        services.AddCompression();
         services.AddMonitoring(configuration);
         services.AddHealthEndpoint();
         services.AddFrontend();

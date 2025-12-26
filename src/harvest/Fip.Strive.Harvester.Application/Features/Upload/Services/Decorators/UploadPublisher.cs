@@ -3,7 +3,6 @@ using Fip.Strive.Core.Application.Features.FileSystem.Services.Contracts;
 using Fip.Strive.Harvester.Application.Core.Signals;
 using Fip.Strive.Harvester.Application.Defaults;
 using Fip.Strive.Harvester.Application.Features.Upload.Services.Contracts;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 
 namespace Fip.Strive.Harvester.Application.Features.Upload.Services.Decorators;
@@ -57,7 +56,7 @@ public class UploadPublisher(
         );
 
         var signal = UploadSignal.From(filepath, hash);
-        var message = JsonConvert.SerializeObject(signal);
+        var message = signal.ToJson();
         var body = Encoding.UTF8.GetBytes(message);
         var props = new BasicProperties();
 
