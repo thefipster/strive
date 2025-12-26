@@ -8,6 +8,9 @@ test/data/
 ##
 ## Get latest from `dotnet new gitignore`
 
+#Aspire CLI
+.aspire/
+
 # dotenv files
 .env
 .idea
