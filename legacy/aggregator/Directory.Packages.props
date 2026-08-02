@@ -1,0 +1,9 @@
+<Project>
+  <!--
+    The ActivityAggregator generation predates central package management and pins its versions
+    inline. Opting out here keeps the root Directory.Packages.props from reaching these projects.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

@@ -24,7 +24,7 @@ The spec was written without knowledge of this repository or the homelab. These 
 
 | # | Step | Detail | Status |
 |---|---|---|---|
-| 0 | Restructure repository, new solution, UI shell | [step-0-restructure.md](roadmap/step-0-restructure.md) | ☐ |
+| 0 | Restructure repository, new solution, UI shell | [step-0-restructure.md](roadmap/step-0-restructure.md) | ☑ |
 | 1 | Zip upload & deduplication (L0) | [step-1-upload-dedup.md](roadmap/step-1-upload-dedup.md) | ☐ |
 | 2 | Job engine & status UI | [step-2-job-engine.md](roadmap/step-2-job-engine.md) | ☐ |
 | 3 | File classification | [step-3-classification.md](roadmap/step-3-classification.md) | ☐ |

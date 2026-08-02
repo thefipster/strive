@@ -26,7 +26,7 @@ function Run-Strive {
         [string]$Args
     )
     Write-Host "Starting"
-    dotnet run --project src/Fip.Strive.AppHost --configuration Release
+    dotnet run --project src/Fip.Strive.Web --configuration Release
 }
 
 function Clean-Strive {
@@ -35,7 +35,7 @@ function Clean-Strive {
         [string]$Args
     )
     Write-Host "Cleaning"
-    dotnet clean
+    dotnet clean strive.sln
 }
 
 function Test-Strive {
@@ -44,7 +44,7 @@ function Test-Strive {
         [string]$Args
     )
     Write-Host "Testing"
-    dotnet test --collect:"XPlat Code Coverage"
+    dotnet test strive.sln --collect:"XPlat Code Coverage"
     reportgenerator -reports:**/coverage*.xml -targetdir:logs/coverage -reporttypes:Html
     Start-Process (Join-Path $PSScriptRoot 'logs\coverage\index.html')
 }
