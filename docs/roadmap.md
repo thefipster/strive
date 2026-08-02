@@ -19,13 +19,15 @@ The spec was written without knowledge of this repository or the homelab. These 
 | Deployment | Single self-contained container | App container + Postgres/Timescale, orchestrated in the homelab. |
 | Parser shape | One parser per `(vendor, dataType)` file | **Two-tier extraction**: one *reader* per file format (parses the file once, streams decoded records) fanned out to many small *fact extractors* (one metric/series type each, individually versioned). |
 | Prototype migration (§14.7) | Open question | Classifiers and `FileProbe` are ported nearly as-is. Extractors are reshaped into readers + fact extractors, keeping their format knowledge. The distributed pipeline (RabbitMQ/Redis/worker CLIs) is **not** carried forward — everything runs in-process in the Blazor Server app, driven by a job table. |
+| Aspire | — (step 0 dropped it with the distributed runtime) | **Reinstated for development only** (step 1). `src/Fip.Strive.AppHost` exists so `dotnet run` brings up Postgres alongside the app; it orchestrates infrastructure, not a distributed pipeline. Nothing outside the AppHost references Aspire — the web app reads a plain connection string, so the production container is unchanged. |
+| File storage location | — | A single `Storage:DataDirectory` root (blobs and upload staging derived from it). Relative paths resolve against the content root; `Storage__DataDirectory` overrides it in a container. |
 
 ## Steps
 
 | # | Step | Detail | Status |
 |---|---|---|---|
 | 0 | Restructure repository, new solution, UI shell | [step-0-restructure.md](roadmap/step-0-restructure.md) | ☑ |
-| 1 | Zip upload & deduplication (L0) | [step-1-upload-dedup.md](roadmap/step-1-upload-dedup.md) | ☐ |
+| 1 | Zip upload & deduplication (L0) | [step-1-upload-dedup.md](roadmap/step-1-upload-dedup.md) | ☑ |
 | 2 | Job engine & status UI | [step-2-job-engine.md](roadmap/step-2-job-engine.md) | ☐ |
 | 3 | File classification | [step-3-classification.md](roadmap/step-3-classification.md) | ☐ |
 | 4 | Feature extraction (L1) | [step-4-extraction.md](roadmap/step-4-extraction.md) | ☐ |

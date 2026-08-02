@@ -7,9 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMonitoring(builder.Configuration);
 builder.Services.AddFrontend();
 builder.Services.AddHealthEndpoint();
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Configuration, builder.Environment.ContentRootPath);
 
 var app = builder.Build();
+
+app.EnsureStorageReady();
+await app.MigrateDatabaseAsync();
 
 app.UseRequestLogging();
 app.UseErrorHandling();
@@ -19,7 +22,7 @@ app.UseAntiforgery();
 app.UseFrontend<App>();
 app.UseHealthEndpoint();
 
-app.Run();
+await app.RunAsync();
 
 // Exposed so the test host can reference this assembly via WebApplicationFactory<Program>.
 public partial class Program;

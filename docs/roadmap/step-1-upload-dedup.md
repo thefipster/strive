@@ -22,10 +22,10 @@ Build the content-addressed raw layer: upload vendor takeout ZIPs, unpack them, 
 
 ## Tasks
 
-- [ ] Postgres wiring (EF Core, migrations) + `CatalogEntry`, `ImportPackage`, manifest tables
-- [ ] Streaming upload endpoint/page with progress
-- [ ] Unpack + SHA-256 + blob-store write with dedup-on-write
-- [ ] Package list and catalog browser pages
+- [x] Postgres wiring (EF Core, migrations) + `CatalogEntry`, `ImportPackage`, manifest tables
+- [x] Streaming upload endpoint/page with progress
+- [x] Unpack + SHA-256 + blob-store write with dedup-on-write
+- [x] Package list and catalog browser pages
 
 ## Done criterion
 
@@ -34,3 +34,32 @@ Upload **two real takeout packages with overlapping content**. The shared files 
 ## Out of scope
 
 - Classification, parsing, background jobs (step 2+).
+
+## Result
+
+**Schema** — `catalog_entries` keyed by the content hash itself (no surrogate key, so duplicate
+content is impossible by construction), `import_packages` with a unique index on `archive_hash`,
+and `package_files` as the manifest with a unique `(package, path)` index. Deleting a package
+cascades its manifest but is restricted from removing catalog entries: L0 blobs are immutable and
+other packages may still reference them.
+
+**Storage** — `Storage:DataDirectory` (default `data`, relative to the content root) with `blobs/`
+and `incoming/` derived from it. Resolved and created at startup, so a bad path fails fast and the
+resolved location is in the log. Override with `Storage__DataDirectory`.
+
+**Dedup** — blobs stream to a temp file while hashing, then move into `blobs/ab/cd/<hash>`; if that
+path already exists the write is discarded. Blobs land before the database commit, so a failed
+import leaves unreferenced bytes that the next attempt deduplicates against rather than a
+half-catalogued package. Archives are discarded after import — every file inside is already stored,
+so keeping the ZIP too would just double the disk bill.
+
+**Development** — `src/Fip.Strive.AppHost` (Aspire) brings up Postgres with a persistent data
+volume and pgAdmin on :8081. Development-time only; the web app takes a plain connection string.
+
+Verified against 13 real Polar Flow activity exports packaged as two overlapping archives, plus
+`test/Fip.Strive.IntegrationTests`, which runs the done criterion against real Postgres via
+Testcontainers on every CI run.
+
+**Known limits, deferred to step 2:** unpacking runs on the request path and a browser refresh
+mid-import abandons it (the job engine fixes this); the manifest is written with EF batch inserts,
+which will want `COPY` if a package ever carries six-figure file counts.
