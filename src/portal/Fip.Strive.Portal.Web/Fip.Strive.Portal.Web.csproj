@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <NoWarn>$(NoWarn);CS8669</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\core\Fip.Strive.Core.Web\Fip.Strive.Core.Web.csproj" />
-  </ItemGroup>
-</Project>

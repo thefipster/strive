@@ -2,28 +2,32 @@
 
 Aggregator for different activity sources from Polar, Garmin, Withings and some more...
 
+Strive is being rebuilt incrementally against the
+[wearable data platform spec](docs/wearable-data-platform-spec.md), one step at a time — see the
+[roadmap](docs/roadmap.md). Everything runs in a single in-process Blazor Server app.
+
 ## Helpful links
 
 [Filtered Issues](https://github.com/thefipster/strive/issues?q=is%3Aissue%20state%3Aopen%20-label%3Atask)
 
-# Vertical Slices
+## Repository layout
 
-## Core
+| Path | What |
+|---|---|
+| `src/Fip.Strive.Web` | Blazor Server app — the whole runtime. MudBlazor shell, health endpoint, Serilog. |
+| `src/Fip.Strive.Application` | Application layer: pipeline features land here as roadmap steps complete. |
+| `test/` | xunit test projects, one per source project. |
+| `docs/` | Spec, roadmap, and a detail document per roadmap step. |
+| `legacy/` | Two earlier generations, read-only reference. See [legacy/Readme.md](legacy/Readme.md). |
+| `testdata/` | Seed corpus of real exports. Local only, never committed. |
 
-Core functionality shared across apps.
+## Working with it
 
-## Harvester
+```powershell
+./make.ps1 build
+./make.ps1 run
+./make.ps1 test
+```
 
-Imports all activity data from exported zip files.
-
-## Unifier
-
-tbd: Merges all havested data into a single source of truth.
-
-## Dashboard
-
-tbd: Dashboard to display unified data.
-
-## Legacy
-
-Old activity-aggregator repo code
+Or plain `dotnet build strive.sln` / `dotnet test strive.sln`. Requires the .NET 10 SDK
+(pinned in `global.json`).

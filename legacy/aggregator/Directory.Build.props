@@ -1,0 +1,7 @@
+<Project>
+  <!--
+    Reference-only code from the ActivityAggregator generation. This file exists solely to stop
+    MSBuild walking up into the root Directory.Build.props: these projects declare their own
+    target frameworks and must not inherit the new solution's net10.0 settings.
+  -->
+</Project>
