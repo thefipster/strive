@@ -1,0 +1,94 @@
+@page "/catalog"
+
+<PageTitle>Catalog — Strive</PageTitle>
+
+<Headline Text="Catalog"/>
+
+<MudTextField T="string"
+              Value="_search"
+              ValueChanged="OnSearchChangedAsync"
+              DebounceInterval="300"
+              Immediate="true"
+              Placeholder="Filter by hash prefix or path…"
+              Adornment="Adornment.Start"
+              AdornmentIcon="@Icons.Material.Outlined.Search"
+              Variant="Variant.Outlined"
+              Clearable="true"
+              Class="mb-4"/>
+
+<MudTable @ref="_table"
+          T="CatalogEntryRow"
+          ServerData="LoadAsync"
+          Dense="true"
+          Hover="true"
+          Breakpoint="Breakpoint.Sm"
+          RowsPerPage="25">
+    <HeaderContent>
+        <MudTh>Hash</MudTh>
+        <MudTh Style="text-align: right">Size</MudTh>
+        <MudTh>First seen</MudTh>
+        <MudTh Style="text-align: right">Occurrences</MudTh>
+        <MudTh/>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Hash"><code>@context.Hash[..16]</code></MudTd>
+        <MudTd DataLabel="Size" Style="text-align: right">@ByteSize.Format(context.SizeBytes)</MudTd>
+        <MudTd DataLabel="First seen">@context.FirstSeenUtc.LocalDateTime.ToString("g")</MudTd>
+        <MudTd DataLabel="Occurrences" Style="text-align: right">
+            <MudChip T="string"
+                     Size="Size.Small"
+                     Color="@(context.OccurrenceCount > 1 ? Color.Primary : Color.Default)">
+                @context.OccurrenceCount
+            </MudChip>
+        </MudTd>
+        <MudTd Style="text-align: right">
+            <MudIconButton Icon="@Icons.Material.Outlined.Visibility"
+                           Size="Size.Small"
+                           OnClick="@(() => ShowOccurrencesAsync(context))"/>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No catalog entries match.</MudText>
+    </NoRecordsContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new[] { 25, 50, 100 }"/>
+    </PagerContent>
+</MudTable>
+
+<MudDrawer @bind-Open="_detailOpen" Anchor="Anchor.End" Elevation="2" Width="520px" Variant="DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudStack Spacing="0">
+            <MudText Typo="Typo.h4">Occurrences</MudText>
+            <MudText Typo="Typo.caption" Class="mud-text-secondary"><code>@_selected?.Hash</code></MudText>
+        </MudStack>
+    </MudDrawerHeader>
+
+    <MudContainer Class="pa-4">
+        @if (_occurrences is null)
+        {
+            <MudProgressLinear Indeterminate="true"/>
+        }
+        else
+        {
+            <MudText Typo="Typo.body2" Class="mud-text-secondary mb-3">
+                Stored once, referenced @_occurrences.Count @(_occurrences.Count == 1 ? "time" : "times").
+            </MudText>
+
+            <MudList T="string" Dense="true">
+                @foreach (var occurrence in _occurrences)
+                {
+                    <MudListItem T="string">
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.body2" Style="word-break: break-all;">
+                                @occurrence.PathInArchive
+                            </MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                @occurrence.PackageName · @occurrence.UploadedUtc.LocalDateTime.ToString("g")
+                            </MudText>
+                        </MudStack>
+                    </MudListItem>
+                }
+            </MudList>
+        }
+    </MudContainer>
+</MudDrawer>

@@ -1,0 +1,50 @@
+@page "/packages"
+
+<PageTitle>Packages — Strive</PageTitle>
+
+<Headline Text="Packages"/>
+
+@if (_packages is null)
+{
+    <MudProgressLinear Indeterminate="true"/>
+}
+else if (_packages.Count == 0)
+{
+    <MudAlert Severity="Severity.Info">
+        Nothing imported yet. <MudLink Href="/import">Upload a takeout archive</MudLink> to get started.
+    </MudAlert>
+}
+else
+{
+    <MudTable Items="_packages" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+        <HeaderContent>
+            <MudTh>Archive</MudTh>
+            <MudTh>Uploaded</MudTh>
+            <MudTh Style="text-align: right">Size</MudTh>
+            <MudTh Style="text-align: right">Files</MudTh>
+            <MudTh Style="text-align: right">New</MudTh>
+            <MudTh Style="text-align: right">Known</MudTh>
+            <MudTh>New vs known</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Archive">
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.body2">@context.FileName</MudText>
+                    <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                        <code>@context.ArchiveHash[..12]</code>
+                    </MudText>
+                </MudStack>
+            </MudTd>
+            <MudTd DataLabel="Uploaded">@context.UploadedUtc.LocalDateTime.ToString("g")</MudTd>
+            <MudTd DataLabel="Size" Style="text-align: right">@ByteSize.Format(context.SizeBytes)</MudTd>
+            <MudTd DataLabel="Files" Style="text-align: right">@context.FileCount</MudTd>
+            <MudTd DataLabel="New" Style="text-align: right">@context.NewEntryCount</MudTd>
+            <MudTd DataLabel="Known" Style="text-align: right">@context.KnownEntryCount</MudTd>
+            <MudTd DataLabel="New vs known" Style="min-width: 140px">
+                <MudTooltip Text="@($"{NewShare(context):P0} of this package was content the catalog had not seen")">
+                    <MudProgressLinear Value="@(NewShare(context) * 100)" Color="Color.Primary"/>
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}

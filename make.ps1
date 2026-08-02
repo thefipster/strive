@@ -26,7 +26,9 @@ function Run-Strive {
         [string]$Args
     )
     Write-Host "Starting"
-    dotnet run --project src/Fip.Strive.Web --configuration Release
+    # Via the Aspire AppHost, so Postgres comes up with the app. To run the web app on its own,
+    # set ConnectionStrings__strive and start src/Fip.Strive.Web directly.
+    dotnet run --project src/Fip.Strive.AppHost --configuration Release
 }
 
 function Clean-Strive {

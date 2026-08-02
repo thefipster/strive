@@ -27,6 +27,8 @@ on:
 jobs:
   build:
 
+    # The integration tests start a throwaway Postgres through Testcontainers, so the runner
+    # needs a working Docker daemon — preinstalled on GitHub's ubuntu images.
     runs-on: ubuntu-latest
 
     steps:

@@ -1,0 +1,15 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.4.6">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Fip.Strive.AppHost</RootNamespace>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>d7f2a1c4-6b3e-4a19-9f52-0c8e5d31b7a6</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Fip.Strive.Web\Fip.Strive.Web.csproj" />
+  </ItemGroup>
+</Project>

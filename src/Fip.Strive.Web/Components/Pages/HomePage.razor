@@ -4,6 +4,21 @@
 
 <Headline Text="Strive"/>
 
-<MudText Typo="Typo.body1">
-    The shell is up. Pipeline features arrive step by step — see docs/roadmap.md.
+<MudText Typo="Typo.body1" Class="mb-6">
+    Content-addressed raw layer is up. Upload takeout archives and every file is catalogued exactly
+    once, however many packages it appears in.
 </MudText>
+
+<MudStack Row="true" Spacing="3">
+    <MudButton Href="/import"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Outlined.CloudUpload">
+        Import
+    </MudButton>
+    <MudButton Href="/catalog"
+               Variant="Variant.Outlined"
+               StartIcon="@Icons.Material.Outlined.Storage">
+        Browse catalog
+    </MudButton>
+</MudStack>

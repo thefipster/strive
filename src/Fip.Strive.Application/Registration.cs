@@ -1,15 +1,90 @@
+using Fip.Strive.Application.Features.Catalog.Services;
+using Fip.Strive.Application.Features.Catalog.Services.Contracts;
+using Fip.Strive.Application.Features.Import.Services;
+using Fip.Strive.Application.Features.Import.Services.Contracts;
+using Fip.Strive.Application.Features.Storage;
+using Fip.Strive.Application.Features.Storage.Services;
+using Fip.Strive.Application.Features.Storage.Services.Contracts;
+using Fip.Strive.Application.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Application;
 
 /// <summary>
-/// Composition root for the application layer. Feature registrations are added here as the
-/// roadmap steps land; for now it only establishes the seam the web host wires into.
+/// Composition root for the application layer.
 /// </summary>
 public static class Registration
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    /// <param name="basePath">
+    /// What a relative <see cref="StorageOptions.DataDirectory"/> resolves against — the host's
+    /// content root in the app, a temp directory in tests.
+    /// </param>
+    public static IServiceCollection AddApplication(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string basePath
+    )
     {
+        services.AddPersistence(configuration);
+        services.AddStorage(configuration, basePath);
+        services.AddCatalog();
+
+        services.TryAddTimeProvider();
+
         return services;
     }
+
+    private static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString(DatabaseName);
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new InvalidOperationException(
+                $"Connection string '{DatabaseName}' is missing. In development the Aspire AppHost "
+                    + "supplies it; in a container set ConnectionStrings__strive."
+            );
+
+        services.AddDbContext<StriveContext>(options => options.UseNpgsql(connectionString));
+    }
+
+    private static void AddStorage(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        string basePath
+    )
+    {
+        services.Configure<StorageOptions>(configuration.GetSection(StorageOptions.SectionName));
+
+        services.AddSingleton(provider =>
+        {
+            var options = provider.GetRequiredService<IOptions<StorageOptions>>().Value;
+
+            // GetFullPath ignores basePath when DataDirectory is already absolute, which is
+            // exactly the relative-or-absolute contract the option documents.
+            var paths = new StoragePaths(Path.GetFullPath(options.DataDirectory, basePath));
+            paths.EnsureCreated();
+            return paths;
+        });
+
+        services.AddSingleton<IBlobStore, BlobStore>();
+        services.AddSingleton<IStagingArea, StagingArea>();
+    }
+
+    private static void AddCatalog(this IServiceCollection services)
+    {
+        services.AddScoped<ICatalogReader, CatalogReader>();
+        services.AddScoped<IPackageImporter, PackageImporter>();
+    }
+
+    private static void TryAddTimeProvider(this IServiceCollection services)
+    {
+        if (services.All(descriptor => descriptor.ServiceType != typeof(TimeProvider)))
+            services.AddSingleton(TimeProvider.System);
+    }
+
+    /// <summary>Connection string name, shared with the Aspire AppHost's database resource.</summary>
+    public const string DatabaseName = "strive";
 }

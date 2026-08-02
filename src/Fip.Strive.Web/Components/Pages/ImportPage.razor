@@ -1,0 +1,81 @@
+@page "/import"
+
+<PageTitle>Import — Strive</PageTitle>
+
+<Headline Text="Import"/>
+
+<MudGrid Class="mb-6">
+    <MudItem xs="12" sm="4">
+        <MudPaper Class="pa-4" Outlined="true">
+            <MudText Typo="Typo.overline">Packages</MudText>
+            <MudText Typo="Typo.h3">@_summary.PackageCount</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudPaper Class="pa-4" Outlined="true">
+            <MudText Typo="Typo.overline">Catalog entries</MudText>
+            <MudText Typo="Typo.h3">@_summary.EntryCount</MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="4">
+        <MudPaper Class="pa-4" Outlined="true">
+            <MudText Typo="Typo.overline">Stored</MudText>
+            <MudText Typo="Typo.h3">@ByteSize.Format(_summary.TotalBytes)</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudFileUpload T="IReadOnlyList<IBrowserFile>"
+               FilesChanged="OnFilesChangedAsync"
+               Accept=".zip"
+               MaximumFileCount="20"
+               Disabled="_busy"
+               Class="d-block mb-6">
+    <ActivatorContent>
+        <MudPaper Outlined="true"
+                  Class="pa-12 d-flex flex-column align-center justify-center cursor-pointer"
+                  Style="border-style: dashed; border-width: 2px;">
+            <MudIcon Icon="@Icons.Material.Outlined.CloudUpload" Size="Size.Large" Class="mb-3"/>
+            <MudText Typo="Typo.h4">Drop takeout archives here</MudText>
+            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                ZIP files, streamed straight to disk — up to @ByteSize.Format(MaxUploadBytes) each
+            </MudText>
+        </MudPaper>
+    </ActivatorContent>
+</MudFileUpload>
+
+@if (_busy)
+{
+    <MudButton Variant="Variant.Outlined"
+               Color="Color.Error"
+               StartIcon="@Icons.Material.Outlined.Cancel"
+               OnClick="Cancel"
+               Class="mb-4">
+        Cancel
+    </MudButton>
+}
+
+@if (_jobs.Count > 0)
+{
+    <MudPaper Outlined="true">
+        <MudList T="string" Dense="true">
+            @foreach (var job in _jobs)
+            {
+                <MudListItem T="string" Icon="@IconFor(job)" IconColor="@ColorFor(job)">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.body1">@job.FileName</MudText>
+                            <MudText Typo="Typo.caption" Class="mud-text-secondary">@job.Detail</MudText>
+                        </MudStack>
+                        <MudText Typo="Typo.caption">@ByteSize.Format(job.SizeBytes)</MudText>
+                    </MudStack>
+
+                    @if (job.ShowsProgress)
+                    {
+                        <MudProgressLinear Value="@job.Percent" Color="Color.Primary" Class="mt-2"/>
+                    }
+                </MudListItem>
+            }
+        </MudList>
+    </MudPaper>
+}
