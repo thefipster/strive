@@ -40,10 +40,10 @@ jobs:
         dotnet-version: 10.0.x
 
     - name: Restore
-      run: dotnet restore strive.slnx
+      run: dotnet restore src/strive.slnx
 
     - name: Build
-      run: dotnet build --no-restore --configuration Release strive.slnx
+      run: dotnet build --no-restore --configuration Release src/strive.slnx
 
     - name: Test
-      run: dotnet test --no-build --configuration Release strive.slnx
+      run: dotnet test --no-build --configuration Release src/strive.slnx

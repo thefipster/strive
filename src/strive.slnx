@@ -4,6 +4,13 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/files/">
+    <File Path="../.github/workflows/strive.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="NuGet.config" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="Fip.Strive.AppHost/Fip.Strive.AppHost.csproj" />
     <Project Path="Fip.Strive.Application/Fip.Strive.Application.csproj" />
