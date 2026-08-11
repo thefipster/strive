@@ -1,30 +1,20 @@
 # Export guide — Withings
 
-*Verified 2026-08-10 against Withings support: [Online Dashboard — Exporting my
-data](https://support.withings.com/hc/en-us/articles/201491377-Withings-App-Online-Dashboard-Exporting-my-data),
-[Android — Exporting your
+*Verified 2026-08-10 against Withings support: [Android — Exporting your
 data](https://support.withings.com/hc/en-us/articles/31647944317201-Withings-App-Android-Exporting-your-data),
 [iOS — Exporting your
 data](https://support.withings.com/hc/en-us/articles/360001399167-Withings-App-iOS-Exporting-your-data),
+[Online Dashboard — Exporting my
+data](https://support.withings.com/hc/en-us/articles/201491377-Withings-App-Online-Dashboard-Exporting-my-data),
 [Privacy — How can I export my
 data?](https://support.withings.com/hc/en-us/articles/360001391287-Privacy-How-can-I-export-my-data).*
 
 Withings exports **per user profile**, not per account. If several people share the scale under one
 account, run the export once per profile — each one is a separate archive.
 
-## Route A — the web dashboard (recommended)
+## Route A — the Withings app (iOS / Android)
 
-The dashboard is the more reliable of the two routes; when the app export mail fails to arrive,
-this is the fallback that usually works.
-
-1. Open the Withings health dashboard at <https://account.withings.com> and sign in.
-2. Click your **avatar** in the top-right corner → **Settings**.
-3. Select the **user profile** whose data you want.
-4. Click **Download my data**.
-5. On the page that opens, start the export and confirm the mail address.
-6. You get a mail with a download link; the archive is a ZIP of CSV files.
-
-## Route B — the Withings app (iOS / Android)
+The quickest route: four taps on the phone you already have in your hand.
 
 1. Open the Withings app and go to your **Profile**.
 2. Tap the **Settings** icon at the top right.
@@ -33,8 +23,21 @@ this is the fallback that usually works.
 5. Wait for the mail containing the download link.
 
 If the mail never shows up: check *All Mail* and *Spam* (the mail is nothing but a link, so filters
-like it), confirm the address on the account is one you can actually read, and then retry through
-the web dashboard.
+like it), confirm the address on the account is one you can actually read, and then fall back to
+route B.
+
+## Route B — the web dashboard
+
+Slower to reach, but the more reliable of the two: when the app export mail fails to arrive, this is
+the one that usually works. It is also the better route when you are exporting several profiles in
+one sitting, since you pick the profile explicitly at step 3.
+
+1. Open the Withings health dashboard at <https://account.withings.com> and sign in.
+2. Click your **avatar** in the top-right corner → **Settings**.
+3. Select the **user profile** whose data you want.
+4. Click **Download my data**.
+5. On the page that opens, start the export and confirm the mail address.
+6. You get a mail with a download link; the archive is a ZIP of CSV files.
 
 ## What is in the package
 
