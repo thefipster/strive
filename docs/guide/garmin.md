@@ -1,8 +1,13 @@
 # Export guide — Garmin
 
-*Verified 2026-08-10 against [How Do I Export Data Out of Garmin
-Connect?](https://support.garmin.com/en-US/?faq=W1TvTPW8JZ6LfJSfK512Q8), Garmin's data-management
-page at <https://www.garmin.com/en-US/account/datamanagement/exportdata/>, [Exporting Garmin Explore
+**The path on the web, current as of 2026-08-11:**
+<https://connect.garmin.com> → **Avatar** → **Account Information** → **Data Management in your
+Garmin Account** → **Export Your Data** → **Request Data Export**
+
+*Path verified 2026-08-11 by hand. Background verified 2026-08-10 against [How Do I Export Data Out
+of Garmin Connect?](https://support.garmin.com/en-US/?faq=W1TvTPW8JZ6LfJSfK512Q8), Garmin's
+data-management page at <https://www.garmin.com/en-US/account/datamanagement>, [Exporting Garmin
+Explore
 Account Data](https://support.garmin.com/en-US/?faq=C9IsxpGgFU0BGRl5quZJg6), and the Gadgetbridge
 [Garmin Connect import notes](https://gadgetbridge.org/basics/topics/garmin/import-garmin-connect/).*
 
@@ -12,11 +17,13 @@ the account holds, including the original FIT files from every device you ever p
 ## 1. Request the export
 
 1. Sign in at <https://connect.garmin.com>.
-2. Click your name or profile picture in the top-right corner → **Account Settings**.
-3. In the **Account Management** section, open **Export Your Data**. Depending on your region this
-   may be labelled under *Privacy Settings* or *Data Management*.
-   Direct link: <https://www.garmin.com/en-US/account/datamanagement/exportdata/>
-4. Click **Request Data Export**.
+2. Click your **avatar** (profile picture) in the top-right corner.
+3. Choose **Account Information**.
+4. Click the button **Data Management in your Garmin Account**. This leaves Garmin Connect and opens
+   <https://www.garmin.com/en-US/account/datamanagement> — a different site, same account. That is
+   expected, not a misredirect; you can also go straight there.
+5. Open **Export Your Data**.
+6. Click **Request Data Export**.
 
 Garmin confirms the request on screen and starts assembling the archive.
 
