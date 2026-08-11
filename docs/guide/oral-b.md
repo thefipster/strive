@@ -1,17 +1,23 @@
 # Export guide — Oral-B
 
-*Verified 2026-08-10 against [Oral-B — The European Data
+**The path in the Oral-B app, current as of 2026-08-11:**
+**More** → **Legal** → **EU Data Act** → **Export**
+(German UI: *Mehr* → *Rechtliches* → *EU-Datengesetz* → *Exportieren*)
+
+*In-app path verified 2026-08-11 on a German-locale app; the rest verified 2026-08-10 against
+[Oral-B — The European Data
 Act](https://www.oralb.co.uk/en-gb/the-european-data-act), the [P&G privacy
 policy](https://privacypolicy.pg.com/en-US/) and its [data-request preference
 centre](https://preferencecenter.pg.com/en-us/datarequests/), [Where can I find my brushing history
 in the Oral-B app?](https://oralb.com/en-us/where-can-i-find-my-past-brushing-data-in-the-new-app/),
 and the [Oral-B App Store listing](https://apps.apple.com/us/app/oral-b/id698092608).*
 
-**Set expectations first.** Oral-B is the outlier in this set: there is **no self-service "download
-my data" button** in the app comparable to Polar's or Garmin's. Brushing history is visible in the
-app (filtered by week, month, year) but the app has no documented bulk export to file. Getting the
-data out means either a formal data request to P&G, or capturing the data via a platform the app
-syncs into. Do both — they return different things.
+**Set expectations first.** Oral-B is the outlier in this set. The app does carry an **Export**
+action (the path above), but it sits under **EU Data Act** — it is the entry point to a formal data
+request to P&G, not an instant download like Polar's or Garmin's. Brushing history is visible in the
+app (filtered by week, month, year); there is no documented one-tap bulk export to file. So getting
+the data out means either that data request, or capturing the data via a platform the app syncs
+into. Do both — they return different things.
 
 ## Route A — formal data request to P&G (the complete record)
 
@@ -19,9 +25,10 @@ Oral-B is a P&G brand and **P&G is the data controller** for brushing data (in t
 represented by Procter & Gamble Ireland, Dublin, under Art. 27 GDPR). The request goes to P&G, not
 to Oral-B support.
 
-1. **From the app**: open the **Legal** menu and look for **EU Data Act**. That section carries the
-   current instructions and the request link for accessing (or erasing) your brushing data. This is
-   the route Oral-B itself points at, so prefer it — it arrives pre-associated with your account.
+1. **From the app**, in this order: **More** (*Mehr*) → **Legal** (*Rechtliches*) → **EU Data Act**
+   (*EU-Datengesetz*) → **Export** (*Exportieren*). That section carries the current instructions
+   and the request for accessing (or erasing) your brushing data. This is the route Oral-B itself
+   points at, so prefer it — it arrives pre-associated with your account.
 2. **From the web**, if the app has no such entry in your region: use the P&G privacy request form
    at <https://preferencecenter.pg.com/en-us/datarequests/> (the region-appropriate variant is
    linked from <https://privacypolicy.pg.com/>) and submit an **access** request for the account
