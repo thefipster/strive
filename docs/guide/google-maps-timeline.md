@@ -1,6 +1,9 @@
 # Export guide — Google Maps Timeline (on-device)
 
-*Verified 2026-08-10 against [Manage your Google Maps
+**The path on Android, current as of 2026-08-11:**
+**Settings** → **Location** → **Location services** → **Timeline** → **Export Timeline data**
+
+*Verified 2026-08-11 on-device, and against [Manage your Google Maps
 Timeline](https://support.google.com/maps/answer/6258979) and the Google Maps community threads on
 the on-device Timeline export
 ([Android](https://support.google.com/maps/thread/311275268), [full JSON
@@ -18,11 +21,15 @@ Of all the providers here, this is the one worth exporting on a schedule.
 ## Android
 
 1. Open the phone's **Settings** app.
-2. Tap **Location** (on some builds: *Location* → *Location services*).
-3. Tap **Timeline**.
-4. Tap **Export Timeline data**.
-5. Tap **Continue**, then **Save**, and choose where to put the file (Downloads, or straight into a
+2. Tap **Location**.
+3. Tap **Location services**.
+4. Tap **Timeline**.
+5. Tap **Export Timeline data**.
+6. Tap **Continue**, then **Save**, and choose where to put the file (Downloads, or straight into a
    cloud folder).
+
+On older builds **Timeline** sits directly under **Location**, without the **Location services**
+step in between.
 
 The same screen is reachable from Maps: profile picture → **Your Timeline** → **⋯** →
 **Location & privacy settings** → **Export Timeline data**.
