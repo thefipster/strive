@@ -9,7 +9,7 @@ written as a checklist you can follow end to end, ending with what to hand to St
 | Garmin | [garmin.md](garmin.md) | Garmin Account → *Export Your Data* | 24–48 h, up to 30 days | ZIP of FIT + JSON |
 | Withings | [withings.md](withings.md) | Health dashboard → *Download my data* | minutes to hours | ZIP of CSV |
 | Google Maps Timeline | [google-maps-timeline.md](google-maps-timeline.md) | on-device export in Maps/Android settings | immediate | single JSON |
-| Oral-B | [oral-b.md](oral-b.md) | P&G privacy request (+ Apple Health as a shortcut) | up to 30 days | varies |
+| Oral-B | [oral-b.md](oral-b.md) | in-app export under *EU Data Act* | immediate | single JSON |
 
 ## Ground rules
 
