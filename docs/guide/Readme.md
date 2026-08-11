@@ -3,6 +3,10 @@
 How to get a full data export out of every provider Strive ingests. One guide per provider, each
 written as a checklist you can follow end to end, ending with what to hand to Strive's upload page.
 
+**Doing all of them at once?** [all-providers.md](all-providers.md) is the happy path only — the
+primary route from each guide, ordered so the slow requests are queued before you start the instant
+ones.
+
 | Provider | Guide | Route | Typical wait | Package |
 |---|---|---|---|---|
 | Polar | [polar.md](polar.md) | `account.polar.com` → *Download your data* | hours to days | ZIP of JSON |
