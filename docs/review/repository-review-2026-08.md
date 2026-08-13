@@ -736,8 +736,29 @@ A tracker used daily for years is fine. One fed by an importer is not. Two indep
 numbers as `REAL` alongside the exact decimal (aggregate on the former, display the latter), or
 cache the statistics and invalidate on write rather than recomputing on every render.
 
-- [ ] Avoid recomputing statistics on every event record
-- [ ] Consider a sortable numeric column if trackers ever grow large
+- [x] Avoid recomputing statistics on every event record
+- [x] Consider a sortable numeric column if trackers ever grow large
+
+**Done, and better than either suggestion.** The finding offered two fixes — a REAL column beside
+the exact decimal, or a cache invalidated on write. Both were avoidable. Casting to REAL *in the
+query* gets the same aggregation into SQLite without a schema change, which matters more than it
+sounds: adding a column would have tripped the D1 version check and demanded the user move their
+database aside to gain a performance improvement.
+
+So `GROUP BY` with `SUM/MIN/MAX/AVG(CAST(... AS REAL))` replaces fetching every recorded number of a
+tracker and totalling it in memory. The original reasoning for doing it in memory was sound — text
+comparison really does return nonsense — and the cast is precisely what makes it wrong to worry
+about. Raw SQL, because the cast is the entire point and no LINQ spelling of it survives
+translation.
+
+The trade, stated plainly: aggregates now cross through `double`, so a very long run of many-decimal
+values could drift in the last digits. Individual values are still stored and displayed as the exact
+decimals they were entered as — only the summary passes through a float. For counts, minutes, reps
+and weights it is exact.
+
+Two tests pin the parts that would fail silently: fractional values totalling correctly, and 9 vs 10
+ordering numerically rather than as text — the latter being exactly the trap the cast avoids, and
+one nobody would notice until their numbers crossed a digit boundary.
 
 ### D3 — API key comparison leaks key length *(low)*
 
