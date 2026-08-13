@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <RootNamespace>Fip.Strive.Tracking.Web</RootNamespace>
+    <UserSecretsId>fc8a805c-509a-40e2-8f16-d155533ccb3b</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MudBlazor" />

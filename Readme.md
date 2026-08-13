@@ -105,20 +105,62 @@ moving the old file aside rather than maintaining a migration chain.
 `src/tracking.slnx` holds just these projects; `dotnet test src/tracking.slnx` runs the unit tests
 without needing Docker or Postgres.
 
-### Running it
+### Making a password hash
 
-The app refuses to start without a password hash, so make one first. It reads from stdin, which
-keeps the password out of your shell history:
+Configuration holds a hash, never the password, so the app refuses to start until there is one.
+`hash-password` is what turns one into the other. It reads from stdin, which keeps the password out
+of your shell history and out of the process list:
 
 ```bash
 dotnet run --project src/Fip.Strive.Tracking.Web -- hash-password
 ```
 
-Then, locally:
+It prints a single line looking like `pbkdf2-sha256$210000$<salt>$<hash>`. That whole line is the
+value, `$` signs included.
+
+**Paste it inside single quotes.** The hash contains `$210000$`, and both bash and PowerShell expand
+`$` inside double quotes, so `"pbkdf2-sha256$210000$abc"` silently becomes `pbkdf2-sha25610000`. The
+app then rejects it as "missing or not a PBKDF2 hash" while the value looks perfectly fine on the
+screen you copied it from.
+
+This applies to pasted literals only. Piping the command's output straight into something, as the
+`docker run` below does, is safe either way — a command substitution's result is not expanded again.
+
+It also takes the password as an argument, which is handy in a pipe and a bad idea interactively:
+
+```bash
+docker run --rm -i strive-tracking hash-password < secret.txt
+```
+
+### Running it
+
+Locally, with the hash on the command line:
 
 ```bash
 Access__PasswordHash='pbkdf2-sha256$...' dotnet run --project src/Fip.Strive.Tracking.Web
 ```
+
+From an IDE, use user secrets instead — the hash lives outside the repository entirely and you stop
+having to supply it on every run:
+
+```bash
+dotnet user-secrets set 'Access:PasswordHash' 'pbkdf2-sha256$...' --project src/Fip.Strive.Tracking.Web
+```
+
+Then just run the `http` or `https` profile. Both set `ASPNETCORE_ENVIRONMENT=Development`, which is
+what makes the host read user secrets at all, and is also why plain `http://localhost:5230` works
+here when it would not in production — the session cookie is only marked `Secure` outside
+Development.
+
+Two things that will otherwise cost you an afternoon:
+
+- **The first run after enabling user secrets has to be a real build.** The `UserSecretsId` reaches
+  the assembly as a compile-time attribute, so running against a stale binary fails with the same
+  "missing or not a PBKDF2 hash" message as having no hash at all.
+- **Do not put the hash in `launchSettings.json` or `appsettings.Development.json`.** Both are
+  committed. This matters in Rider specifically: its run configuration for this project *is* the
+  launch settings profile, so anything typed into that configuration's environment-variables box is
+  written straight into `launchSettings.json` and committed with it.
 
 Or in a container — built from the repository root, because the project inherits its build files
 from `src/`:
