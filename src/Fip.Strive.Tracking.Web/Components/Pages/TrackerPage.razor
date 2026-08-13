@@ -1,0 +1,170 @@
+@page "/trackers/{TrackerId:guid}"
+
+<PageTitle>@(_tracker?.Name ?? "Tracker")</PageTitle>
+
+@if (_missing)
+{
+    <Headline Text="Tracker"/>
+    <MudAlert Severity="Severity.Warning">
+        That tracker does not exist any more. <MudLink Href="/">Back to the list.</MudLink>
+    </MudAlert>
+}
+else if (_tracker is null)
+{
+    <MudProgressLinear Indeterminate="true"/>
+}
+else
+{
+    <Headline Text="@_tracker.Name">
+        <Actions>
+            <MudButton Href="@($"/trackers/{TrackerId}/fields")"
+                       Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Outlined.Tune">
+                Fields
+            </MudButton>
+        </Actions>
+    </Headline>
+
+    @if (!string.IsNullOrWhiteSpace(_tracker.Description))
+    {
+        <MudText Typo="Typo.body1" Class="mud-text-secondary mb-5">@_tracker.Description</MudText>
+    }
+
+    <MudPaper Class="pa-4 mb-6" Elevation="1">
+        <MudText Typo="Typo.h4" Class="mb-4">Log an event</MudText>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudDatePicker Label="Date" @bind-Date="_date" Variant="Variant.Outlined"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudTimePicker Label="Time" @bind-Time="_time" Variant="Variant.Outlined"/>
+            </MudItem>
+
+            @foreach (var definition in Fields)
+            {
+                <MudItem xs="12" sm="6" md="3">
+                    @if (definition.Type == TrackerFieldType.Number)
+                    {
+                        <MudNumericField T="decimal?"
+                                         Label="@ValueFormat.EntryLabel(definition)"
+                                         Value="@NumberFor(definition)"
+                                         ValueChanged="@(value => _numbers[definition.Id] = value)"
+                                         Variant="Variant.Outlined"
+                                         Immediate="true"/>
+                    }
+                    else
+                    {
+                        <MudTextField T="string"
+                                      Label="@ValueFormat.EntryLabel(definition)"
+                                      Value="@TextFor(definition)"
+                                      ValueChanged="@(value => _texts[definition.Id] = value)"
+                                      Variant="Variant.Outlined"
+                                      Immediate="true"/>
+                    }
+                </MudItem>
+            }
+
+            <MudItem xs="12">
+                <MudTextField T="string"
+                              @bind-Value="_note"
+                              Label="Note (optional)"
+                              Variant="Variant.Outlined"
+                              Lines="2"
+                              Immediate="true"/>
+            </MudItem>
+        </MudGrid>
+
+        <MudStack Row="true" Spacing="2" Class="mt-4">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Outlined.Add"
+                       Disabled="_busy"
+                       OnClick="RecordAsync">
+                Record
+            </MudButton>
+            <MudButton Variant="Variant.Text" Disabled="_busy" OnClick="ResetForm">
+                Reset to now
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    @if (_stats is { Count: > 0 })
+    {
+        <MudGrid Class="mb-6">
+            @foreach (var stat in _stats)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudPaper Class="pa-4" Elevation="1" Style="height: 100%;">
+                        <MudText Typo="Typo.h4">@stat.FieldName</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                            @stat.Count @(stat.Count == 1 ? "value" : "values") recorded
+                        </MudText>
+                        <MudSimpleTable Dense="true" Elevation="0" Class="mt-2">
+                            <tbody>
+                            <tr>
+                                <td>Total</td>
+                                <td style="text-align: right">@ValueFormat.WithUnit(stat.Total, stat.Unit)</td>
+                            </tr>
+                            <tr>
+                                <td>Average</td>
+                                <td style="text-align: right">@ValueFormat.WithUnit(stat.Average, stat.Unit)</td>
+                            </tr>
+                            <tr>
+                                <td>Lowest</td>
+                                <td style="text-align: right">@ValueFormat.WithUnit(stat.Minimum, stat.Unit)</td>
+                            </tr>
+                            <tr>
+                                <td>Highest</td>
+                                <td style="text-align: right">@ValueFormat.WithUnit(stat.Maximum, stat.Unit)</td>
+                            </tr>
+                            </tbody>
+                        </MudSimpleTable>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+
+    <MudText Typo="Typo.h3" Class="mb-3">History</MudText>
+
+    <MudTable @ref="_table"
+              T="EventRow"
+              ServerData="LoadAsync"
+              Dense="true"
+              Hover="true"
+              Breakpoint="Breakpoint.Sm"
+              RowsPerPage="25">
+        <HeaderContent>
+            <MudTh>When</MudTh>
+            @foreach (var definition in Fields)
+            {
+                <MudTh>@ValueFormat.Label(definition)</MudTh>
+            }
+            <MudTh>Note</MudTh>
+            <MudTh/>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="When">@ValueFormat.Moment(context.OccurredUtc)</MudTd>
+            @foreach (var definition in Fields)
+            {
+                <MudTd DataLabel="@definition.Name">
+                    @ValueFormat.Cell(context.ValueFor(definition.Id))
+                </MudTd>
+            }
+            <MudTd DataLabel="Note">@context.Note</MudTd>
+            <MudTd Style="text-align: right">
+                <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                               Size="Size.Small"
+                               Disabled="_busy"
+                               OnClick="@(() => DeleteAsync(context))"/>
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>Nothing logged yet.</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new[] { 25, 50, 100 }"/>
+        </PagerContent>
+    </MudTable>
+}

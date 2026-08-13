@@ -499,3 +499,7 @@ $RECYCLE.BIN/
 # Test data
 testdata/
 coverage-report/
+
+# Whatever an app writes beside itself when its data directory is left at the default
+src/*/data/
+src/*/logs/

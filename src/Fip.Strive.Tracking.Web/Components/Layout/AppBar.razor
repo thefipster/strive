@@ -1,0 +1,16 @@
+<MudAppBar Elevation="1">
+    <MudIconButton
+        Icon="@Icons.Material.Filled.Menu"
+        Color="Color.Inherit"
+        Edge="Edge.Start"
+        OnClick="OnToggleDrawer"/>
+    <MudIcon Class="ml-3" Icon="@Icons.Material.Outlined.Timeline" Color="Color.Inherit"/>
+    <MudLink Style="text-decoration: none;" Color="Color.Inherit" Href="/">
+        <span class="ml-4 page-title">Tracker</span>
+    </MudLink>
+    <MudSpacer/>
+</MudAppBar>
+
+@code {
+    [Parameter] public EventCallback OnToggleDrawer { get; set; }
+}

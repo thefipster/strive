@@ -1,0 +1,165 @@
+@page "/trackers/{TrackerId:guid}/fields"
+
+<PageTitle>@(_tracker is null ? "Fields" : $"{_tracker.Name} — fields")</PageTitle>
+
+@if (_missing)
+{
+    <Headline Text="Fields"/>
+    <MudAlert Severity="Severity.Warning">
+        That tracker does not exist any more. <MudLink Href="/">Back to the list.</MudLink>
+    </MudAlert>
+}
+else if (_tracker is null)
+{
+    <MudProgressLinear Indeterminate="true"/>
+}
+else
+{
+    <Headline Text="@($"{_tracker.Name} — fields")">
+        <Actions>
+            <MudButton Href="@($"/trackers/{TrackerId}")"
+                       Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Outlined.Timeline">
+                History
+            </MudButton>
+        </Actions>
+    </Headline>
+
+    <MudPaper Class="pa-4 mb-6" Elevation="1">
+        <MudText Typo="Typo.h4" Class="mb-4">Add a field</MudText>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudTextField T="string"
+                              @bind-Value="_fieldName"
+                              Label="Name"
+                              Placeholder="Cups, Weight, Mood…"
+                              Variant="Variant.Outlined"
+                              Immediate="true"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudSelect T="TrackerFieldType" @bind-Value="_fieldType" Label="Type" Variant="Variant.Outlined">
+                    <MudSelectItem T="TrackerFieldType" Value="TrackerFieldType.Number">Number</MudSelectItem>
+                    <MudSelectItem T="TrackerFieldType" Value="TrackerFieldType.Text">Text</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudTextField T="string"
+                              @bind-Value="_fieldUnit"
+                              Label="Unit (optional)"
+                              Placeholder="kg, min, €"
+                              Disabled="@(_fieldType != TrackerFieldType.Number)"
+                              Variant="Variant.Outlined"
+                              Immediate="true"/>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3" Class="d-flex align-center">
+                <MudCheckBox T="bool" @bind-Value="_fieldRequired" Label="Required"/>
+            </MudItem>
+        </MudGrid>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Outlined.Add"
+                   Class="mt-4"
+                   Disabled="@(_busy || string.IsNullOrWhiteSpace(_fieldName))"
+                   OnClick="AddFieldAsync">
+            Add field
+        </MudButton>
+    </MudPaper>
+
+    @if (_tracker.Fields.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info" Class="mb-6">
+            No custom fields. The tracker still records a timestamp and a note for every event —
+            fields are for the extra values you want alongside them.
+        </MudAlert>
+    }
+    else
+    {
+        <MudTable T="TrackerFieldRow" Items="_tracker.Fields" Dense="true" Hover="true" Class="mb-6">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Unit</MudTh>
+                <MudTh>Required</MudTh>
+                <MudTh/>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Type">@context.Type</MudTd>
+                <MudTd DataLabel="Unit">@context.Unit</MudTd>
+                <MudTd DataLabel="Required">
+                    <MudSwitch T="bool"
+                               Value="@context.IsRequired"
+                               ValueChanged="@(value => ToggleRequiredAsync(context, value))"
+                               Color="Color.Primary"/>
+                </MudTd>
+                <MudTd Style="text-align: right">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete"
+                                   Size="Size.Small"
+                                   Disabled="_busy"
+                                   OnClick="@(() => DeleteFieldAsync(context))"/>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+
+    <MudText Typo="Typo.h3" Class="mb-3">Tracker</MudText>
+
+    <MudPaper Class="pa-4" Elevation="1">
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudTextField T="string"
+                              @bind-Value="_name"
+                              Label="Name"
+                              Variant="Variant.Outlined"
+                              Immediate="true"/>
+            </MudItem>
+            <MudItem xs="12" md="8">
+                <MudTextField T="string"
+                              @bind-Value="_description"
+                              Label="Description"
+                              Variant="Variant.Outlined"
+                              Immediate="true"/>
+            </MudItem>
+        </MudGrid>
+
+        <MudStack Row="true" Spacing="2" Class="mt-4">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(_busy || string.IsNullOrWhiteSpace(_name))"
+                       OnClick="SaveTrackerAsync">
+                Save
+            </MudButton>
+            <MudSpacer/>
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Error"
+                       StartIcon="@Icons.Material.Outlined.DeleteForever"
+                       Disabled="_busy"
+                       OnClick="@(() => _confirmingDelete = true)">
+                Delete tracker
+            </MudButton>
+        </MudStack>
+
+        @if (_confirmingDelete)
+        {
+            <MudAlert Severity="Severity.Error" Class="mt-4">
+                <MudStack Row="true" Spacing="3" AlignItems="AlignItems.Center">
+                    <span>Deleting takes every event ever recorded with it. There is no undo.</span>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Error"
+                               Size="Size.Small"
+                               Disabled="_busy"
+                               OnClick="DeleteTrackerAsync">
+                        Delete for good
+                    </MudButton>
+                    <MudButton Variant="Variant.Text"
+                               Size="Size.Small"
+                               OnClick="@(() => _confirmingDelete = false)">
+                        Keep it
+                    </MudButton>
+                </MudStack>
+            </MudAlert>
+        }
+    </MudPaper>
+}

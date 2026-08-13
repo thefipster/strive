@@ -17,6 +17,8 @@ Strive is being rebuilt incrementally against the
 | `src/Fip.Strive.Web` | Blazor Server app — the whole runtime. MudBlazor shell, health endpoint, Serilog. |
 | `src/Fip.Strive.Application` | Application layer: catalog, blob store, import. Pipeline features land here as roadmap steps complete. |
 | `src/Fip.Strive.AppHost` | Aspire orchestration for development only — brings up Postgres alongside the app. |
+| `src/Fip.Strive.Tracking.Web` | The tracker — a second, standalone Blazor Server app. Shares nothing with the platform above but the repo. |
+| `src/Fip.Strive.Tracking.Application` | Its application layer: trackers, custom fields, events. Stores everything in one SQLite file. |
 | `test/` | xunit projects: pure unit tests, plus integration tests against real Postgres via Testcontainers. |
 | `docs/` | Spec, roadmap, and a detail document per roadmap step. |
 | `legacy/` | Two earlier generations, read-only reference. See [legacy/Readme.md](legacy/Readme.md). |
@@ -48,3 +50,25 @@ ConnectionStrings__strive="Host=localhost;Database=strive;Username=postgres;Pass
 | `Storage:MaxUploadBytes` | `Storage__MaxUploadBytes` | 8 GiB | Largest archive the upload page accepts. |
 
 The schema is migrated on startup.
+
+## The tracker
+
+A second app in the same repo, deliberately unconnected to the platform above: no Postgres, no
+Docker, no Aspire. Create a tracker for anything worth counting, give it whatever custom fields you
+want alongside the timestamp — decimal numbers with an optional unit, or free text — and log events
+against it. Numbers are totalled, averaged and bracketed per field on the tracker's page.
+
+```bash
+dotnet run --project src/Fip.Strive.Tracking.Web
+```
+
+Everything it knows lives in one SQLite file, created on first run. Copy that file away and that is
+your backup.
+
+| Setting | Env var | Default | What |
+|---|---|---|---|
+| `Tracking:DataDirectory` | `Tracking__DataDirectory` | `data` | Directory holding the database file. Relative paths resolve against the content root, absolute paths are used as-is. |
+| `Tracking:DatabaseFileName` | `Tracking__DatabaseFileName` | `tracking.db` | Name of the SQLite file inside that directory. |
+
+There are no EF migrations behind it: one file, one person, so a schema change means moving the old
+file aside rather than maintaining a migration chain.

@@ -1,0 +1,27 @@
+@page "/error"
+
+<PageTitle>Error</PageTitle>
+
+<Headline Text="Error"/>
+
+<MudAlert Severity="Severity.Error" Class="mb-4">
+    An error occurred while processing your request.
+</MudAlert>
+
+@if (ShowRequestId)
+{
+    <MudText Typo="Typo.body1">
+        Request ID: <code>@RequestId</code>
+    </MudText>
+}
+
+@code {
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

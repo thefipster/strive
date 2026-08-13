@@ -1,0 +1,11 @@
+<MudStack Class="mb-5" Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+    <MudText Typo="Typo.h1">@Text</MudText>
+    @Actions
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired] public string Text { get; set; } = string.Empty;
+
+    /// <summary>Buttons that belong to the page as a whole, pushed to the far end of the line.</summary>
+    [Parameter] public RenderFragment? Actions { get; set; }
+}
