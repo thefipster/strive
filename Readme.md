@@ -96,8 +96,21 @@ docker run -d -p 8080:8080 -v strive-tracking-data:/data \
 ```
 
 The database lands in `/data`, which is where the volume goes. The image runs as a non-root user, so
-a bind mount instead of a named volume has to be chowned on the host first. Readiness is at
-`/health`, which stays public.
+a bind mount instead of a named volume has to be chowned on the host first.
+
+Readiness is at `/health`. It queries the database rather than reporting on the process, so it goes
+red when the SQLite file is missing, locked or short of the schema the app expects — which is worth
+knowing, given a schema change here means moving the old file aside rather than migrating it. When
+`Access:ApiKey` is set the endpoint wants the same `X-Api-Key` header the pull API does, so the
+probe has to carry it:
+
+```bash
+curl -fsS -H "X-Api-Key: $KEY" https://tracker.example/health
+```
+
+With no API key configured there is nothing to authenticate with, and `/health` stays public — a
+probe that could only ever get a 401 would read as a permanently unhealthy container. The app says
+which of the two it is in its startup log.
 
 **Put it behind TLS.** The session cookie is issued `Secure` outside Development, so sign-in simply
 will not work over plain HTTP — which is the intended failure.
@@ -105,7 +118,8 @@ will not work over plain HTTP — which is the intended failure.
 ### Getting in
 
 One user, one password, no user table — the hash lives in configuration. Signing in sets a cookie
-and everything except `/login.html`, `/auth/*`, `/health` and the API needs it. The login form is
+and everything except `/login.html`, `/auth/*`, `/health` and the API needs it. Those last two are
+not open, they are keyed rather than cookied — both want `X-Api-Key`. The login form is
 rate limited to 10 attempts per 5 minutes per caller address; behind a reverse proxy that is one
 bucket for everyone, which still bounds a brute force.
 

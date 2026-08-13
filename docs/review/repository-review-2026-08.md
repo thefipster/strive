@@ -66,8 +66,27 @@ Add a real check per app: `AddDbContextCheck<StriveContext>()` for strive, and s
 (a trivial `SELECT 1` or a write probe on the data directory) for tracking. Keep the endpoint cheap
 — it is polled.
 
-- [ ] Register a database health check in `Fip.Strive.Web`
-- [ ] Register a database/data-directory health check in `Fip.Strive.Tracking.Web`
+- [x] Register a database health check in `Fip.Strive.Web`
+- [x] Register a database/data-directory health check in `Fip.Strive.Tracking.Web`
+
+**Done.** Both apps got a check that queries rather than connects: `AnyAsync` against
+`catalog_entries` on Postgres and against `trackers` on SQLite. `EXISTS … LIMIT 1` stops at the
+first row, so neither grows more expensive as the data does, and both prove connection *and* schema
+instead of just a reachable socket. Descriptions are deliberately vague — the host and the
+connection error go to the log, not over the wire — and each check carries a 5s timeout so an
+unreachable Postgres cannot park the probe on the connection timeout.
+
+The tracker's endpoint now also sits behind the `X-Api-Key` filter, and moved from `MapHealthChecks`
+to a route handler to get there: endpoint filters are only built for route handler delegates, so
+`AddEndpointFilter` on a `RequestDelegate` endpoint compiles and never runs. With no API key
+configured the endpoint stays public — there would be nothing to authenticate with, and a probe that
+can only ever get a 401 reads as a permanently unhealthy container. Which of the two applies is in
+the startup log.
+
+Side effect worth noting against D1: the tracking check reads a table, so a database file left
+behind by an older model now fails readiness at startup instead of surfacing on whichever page
+touches the missing column first. That is a detector, not the fix D1 asks for — the message still
+says "did not answer" rather than "your schema is stale".
 
 ### A3 — No Dockerfile for the main app *(medium)*
 
@@ -414,8 +433,16 @@ Postgres and asserts that migrations apply and pages render. The gaps are the un
 The API-and-auth gap is the one that matters most: the tracker's whole security posture is "the
 endpoints require authorization", and nothing asserts it. A handful of `WebApplicationFactory` tests
 — anonymous request to a page redirects to login, API call without `X-Api-Key` returns 401, with a
-wrong key returns 401, with the right key returns 200, `/health` stays public — would pin the
-property that the design depends on.
+wrong key returns 401, with the right key returns 200 — would pin the property that the design
+depends on.
+
+The A2 work made this more pressing, not less. `/health` is now guarded by the same key, and it got
+there through a route-handler mapping chosen specifically because the obvious spelling
+(`AddEndpointFilter` on `MapHealthChecks`) compiles and silently does nothing. A refactor back to
+that spelling, or narrowing the handler's parameters to just `HttpContext`, would reopen the
+endpoint with no compiler error and no visible symptom. Two tests — 401 without a key, 200 with one
+— are what stops that. Neither the health endpoint nor the API has any test today, and none of this
+was verified by running anything.
 
 Also note `Fip.Strive.Web.csproj:15` grants `InternalsVisibleTo` to `Fip.Strive.Web.UnitTests`, a
 project that does not exist. Either that project was planned and never created, or it was removed
@@ -440,7 +467,7 @@ Grouped by what they cost against what they buy, rather than strictly by severit
 
 **Second — bounded work, prevents future damage**
 5. C1 — archive expansion limits
-6. A2 — real health checks
+6. ~~A2 — real health checks~~ — **done**, but untested (see F)
 7. B3, B4 — Dependabot targeting, vulnerable-package scan, CodeQL
 8. D1 — schema version stamp
 

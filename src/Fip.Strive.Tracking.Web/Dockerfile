@@ -46,8 +46,9 @@ ENV Tracking__DataDirectory=/data \
 VOLUME /data
 EXPOSE 8080
 
-# Readiness lives at /health. No HEALTHCHECK here: the runtime image ships neither curl nor
-# wget, and installing one just to poll an endpoint the orchestrator can poll itself is a poor
-# trade.
+# Readiness lives at /health, and it queries the database rather than reporting on the process.
+# When Access__ApiKey is set it wants that key in an X-Api-Key header, so whatever polls it has to
+# carry one. No HEALTHCHECK here: the runtime image ships neither curl nor wget, and installing one
+# just to poll an endpoint the orchestrator can poll itself is a poor trade.
 USER $APP_UID
 ENTRYPOINT ["dotnet", "Fip.Strive.Tracking.Web.dll"]
