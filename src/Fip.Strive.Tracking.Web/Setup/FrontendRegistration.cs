@@ -15,8 +15,12 @@ public static class FrontendRegistration
         });
     }
 
+    /// <summary>
+    /// Every page and the circuit behind them require a signed-in user. Enforced on the endpoints
+    /// rather than per page, so a page added later is protected by default instead of by memory.
+    /// </summary>
     public static void UseFrontend<TApp>(this WebApplication app)
     {
-        app.MapRazorComponents<TApp>().AddInteractiveServerRenderMode();
+        app.MapRazorComponents<TApp>().AddInteractiveServerRenderMode().RequireAuthorization();
     }
 }

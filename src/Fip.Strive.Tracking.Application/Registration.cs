@@ -1,5 +1,10 @@
+using Fip.Strive.Tracking.Application.Features.Access;
+using Fip.Strive.Tracking.Application.Features.Access.Services;
+using Fip.Strive.Tracking.Application.Features.Access.Services.Contracts;
 using Fip.Strive.Tracking.Application.Features.Events.Services;
 using Fip.Strive.Tracking.Application.Features.Events.Services.Contracts;
+using Fip.Strive.Tracking.Application.Features.Export.Services;
+using Fip.Strive.Tracking.Application.Features.Export.Services.Contracts;
 using Fip.Strive.Tracking.Application.Features.Storage;
 using Fip.Strive.Tracking.Application.Features.Trackers.Services;
 using Fip.Strive.Tracking.Application.Features.Trackers.Services.Contracts;
@@ -28,10 +33,39 @@ public static class Registration
     {
         services.AddPersistence(configuration, basePath);
         services.AddTrackers();
+        services.AddAccess(configuration);
 
         services.TryAddTimeProvider();
 
         return services;
+    }
+
+    private static void AddAccess(this IServiceCollection services, IConfiguration configuration)
+    {
+        var section = configuration.GetSection(AccessOptions.SectionName);
+        var options = section.Get<AccessOptions>() ?? new AccessOptions();
+
+        // Refused at startup rather than at the first login attempt: this app is meant to sit on the
+        // open internet, and an instance nobody can log into is far better than one anybody can.
+        if (!Pbkdf2Password.IsEncodedHash(options.PasswordHash))
+            throw new InvalidOperationException(
+                $"'{AccessOptions.SectionName}:PasswordHash' is missing or not a PBKDF2 hash. "
+                    + "Generate one with `dotnet run --project src/Fip.Strive.Tracking.Web -- "
+                    + "hash-password` and supply it as Access__PasswordHash."
+            );
+
+        if (
+            !string.IsNullOrEmpty(options.ApiKey)
+            && options.ApiKey.Length < AccessOptions.MinimumApiKeyLength
+        )
+            throw new InvalidOperationException(
+                $"'{AccessOptions.SectionName}:ApiKey' is shorter than "
+                    + $"{AccessOptions.MinimumApiKeyLength} characters. Leave it empty to turn the "
+                    + "API off, or set a generated secret."
+            );
+
+        services.Configure<AccessOptions>(section);
+        services.AddSingleton<IAccessGuard, AccessGuard>();
     }
 
     private static void AddPersistence(
@@ -71,6 +105,7 @@ public static class Registration
         services.AddScoped<ITrackerWriter, TrackerWriter>();
         services.AddScoped<IEventReader, EventReader>();
         services.AddScoped<IEventRecorder, EventRecorder>();
+        services.AddScoped<IExportReader, ExportReader>();
     }
 
     private static void TryAddTimeProvider(this IServiceCollection services)
