@@ -15,6 +15,16 @@ public static class Pbkdf2Password
     /// <summary>OWASP's floor for PBKDF2-HMAC-SHA256. Raise it, do not lower it.</summary>
     private const int Iterations = 210_000;
 
+    /// <summary>
+    /// Ceiling on the iteration count accepted from an encoded hash. The value comes from
+    /// configuration rather than from an attacker, so this is a foot-gun guard rather than a
+    /// defence: one stray digit turns every login attempt into a multi-second CPU burn on an
+    /// endpoint that is reachable before authentication, which is a denial of service somebody
+    /// would inflict on themselves. Roughly fifty times the current cost — far above any plausible
+    /// deliberate raise, far below anything that hangs.
+    /// </summary>
+    private const int MaximumIterations = 10_000_000;
+
     private const int SaltBytes = 16;
     private const int HashBytes = 32;
 
@@ -48,6 +58,7 @@ public static class Pbkdf2Password
         if (
             !int.TryParse(parts[1], CultureInfo.InvariantCulture, out var iterations)
             || iterations <= 0
+            || iterations > MaximumIterations
         )
             return false;
 

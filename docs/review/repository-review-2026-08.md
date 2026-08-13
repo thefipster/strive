@@ -706,7 +706,10 @@ The reasoning in the comment is right and the fix is small: hash both sides (`SH
 compare the digests, which are always 32 bytes. Marginal — a 32-character generated secret is not
 falling to a length oracle — but it is three lines and it makes the intent exact.
 
-- [ ] Compare fixed-length digests instead of raw bytes
+- [x] Compare fixed-length digests instead of raw bytes
+
+**Done.** `SHA256.HashData` on both sides, so the comparison is always over 32 bytes and the key's
+length stops being observable in the timing.
 
 ### D4 — No upper bound on the PBKDF2 iteration count *(low)*
 
@@ -715,7 +718,11 @@ from configuration, not from an attacker, so this is a foot-gun rather than an e
 adding a digit turns every login attempt into a multi-second CPU burn, and the login endpoint is
 reachable pre-authentication. Clamp to a sane ceiling and reject above it.
 
-- [ ] Clamp accepted iteration counts in `Verify`
+- [x] Clamp accepted iteration counts in `Verify`
+
+**Done.** Rejected above 10,000,000 — roughly fifty times the current cost, far above any plausible
+deliberate raise and far below anything that hangs. A malformed count still reads as "wrong
+password" rather than throwing, which is the existing contract.
 
 ### D5 — Name-uniqueness checks race against the unique index *(low)*
 
@@ -742,7 +749,10 @@ bound.
 The inconsistency between two apps in one repository is itself worth resolving, whichever way it
 goes. Changing this does not require touching existing rows: both are GUIDs.
 
-- [ ] Switch tracking to `Guid.CreateVersion7()` for consistency and index locality
+- [x] Switch tracking to `Guid.CreateVersion7()` for consistency and index locality
+
+**Done.** All four call sites. No data migration needed — both are GUIDs, so existing rows keep
+their keys and only new inserts benefit from the ordering.
 
 ### D7 — Login redirect discards the return URL *(low)*
 
@@ -751,7 +761,19 @@ app while signed out therefore lands on the tracker list rather than the page th
 The cookie handler already puts the original path in `?ReturnUrl=`; the login form does not carry it
 through. Minor, and only noticeable on a session expiry mid-navigation.
 
-- [ ] Round-trip `ReturnUrl` through the login form and honour it with `LocalRedirect`
+- [x] Round-trip `ReturnUrl` through the login form and honour it with `LocalRedirect`
+
+**Done, and it needed an open-redirect guard the finding did not mention.** The login page is a
+static file, so nothing templates the challenge's `?ReturnUrl=` into the form; a few lines of script
+copy it into a hidden field, and the endpoint honours it. It survives a failed attempt too, so a
+mistyped password does not silently cost the destination.
+
+The part worth care: a login form that will forward anywhere is a phishing primitive. Anything that
+is not a path on this host becomes `/`, and that check is explicit rather than left to
+`Results.LocalRedirect`, which *throws* on a non-local URL — on this endpoint that would turn a
+crafted link into a 500 on the one page that has to keep working. `//evil.test` and `/\evil.test`
+are both covered: browsers read both as protocol-relative, so a leading slash alone does not make
+something local. Four theory cases pin it.
 
 *Second pass: confirmed against a running instance. `GET /trackers/{id}` while signed out redirects
 to `/login.html?ReturnUrl=%2Ftrackers%2F…`, and posting the correct password answers

@@ -28,9 +28,12 @@ public static class AccessEndpoints
                     HttpContext http,
                     IAccessGuard guard,
                     ILoggerFactory loggers,
-                    [FromForm] string? password
+                    [FromForm] string? password,
+                    [FromForm] string? returnUrl
                 ) =>
                 {
+                    var destination = LocalPathOrHome(returnUrl);
+
                     if (!guard.IsPassword(password))
                     {
                         loggers
@@ -40,7 +43,15 @@ public static class AccessEndpoints
                                 http.Connection.RemoteIpAddress
                             );
 
-                        return Results.Redirect($"{AccessRegistration.LoginPath}?error=1");
+                        // Carried through the failure too, so a mistyped password does not quietly
+                        // cost the destination that survived the first redirect. Omitted when it is
+                        // just the home page, which the login already defaults to.
+                        var query =
+                            destination == "/"
+                                ? "?error=1"
+                                : $"?error=1&ReturnUrl={Uri.EscapeDataString(destination)}";
+
+                        return Results.Redirect($"{AccessRegistration.LoginPath}{query}");
                     }
 
                     var identity = new ClaimsIdentity(
@@ -54,11 +65,43 @@ public static class AccessEndpoints
                         new AuthenticationProperties { IsPersistent = true }
                     );
 
-                    return Results.LocalRedirect("/");
+                    return Results.LocalRedirect(destination);
                 }
             )
             .RequireRateLimiting(AccessRegistration.LoginRateLimit);
 
+        MapSignOut(access);
+    }
+
+    /// <summary>
+    /// Where to land after signing in. Anything that is not a path on this host becomes the home
+    /// page, which is what stops a crafted <c>?ReturnUrl=</c> from turning the login form into an
+    /// open redirect — a login page that will forward anywhere is a phishing primitive.
+    /// </summary>
+    /// <remarks>
+    /// Validated here rather than left to <see cref="Results.LocalRedirect"/>, which throws on a
+    /// non-local URL. On this path an exception would turn a hostile link into a 500 on the one
+    /// endpoint that has to keep working.
+    /// </remarks>
+    private static string LocalPathOrHome(string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+            return "/";
+
+        // "//evil.test" and "/\evil.test" are both read as protocol-relative URLs by browsers, so
+        // a leading slash on its own is not enough to call something local.
+        if (
+            returnUrl[0] != '/'
+            || returnUrl.StartsWith("//", StringComparison.Ordinal)
+            || returnUrl.StartsWith("/\\", StringComparison.Ordinal)
+        )
+            return "/";
+
+        return returnUrl;
+    }
+
+    private static void MapSignOut(RouteGroupBuilder access)
+    {
         access.MapPost(
             "/logout",
             async (HttpContext http) =>

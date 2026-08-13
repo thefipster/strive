@@ -63,6 +63,58 @@ public class SignInTests : TrackingWebTest
         return location!.IsAbsoluteUri ? location.AbsolutePath : location.OriginalString;
     }
 
+    [Fact]
+    public async Task A_deep_link_survives_the_sign_in()
+    {
+        var response = await PostPasswordAsync(
+            TrackingAppFactory.Password,
+            "/trackers/0f8fad5b-d9cb-469f-a165-70867728950e"
+        );
+
+        response
+            .Headers.Location?.OriginalString.Should()
+            .Be(
+                "/trackers/0f8fad5b-d9cb-469f-a165-70867728950e",
+                "following a link while signed out should land on the page that was asked for"
+            );
+    }
+
+    [Fact]
+    public async Task A_failed_attempt_keeps_the_destination()
+    {
+        var response = await PostPasswordAsync("not the password", "/trackers/abc");
+
+        // A mistyped password should not quietly cost the destination.
+        var location = response.Headers.Location?.OriginalString;
+
+        location.Should().StartWith("/login.html?error=1");
+        location.Should().Contain("ReturnUrl=%2Ftrackers%2Fabc");
+    }
+
+    [Theory]
+    [InlineData("https://evil.test/steal")]
+    [InlineData("//evil.test/steal")]
+    [InlineData("/\evil.test/steal")]
+    [InlineData("javascript:alert(1)")]
+    public async Task A_destination_that_leaves_this_host_is_ignored(string hostile)
+    {
+        var response = await PostPasswordAsync(TrackingAppFactory.Password, hostile);
+
+        // A login form that forwards anywhere is a phishing primitive, so anything that is not a
+        // path on this host becomes the home page.
+        response.Headers.Location?.OriginalString.Should().Be("/");
+    }
+
+    private async Task<HttpResponseMessage> PostPasswordAsync(string password, string? returnUrl) =>
+        await Client()
+            .PostAsync(
+                "/auth/login",
+                new FormUrlEncodedContent([
+                    new KeyValuePair<string, string>("password", password),
+                    new KeyValuePair<string, string>("returnUrl", returnUrl ?? string.Empty),
+                ])
+            );
+
     private async Task<HttpResponseMessage> PostPasswordAsync(string password) =>
         await Client()
             .PostAsync(

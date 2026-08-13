@@ -17,7 +17,7 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
 
         var entity = new Tracker
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             Name = name,
             Description = CleanOptional(
                 tracker.Description,
@@ -98,7 +98,7 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
 
         var entity = new TrackerField
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             TrackerId = trackerId,
             Name = name,
             Type = field.Type,
