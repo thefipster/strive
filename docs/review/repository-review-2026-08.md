@@ -385,8 +385,22 @@ list) and confirm from the Dependabot run log that it actually discovers the pro
 is no `github-actions` ecosystem entry at all, so `actions/checkout@v4` and `actions/setup-dotnet@v4`
 will never be bumped.
 
-- [ ] Repoint the NuGet ecosystem at `/src` and verify against a real Dependabot run
-- [ ] Add a `github-actions` ecosystem entry
+- [x] Repoint the NuGet ecosystem at `/src`
+- [ ] Verify against a real Dependabot run
+- [x] Add a `github-actions` ecosystem entry
+
+**Done, bar the confirmation.** The NuGet ecosystem points at `/src`, which holds all 9 `.csproj`
+files, both `.slnx` solutions and `Directory.Packages.props`; a `github-actions` entry now covers
+the workflow actions that would otherwise have sat on `v4` forever.
+
+Two grouping rules came out of this branch's own experience. EF Core's four packages are grouped so
+they move together — splitting them across pull requests is exactly how `Relational` ended up seven
+patches behind its family in A8. Test-only packages are grouped because they are reviewed as a batch.
+
+The verification step stays open deliberately, and it is not busywork: the failure mode here is a
+*correctly-formed* configuration that matches nothing, which produces no error anywhere. Only the
+Dependabot run log (Insights → Dependency graph → Dependabot) shows which manifests were actually
+discovered, and that cannot be checked from a working copy.
 
 ### B4 — No security or quality gates in CI *(medium)*
 

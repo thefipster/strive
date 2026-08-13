@@ -1,9 +1,45 @@
 version: 2
+
 updates:
+  # /src, not /. Everything buildable lives under src/ — the projects, both .slnx solutions and the
+  # Directory.Packages.props that pins every version centrally. Pointed at the root, as this was,
+  # Dependabot finds no manifest at all and silently updates nothing: there is no error for a
+  # correctly-formed config that matches nothing.
+  #
+  # Worth confirming against a real run rather than trusting this comment. The Dependabot run log
+  # (Insights -> Dependency graph -> Dependabot) lists the manifests it discovered; if the NuGet
+  # entry shows none, the path is still wrong.
   - package-ecosystem: "nuget"
+    directory: "/src"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      # EF Core ships Core, Relational, Design and Sqlite in lockstep and they have to move
+      # together — splitting them across pull requests is what produced the version skew that
+      # MSB3277 was reporting. One PR, all four.
+      entity-framework:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+          - "Npgsql.EntityFrameworkCore*"
+      # Test-only packages, which can be reviewed as a batch rather than one at a time.
+      testing:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+          - "Microsoft.AspNetCore.Mvc.Testing"
+          - "Testcontainers*"
+          - "NSubstitute"
+          - "AwesomeAssertions"
+          - "coverlet.collector"
+
+  # Nothing was updating the actions themselves, so actions/checkout and actions/setup-dotnet would
+  # have stayed on v4 indefinitely.
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+
   - package-ecosystem: "docker"
     directory: "/src/Fip.Strive.Tracking.Web"
     schedule:
