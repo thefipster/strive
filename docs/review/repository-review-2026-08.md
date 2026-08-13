@@ -47,10 +47,10 @@ genuinely fixed. Three corrections and one addition are worth calling out:
 - **B3 is confirmed, not merely suspected.** It carried the document's only *(verify)* marker, and
   that marker is now resolved: none of the paths Dependabot and `strive.yml` point at are tracked at
   the repository root.
-- **B1's premise needed re-checking and survives.** A `test/` directory and a root `NuGet.Config`
-  *do* exist on disk, which initially looked like the finding was wrong. Both are untracked
-  leftovers from the `c1dd7d7` restructure — `git ls-files` returns nothing for either — so the path
-  filters really are dead. See B6 for the leftovers themselves.
+- **B1's premise mostly survives, but not entirely.** Five of its six root paths really are dead.
+  The sixth, `NuGet.config`, is tracked and live — a case-sensitive pathspec against a
+  `core.ignorecase=true` checkout reported it as missing, and that error stood through two rounds of
+  "verification" before a case-insensitive listing caught it. Corrected in B1 and B6.
 - **C1, D1, D2, D6, D7 and the E-series were re-read against the source** and all hold exactly as
   described. E1's two Readme mismatches are still present; `make.ps1` still does not exist.
 - **The most serious findings in this document are now the two the first pass could not see** — G1
@@ -153,7 +153,12 @@ sources therefore still apply, so a build on a machine with an extra feed config
 packages from somewhere the repository never named. Standard supply-chain hygiene is to clear
 first, then add exactly the sources you intend.
 
-- [ ] Add `<clear />` to both `NuGet.config` files
+- [x] Add `<clear />` to both `NuGet.config` files
+
+**Done.** Both — and there really are two tracked ones, at the repository root and under `src/`,
+which B6's correction confirms. NuGet merges every config from the project directory upwards, so
+both apply on every restore and both needed clearing. Verified: `dotnet nuget list source` reports
+`nuget.org` alone, and a forced restore of the whole solution still resolves everything.
 
 ### A5 — No lock file, so restores are not reproducible *(low)*
 
@@ -350,9 +355,18 @@ correction.
 
 **Done, together with B2 — they live in the same `on:` block.** The filters now name the five
 projects in `strive.slnx` individually rather than a blanket `src/**`, which fixes the dead paths
-and stops a tracking-only change from starting a job that spins up Postgres for nothing. Verified by
-matching every pattern against `git ls-files`: **0 dead patterns** in either workflow, and every
-project in each solution covered.
+and stops a tracking-only change from starting a job that spins up Postgres for nothing.
+
+**Correction: the finding overstated itself, and so did the first fix.** Five of the six original
+root filters were dead — `test/**`, `strive.slnx`, `Directory.Build.props`,
+`Directory.Packages.props` and `global.json`. The sixth, `NuGet.config`, was **alive**: it is
+tracked at the repository root and NuGet merges it with `src/NuGet.config` on restore. The
+case-sensitivity trap described in B6 is what hid that, and the first version of this fix dropped
+the live path along with the dead ones — briefly making the filters *worse*. It is back in both
+workflows.
+
+Re-verified case-exactly against `git ls-files`: **0 dead patterns** across both workflows' 14
+filters, every project in each solution covered, and the one live root path retained.
 
 ### B2 — `strive.yml` never runs on branch pushes *(medium)*
 
@@ -484,19 +498,29 @@ Verified: `csharpier check` exits 0, both solutions build with `-warnaserror` at
 two metadata properties — no analyzers, no `TreatWarningsAsErrors`. A8 and G1 are both cases a
 warnings-as-errors gate would have stopped at the commit that introduced them.*
 
-### B6 — untracked build leftovers still sit where the old layout was *(low, **new**)*
+### B6 — a stale `test/` leftover, and a case trap that caught this review *(low, **new**)*
 
-`test/` and a root `NuGet.Config` exist on disk but are tracked by neither git nor any solution.
-`test/` holds ten files, all of them `obj/` restore artefacts — `project.assets.json`,
-`*.nuget.g.props` and friends — left behind by `c1dd7d7`, the commit that moved the test projects
-under `src/`.
+`test/` exists on disk but is tracked by nobody: ten files, all `obj/` restore artefacts left by
+`c1dd7d7`, the commit that moved the test projects under `src/`. It is gitignored, so `git status`
+stays clean and nothing builds from it.
 
-Nothing builds from them and `git status` is clean, so this is cosmetic. It is worth clearing
-anyway, for one specific reason: reviewing B1 and B3 means asking "does this path exist?", and the
-honest answer on a working copy is "yes, but not really". That cost this pass a detour, and it will
-cost the next one the same detour. `git clean -ndX` will show them.
+- [x] Delete the stale `test/` leftover from working copies
 
-- [ ] Delete the stale `test/` and root `NuGet.Config` leftovers from working copies
+**Done — and this finding was half wrong, in a way worth recording.** It originally claimed the root
+`NuGet.Config` was a leftover too. It is not: `NuGet.config` (lowercase `c`) is **tracked**, and
+NuGet merges it with `src/NuGet.config` on every restore, so it genuinely affects the build.
+
+The mistake was a case trap. The file appears as `NuGet.Config` in a Windows working copy, and
+`git ls-files NuGet.Config` returns nothing because pathspecs are case-sensitive even when
+`core.ignorecase=true` makes the filesystem behave otherwise. Every check said "untracked", and all
+of them were asking the wrong question. `git ls-files | grep -i` is what showed it.
+
+That error propagated into B1 before it was caught — see the correction there. Two lessons, both
+cheap: verify a path's tracked-ness with a case-insensitive listing on Windows, and treat "the tool
+returned zero results" as a claim needing its own check when the conclusion is "this thing does not
+exist". `testdata/` is *also* untracked-by-design and must not be swept up in any cleanup — it is
+the seed corpus the Readme documents as local-only, and `git clean -ndX` lists it right next to
+`test/`.
 
 ### B7 — a high-severity advisory was already in the dependency tree *(medium, **new**)*
 
