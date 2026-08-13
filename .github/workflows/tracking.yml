@@ -56,8 +56,10 @@ jobs:
       with:
         dotnet-version: 10.0.x
 
+    # Locked mode fails rather than silently updating packages.lock.json, so a transitive change
+    # arrives as a reviewable diff instead of as a difference between two machines.
     - name: Restore
-      run: dotnet restore src/tracking.slnx
+      run: dotnet restore src/tracking.slnx --locked-mode
 
     # The formatter is pinned in .config/dotnet-tools.json, so this checks against the same
     # version everywhere rather than whatever the runner happens to resolve.

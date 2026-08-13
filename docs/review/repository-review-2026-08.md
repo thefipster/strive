@@ -167,8 +167,25 @@ Central package management pins versions, which is good, but transitive dependen
 a restore reproducible and makes transitive changes visible in review — which matters given the
 repo already carries a note about dodging a vulnerable transitive `SQLitePCLRaw`.
 
-- [ ] Enable `RestorePackagesWithLockFile` and commit the lock files
-- [ ] Add `--locked-mode` to the CI restore steps
+- [x] Enable `RestorePackagesWithLockFile` and commit the lock files
+- [x] Add locked mode to the CI restore steps
+
+**Done.** Nine lock files, one per project, and both workflows restore in locked mode so a
+transitive change fails CI instead of silently differing between machines. The finding's rationale
+was borne out twice on this very branch: B7 was a vulnerable package arriving transitively through
+Testcontainers, and A8 was an EF Core package resolving at a provider's floor. Both would have shown
+up as a lock diff.
+
+Verified that the gate actually gates, which took two attempts. Editing a `resolved` version in the
+lock file changed nothing — locked mode does not validate that field — so the first check passed and
+proved nothing. Removing a package reference produces `NU1004` and fails the restore, which is the
+case that matters.
+
+One trap on the way in, worth recording because the error blamed the wrong thing entirely. Writing
+`--locked-mode` inside the XML comment in `Directory.Build.props` made the file unparseable — XML
+comments cannot contain a double hyphen — so `TargetFramework` never got set and *every* project
+failed restore with "The TargetFramework value '' was not recognized". Nothing in that message
+points at a comment.
 
 ### A6 — the tracker's session cookie is `Secure` on an HTTP-only container *(high, **new**)*
 
