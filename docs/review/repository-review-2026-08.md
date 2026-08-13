@@ -414,9 +414,26 @@ those are cheap additions:
   wider than either job needs)
 - SHA-pinned action versions
 
-- [ ] Add a vulnerable-package check to both workflows
-- [ ] Add a CodeQL workflow
-- [ ] Add least-privilege `permissions` blocks and pin actions by SHA
+- [x] Add a vulnerable-package check to both workflows
+- [x] Add a CodeQL workflow
+- [x] Add least-privilege `permissions` blocks and pin actions by SHA
+
+**Done, all four.** The vulnerable-package step reads the report rather than trusting the exit code,
+because `dotnet list package --vulnerable` exits 0 whatever it finds — a step that just ran the
+command would have passed forever. Running it by hand while writing this is what turned up B7, so
+the gate had already earned itself before it existed.
+
+CodeQL runs on `main`, on pull requests, and weekly. The schedule is the part worth keeping: query
+packs and advisories change without the code changing, so a scan that only fires on push stops
+learning anything the moment work pauses. `build-mode: none` avoids needing Docker for the
+Testcontainers projects and cannot be broken by a build change; it costs some precision, which is
+the right trade for a repository whose builds are already checked on every branch.
+
+Actions are pinned to commit SHAs with the version in a trailing comment. Deliberately pinned at the
+**v4 SHAs already in use**, not at the latest — `actions/checkout` is on v7 and `setup-dotnet` on v6
+now, and rolling two majors forward inside a hardening commit would smuggle an unverified change
+past the gate this same commit is installing. The `github-actions` ecosystem added in B3 will
+propose those upgrades as their own reviewable pull requests.
 
 ### B5 — No formatting or analyzer enforcement *(low)*
 

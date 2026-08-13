@@ -42,6 +42,10 @@ on:
       - '.editorconfig'
       - '.github/workflows/strive.yml'
 
+# The default token grant is wider than either job needs — both only ever read the checkout.
+permissions:
+  contents: read
+
 jobs:
   build:
 
@@ -50,10 +54,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
       with:
         dotnet-version: 10.0.x
 
@@ -75,3 +79,14 @@ jobs:
 
     - name: Test
       run: dotnet test --no-build --configuration Release src/strive.slnx
+
+    # `dotnet list package --vulnerable` exits 0 no matter what it finds, so the report has to be
+    # read rather than the exit code trusted. This is the check that turned up a high-severity
+    # advisory sitting in the tree under a green build.
+    - name: Check for vulnerable packages
+      run: |
+        dotnet list src/strive.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable.txt
+        if grep -q "has the following vulnerable packages" vulnerable.txt; then
+          echo "::error::Vulnerable packages found - see the report above."
+          exit 1
+        fi

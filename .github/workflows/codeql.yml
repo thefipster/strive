@@ -1,0 +1,44 @@
+name: codeql
+
+# Static analysis on the default branch and on anything proposed to merge into it. The weekly run
+# matters as much as the other two: advisories and query packs change without the code changing, so
+# a repository that only scans on push stops learning anything the moment work pauses.
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '31 4 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze C#
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Only this job writes, and only to the code-scanning alert store.
+      security-events: write
+      contents: read
+      actions: read
+
+    steps:
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
+      with:
+        languages: csharp
+        # No build. Buildless analysis costs a little precision, but it means this workflow cannot
+        # be broken by a build change, does not need Docker for the Testcontainers projects, and
+        # does not duplicate work strive.yml already does on every branch.
+        build-mode: none
+        queries: security-and-quality
+
+    - name: Analyze
+      uses: github/codeql-action/analyze@ff2f1c621b7f889edc0d3c761ac2e6a3f8cdb0dd # v4.37.7
+      with:
+        category: "/language:csharp"
