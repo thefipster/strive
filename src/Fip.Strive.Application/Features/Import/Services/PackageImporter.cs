@@ -9,6 +9,7 @@ using Fip.Strive.Application.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Npgsql;
 
 namespace Fip.Strive.Application.Features.Import.Services;
 
@@ -154,7 +155,24 @@ public sealed class PackageImporter(
 
         context.CatalogEntries.AddRange(newEntries);
         context.ImportPackages.Add(package);
-        await context.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsDuplicateArchive(exception))
+        {
+            // Two circuits importing the same bytes at once. The unique index makes the outcome
+            // safe — two packages for one archive are impossible — but the loser was getting a raw
+            // EF exception and a failure snackbar for something that is not a failure. Re-read and
+            // report it as the duplicate it is.
+            logger.LogInformation(
+                "Archive {ArchiveHash} was imported concurrently; reporting the winner",
+                archive.Hash
+            );
+
+            return await DuplicateOfAsync(archive, exception, cancellationToken);
+        }
 
         logger.LogInformation(
             "Imported {FileName} as package {PackageId}: {FileCount} files, {NewEntryCount} new to the catalog",
@@ -169,6 +187,56 @@ public sealed class PackageImporter(
             package.Id,
             package.FileCount,
             package.NewEntryCount
+        );
+    }
+
+    /// <summary>
+    /// Postgres reports a broken unique index as SQLSTATE 23505. Matched on the state rather than
+    /// the constraint name so a renamed index does not silently turn this back into a raw failure,
+    /// and narrowly enough that a foreign-key or not-null violation — which would be a bug here,
+    /// not a race — still surfaces as one.
+    /// </summary>
+    private static bool IsDuplicateArchive(DbUpdateException exception) =>
+        exception.InnerException
+            is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation };
+
+    /// <summary>
+    /// Reports the package the winning writer created. The context is poisoned by the failed save,
+    /// so this reads through a fresh one rather than through a change tracker that still believes
+    /// in the row it could not write.
+    /// </summary>
+    private async Task<ImportResult> DuplicateOfAsync(
+        StagedArchive archive,
+        DbUpdateException exception,
+        CancellationToken cancellationToken
+    )
+    {
+        await using var fresh = new StriveContext(
+            new DbContextOptionsBuilder<StriveContext>()
+                .UseNpgsql(context.Database.GetConnectionString())
+                .Options
+        );
+
+        var winner =
+            await fresh
+                .ImportPackages.AsNoTracking()
+                .FirstOrDefaultAsync(
+                    package => package.ArchiveHash == archive.Hash,
+                    cancellationToken
+                )
+            // The unique index fired, so a row with this hash exists; not finding it means the
+            // violation was something else entirely and swallowing it would hide a real fault.
+            ?? throw new InvalidOperationException(
+                $"A unique violation was reported for archive {archive.Hash}, but no package with "
+                    + "that hash could be read back.",
+                exception
+            );
+
+        return new ImportResult(
+            ImportOutcome.DuplicateArchive,
+            winner.Id,
+            winner.FileCount,
+            NewEntryCount: 0
         );
     }
 

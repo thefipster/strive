@@ -591,7 +591,16 @@ Only reachable from two circuits at once (the page's `_busy` flag is per-circuit
 in a single-user homelab. Cheap to fix: catch the unique-violation on save, re-read, and return
 `DuplicateArchive`.
 
-- [ ] Translate the unique-violation into `ImportOutcome.DuplicateArchive`
+- [x] Translate the unique-violation into `ImportOutcome.DuplicateArchive`
+
+**Done.** Postgres SQLSTATE 23505 on the archive-hash index is caught and re-read into the
+`DuplicateArchive` result the caller should have got, so a concurrent import of the same bytes
+reports "already imported" instead of a failure snackbar for something that is not a failure.
+
+Two details worth noting. The re-read goes through a fresh context, because the one that failed its
+save still has the rejected package in its change tracker. And if the re-read finds nothing, that is
+rethrown rather than swallowed — the index fired, so a row must exist, and not finding it means the
+violation was something else that would be hidden by reporting a duplicate.
 
 ### C4 — The platform app has no authentication at all *(medium — decision needed)*
 
@@ -644,8 +653,19 @@ is the table that grows fastest. Fine at today's size; consider a trigram index 
 when it stops being fine. Note also that `%` and `_` typed into the box act as wildcards, which is
 harmless but surprising.
 
-- [ ] Lowercase the search term before the hash comparison
+- [x] Lowercase the search term before the hash comparison
 - [ ] Revisit path search performance when `package_files` gets large
+
+**Done.** The term is lowercased before the prefix match, so a hash pasted from a tool that emits
+uppercase now finds its entry instead of silently matching nothing. Done outside the expression
+rather than in SQL, so the comparison stays an index-friendly prefix match rather than a function
+call per row. Path matching is left case-sensitive on purpose: paths inside an archive are.
+
+The `%` and `_` wildcard note turned out to be a non-issue — EF Core escapes both when it translates
+`StartsWith` and `Contains`, so they match literally.
+
+Path search performance stays open, as intended: it is a "when it stops being fine" item, and
+`package_files` is nowhere near that yet.
 
 ---
 
@@ -736,7 +756,17 @@ Also worth noting: the case-insensitive check uses `ToLower()`, which SQLite app
 "STRASSE" and "straße" will not be seen as colliding. Almost certainly irrelevant here; recorded so
 it is a known limit rather than a surprise.
 
-- [ ] Translate unique-index violations into `TrackingException`
+- [x] Translate unique-index violations into `TrackingException`
+
+**Done.** Saves that can hit a name index now translate SQLite's extended error 2067 into the same
+`TrackingException` the pre-flight guards throw, so the losing writer gets the snackbar rather than
+an unhandled error. Matched on the *extended* code rather than plain `SQLITE_CONSTRAINT`, so a
+foreign-key or not-null failure — which would be a bug, not a user error — still surfaces as one.
+
+Not covered by a test, and deliberately so: deterministically interleaving two writers between their
+guard and their save needs a seam the code does not have, and inventing one to test a two-tab race
+in a single-user app is a poor trade. The ASCII-only `ToLower()` limitation is unchanged and remains
+recorded rather than fixed.
 
 ### D6 — Random GUIDs as primary keys *(low)*
 
@@ -906,7 +936,7 @@ reports on Postgres rather than on nothing.
 
 - [x] Add auth/API integration tests for the tracking app *(highest value)*
 - [ ] Add unit tests for `PackageImporter`'s duplicate and cancellation paths
-- [ ] Add tests for `CatalogReader`, including case-sensitivity of hash search
+- [x] Add tests for `CatalogReader`, including case-sensitivity of hash search
 - [ ] Assert the `postgres` check in `ShellTests`, mirroring the tracker's health test
 - [ ] Remove the stale `InternalsVisibleTo`, or create the project it names
 
