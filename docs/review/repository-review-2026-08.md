@@ -373,6 +373,32 @@ cost the next one the same detour. `git clean -ndX` will show them.
 
 - [ ] Delete the stale `test/` and root `NuGet.Config` leftovers from working copies
 
+### B7 — a high-severity advisory was already in the dependency tree *(medium, **new**)*
+
+Found by running the check B4 asks for, before writing it into CI. `Fip.Strive.IntegrationTests`
+pulled `SSH.NET` 2025.1.0, which carries **GHSA-q939-rpr3-3284, rated high**, by way of
+`Testcontainers.PostgreSql 4.13.0 → Testcontainers 4.13.0 → SSH.NET`.
+
+Exposure is narrow: it is a test-only dependency, it never ships, and Testcontainers reaches for
+SSH.NET only on the remote-Docker path, which this repo does not use. It is worth fixing anyway,
+because it is exactly the finding B4's missing gate exists to surface, and because it sat there
+unnoticed while the build was green.
+
+Testcontainers 4.13.0 is already the latest and still asks for the vulnerable version, so the fix is
+a direct reference to `SSH.NET` 2026.0.0 — the same arrangement, for the same reason, that
+`SQLitePCLRaw` already has in this repository. Testcontainers declares 2025.1.0 as a minimum rather
+than an exact version, so restore is clean.
+
+- [x] Pin `SSH.NET` past the advisory
+
+**Done.** `dotnet list package --vulnerable --include-transitive` now reports no vulnerable packages
+across all nine projects, and `strive.slnx` builds **0 warnings, 0 errors** for the first time.
+
+One caveat carried forward: Testcontainers was compiled against 2025.1.0, and this is a major-version
+bump. Nothing here can prove it at runtime, because the integration suite needs Docker (F2) and no
+daemon is available locally. CI runs that suite with Docker, so the branch build is the confirmation
+— if `ImportTests` or `ShellTests` fail there, this is the first thing to look at.
+
 ---
 
 ## C. Import pipeline (`Fip.Strive.Application`)
