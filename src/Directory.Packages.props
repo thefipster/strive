@@ -15,9 +15,16 @@
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.6" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.4.6" />
   </ItemGroup>
-  <!-- Pinned to what the Npgsql provider builds against; a higher EF Core trips MSB3277. -->
+  <!--
+    EF Core ships Core, Relational, Design and Sqlite in lockstep, so every one of them is pinned to
+    the same patch here. Relational is listed even though nothing references it by name: the Npgsql
+    provider asks for [10.0.4, 11.0.0) and NuGet would otherwise settle on that floor, leaving one
+    member of the family seven patches behind the rest and tripping MSB3277 across the solution.
+    The provider's range covers what is pinned here, so unifying upwards is what it supports.
+  -->
   <ItemGroup Label="Persistence">
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.11" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <!-- The tracking app's whole database is one file; nothing else here touches SQLite. -->

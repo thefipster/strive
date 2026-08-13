@@ -255,9 +255,29 @@ provider, which is versioned in step with EF Core.
 Either put EF Core back to what Npgsql builds against, or move Npgsql up to a build that targets
 10.0.11 — and update the comment either way, because it is currently misleading.
 
-- [ ] Realign EF Core and the Npgsql provider so `strive.slnx` builds clean again
-- [ ] Correct or remove the pin comment in `Directory.Packages.props`
+- [x] Realign EF Core and the Npgsql provider so `strive.slnx` builds clean again
+- [x] Correct or remove the pin comment in `Directory.Packages.props`
 - [ ] Consider `TreatWarningsAsErrors` for this class of drift (see B5)
+
+**Done, and the comment was wrong about the cause.** The provider does not pin EF Core; it asks for
+`[10.0.4, 11.0.0)` for both `Microsoft.EntityFrameworkCore` and `Microsoft.EntityFrameworkCore.Relational`.
+10.0.11 sits inside that range and always did, so "a higher EF Core trips MSB3277" named the wrong
+culprit — and the original 10.0.4 pin was treating the symptom.
+
+The actual cause is that `Relational` was the one member of the EF family nobody pinned. Core,
+Design and Sqlite were all listed at 10.0.11; `Relational` arrived only as a transitive dependency,
+so NuGet resolved it at the provider's *floor* of 10.0.4 and left it seven patches behind its own
+family. That skew is what MSB3277 was reporting, and it would have appeared at any pinned version
+above the floor — the bump exposed it rather than caused it.
+
+Pinning `Relational` alongside the rest and naming it in `Fip.Strive.Application` resolves the
+family upward, which is what the provider's range supports. `strive.slnx` builds with **0** MSB3277
+warnings, the assembly shipped to `Fip.Strive.Web/bin` is now `10.0.11`, `dotnet ef migrations
+script` still generates correct DDL, and the tracking solution is untouched at 0 warnings with 69
+tests passing.
+
+One warning survives on `strive.slnx`, and it is not this: `SSH.NET` carries a high-severity
+advisory. See B7.
 
 ---
 
