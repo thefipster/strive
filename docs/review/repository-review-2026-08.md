@@ -346,7 +346,13 @@ filters are dead weight that reads as intentional coverage, and the moment `src/
 become a silent gap. `tracking.yml` gets the same paths right, so this is a straightforward
 correction.
 
-- [ ] Fix the path filters in `strive.yml` to `src/...`, drop `test/**`
+- [x] Fix the path filters in `strive.yml` to `src/...`, drop `test/**`
+
+**Done, together with B2 — they live in the same `on:` block.** The filters now name the five
+projects in `strive.slnx` individually rather than a blanket `src/**`, which fixes the dead paths
+and stops a tracking-only change from starting a job that spins up Postgres for nothing. Verified by
+matching every pattern against `git ls-files`: **0 dead patterns** in either workflow, and every
+project in each solution covered.
 
 ### B2 — `strive.yml` never runs on branch pushes *(medium)*
 
@@ -357,7 +363,12 @@ comment argues for.
 
 Either mirror the tracker's trigger, or write down why the two apps are treated differently.
 
-- [ ] Make `strive.yml` build on branch pushes, or document the asymmetry
+- [x] Make `strive.yml` build on branch pushes, or document the asymmetry
+
+**Done — mirrored, not documented.** `strive.yml` now runs on every branch push exactly as
+`tracking.yml` does. The asymmetry had no defence: the build is most useful while a change is still
+being written, which is precisely when the old trigger stayed silent. Narrowing the paths in B1 pays
+for the extra runs, since strive no longer builds on tracking-only commits.
 
 ### B3 — Dependabot almost certainly updates nothing *(medium)*
 

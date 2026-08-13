@@ -1,27 +1,45 @@
 name: strive-build
 
+# Runs on every branch, matching tracking.yml. The previous main-only trigger meant branch work got
+# no signal until a pull request existed, which is backwards: the build is most useful while the
+# change is still being written.
+#
+# The paths below name the projects in strive.slnx rather than all of src/**, so a tracking-only
+# change no longer starts a job that spins up Postgres for nothing. They are also, unlike the paths
+# they replace, paths that exist — the previous list pointed at a test/ directory and at root-level
+# build files that the c1dd7d7 restructure moved under src/, and only fired at all because a
+# blanket 'src/**' entry happened to cover them.
 on:
   push:
-    branches: [ "main" ]
     paths:
-      - 'src/**'
-      - 'test/**'
-      - 'strive.slnx'
-      - 'Directory.Build.props'
-      - 'Directory.Packages.props'
-      - 'NuGet.config'
-      - 'global.json'
+      - 'src/Fip.Strive.AppHost/**'
+      - 'src/Fip.Strive.Application/**'
+      - 'src/Fip.Strive.Application.UnitTests/**'
+      - 'src/Fip.Strive.IntegrationTests/**'
+      - 'src/Fip.Strive.Web/**'
+      - 'src/strive.slnx'
+      - 'src/Directory.Build.props'
+      - 'src/Directory.Packages.props'
+      - 'src/NuGet.config'
+      - 'src/global.json'
+      - '.config/dotnet-tools.json'
+      - '.editorconfig'
       - '.github/workflows/strive.yml'
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'src/**'
-      - 'test/**'
-      - 'strive.slnx'
-      - 'Directory.Build.props'
-      - 'Directory.Packages.props'
-      - 'NuGet.config'
-      - 'global.json'
+      - 'src/Fip.Strive.AppHost/**'
+      - 'src/Fip.Strive.Application/**'
+      - 'src/Fip.Strive.Application.UnitTests/**'
+      - 'src/Fip.Strive.IntegrationTests/**'
+      - 'src/Fip.Strive.Web/**'
+      - 'src/strive.slnx'
+      - 'src/Directory.Build.props'
+      - 'src/Directory.Packages.props'
+      - 'src/NuGet.config'
+      - 'src/global.json'
+      - '.config/dotnet-tools.json'
+      - '.editorconfig'
       - '.github/workflows/strive.yml'
 
 jobs:
