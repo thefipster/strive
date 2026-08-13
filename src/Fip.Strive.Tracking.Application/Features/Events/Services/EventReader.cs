@@ -83,7 +83,9 @@ public sealed class EventReader(TrackingContext context) : IEventReader
                 sample.SortOrder,
             })
             .OrderBy(group => group.Key.SortOrder)
-            .Select(group => Summarise(group.Key.FieldId, group.Key.FieldName, group.Key.Unit, group))
+            .Select(group =>
+                Summarise(group.Key.FieldId, group.Key.FieldName, group.Key.Unit, group)
+            )
             .ToList();
     }
 
@@ -94,10 +96,7 @@ public sealed class EventReader(TrackingContext context) : IEventReader
         IEnumerable<NumberSample> samples
     )
     {
-        var numbers = samples
-            .Select(sample => sample.Number)
-            .OfType<decimal>()
-            .ToList();
+        var numbers = samples.Select(sample => sample.Number).OfType<decimal>().ToList();
 
         return new NumberStats(
             fieldId,

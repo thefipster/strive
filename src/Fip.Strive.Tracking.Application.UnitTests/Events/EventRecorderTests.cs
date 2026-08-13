@@ -135,7 +135,10 @@ public class EventRecorderTests : IDisposable
             trackerId,
             new NewField("Cups", TrackerFieldType.Number, "cups", requiredCups)
         );
-        var mood = await writer.AddFieldAsync(trackerId, new NewField("Mood", TrackerFieldType.Text));
+        var mood = await writer.AddFieldAsync(
+            trackerId,
+            new NewField("Mood", TrackerFieldType.Text)
+        );
 
         return (trackerId, cups, mood);
     }

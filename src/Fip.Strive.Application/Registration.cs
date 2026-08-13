@@ -37,7 +37,10 @@ public static class Registration
         return services;
     }
 
-    private static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    private static void AddPersistence(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var connectionString = configuration.GetConnectionString(DatabaseName);
 

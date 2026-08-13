@@ -82,7 +82,10 @@ public sealed class BlobStore(StoragePaths paths) : IBlobStore
             );
 
             int read;
-            while ((read = await content.ReadAsync(buffer.AsMemory(0, BufferSize), cancellationToken)) > 0)
+            while (
+                (read = await content.ReadAsync(buffer.AsMemory(0, BufferSize), cancellationToken))
+                > 0
+            )
             {
                 hasher.AppendData(buffer, 0, read);
                 await target.WriteAsync(buffer.AsMemory(0, read), cancellationToken);

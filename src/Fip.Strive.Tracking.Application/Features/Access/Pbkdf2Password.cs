@@ -74,8 +74,7 @@ public static class Pbkdf2Password
 
     /// <summary>Whether a configuration value is even shaped like something Verify could accept.</summary>
     public static bool IsEncodedHash(string? encoded) =>
-        !string.IsNullOrWhiteSpace(encoded)
-        && encoded.Split('$') is [Algorithm, _, _, _];
+        !string.IsNullOrWhiteSpace(encoded) && encoded.Split('$') is [Algorithm, _, _, _];
 
     private static byte[] Derive(string password, byte[] salt, int iterations, int length) =>
         Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA256, length);

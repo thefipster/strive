@@ -26,10 +26,16 @@ public class EventReaderTests : IDisposable
 
         var first = await reader.GetEventsAsync(trackerId, 0, 2);
         first.TotalCount.Should().Be(5);
-        first.Items.Select(item => item.OccurredUtc).Should().Equal(Noon.AddHours(4), Noon.AddHours(3));
+        first
+            .Items.Select(item => item.OccurredUtc)
+            .Should()
+            .Equal(Noon.AddHours(4), Noon.AddHours(3));
 
         var second = await reader.GetEventsAsync(trackerId, 2, 2);
-        second.Items.Select(item => item.OccurredUtc).Should().Equal(Noon.AddHours(2), Noon.AddHours(1));
+        second
+            .Items.Select(item => item.OccurredUtc)
+            .Should()
+            .Equal(Noon.AddHours(2), Noon.AddHours(1));
     }
 
     [Fact]

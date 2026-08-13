@@ -69,9 +69,6 @@ public static class HealthCheckRegistration
 
         health.AddEndpointFilter<ApiKeyFilter>();
 
-        app.Logger.LogInformation(
-            "/health requires the {Header} header",
-            ApiKeyFilter.HeaderName
-        );
+        app.Logger.LogInformation("/health requires the {Header} header", ApiKeyFilter.HeaderName);
     }
 }

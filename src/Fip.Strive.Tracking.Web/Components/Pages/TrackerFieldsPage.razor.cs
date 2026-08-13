@@ -55,7 +55,9 @@ public partial class TrackerFieldsPage
                     _fieldType,
                     // A unit only ever renders next to a number, so carrying one on a text field
                     // would just be a setting that does nothing.
-                    _fieldType == TrackerFieldType.Number ? _fieldUnit : null,
+                    _fieldType == TrackerFieldType.Number
+                        ? _fieldUnit
+                        : null,
                     _fieldRequired
                 )
             );
@@ -106,7 +108,10 @@ public partial class TrackerFieldsPage
         try
         {
             await Writer.DeleteFieldAsync(field.Id);
-            Snackbar.Add($"'{field.Name}' and everything recorded under it is gone.", Severity.Info);
+            Snackbar.Add(
+                $"'{field.Name}' and everything recorded under it is gone.",
+                Severity.Info
+            );
             await ReloadAsync();
         }
         catch (TrackingException exception)

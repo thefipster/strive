@@ -19,7 +19,8 @@ public static class AccessRegistration
         IWebHostEnvironment environment
     )
     {
-        var options = configuration.GetSection(AccessOptions.SectionName).Get<AccessOptions>()
+        var options =
+            configuration.GetSection(AccessOptions.SectionName).Get<AccessOptions>()
             ?? new AccessOptions();
 
         services

@@ -8,7 +8,9 @@ namespace Fip.Strive.Tracking.Application.Features.Export.Services.Contracts;
 /// </summary>
 public interface IExportReader
 {
-    Task<IReadOnlyList<TrackerExport>> GetTrackersAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TrackerExport>> GetTrackersAsync(
+        CancellationToken cancellationToken = default
+    );
 
     /// <param name="since">Inclusive lower bound on <c>RecordedUtc</c>. Null pulls from the start.</param>
     /// <param name="take">Clamped to <see cref="MaximumPageSize"/>.</param>

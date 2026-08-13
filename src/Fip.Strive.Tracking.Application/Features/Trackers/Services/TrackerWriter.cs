@@ -58,7 +58,10 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteTrackerAsync(Guid trackerId, CancellationToken cancellationToken = default)
+    public async Task DeleteTrackerAsync(
+        Guid trackerId,
+        CancellationToken cancellationToken = default
+    )
     {
         // Fields, events and values go with it through the foreign keys' cascade, which the SQLite
         // provider has switched on — no need to pull the history into memory just to delete it.

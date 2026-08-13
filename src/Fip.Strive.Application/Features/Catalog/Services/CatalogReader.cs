@@ -11,8 +11,10 @@ public sealed class CatalogReader(StriveContext context) : ICatalogReader
     {
         var packageCount = await context.ImportPackages.CountAsync(cancellationToken);
         var entryCount = await context.CatalogEntries.CountAsync(cancellationToken);
-        var totalBytes = await context
-            .CatalogEntries.SumAsync(entry => (long?)entry.SizeBytes, cancellationToken);
+        var totalBytes = await context.CatalogEntries.SumAsync(
+            entry => (long?)entry.SizeBytes,
+            cancellationToken
+        );
 
         return new CatalogSummary(packageCount, entryCount, totalBytes ?? 0);
     }
