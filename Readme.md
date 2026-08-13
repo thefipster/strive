@@ -202,6 +202,11 @@ curl -H "X-Api-Key: $KEY" "https://tracker.example/api/v1/events?since=2026-08-1
 `GET /api/v1/events` returns events oldest-first with their values, taking `since`, `trackerId`,
 `skip` and `take` (max 1000).
 
+`since` filters on `RecordedUtc`, not `OccurredUtc` — an event backdated to last week is still news
+to a puller that synced yesterday. It is an **inclusive** lower bound, and the `nextSince` in each
+response is the last row's `RecordedUtc`, so following it re-delivers that final event on the next
+pull. Deduplicate on event id; the ids are stable.
+
 Two things to know before writing the puller:
 
 - `since` filters on **`recordedUtc`**, not `occurredUtc`, and is **inclusive**. An event entered

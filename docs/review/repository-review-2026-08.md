@@ -663,7 +663,12 @@ in `blobs/` with no way to find or remove them. `package_files` deletion cascade
 No action needed today — nothing deletes packages yet. Worth a placeholder so it is a conscious
 deferral rather than an oversight.
 
-- [ ] Note blob GC as a prerequisite for any future package deletion
+- [x] Note blob GC as a prerequisite for any future package deletion
+
+**Done.** Recorded on `BlobStore` itself, where somebody about to write a delete path will actually
+be reading, rather than in a document they would have to know to open. The note says what the
+current behaviour is, why it is harmless today, and that a collector is a *prerequisite* for package
+deletion rather than a follow-up to it.
 
 ### C6 — Catalog search is case-sensitive and unindexed *(low)*
 
@@ -882,7 +887,10 @@ collisions are not a practical concern — but a consumer still has to deduplica
 said anywhere a consumer would read it.
 
 - [x] Index `tracker_events` on `RecordedUtc` to match the export's filter and sort
-- [ ] Document that `since` is inclusive, so consumers deduplicate the boundary event
+- [x] Document that `since` is inclusive, so consumers deduplicate the boundary event
+
+**Done**, in the Readme's API section — including that it filters on `RecordedUtc` rather than
+`OccurredUtc`, and that deduplication should be on event id.
 
 **Done, as a composite `(RecordedUtc, Id)`** — the export orders by both, so the tiebreaker is
 covered too rather than left to a sort.
@@ -1081,7 +1089,15 @@ this: a major version was crossed in a bulk bump, and this is the instance loud 
 The tracking app's Razor compiles clean, so it is unaffected.
 
 - [x] Rename `ActivatorContent` to `CustomContent` in `ImportPage.razor`
-- [ ] Review the rest of the MudBlazor 8 → 9 breaking changes against both apps' components
+- [x] Review the rest of the MudBlazor 8 → 9 breaking changes against both apps' components
+
+**Done, and nothing else was broken.** Both apps compile clean under `-warnaserror` with MudBlazor's
+own analyzer active, which is what surfaced the drop zone in the first place. But "it compiles" was
+demonstrably insufficient here, so the audit added rendering coverage rather than trusting the
+compiler twice: the strive app's four pages were already asserted to render inside the shell by
+`ShellTests`, and the tracker had no equivalent because every page needs a cookie first.
+`ShellRenderTests` signs in and asserts the shell renders, which is the check that does not depend
+on an analyzer knowing to complain.
 - [ ] Add a warnings-as-errors gate so the next silent Razor break fails the build (see B5)
 
 **Done.** The rename alone would have restored the markup but not the behaviour: MudBlazor 9 no

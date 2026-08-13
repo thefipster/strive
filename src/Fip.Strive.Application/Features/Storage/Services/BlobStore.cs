@@ -9,6 +9,17 @@ namespace Fip.Strive.Application.Features.Storage.Services;
 /// Filesystem blob store sharded by hash prefix (<c>ab/cd/abcd…</c>) to keep directory fan-out
 /// manageable across hundreds of thousands of files.
 /// </summary>
+/// <remarks>
+/// Nothing here ever deletes. Blobs are written before the catalog transaction commits, so a failed
+/// or cancelled import leaves unreferenced bytes that a retry deduplicates against — deliberate, and
+/// harmless while nothing removes packages.
+///
+/// It stops being harmless the day something does. Deleting a package cascades its
+/// <c>package_files</c> rows and leaves both the <c>catalog_entries</c> and the blobs behind, and
+/// there is no way to find an unreferenced blob short of walking the whole store against the
+/// catalog. Treat a garbage collector as a prerequisite for package deletion rather than a
+/// follow-up to it.
+/// </remarks>
 public sealed class BlobStore(StoragePaths paths) : IBlobStore
 {
     private const int BufferSize = 128 * 1024;
