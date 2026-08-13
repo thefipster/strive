@@ -427,30 +427,34 @@ Postgres and asserts that migrations apply and pages render. The gaps are the un
 | `PackageImporter` unit level | Not covered — no test for the duplicate-name, duplicate-archive or cancellation paths |
 | `CatalogReader` | Not covered — including the search behaviour in C6 |
 | `TrackerReader` | Not covered |
-| `ApiKeyFilter`, `AccessEndpoints` | Not covered — no test that an unauthenticated request is actually refused |
+| `ApiKeyFilter`, `AccessEndpoints`, `/health` | Covered by `Fip.Strive.Tracking.Web.UnitTests` |
 | Blazor components (either app) | Not covered — no bUnit project |
 
-The API-and-auth gap is the one that matters most: the tracker's whole security posture is "the
-endpoints require authorization", and nothing asserts it. A handful of `WebApplicationFactory` tests
-— anonymous request to a page redirects to login, API call without `X-Api-Key` returns 401, with a
-wrong key returns 401, with the right key returns 200 — would pin the property that the design
-depends on.
+The API-and-auth gap was the one that mattered most: the tracker's whole security posture is "the
+endpoints require authorization", and nothing asserted it. `Fip.Strive.Tracking.Web.UnitTests` now
+does — it boots the real host via `WebApplicationFactory` against a throwaway data directory, so
+what it tests is the pipeline as `Program.cs` actually assembles it.
 
-The A2 work made this more pressing, not less. `/health` is now guarded by the same key, and it got
-there through a route-handler mapping chosen specifically because the obvious spelling
-(`AddEndpointFilter` on `MapHealthChecks`) compiles and silently does nothing. A refactor back to
-that spelling, or narrowing the handler's parameters to just `HttpContext`, would reopen the
-endpoint with no compiler error and no visible symptom. Two tests — 401 without a key, 200 with one
-— are what stops that. Neither the health endpoint nor the API has any test today, and none of this
-was verified by running anything.
+The A2 work is what made this urgent. `/health` is guarded by the same key, and it got there through
+a route-handler mapping chosen specifically because the obvious spelling (`AddEndpointFilter` on
+`MapHealthChecks`) compiles and silently does nothing. Narrowing the handler's parameters to just
+`HttpContext` has the same effect, for the same reason. Either refactor would reopen the endpoint
+with no compiler error and no visible symptom — the 401-without-a-key test is the only thing that
+would notice.
 
-Also note `Fip.Strive.Web.csproj:15` grants `InternalsVisibleTo` to `Fip.Strive.Web.UnitTests`, a
-project that does not exist. Either that project was planned and never created, or it was removed
-and the attribute outlived it.
+No Docker or Postgres involved, so it runs wherever `tracking.slnx` runs. It is named `UnitTests`
+to match the app's existing test project rather than because it is one; the repo's split is really
+"needs infrastructure" against "does not".
 
-- [ ] Add auth/API integration tests for the tracking app *(highest value)*
+Still open: `Fip.Strive.Web.csproj:15` grants `InternalsVisibleTo` to `Fip.Strive.Web.UnitTests`, a
+project that does not exist. The platform app has no equivalent web-level suite — its
+`IntegrationTests` cover the shell and the import path, but nothing asserts that the health check
+reports on Postgres rather than on nothing.
+
+- [x] Add auth/API integration tests for the tracking app *(highest value)*
 - [ ] Add unit tests for `PackageImporter`'s duplicate and cancellation paths
 - [ ] Add tests for `CatalogReader`, including case-sensitivity of hash search
+- [ ] Assert the `postgres` check in `ShellTests`, mirroring the tracker's health test
 - [ ] Remove the stale `InternalsVisibleTo`, or create the project it names
 
 ---
@@ -463,7 +467,7 @@ Grouped by what they cost against what they buy, rather than strictly by severit
 1. ~~A1 — remove the `E:\` path~~ — **done**
 2. E1 — fix the Readme's remaining mismatches
 3. B1, B2 — correct `strive.yml`'s filters and triggers
-4. F — auth/API integration tests for the tracker
+4. ~~F — auth/API integration tests for the tracker~~ — **done**
 
 **Second — bounded work, prevents future damage**
 5. C1 — archive expansion limits

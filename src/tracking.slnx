@@ -19,5 +19,6 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="Fip.Strive.Tracking.Application.UnitTests/Fip.Strive.Tracking.Application.UnitTests.csproj" />
+    <Project Path="Fip.Strive.Tracking.Web.UnitTests/Fip.Strive.Tracking.Web.UnitTests.csproj" />
   </Folder>
 </Solution>

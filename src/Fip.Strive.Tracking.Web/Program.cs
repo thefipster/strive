@@ -44,3 +44,6 @@ app.UseFrontend<App>();
 app.UseHealthEndpoint();
 
 await app.RunAsync();
+
+// Exposed so the test host can reference this assembly via WebApplicationFactory<Program>.
+public partial class Program;

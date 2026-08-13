@@ -24,5 +24,6 @@
     <Project Path="Fip.Strive.Application.UnitTests/Fip.Strive.Application.UnitTests.csproj" />
     <Project Path="Fip.Strive.IntegrationTests/Fip.Strive.IntegrationTests.csproj" />
     <Project Path="Fip.Strive.Tracking.Application.UnitTests/Fip.Strive.Tracking.Application.UnitTests.csproj" />
+    <Project Path="Fip.Strive.Tracking.Web.UnitTests/Fip.Strive.Tracking.Web.UnitTests.csproj" />
   </Folder>
 </Solution>
