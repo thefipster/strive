@@ -1,0 +1,13 @@
+# The build context is the repository root, and most of it has no business in an image.
+.git/
+.github/
+docs/
+legacy/
+testdata/
+coverage-report/
+
+**/bin/
+**/obj/
+**/data/
+**/logs/
+**/*.user

@@ -1,0 +1,25 @@
+html, body {
+    font-family: "Exo", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.page-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+h1:focus {
+    outline: none;
+}
+
+.blazor-error-boundary {
+    background: #b32121;
+    padding: 1rem;
+    color: white;
+}
+
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}

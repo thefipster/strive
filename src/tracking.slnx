@@ -5,24 +5,19 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/files/">
-    <File Path="../.github/workflows/strive.yml" />
+    <File Path="../.dockerignore" />
+    <File Path="../.github/workflows/tracking.yml" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
+    <File Path="Fip.Strive.Tracking.Web/Dockerfile" />
     <File Path="global.json" />
     <File Path="NuGet.config" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="Fip.Strive.AppHost/Fip.Strive.AppHost.csproj" />
-    <Project Path="Fip.Strive.Application/Fip.Strive.Application.csproj" />
-    <Project Path="Fip.Strive.Web/Fip.Strive.Web.csproj" />
-  </Folder>
-  <Folder Name="/tracking/">
     <Project Path="Fip.Strive.Tracking.Application/Fip.Strive.Tracking.Application.csproj" />
     <Project Path="Fip.Strive.Tracking.Web/Fip.Strive.Tracking.Web.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="Fip.Strive.Application.UnitTests/Fip.Strive.Application.UnitTests.csproj" />
-    <Project Path="Fip.Strive.IntegrationTests/Fip.Strive.IntegrationTests.csproj" />
     <Project Path="Fip.Strive.Tracking.Application.UnitTests/Fip.Strive.Tracking.Application.UnitTests.csproj" />
   </Folder>
 </Solution>

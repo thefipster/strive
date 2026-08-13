@@ -1,0 +1,117 @@
+@page "/"
+
+<PageTitle>Tracker</PageTitle>
+
+<Headline Text="Trackers">
+    <Actions>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Outlined.Add"
+                   OnClick="ToggleForm">
+            New tracker
+        </MudButton>
+    </Actions>
+</Headline>
+
+@if (_creating)
+{
+    <MudPaper Class="pa-4 mb-6" Elevation="1">
+        <MudStack Spacing="3">
+            <MudTextField T="string"
+                          @bind-Value="_name"
+                          Label="Name"
+                          Placeholder="Coffee, Headache, Gym…"
+                          Variant="Variant.Outlined"
+                          Immediate="true"/>
+            <MudTextField T="string"
+                          @bind-Value="_description"
+                          Label="What is it for? (optional)"
+                          Variant="Variant.Outlined"
+                          Immediate="true"/>
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="@(_busy || string.IsNullOrWhiteSpace(_name))"
+                           OnClick="CreateAsync">
+                    Create
+                </MudButton>
+                <MudButton Variant="Variant.Text" OnClick="ToggleForm">Cancel</MudButton>
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+}
+
+@if (_trackers is null)
+{
+    <MudProgressLinear Indeterminate="true"/>
+}
+else if (_trackers.Count == 0)
+{
+    <MudAlert Severity="Severity.Info">
+        Nothing tracked yet. Create a tracker, give it whatever custom fields you want to capture,
+        and start logging.
+    </MudAlert>
+}
+else
+{
+    <MudGrid>
+        @foreach (var tracker in _trackers)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCard Elevation="1" Style="height: 100%;">
+                    <MudCardContent>
+                        <MudLink Href="@Detail(tracker)" Underline="Underline.None" Color="Color.Inherit">
+                            <MudText Typo="Typo.h4">@tracker.Name</MudText>
+                        </MudLink>
+
+                        @if (!string.IsNullOrWhiteSpace(tracker.Description))
+                        {
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary mt-1">
+                                @tracker.Description
+                            </MudText>
+                        }
+
+                        <MudStack Row="true" Spacing="1" Class="mt-4">
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary">
+                                @tracker.EventCount @(tracker.EventCount == 1 ? "event" : "events")
+                            </MudChip>
+                            @if (tracker.FieldCount > 0)
+                            {
+                                <MudChip T="string" Size="Size.Small">
+                                    @tracker.FieldCount @(tracker.FieldCount == 1 ? "field" : "fields")
+                                </MudChip>
+                            }
+                        </MudStack>
+
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                            @(tracker.LastEventUtc is { } last
+                                ? $"Last on {ValueFormat.Moment(last)}"
+                                : "Never logged")
+                        </MudText>
+                    </MudCardContent>
+
+                    <MudCardActions>
+                        <MudButton Href="@Detail(tracker)" Variant="Variant.Text">Open</MudButton>
+                        <MudSpacer/>
+                        @if (tracker.NeedsInput)
+                        {
+                            <MudTooltip Text="This tracker has required fields — open it to log one">
+                                <MudIconButton Icon="@Icons.Material.Outlined.EditNote"
+                                               Href="@Detail(tracker)"/>
+                            </MudTooltip>
+                        }
+                        else
+                        {
+                            <MudTooltip Text="Log one right now">
+                                <MudIconButton Icon="@Icons.Material.Outlined.AddCircle"
+                                               Color="Color.Primary"
+                                               Disabled="_busy"
+                                               OnClick="@(() => LogNowAsync(tracker))"/>
+                            </MudTooltip>
+                        }
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}

@@ -23,6 +23,13 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.4" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <!-- The tracking app's whole database is one file; nothing else here touches SQLite. -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.4" />
+    <!--
+      Referenced directly only to get off the 2.1.11 the provider would otherwise drag in, which
+      carries GHSA-2m69-gcr7-jv3q. Drop the reference once EF Core's own floor has moved past it.
+    -->
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.12" />
   </ItemGroup>
 
   <ItemGroup Label="Logging">

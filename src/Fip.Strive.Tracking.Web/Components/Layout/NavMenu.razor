@@ -1,0 +1,8 @@
+@* The tracker list itself lives on the home page. Querying for it here as well would put two
+   components on the circuit's single DbContext at the same time. *@
+
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">
+        Trackers
+    </MudNavLink>
+</MudNavMenu>
