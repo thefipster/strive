@@ -28,8 +28,15 @@ public class TrackerEventConfiguration : IEntityTypeConfiguration<TrackerEvent>
 
         builder.Property(occurrence => occurrence.Note).HasMaxLength(TrackingLimits.NoteLength);
 
-        // Every event query is "this tracker, newest first", which this index answers on its own.
+        // Every event query in the UI is "this tracker, newest first", which this index answers on
+        // its own.
         builder.HasIndex(occurrence => new { occurrence.TrackerId, occurrence.OccurredUtc });
+
+        // The export is a different query and the index above cannot serve it: the pull API filters
+        // on RecordedUtc and orders by RecordedUtc then Id, so without this it scans and sorts the
+        // whole table on every call — and that is the one caller guaranteed to run forever on a
+        // timer. Composite rather than a plain RecordedUtc index so it covers the tiebreaker too.
+        builder.HasIndex(occurrence => new { occurrence.RecordedUtc, occurrence.Id });
 
         builder
             .HasMany(occurrence => occurrence.Values)

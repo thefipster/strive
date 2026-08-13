@@ -37,6 +37,8 @@ public static class TrackingSchema
             return;
         }
 
+        await EnsureIndexesAsync(context, cancellationToken);
+
         var found = await ReadVersionAsync(context, cancellationToken);
 
         // Zero is what every file written before this check existed reports, and those files match
@@ -56,6 +58,31 @@ public static class TrackingSchema
                     + "keeping the old file if the data in it still matters."
             );
     }
+
+    /// <summary>
+    /// The one deliberate exception to "no migrations here". An index is pure derived data: adding
+    /// one cannot lose anything, cannot conflict with what is already stored, and
+    /// <c>IF NOT EXISTS</c> makes it a no-op on every start after the first. Bumping
+    /// <see cref="SchemaVersion"/> instead would demand the file be moved aside — i.e. that the user
+    /// throw away their data — to gain a performance index, which is wildly out of proportion.
+    /// </summary>
+    /// <remarks>
+    /// This does not extend to tables or columns. Those change what the data *means*, cannot be
+    /// added safely without deciding what existing rows should contain, and are exactly what the
+    /// version check is for. The name below matches EF's own convention, so a database created
+    /// fresh by <c>EnsureCreated</c> already has this index and the statement does nothing.
+    /// </remarks>
+    private static async Task EnsureIndexesAsync(
+        TrackingContext context,
+        CancellationToken cancellationToken
+    ) =>
+        await context.Database.ExecuteSqlRawAsync(
+            """
+            CREATE INDEX IF NOT EXISTS "IX_tracker_events_RecordedUtc_Id"
+                ON "tracker_events" ("RecordedUtc", "Id");
+            """,
+            cancellationToken
+        );
 
     /// <summary>
     /// <c>user_version</c> is a four-byte slot in the SQLite header that the database itself never

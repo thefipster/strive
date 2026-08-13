@@ -784,8 +784,21 @@ is deliberate and documented, and the timestamps are stored at 100-nanosecond re
 collisions are not a practical concern — but a consumer still has to deduplicate, and that is not
 said anywhere a consumer would read it.
 
-- [ ] Index `tracker_events` on `RecordedUtc` to match the export's filter and sort
+- [x] Index `tracker_events` on `RecordedUtc` to match the export's filter and sort
 - [ ] Document that `since` is inclusive, so consumers deduplicate the boundary event
+
+**Done, as a composite `(RecordedUtc, Id)`** — the export orders by both, so the tiebreaker is
+covered too rather than left to a sort.
+
+This collided with D1, one commit after adding it. An index *is* a schema change, so the version
+check would refuse to start on any existing database — demanding the user throw their data away to
+gain a performance index. That is wildly out of proportion, so indexes get one deliberate carve-out
+from "no migrations here": they are created with `IF NOT EXISTS` on every start. An index is pure
+derived data, it cannot lose anything, cannot conflict with existing rows, and the statement is a
+no-op from the second start onwards.
+
+The carve-out stops there. Tables and columns change what the data *means*, cannot be added without
+deciding what existing rows should hold, and remain exactly what `SchemaVersion` is for.
 
 ---
 

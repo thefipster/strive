@@ -85,6 +85,60 @@ public sealed class TrackingSchemaTests : IDisposable
             .WithMessage("*move the existing database file aside*");
     }
 
+    [Fact]
+    public async Task The_export_index_is_created_on_a_fresh_database()
+    {
+        var context = NewContext();
+        await context.EnsureCreatedAsync();
+
+        (await IndexNamesAsync(context)).Should().Contain("IX_tracker_events_RecordedUtc_Id");
+    }
+
+    [Fact]
+    public async Task The_export_index_is_added_to_a_database_that_predates_it()
+    {
+        var first = NewContext();
+        await first.EnsureCreatedAsync();
+
+        // A database from before the index existed. Dropping it is the only way to reach that
+        // state, since EnsureCreated builds it from the current model.
+        await first.Database.ExecuteSqlRawAsync(
+            "DROP INDEX IF EXISTS \"IX_tracker_events_RecordedUtc_Id\";"
+        );
+
+        var second = NewContext();
+        await second.EnsureCreatedAsync();
+
+        // An index is derived data, so it is added in place rather than demanding the file be moved
+        // aside — which for a performance index would mean discarding the user's data.
+        (await IndexNamesAsync(second))
+            .Should()
+            .Contain("IX_tracker_events_RecordedUtc_Id");
+    }
+
+    private static async Task<List<string>> IndexNamesAsync(TrackingContext context)
+    {
+        await using var command = context.Database.GetDbConnection().CreateCommand();
+        command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'index';";
+
+        await context.Database.OpenConnectionAsync();
+
+        try
+        {
+            var names = new List<string>();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+                names.Add(reader.GetString(0));
+
+            return names;
+        }
+        finally
+        {
+            await context.Database.CloseConnectionAsync();
+        }
+    }
+
     private TrackingContext NewContext()
     {
         var context = new TrackingContext(
