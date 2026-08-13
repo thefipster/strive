@@ -5,8 +5,13 @@ A full read-through of the repository as of `2dbe5ce`, covering both application
 carry a severity and a checkbox, so this document doubles as the work list.
 
 **Scope note.** This was a static review — no .NET SDK was available in the review environment, so
-nothing here was verified by building or running the test suite. Every finding was derived from
+no finding below was confirmed by building or running the test suite. Every finding was derived from
 reading the source. Items marked *(verify)* need a build or a run to confirm before acting on them.
+
+The fixes applied since (A1, A2, F) *were* verified, by CI on the branch rather than locally: the
+`tracking-build` workflow restores, builds, runs both test projects and builds the container image,
+and is green. That covers the tracking side end to end. The strive side is only as covered as its
+existing suite — see F.
 
 **Severity.** `high` = wrong behaviour or a real exposure; `medium` = will bite as data or usage
 grows, or a real operational hazard; `low` = hygiene, consistency, polish.
@@ -471,7 +476,7 @@ Grouped by what they cost against what they buy, rather than strictly by severit
 
 **Second — bounded work, prevents future damage**
 5. C1 — archive expansion limits
-6. ~~A2 — real health checks~~ — **done**, but untested (see F)
+6. ~~A2 — real health checks~~ — **done**, and covered by F
 7. B3, B4 — Dependabot targeting, vulnerable-package scan, CodeQL
 8. D1 — schema version stamp
 
