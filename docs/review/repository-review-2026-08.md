@@ -725,9 +725,21 @@ The fix is a rename to `<CustomContent>`, but the upgrade should not be assumed 
 this: a major version was crossed in a bulk bump, and this is the instance loud enough to warn.
 The tracking app's Razor compiles clean, so it is unaffected.
 
-- [ ] Rename `ActivatorContent` to `CustomContent` in `ImportPage.razor` and check the result in a browser
+- [x] Rename `ActivatorContent` to `CustomContent` in `ImportPage.razor`
 - [ ] Review the rest of the MudBlazor 8 → 9 breaking changes against both apps' components
 - [ ] Add a warnings-as-errors gate so the next silent Razor break fails the build (see B5)
+
+**Done.** The rename alone would have restored the markup but not the behaviour: MudBlazor 9 no
+longer wraps custom content in an activator, so the zone would have rendered and done nothing when
+clicked. The input is therefore kept in the layout with `Hidden="false"` and stretched over the zone
+by a new `.upload-drop-input` rule in `app.css` — invisible, but still a real file input, which is
+what makes both the click *and* the drop work without a handler of either kind.
+
+`InputStyle` would have done the same job in one attribute and is obsolete in 9.x; it is avoided
+here so the warnings-as-errors gate below has nothing to trip on. Rendering the component confirms
+the paper, the dashed border, the icon, the heading and the size hint are all back, and both
+`RZ10012` and `MUD0002` are gone from the build. Still worth one look in a browser to confirm the
+drop target lines up with the visible zone — that is a CSS question the renderer cannot answer.
 
 ---
 

@@ -25,13 +25,18 @@
     </MudItem>
 </MudGrid>
 
+@* MudBlazor 9 renamed ActivatorContent to CustomContent and no longer wraps it in an activator,
+   so the input is positioned over the zone by .upload-drop-input instead. Hidden="false" is what
+   keeps it in the layout to receive the drop. *@
 <MudFileUpload T="IReadOnlyList<IBrowserFile>"
                FilesChanged="OnFilesChangedAsync"
                Accept=".zip"
                MaximumFileCount="20"
                Disabled="_busy"
-               Class="d-block mb-6">
-    <ActivatorContent>
+               Hidden="false"
+               InputClass="upload-drop-input"
+               Class="d-block mb-6 relative">
+    <CustomContent>
         <MudPaper Outlined="true"
                   Class="pa-12 d-flex flex-column align-center justify-center cursor-pointer"
                   Style="border-style: dashed; border-width: 2px;">
@@ -41,7 +46,7 @@
                 ZIP files, streamed straight to disk — up to @ByteSize.Format(MaxUploadBytes) each
             </MudText>
         </MudPaper>
-    </ActivatorContent>
+    </CustomContent>
 </MudFileUpload>
 
 @if (_busy)
