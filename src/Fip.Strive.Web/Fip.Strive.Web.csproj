@@ -11,7 +11,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Fip.Strive.Application\Fip.Strive.Application.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="Fip.Strive.Web.UnitTests" />
-  </ItemGroup>
 </Project>

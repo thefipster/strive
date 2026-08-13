@@ -66,7 +66,10 @@ public sealed class ImportHarness : IAsyncDisposable
     public StorageOptions Limits { get; set; } = new();
 
     /// <summary>Stages and imports an archive exactly as the import page does.</summary>
-    public async Task<ImportResult> ImportAsync(string archivePath)
+    public async Task<ImportResult> ImportAsync(
+        string archivePath,
+        CancellationToken cancellationToken = default
+    )
     {
         await using var source = File.OpenRead(archivePath);
         var staged = await Staging.StageAsync(Path.GetFileName(archivePath), source);
@@ -82,7 +85,7 @@ public sealed class ImportHarness : IAsyncDisposable
                 NullLogger<PackageImporter>.Instance
             );
 
-            return await importer.ImportAsync(staged);
+            return await importer.ImportAsync(staged, cancellationToken: cancellationToken);
         }
         finally
         {

@@ -959,10 +959,24 @@ project that does not exist. The platform app has no equivalent web-level suite 
 reports on Postgres rather than on nothing.
 
 - [x] Add auth/API integration tests for the tracking app *(highest value)*
-- [ ] Add unit tests for `PackageImporter`'s duplicate and cancellation paths
+- [x] Add tests for `PackageImporter`'s duplicate, cancellation and expansion paths
 - [x] Add tests for `CatalogReader`, including case-sensitivity of hash search
-- [ ] Assert the `postgres` check in `ShellTests`, mirroring the tracker's health test
-- [ ] Remove the stale `InternalsVisibleTo`, or create the project it names
+- [x] Assert the `postgres` check in `ShellTests`, mirroring the tracker's health test
+- [x] Remove the stale `InternalsVisibleTo`, or create the project it names
+
+**Done, all four gaps closed.** `PackageImporterTests` covers re-uploading the same bytes, the same
+content under a different archive name, cancelling, retrying after a cancel, and an archive past its
+expansion ceiling. They sit in `IntegrationTests` rather than a unit project because the importer
+takes a `StriveContext` — which is exactly why these paths were uncovered in the first place.
+
+The `ShellTests` addition is the more interesting one. `Health_endpoint_reports_healthy` passes just
+as happily with *no checks registered at all*, because an empty report is `Healthy` by definition —
+the precise state A2 found. The new test reads the named entries and asserts `postgres` is among
+them, so dropping the registration now fails a test instead of silently returning to reporting on
+nothing.
+
+`InternalsVisibleTo` removed rather than the project created: nothing in `Fip.Strive.Web` is
+`internal` and under test, so the grant had nothing to grant.
 
 ### F1 — the suite runs in Development, so production-only behaviour is untested *(medium, **new**)*
 

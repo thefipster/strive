@@ -2,6 +2,7 @@ using System.Net;
 using System.Text.Json;
 using AwesomeAssertions;
 using Fip.Strive.IntegrationTests.Fixtures;
+using Fip.Strive.Web.Setup;
 
 namespace Fip.Strive.IntegrationTests;
 
@@ -36,6 +37,25 @@ public class ShellTests(PostgresFixture postgres) : IAsyncLifetime
 
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         document.RootElement.GetProperty("status").GetString().Should().Be("Healthy");
+    }
+
+    [Fact]
+    public async Task Health_endpoint_reports_on_postgres_rather_than_on_nothing()
+    {
+        var response = await _factory.CreateClient().GetAsync("/health");
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+        // The assertion above passes just as happily with no checks registered at all: an empty
+        // report is Healthy by definition, which is exactly the state A2 found and fixed. This is
+        // the one that would notice the registration being dropped.
+        var checks = document
+            .RootElement.GetProperty("results")
+            .EnumerateArray()
+            .Select(result => result.GetProperty("name").GetString())
+            .ToList();
+
+        checks.Should().Contain(CatalogHealthCheck.Name);
     }
 
     [Fact]
