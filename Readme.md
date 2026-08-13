@@ -18,7 +18,7 @@ Strive is being rebuilt incrementally against the
 | `src/Fip.Strive.Application` | Application layer: catalog, blob store, import. Pipeline features land here as roadmap steps complete. |
 | `src/Fip.Strive.AppHost` | Aspire orchestration for development only — brings up Postgres alongside the app. |
 | `test/` | xunit projects: pure unit tests, plus integration tests against real Postgres via Testcontainers. |
-| `docs/` | Spec, roadmap, and a detail document per roadmap step. |
+| `docs/` | Spec, roadmap, a detail document per roadmap step, and [export guides](docs/guide/Readme.md) per provider. |
 | `legacy/` | Two earlier generations, read-only reference. See [legacy/Readme.md](legacy/Readme.md). |
 | `testdata/` | Seed corpus of real exports. Local only, never committed. |
 
