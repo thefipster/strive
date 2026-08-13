@@ -249,7 +249,27 @@ silently producing a login that cannot complete.
 
 - [x] Decide and document whether the container is ever meant to be reached over plain HTTP
 - [x] Warn or refuse at startup when `SecurePolicy.Always` is combined with no HTTPS
-- [ ] Confirm the loop in a browser against a plain-HTTP container
+- [x] Confirm the loop in a browser against a plain-HTTP container
+
+**Confirmed — and it very nearly confirmed the opposite.** Run the shipped image on plain HTTP, open
+it in a browser at `http://localhost:8098`, sign in with the correct password, and it *works*. No
+loop. On that evidence the finding looks wrong.
+
+It is not wrong; `localhost` is the exception. Browsers treat it as a *potentially trustworthy*
+origin under the W3C Secure Contexts spec, so a `Secure` cookie is accepted there despite the plain
+HTTP. Reaching the same container by LAN address instead reproduces the loop exactly:
+
+```
+POST /auth/login  ->  302     accepted; no ?error=1, so the password was right
+GET  /            ->  302     unauthenticated - the cookie never came back
+GET  /login.html  ->  304     back where we started
+```
+
+The password is accepted and the very next request is anonymous. That is the whole defect, and the
+last claim in this document that was argued from specification rather than observed.
+
+Worth keeping the near-miss on record: anyone reproducing this on `localhost` — the obvious way to
+try — will conclude the finding is bogus and close it. The reproduction needs a non-loopback origin.
 
 **Done — and the finding needs one correction in fairness to the code.** The Readme already said
 "Put it behind TLS … sign-in simply will not work over plain HTTP — which is the intended failure."
@@ -354,7 +374,7 @@ Either put EF Core back to what Npgsql builds against, or move Npgsql up to a bu
 
 - [x] Realign EF Core and the Npgsql provider so `strive.slnx` builds clean again
 - [x] Correct or remove the pin comment in `Directory.Packages.props`
-- [ ] Consider `TreatWarningsAsErrors` for this class of drift (see B5)
+- [x] Consider `TreatWarningsAsErrors` for this class of drift (see B5) — CI builds with `-warnaserror`
 
 **Done, and the comment was wrong about the cause.** The provider does not pin EF Core; it asks for
 `[10.0.4, 11.0.0)` for both `Microsoft.EntityFrameworkCore` and `Microsoft.EntityFrameworkCore.Relational`.
@@ -1167,7 +1187,7 @@ compiler twice: the strive app's four pages were already asserted to render insi
 `ShellTests`, and the tracker had no equivalent because every page needs a cookie first.
 `ShellRenderTests` signs in and asserts the shell renders, which is the check that does not depend
 on an analyzer knowing to complain.
-- [ ] Add a warnings-as-errors gate so the next silent Razor break fails the build (see B5)
+- [x] Add a warnings-as-errors gate so the next silent Razor break fails the build (see B5)
 
 **Done.** The rename alone would have restored the markup but not the behaviour: MudBlazor 9 no
 longer wraps custom content in an activator, so the zone would have rendered and done nothing when
