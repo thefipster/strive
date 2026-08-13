@@ -350,9 +350,41 @@ author's local setup. `Directory.Build.props` also enables no analyzers, yet
 `Features/Catalog/Models/PackageFile.cs` carries a `[SuppressMessage("Usage", "CA2227")]` for a rule
 that is not switched on.
 
-- [ ] Add an `.editorconfig` capturing the current style
-- [ ] Add a `dotnet format --verify-no-changes` step to CI
-- [ ] Enable `EnableNETAnalyzers` / set an `AnalysisLevel`, then revisit the stale suppression
+- [x] Add an `.editorconfig` capturing the current style
+- [x] Add a formatting check to CI — as `csharpier check`, not `dotnet format`
+- [x] Enable `EnableNETAnalyzers` / set an `AnalysisLevel`, then revisit the stale suppression
+
+**Done, with one correction to the prescription.** The tool being run is CSharpier, not
+`dotnet format`. Testing print widths against the tree settles it: CSharpier's default of 100 leaves
+22 files disagreeing, 110 leaves 38, 120 leaves 60. A `dotnet format --verify-no-changes` step would
+therefore have fought the real formatter instead of enforcing it. The convention is captured by
+committing the tool — a manifest pinning `csharpier 1.3.0` — and CI runs `dotnet csharpier check`.
+The 22 drifted files were reformatted in the same pass; the diff is pure reflow.
+
+`.editorconfig` still earns its place for what CSharpier does not own: encoding, indent width for
+non-C# files, and the naming and style preferences an IDE surfaces while typing. Those are all
+`suggestion`, deliberately — CI builds with `-warnaserror`, and a preference should not fail a build.
+
+**One trap worth recording, because it would have broken CI rather than caught anything.** Writing
+`end_of_line = crlf` into `.editorconfig` looked obviously right: every tracked `.cs` file in a
+Windows working copy is CRLF. But CSharpier reads that setting, and the repository *stores* LF while
+`core.autocrlf=true` converts on checkout — so the Ubuntu runner sees LF and would have failed every
+file. Pinning `lf` instead just moves the failure onto the author's machine. The setting is left
+unset, which is the only value that works on both, with a comment saying why and what a
+`.gitattributes` would have to do first to make pinning safe.
+
+Analyzers are on at the default `AnalysisMode`; both solutions already pass at zero warnings, so
+this costs nothing today and is only ever a net. `AnalysisMode=All` was considered and rejected: it
+immediately flags the EF navigation collections under CA2227, which have to stay settable for the
+change tracker.
+
+The stale suppression was staler than it looked. `CA2227` is *collection* properties should be read
+only, and it sat on `PackageFile.Package` — a single reference the rule can never fire on. The
+collections it would apply to are `ImportPackage.Files` and `CatalogEntry.Occurrences`. Removed
+rather than moved, since the rule is off in the chosen mode.
+
+Verified: `csharpier check` exits 0, both solutions build with `-warnaserror` at 0 warnings, and all
+89 runnable tests pass in Release.
 
 *Second pass: all three confirmed. No `.editorconfig` is tracked anywhere, and
 `Directory.Build.props` sets only `TargetFramework`, `Nullable`, `ImplicitUsings`, `LangVersion` and

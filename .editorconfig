@@ -1,0 +1,62 @@
+; Layout inside C# files belongs to CSharpier, which is pinned in .config/dotnet-tools.json and
+; checked in CI. What lives here is everything CSharpier does not own — encoding, line endings,
+; non-C# files — plus the naming and style preferences an IDE should surface while typing.
+;
+; Style rules are deliberately `suggestion`, not `warning`: CI builds with -warnaserror, and a
+; preference is not worth failing a build over. Correctness rules come from the .NET analyzers
+; enabled in Directory.Build.props, and those do fail it.
+
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+; end_of_line is deliberately not set. CSharpier reads it, and the repository stores LF while
+; core.autocrlf hands Windows working copies CRLF — so pinning either value makes the CI check fail
+; on one platform or the author's machine on the other. Left unset, CSharpier keeps whatever a file
+; already uses and both agree. Set it only alongside a .gitattributes that makes checkouts
+; byte-identical everywhere.
+
+[*.{yml,yaml,json,csproj,props,targets,slnx,config}]
+indent_size = 2
+
+[*.md]
+; Two trailing spaces are a hard line break in Markdown.
+trim_trailing_whitespace = false
+
+[*.cs]
+; CSharpier's default print width. Recorded so an IDE wraps where the formatter would.
+max_line_length = 100
+
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+csharp_style_namespace_declarations = file_scoped:suggestion
+csharp_using_directive_placement = outside_namespace:suggestion
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = true:suggestion
+csharp_style_expression_bodied_methods = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+csharp_prefer_braces = when_multiline:suggestion
+csharp_style_prefer_primary_constructors = true:suggestion
+
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:suggestion
+dotnet_style_readonly_field = true:suggestion
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
+
+dotnet_naming_rule.private_fields_underscore.symbols = private_fields
+dotnet_naming_rule.private_fields_underscore.style = underscore_camel
+dotnet_naming_rule.private_fields_underscore.severity = suggestion
+
+dotnet_naming_symbols.private_fields.applicable_kinds = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.underscore_camel.capitalization = camel_case
+dotnet_naming_style.underscore_camel.required_prefix = _

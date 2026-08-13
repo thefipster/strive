@@ -14,6 +14,8 @@ on:
       - 'src/Directory.Packages.props'
       - 'src/NuGet.config'
       - 'src/global.json'
+      - '.config/dotnet-tools.json'
+      - '.editorconfig'
       - '.dockerignore'
       - '.github/workflows/tracking.yml'
   pull_request:
@@ -28,6 +30,8 @@ on:
       - 'src/Directory.Packages.props'
       - 'src/NuGet.config'
       - 'src/global.json'
+      - '.config/dotnet-tools.json'
+      - '.editorconfig'
       - '.dockerignore'
       - '.github/workflows/tracking.yml'
 
@@ -49,8 +53,18 @@ jobs:
     - name: Restore
       run: dotnet restore src/tracking.slnx
 
+    # The formatter is pinned in .config/dotnet-tools.json, so this checks against the same
+    # version everywhere rather than whatever the runner happens to resolve.
+    - name: Restore tools
+      run: dotnet tool restore
+
+    - name: Check formatting
+      run: dotnet csharpier check src/
+
+    # -warnaserror is the point of this step: the MudBlazor and EF Core breakages that prompted
+    # this gate were both warnings on an otherwise green build.
     - name: Build
-      run: dotnet build --no-restore --configuration Release src/tracking.slnx
+      run: dotnet build --no-restore --configuration Release -warnaserror src/tracking.slnx
 
     - name: Test
       run: dotnet test --no-build --configuration Release src/tracking.slnx
