@@ -12,9 +12,19 @@ public class TrackerEventConfiguration : IEntityTypeConfiguration<TrackerEvent>
 
         builder.HasKey(occurrence => occurrence.Id);
 
-        builder.Property(occurrence => occurrence.OccurredUtc).IsRequired();
+        // Left to the provider's own mapping, SQLite refuses to ORDER BY or MAX a DateTimeOffset
+        // at all — and "newest first" is the only order this table is ever read in. Converted to a
+        // fixed-width ISO string it sorts correctly, because every row is stored as UTC, and it
+        // stays readable to anyone opening the file in a SQLite browser.
+        builder
+            .Property(occurrence => occurrence.OccurredUtc)
+            .HasConversion(TrackingConversions.UtcText)
+            .IsRequired();
 
-        builder.Property(occurrence => occurrence.RecordedUtc).IsRequired();
+        builder
+            .Property(occurrence => occurrence.RecordedUtc)
+            .HasConversion(TrackingConversions.UtcText)
+            .IsRequired();
 
         builder.Property(occurrence => occurrence.Note).HasMaxLength(TrackingLimits.NoteLength);
 

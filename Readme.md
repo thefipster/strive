@@ -62,8 +62,21 @@ against it. Numbers are totalled, averaged and bracketed per field on the tracke
 dotnet run --project src/Fip.Strive.Tracking.Web
 ```
 
-Everything it knows lives in one SQLite file, created on first run. Copy that file away and that is
-your backup.
+Or in a container — built from the repository root, because the project inherits its build files
+from `src/`:
+
+```bash
+docker build -f src/Fip.Strive.Tracking.Web/Dockerfile -t strive-tracking .
+docker run -d -p 8080:8080 -v strive-tracking-data:/data strive-tracking
+```
+
+Everything it knows lives in one SQLite file, created on first run — in the image at `/data`, which
+is where the volume goes. Copy that file away and that is your backup. The image runs as a non-root
+user, so a bind mount instead of a named volume has to be chowned on the host first. Readiness is
+at `/health`.
+
+`src/tracking.slnx` holds just these projects; `dotnet test src/tracking.slnx` runs the unit tests
+without needing Docker or Postgres.
 
 | Setting | Env var | Default | What |
 |---|---|---|---|

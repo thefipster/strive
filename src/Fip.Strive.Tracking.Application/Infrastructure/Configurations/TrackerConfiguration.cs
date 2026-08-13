@@ -20,7 +20,11 @@ public class TrackerConfiguration : IEntityTypeConfiguration<Tracker>
 
         builder.Property(tracker => tracker.Description).HasMaxLength(TrackingLimits.DescriptionLength);
 
-        builder.Property(tracker => tracker.CreatedUtc).IsRequired();
+        // Same story as the events' timestamps — see TrackerEventConfiguration.
+        builder
+            .Property(tracker => tracker.CreatedUtc)
+            .HasConversion(TrackingConversions.UtcText)
+            .IsRequired();
 
         builder
             .HasMany(tracker => tracker.Fields)

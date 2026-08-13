@@ -1,0 +1,57 @@
+name: tracking-build
+
+# Unlike strive.yml this runs on every branch, not just main: the tracker is a small standalone
+# app, and knowing it still compiles is worth having before a pull request exists.
+on:
+  push:
+    paths:
+      - 'src/Fip.Strive.Tracking.Application/**'
+      - 'src/Fip.Strive.Tracking.Application.UnitTests/**'
+      - 'src/Fip.Strive.Tracking.Web/**'
+      - 'src/tracking.slnx'
+      - 'src/Directory.Build.props'
+      - 'src/Directory.Packages.props'
+      - 'src/NuGet.config'
+      - 'src/global.json'
+      - '.dockerignore'
+      - '.github/workflows/tracking.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'src/Fip.Strive.Tracking.Application/**'
+      - 'src/Fip.Strive.Tracking.Application.UnitTests/**'
+      - 'src/Fip.Strive.Tracking.Web/**'
+      - 'src/tracking.slnx'
+      - 'src/Directory.Build.props'
+      - 'src/Directory.Packages.props'
+      - 'src/NuGet.config'
+      - 'src/global.json'
+      - '.dockerignore'
+      - '.github/workflows/tracking.yml'
+
+jobs:
+  build:
+
+    # No Docker needed for the tests — the tracker's whole database is a SQLite file in a temp
+    # directory. The image build at the end is what wants a daemon.
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore
+      run: dotnet restore src/tracking.slnx
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release src/tracking.slnx
+
+    - name: Test
+      run: dotnet test --no-build --configuration Release src/tracking.slnx
+
+    - name: Build image
+      run: docker build --file src/Fip.Strive.Tracking.Web/Dockerfile --tag strive-tracking:ci .
