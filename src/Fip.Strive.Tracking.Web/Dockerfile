@@ -33,6 +33,11 @@ COPY --from=build /app ./
 RUN mkdir -p /data /app/logs \
     && chown -R $APP_UID:$APP_UID /data /app/logs
 
+# Everything environment-specific reaches the app as an environment variable, never as a file:
+# appsettings.Development.json is kept out of the build context by .dockerignore, and the
+# appsettings.json that does ship carries only application defaults — no paths, no secrets. Both
+# Access__PasswordHash and Access__ApiKey are supplied at `docker run`, never baked in.
+#
 # The database lands in the volume. Everything the app knows is in that one file — copy it away
 # and that is your backup.
 ENV Tracking__DataDirectory=/data \

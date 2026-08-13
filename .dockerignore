@@ -11,3 +11,9 @@ coverage-report/
 **/data/
 **/logs/
 **/*.user
+
+# A container is configured by environment variable, so nothing environment-specific belongs in
+# the image. Keeping these out of the context means `dotnet publish` cannot pick them up either.
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/*.env

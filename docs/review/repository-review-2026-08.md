@@ -40,10 +40,16 @@ failing. It also contradicts the Readme, which documents the default as `data`, 
 `StorageOptions.DataDirectory`, whose own default is already `"data"`.
 
 Remove the key from `appsettings.json` entirely and let the options default stand. If a local
-machine needs `E:\strive\data`, that belongs in user secrets or `appsettings.Development.json`
-(untracked), not in the shipped defaults.
+machine needs `E:\strive\data`, that belongs in `appsettings.Development.json`, not in the shipped
+defaults.
 
-- [ ] Remove `Storage:DataDirectory` from `src/Fip.Strive.Web/appsettings.json`
+- [x] Remove `Storage:DataDirectory` from `src/Fip.Strive.Web/appsettings.json`
+
+**Done.** The `Storage` section moved to `appsettings.Development.json`; `MaxUploadBytes` was
+dropped along with it, since the value it carried was identical to the `StorageOptions` default.
+Both apps' `appsettings.json` now hold only application defaults — no paths, no secrets — and
+`appsettings.Development.json` is excluded from the Docker build context, so nothing
+environment-specific can reach an image. Containers are configured by environment variable.
 
 ### A2 — `/health` reports healthy with no checks registered *(medium)*
 
@@ -361,22 +367,21 @@ through. Minor, and only noticeable on a session expiry mid-navigation.
 
 ### E1 — Readme describes a repository layout that does not exist *(medium)*
 
-Three concrete mismatches, all in the top section where a new reader starts:
+Two concrete mismatches, both in the top section where a new reader starts. (A third — the storage
+default — was the same defect as A1 and went away with it.)
 
 | Readme says | Reality |
 |---|---|
 | `./make.ps1 run` / `./make.ps1 test` | No `make.ps1` anywhere in the repository |
 | `test/` holds the xunit projects | Test projects live in `src/`, beside the code |
-| `Storage:DataDirectory` defaults to `data` | `appsettings.json` overrides it to `E:\strive\data` (see A1) |
 
-The `make.ps1` one is the worst of the three: it is the *first* command the Readme gives, under
+The `make.ps1` one is the worse of the two: it is the *first* command the Readme gives, under
 "Working with it", so the documented entry point into the project does not work. Either restore the
 script or replace those blocks with the `dotnet run --project src/Fip.Strive.AppHost` and
 `dotnet test src/strive.slnx` they stood for.
 
 - [ ] Restore `make.ps1` or replace it with the underlying `dotnet` commands
 - [ ] Correct the `test/` row in the layout table
-- [ ] Fix the storage default once A1 is done
 
 ### E2 — Nothing documents how to run a review of the two solutions *(low)*
 
@@ -428,8 +433,8 @@ and the attribute outlived it.
 Grouped by what they cost against what they buy, rather than strictly by severity.
 
 **First — small, and each closes a real hole**
-1. A1 — remove the `E:\` path *(one line, actively wrong in every non-Windows deployment)*
-2. E1 — fix the Readme's three mismatches
+1. ~~A1 — remove the `E:\` path~~ — **done**
+2. E1 — fix the Readme's remaining mismatches
 3. B1, B2 — correct `strive.yml`'s filters and triggers
 4. F — auth/API integration tests for the tracker
 
