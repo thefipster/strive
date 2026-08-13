@@ -641,8 +641,25 @@ half-catalogued — and should be kept. Batching the *inserts* inside that trans
 bulk-copy path for the manifest, gets the memory back without giving up the atomicity. Worth doing
 before step 2 puts this on the job engine.
 
-- [ ] Batch manifest inserts inside the existing transaction
+- [x] Batch manifest inserts inside the existing transaction
 - [ ] Measure against the largest real takeout in the corpus first
+
+**Done.** Rows go in 5,000 at a time with the change tracker cleared between batches — the clear is
+what actually bounds the memory, since without it every saved entity stays tracked for the life of
+the context and batching would only split the commands.
+
+The transaction is now explicit, and that is the load-bearing part rather than an incidental one:
+batching means several `SaveChangesAsync` calls, and without a transaction around them a failure
+part-way would leave exactly the half-catalogued package the original single-save design existed to
+prevent. The atomicity the finding said to keep is kept, deliberately.
+
+Covered by a 5,100-file archive — over the batch boundary, which every other test in the suite sits
+below, so the batching path had no coverage at all otherwise. It asserts the whole manifest landed,
+because "all of it or none of it" is the property at risk.
+
+Measuring against a real takeout stays open: `testdata/` is local-only and not something to go
+rummaging through. The change is a memory bound rather than a speed optimisation, so the honest
+measurement is of peak memory on a genuinely large import, and that needs the corpus.
 
 ### C3 — Concurrent import of the same archive surfaces a raw EF exception *(low)*
 
@@ -1087,8 +1104,19 @@ strive side has no runnable-anywhere suite at all, and it is why this pass could
 `Fip.Strive.Application.UnitTests` runs fine standalone (20 tests, no infrastructure). The tracking
 app's split is the better model: `tracking.slnx` runs end to end with nothing installed.
 
-- [ ] Document the Docker prerequisite next to the test command (folds into E2)
-- [ ] Consider skipping rather than failing the integration suite when no daemon is reachable
+- [x] Document the Docker prerequisite next to the test command (folds into E2)
+- [ ] ~~Consider skipping rather than failing the integration suite when no daemon is reachable~~ — decided against
+
+**Documented, and the skip deliberately not built.** The Readme's task table now names Docker as a
+prerequisite per command and says which alternatives run without it, which addresses the actual
+complaint — a false start caused by a fail that read as a defect.
+
+Skipping was considered and rejected. xunit 2.9.3 has no runtime skip, so it would mean taking a
+dependency purely to soften an error message, and a suite that silently skips is how coverage
+quietly stops existing. A loud failure with a documented workaround is the better failure. Revisit
+if the project moves to xunit v3, where `Assert.Skip` makes it free.
+
+Docker was available for this pass, so the suite ran: **30 integration tests**, all passing.
 
 ---
 

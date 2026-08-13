@@ -119,6 +119,40 @@ public class PackageImporterTests(PostgresFixture postgres)
     }
 
     [Fact]
+    public async Task An_archive_larger_than_one_insert_batch_is_recorded_whole()
+    {
+        await using var harness = await ImportHarness.CreateAsync(postgres);
+
+        // Over the 5,000-row insert batch, so the manifest is written across several round-trips
+        // inside one transaction. Below that boundary the batching path never runs, and every other
+        // test in this suite sits below it.
+        const int fileCount = 5_100;
+
+        var entries = Enumerable
+            .Range(0, fileCount)
+            .Select(index => ($"activity/day-{index}.json", $"payload {index}"))
+            .ToArray();
+
+        var archive = ZipBuilder.Create(harness.ArchiveDirectory, "big.zip", entries);
+
+        var result = await harness.ImportAsync(archive);
+
+        result.Outcome.Should().Be(ImportOutcome.Imported);
+        result.FileCount.Should().Be(fileCount);
+        result.NewEntryCount.Should().Be(fileCount, "every payload is distinct");
+
+        await using var context = harness.CreateContext();
+
+        // The point of the transaction: all of it, or none of it. A partial manifest would be the
+        // half-catalogued package the single-transaction design exists to prevent.
+        (await context.PackageFiles.CountAsync())
+            .Should()
+            .Be(fileCount);
+        (await context.CatalogEntries.CountAsync()).Should().Be(fileCount);
+        (await context.ImportPackages.CountAsync()).Should().Be(1);
+    }
+
+    [Fact]
     public async Task An_archive_past_its_expansion_ceiling_is_refused()
     {
         await using var harness = await ImportHarness.CreateAsync(postgres);

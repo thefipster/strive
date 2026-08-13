@@ -21,6 +21,12 @@ public sealed class PackageImporter(
     ILogger<PackageImporter> logger
 ) : IPackageImporter
 {
+    /// <summary>
+    /// Rows per insert round-trip. Large enough that a normal takeout is a handful of commands,
+    /// small enough that one batch is never the thing that exhausts memory.
+    /// </summary>
+    private const int InsertBatchSize = 5_000;
+
     public async Task<ImportResult> ImportAsync(
         StagedArchive archive,
         IProgress<ImportProgress>? progress = null,
@@ -112,6 +118,15 @@ public sealed class PackageImporter(
     /// package never exists half-catalogued. Blobs are already on disk at this point; if this
     /// fails they are simply unreferenced bytes that a retry deduplicates against.
     /// </summary>
+    /// <remarks>
+    /// The rows are added in batches, with the change tracker cleared between them. Building the
+    /// whole manifest as one graph hung a tracked entity on every file in the archive — a takeout
+    /// with a few hundred thousand files meant that many live objects and one enormous command.
+    /// The transaction is explicit for exactly that reason: batching means several
+    /// <c>SaveChangesAsync</c> calls, and without a transaction wrapped round them a failure
+    /// half-way would leave precisely the half-catalogued package the original design was built to
+    /// prevent.
+    /// </remarks>
     private async Task<ImportResult> RecordAsync(
         StagedArchive archive,
         List<ManifestLine> manifest,
@@ -139,6 +154,8 @@ public sealed class PackageImporter(
             })
             .ToList();
 
+        // Built without its Files: the manifest is inserted in batches below rather than as one
+        // object graph hanging off this.
         var package = new ImportPackage
         {
             Id = Guid.CreateVersion7(),
@@ -148,17 +165,30 @@ public sealed class PackageImporter(
             UploadedUtc = now,
             FileCount = manifest.Count,
             NewEntryCount = newEntries.Count,
-            Files = manifest
-                .Select(line => new PackageFile { PathInArchive = line.Path, Hash = line.Hash })
-                .ToList(),
         };
 
-        context.CatalogEntries.AddRange(newEntries);
-        context.ImportPackages.Add(package);
+        await using var transaction = await context.Database.BeginTransactionAsync(
+            cancellationToken
+        );
 
         try
         {
+            context.ImportPackages.Add(package);
             await context.SaveChangesAsync(cancellationToken);
+
+            await InsertInBatchesAsync(newEntries, cancellationToken);
+
+            await InsertInBatchesAsync(
+                manifest.Select(line => new PackageFile
+                {
+                    PackageId = package.Id,
+                    PathInArchive = line.Path,
+                    Hash = line.Hash,
+                }),
+                cancellationToken
+            );
+
+            await transaction.CommitAsync(cancellationToken);
         }
         catch (DbUpdateException exception) when (IsDuplicateArchive(exception))
         {
@@ -166,6 +196,8 @@ public sealed class PackageImporter(
             // safe — two packages for one archive are impossible — but the loser was getting a raw
             // EF exception and a failure snackbar for something that is not a failure. Re-read and
             // report it as the duplicate it is.
+            await transaction.RollbackAsync(cancellationToken);
+
             logger.LogInformation(
                 "Archive {ArchiveHash} was imported concurrently; reporting the winner",
                 archive.Hash
@@ -188,6 +220,28 @@ public sealed class PackageImporter(
             package.FileCount,
             package.NewEntryCount
         );
+    }
+
+    /// <summary>
+    /// Adds rows a batch at a time, clearing the change tracker after each. The clear is what
+    /// actually bounds the memory — without it every saved entity stays tracked for the life of the
+    /// context and the batching only splits the commands.
+    /// </summary>
+    private async Task InsertInBatchesAsync<TEntity>(
+        IEnumerable<TEntity> rows,
+        CancellationToken cancellationToken
+    )
+        where TEntity : class
+    {
+        foreach (var batch in rows.Chunk(InsertBatchSize))
+        {
+            context.AddRange(batch);
+            await context.SaveChangesAsync(cancellationToken);
+
+            // Safe because nothing above holds a reference expecting to stay tracked: the package
+            // is already written and only its Id is used afterwards.
+            context.ChangeTracker.Clear();
+        }
     }
 
     /// <summary>
