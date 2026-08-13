@@ -23,3 +23,18 @@ h1:focus {
 .blazor-error-boundary::after {
     content: "An error has occurred."
 }
+
+/*
+   The import drop zone. MudFileUpload's own input is stretched over the whole zone and made
+   invisible rather than hidden: an input that is still in the layout accepts a native file drop,
+   which is what makes "drop archives here" true rather than decorative. Clicking it opens the
+   picker for free, so the zone needs no click handler of its own.
+*/
+.upload-drop-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}

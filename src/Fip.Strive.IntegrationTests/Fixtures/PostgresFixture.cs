@@ -28,7 +28,10 @@ public sealed class PostgresFixture : IAsyncLifetime
 
             // The name is a generated GUID, never test input, so interpolation is safe here —
             // and identifiers cannot be parameterised anyway.
-            await using var command = new NpgsqlCommand($"""CREATE DATABASE "{name}" """, connection);
+            await using var command = new NpgsqlCommand(
+                $"""CREATE DATABASE "{name}" """,
+                connection
+            );
             await command.ExecuteNonQueryAsync();
         }
 

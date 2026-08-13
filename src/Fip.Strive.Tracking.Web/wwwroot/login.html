@@ -142,14 +142,28 @@
         <label for="password">Password</label>
         <input id="password" name="password" type="password" autocomplete="current-password" autofocus required/>
 
+        <input type="hidden" name="returnUrl" id="returnUrl"/>
+
         <button type="submit">Sign in</button>
     </form>
 </main>
 
 <script>
+    const query = new URLSearchParams(window.location.search);
+
     // The form posts to a plain endpoint, which can only report failure back through the URL.
-    if (new URLSearchParams(window.location.search).has('error')) {
+    if (query.has('error')) {
         document.getElementById('error').classList.add('show');
+    }
+
+    // The cookie handler challenges with ?ReturnUrl=<the page that was asked for>. This is a static
+    // file, so nothing has templated that into the form — carrying it through by hand is what makes
+    // a deep link survive the sign-in. The server decides whether to honour it; anything not a
+    // local path is ignored there, so a crafted link cannot turn this into an open redirect.
+    const returnUrl = query.get('ReturnUrl');
+
+    if (returnUrl) {
+        document.getElementById('returnUrl').value = returnUrl;
     }
 </script>
 </body>

@@ -39,7 +39,12 @@ public sealed class StagingArea(StoragePaths paths, ILogger<StagingArea> logger)
             {
                 int read;
                 while (
-                    (read = await content.ReadAsync(buffer.AsMemory(0, BufferSize), cancellationToken)) > 0
+                    (
+                        read = await content.ReadAsync(
+                            buffer.AsMemory(0, BufferSize),
+                            cancellationToken
+                        )
+                    ) > 0
                 )
                 {
                     hasher.AppendData(buffer, 0, read);
@@ -60,12 +65,7 @@ public sealed class StagingArea(StoragePaths paths, ILogger<StagingArea> logger)
         }
 
         var hash = Convert.ToHexStringLower(hasher.GetHashAndReset());
-        logger.LogInformation(
-            "Staged {FileName} ({Size} bytes) as {Hash}",
-            fileName,
-            size,
-            hash
-        );
+        logger.LogInformation("Staged {FileName} ({Size} bytes) as {Hash}", fileName, size, hash);
 
         return new StagedArchive(fileName, path, hash, size);
     }

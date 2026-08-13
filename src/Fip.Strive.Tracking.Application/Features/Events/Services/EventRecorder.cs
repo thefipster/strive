@@ -30,7 +30,10 @@ public sealed class EventRecorder(TrackingContext context, TimeProvider clock) :
 
         var occurrence = new TrackerEvent
         {
-            Id = Guid.NewGuid(),
+            // Version 7 rather than 4: these are time-ordered, so inserts append to the primary key
+            // index instead of scattering across it. Matters most here — tracker_events is the one
+            // table that grows without bound — and it matches what the platform app already does.
+            Id = Guid.CreateVersion7(),
             TrackerId = trackerId,
             // Normalised here rather than at the edge: every comparison and every ordering in this
             // app assumes a single offset, and callers hand over whatever their picker produced.
@@ -85,7 +88,7 @@ public sealed class EventRecorder(TrackingContext context, TimeProvider clock) :
             values.Add(
                 new TrackerEventValue
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.CreateVersion7(),
                     FieldId = field.Id,
                     Number = number,
                     Text = text,

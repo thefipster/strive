@@ -7,4 +7,18 @@
     <Authors>TheFipster</Authors>
     <RepositoryUrl>https://github.com/thefipster/strive</RepositoryUrl>
   </PropertyGroup>
+  <!--
+    The .NET analyzers at their default mode, which both solutions already pass with zero warnings —
+    so this costs nothing today and is only ever a net. CI adds -warnaserror; local builds stay
+    warnings so a work-in-progress still compiles.
+
+    AnalysisMode is left at the default rather than All on purpose. All would immediately flag the
+    EF navigation collections under CA2227, which have to stay settable for the change tracker, and
+    a wall of suppressions teaches nobody anything.
+  -->
+  <PropertyGroup>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
 </Project>

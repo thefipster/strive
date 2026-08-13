@@ -26,10 +26,16 @@ public class EventReaderTests : IDisposable
 
         var first = await reader.GetEventsAsync(trackerId, 0, 2);
         first.TotalCount.Should().Be(5);
-        first.Items.Select(item => item.OccurredUtc).Should().Equal(Noon.AddHours(4), Noon.AddHours(3));
+        first
+            .Items.Select(item => item.OccurredUtc)
+            .Should()
+            .Equal(Noon.AddHours(4), Noon.AddHours(3));
 
         var second = await reader.GetEventsAsync(trackerId, 2, 2);
-        second.Items.Select(item => item.OccurredUtc).Should().Equal(Noon.AddHours(2), Noon.AddHours(1));
+        second
+            .Items.Select(item => item.OccurredUtc)
+            .Should()
+            .Equal(Noon.AddHours(2), Noon.AddHours(1));
     }
 
     [Fact]
@@ -52,6 +58,43 @@ public class EventReaderTests : IDisposable
         stats[0].Average.Should().Be(2.5m);
         stats[0].Minimum.Should().Be(2m);
         stats[0].Maximum.Should().Be(3m);
+    }
+
+    [Fact]
+    public async Task Fractional_values_survive_the_aggregate()
+    {
+        var (trackerId, cups) = await SetUpAsync();
+
+        // Aggregation happens in SQLite over a REAL cast, so this is the case worth pinning: the
+        // values are stored as text, and totalling them as text would return nonsense.
+        await RecordAsync(trackerId, Noon, cups, 1.5m);
+        await RecordAsync(trackerId, Noon.AddHours(1), cups, 2.25m);
+        await RecordAsync(trackerId, Noon.AddHours(2), cups, 0.25m);
+
+        await using var context = _database.NewContext();
+        var stats = await new EventReader(context).GetNumberStatsAsync(trackerId);
+
+        stats[0].Count.Should().Be(3);
+        stats[0].Total.Should().Be(4m);
+        stats[0].Minimum.Should().Be(0.25m);
+        stats[0].Maximum.Should().Be(2.25m);
+    }
+
+    [Fact]
+    public async Task Values_sort_numerically_rather_than_as_text()
+    {
+        var (trackerId, cups) = await SetUpAsync();
+
+        // The trap the REAL cast avoids: as text, "10" sorts before "9", so MIN and MAX would both
+        // be wrong in a way nobody would notice until the numbers crossed a digit boundary.
+        await RecordAsync(trackerId, Noon, cups, 9m);
+        await RecordAsync(trackerId, Noon.AddHours(1), cups, 10m);
+
+        await using var context = _database.NewContext();
+        var stats = await new EventReader(context).GetNumberStatsAsync(trackerId);
+
+        stats[0].Minimum.Should().Be(9m);
+        stats[0].Maximum.Should().Be(10m);
     }
 
     [Fact]
@@ -102,7 +145,12 @@ public class EventReaderTests : IDisposable
         return (trackerId, cups);
     }
 
-    private async Task RecordAsync(Guid trackerId, DateTimeOffset occurred, Guid? field, int? cups)
+    private async Task RecordAsync(
+        Guid trackerId,
+        DateTimeOffset occurred,
+        Guid? field,
+        decimal? cups
+    )
     {
         await using var context = _database.NewContext();
 

@@ -8,7 +8,10 @@ namespace Fip.Strive.Tracking.Application.Features.Trackers.Services.Contracts;
 /// </summary>
 public interface ITrackerWriter
 {
-    Task<Guid> CreateTrackerAsync(NewTracker tracker, CancellationToken cancellationToken = default);
+    Task<Guid> CreateTrackerAsync(
+        NewTracker tracker,
+        CancellationToken cancellationToken = default
+    );
 
     Task UpdateTrackerAsync(
         Guid trackerId,
@@ -25,7 +28,11 @@ public interface ITrackerWriter
         CancellationToken cancellationToken = default
     );
 
-    Task UpdateFieldAsync(Guid fieldId, FieldEdit edit, CancellationToken cancellationToken = default);
+    Task UpdateFieldAsync(
+        Guid fieldId,
+        FieldEdit edit,
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>Drops the field and every value already recorded under it.</summary>
     Task DeleteFieldAsync(Guid fieldId, CancellationToken cancellationToken = default);

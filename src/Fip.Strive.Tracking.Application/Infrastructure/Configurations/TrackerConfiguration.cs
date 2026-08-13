@@ -12,13 +12,18 @@ public class TrackerConfiguration : IEntityTypeConfiguration<Tracker>
 
         builder.HasKey(tracker => tracker.Id);
 
-        builder.Property(tracker => tracker.Name).IsRequired().HasMaxLength(TrackingLimits.NameLength);
+        builder
+            .Property(tracker => tracker.Name)
+            .IsRequired()
+            .HasMaxLength(TrackingLimits.NameLength);
 
         // Two trackers called "Coffee" would be indistinguishable in every list in the app. The
         // index is case sensitive, which is why TrackerWriter also checks case insensitively.
         builder.HasIndex(tracker => tracker.Name).IsUnique();
 
-        builder.Property(tracker => tracker.Description).HasMaxLength(TrackingLimits.DescriptionLength);
+        builder
+            .Property(tracker => tracker.Description)
+            .HasMaxLength(TrackingLimits.DescriptionLength);
 
         // Same story as the events' timestamps — see TrackerEventConfiguration.
         builder

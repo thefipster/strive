@@ -1,28 +1,52 @@
 name: strive-build
 
+# Runs on every branch, matching tracking.yml. The previous main-only trigger meant branch work got
+# no signal until a pull request existed, which is backwards: the build is most useful while the
+# change is still being written.
+#
+# The paths below name the projects in strive.slnx rather than all of src/**, so a tracking-only
+# change no longer starts a job that spins up Postgres for nothing. They are also, unlike the paths
+# they replace, paths that exist — the previous list pointed at a test/ directory and at root-level
+# build files that the c1dd7d7 restructure moved under src/, and only fired at all because a
+# blanket 'src/**' entry happened to cover them.
 on:
   push:
-    branches: [ "main" ]
     paths:
-      - 'src/**'
-      - 'test/**'
-      - 'strive.slnx'
-      - 'Directory.Build.props'
-      - 'Directory.Packages.props'
+      - 'src/Fip.Strive.AppHost/**'
+      - 'src/Fip.Strive.Application/**'
+      - 'src/Fip.Strive.Application.UnitTests/**'
+      - 'src/Fip.Strive.IntegrationTests/**'
+      - 'src/Fip.Strive.Web/**'
+      - 'src/strive.slnx'
+      - 'src/Directory.Build.props'
+      - 'src/Directory.Packages.props'
+      - 'src/NuGet.config'
       - 'NuGet.config'
-      - 'global.json'
+      - 'src/global.json'
+      - '.config/dotnet-tools.json'
+      - '.editorconfig'
       - '.github/workflows/strive.yml'
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'src/**'
-      - 'test/**'
-      - 'strive.slnx'
-      - 'Directory.Build.props'
-      - 'Directory.Packages.props'
+      - 'src/Fip.Strive.AppHost/**'
+      - 'src/Fip.Strive.Application/**'
+      - 'src/Fip.Strive.Application.UnitTests/**'
+      - 'src/Fip.Strive.IntegrationTests/**'
+      - 'src/Fip.Strive.Web/**'
+      - 'src/strive.slnx'
+      - 'src/Directory.Build.props'
+      - 'src/Directory.Packages.props'
+      - 'src/NuGet.config'
       - 'NuGet.config'
-      - 'global.json'
+      - 'src/global.json'
+      - '.config/dotnet-tools.json'
+      - '.editorconfig'
       - '.github/workflows/strive.yml'
+
+# The default token grant is wider than either job needs — both only ever read the checkout.
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -32,18 +56,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
       with:
         dotnet-version: 10.0.x
 
     - name: Restore
       run: dotnet restore src/strive.slnx
 
+    # The formatter is pinned in .config/dotnet-tools.json, so this checks against the same
+    # version everywhere rather than whatever the runner happens to resolve.
+    - name: Restore tools
+      run: dotnet tool restore
+
+    - name: Check formatting
+      run: dotnet csharpier check src/
+
+    # -warnaserror is the point of this step: the MudBlazor and EF Core breakages that prompted
+    # this gate were both warnings on an otherwise green build.
     - name: Build
-      run: dotnet build --no-restore --configuration Release src/strive.slnx
+      run: dotnet build --no-restore --configuration Release -warnaserror src/strive.slnx
 
     - name: Test
       run: dotnet test --no-build --configuration Release src/strive.slnx
+
+    # `dotnet list package --vulnerable` exits 0 no matter what it finds, so the report has to be
+    # read rather than the exit code trusted. This is the check that turned up a high-severity
+    # advisory sitting in the tree under a green build.
+    - name: Check for vulnerable packages
+      run: |
+        dotnet list src/strive.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable.txt
+        if grep -q "has the following vulnerable packages" vulnerable.txt; then
+          echo "::error::Vulnerable packages found - see the report above."
+          exit 1
+        fi
+
+    # Built on every run so the Dockerfile cannot rot behind the code, exactly as tracking.yml
+    # does. Not pushed anywhere — the build succeeding is the whole assertion.
+    - name: Build image
+      run: docker build --file src/Fip.Strive.Web/Dockerfile --tag strive:ci .

@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Fip.Strive.Application.Features.Catalog.Models;
 
 /// <summary>
@@ -18,7 +16,6 @@ public class PackageFile
     /// <summary>SHA-256 of the content — the <see cref="CatalogEntry"/> this path resolved to.</summary>
     public required string Hash { get; set; }
 
-    [SuppressMessage("Usage", "CA2227", Justification = "EF Core navigation property.")]
     public ImportPackage? Package { get; set; }
 
     public CatalogEntry? Entry { get; set; }

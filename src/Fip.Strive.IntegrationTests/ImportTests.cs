@@ -147,7 +147,9 @@ public class ImportTests(PostgresFixture postgres)
         await harness.ImportAsync(original);
         var result = await harness.ImportAsync(renamed);
 
-        result.Outcome.Should().Be(ImportOutcome.DuplicateArchive, "identity is the bytes, not the name");
+        result
+            .Outcome.Should()
+            .Be(ImportOutcome.DuplicateArchive, "identity is the bytes, not the name");
     }
 
     [Fact]

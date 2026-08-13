@@ -39,9 +39,15 @@ public static class ApiEndpoints
                 Guid? trackerId = null,
                 int skip = 0,
                 int take = IExportReader.DefaultPageSize
-            ) => Results.Ok(await export.GetEventsAsync(since, trackerId, skip, take, cancellationToken))
+            ) =>
+                Results.Ok(
+                    await export.GetEventsAsync(since, trackerId, skip, take, cancellationToken)
+                )
         );
 
-        app.Logger.LogInformation("Pull API is on at /api/v1, keyed by {Header}", ApiKeyFilter.HeaderName);
+        app.Logger.LogInformation(
+            "Pull API is on at /api/v1, keyed by {Header}",
+            ApiKeyFilter.HeaderName
+        );
     }
 }

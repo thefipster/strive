@@ -1,6 +1,7 @@
 using Fip.Strive.Tracking.Application.Features.Trackers.Models;
 using Fip.Strive.Tracking.Application.Features.Trackers.Services.Contracts;
 using Fip.Strive.Tracking.Application.Infrastructure;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fip.Strive.Tracking.Application.Features.Trackers.Services;
@@ -17,7 +18,7 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
 
         var entity = new Tracker
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             Name = name,
             Description = CleanOptional(
                 tracker.Description,
@@ -28,7 +29,7 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
         };
 
         context.Trackers.Add(entity);
-        await context.SaveChangesAsync(cancellationToken);
+        await SaveAsync($"A tracker called '{name}' already exists.", cancellationToken);
 
         return entity.Id;
     }
@@ -55,10 +56,13 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
             "Description"
         );
 
-        await context.SaveChangesAsync(cancellationToken);
+        await SaveAsync($"A tracker called '{name}' already exists.", cancellationToken);
     }
 
-    public async Task DeleteTrackerAsync(Guid trackerId, CancellationToken cancellationToken = default)
+    public async Task DeleteTrackerAsync(
+        Guid trackerId,
+        CancellationToken cancellationToken = default
+    )
     {
         // Fields, events and values go with it through the foreign keys' cascade, which the SQLite
         // provider has switched on — no need to pull the history into memory just to delete it.
@@ -95,7 +99,7 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
 
         var entity = new TrackerField
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             TrackerId = trackerId,
             Name = name,
             Type = field.Type,
@@ -105,7 +109,7 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
         };
 
         context.TrackerFields.Add(entity);
-        await context.SaveChangesAsync(cancellationToken);
+        await SaveAsync($"This tracker already has a field called '{name}'.", cancellationToken);
 
         return entity.Id;
     }
@@ -129,7 +133,7 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
         field.Unit = CleanOptional(edit.Unit, TrackingLimits.UnitLength, "Unit");
         field.IsRequired = edit.IsRequired;
 
-        await context.SaveChangesAsync(cancellationToken);
+        await SaveAsync($"This tracker already has a field called '{name}'.", cancellationToken);
     }
 
     public async Task DeleteFieldAsync(Guid fieldId, CancellationToken cancellationToken = default)
@@ -141,6 +145,37 @@ public sealed class TrackerWriter(TrackingContext context, TimeProvider clock) :
         if (deleted == 0)
             throw new TrackingException("That field no longer exists.");
     }
+
+    /// <summary>
+    /// Saves, turning a unique-index violation into the same <see cref="TrackingException"/> the
+    /// pre-flight guards throw.
+    /// </summary>
+    /// <remarks>
+    /// The guards query and then insert, so two tabs submitting at once can both pass the check and
+    /// leave the second insert to the index. The outcome was always *safe* — the index is what
+    /// actually enforces uniqueness — but the loser got a raw <c>DbUpdateException</c>, and the
+    /// pages catch only <see cref="TrackingException"/>, so a duplicate name surfaced as an
+    /// unhandled error instead of the snackbar it deserves.
+    /// </remarks>
+    private async Task SaveAsync(string conflictMessage, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+        {
+            throw new TrackingException(conflictMessage, exception);
+        }
+    }
+
+    /// <summary>
+    /// SQLite reports a broken UNIQUE index as extended error 2067. Matching the extended code
+    /// rather than the plain <c>SQLITE_CONSTRAINT</c> keeps a foreign-key or NOT NULL failure —
+    /// which would be a bug here, not a user error — reported as the bug it is.
+    /// </summary>
+    private static bool IsUniqueViolation(DbUpdateException exception) =>
+        exception.InnerException is SqliteException { SqliteExtendedErrorCode: 2067 };
 
     private async Task GuardTrackerNameIsFreeAsync(
         string name,

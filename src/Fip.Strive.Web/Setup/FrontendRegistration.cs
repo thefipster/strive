@@ -17,7 +17,9 @@ public static class FrontendRegistration
         services
             .AddRazorComponents()
             .AddInteractiveServerComponents()
-            .AddHubOptions(options => options.MaximumReceiveMessageSize = MaximumReceiveMessageSize);
+            .AddHubOptions(options =>
+                options.MaximumReceiveMessageSize = MaximumReceiveMessageSize
+            );
 
         services.AddMudServices(config =>
         {

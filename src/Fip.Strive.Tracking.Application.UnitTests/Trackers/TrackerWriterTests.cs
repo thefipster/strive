@@ -69,7 +69,10 @@ public class TrackerWriterTests : IDisposable
         {
             var writer = new TrackerWriter(context, TimeProvider.System);
 
-            await writer.AddFieldAsync(id, new NewField("Duration", TrackerFieldType.Number, "min"));
+            await writer.AddFieldAsync(
+                id,
+                new NewField("Duration", TrackerFieldType.Number, "min")
+            );
             await writer.AddFieldAsync(id, new NewField("Mood", TrackerFieldType.Text));
         }
 
