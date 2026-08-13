@@ -21,7 +21,7 @@ public class SignInTests : TrackingWebTest
         var response = await Client().GetAsync(path);
 
         response.StatusCode.Should().Be(HttpStatusCode.Found);
-        response.Headers.Location?.OriginalString.Should().StartWith("/login.html");
+        RedirectPath(response).Should().Be("/login.html");
     }
 
     [Fact]
@@ -48,6 +48,19 @@ public class SignInTests : TrackingWebTest
         response.StatusCode.Should().Be(HttpStatusCode.Found);
         response.Headers.Location?.OriginalString.Should().Be("/login.html?error=1");
         response.Headers.Contains("Set-Cookie").Should().BeFalse();
+    }
+
+    /// <summary>
+    /// Where a redirect points, without its host or its query. The cookie handler challenges with
+    /// an absolute URI carrying a <c>ReturnUrl</c>, while the endpoints below redirect with a
+    /// relative one — so only the path is a fair comparison across both.
+    /// </summary>
+    private static string RedirectPath(HttpResponseMessage response)
+    {
+        var location = response.Headers.Location;
+        location.Should().NotBeNull("a redirect has to say where to");
+
+        return location!.IsAbsoluteUri ? location.AbsolutePath : location.OriginalString;
     }
 
     private async Task<HttpResponseMessage> PostPasswordAsync(string password) =>
