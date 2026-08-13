@@ -49,10 +49,18 @@ public sealed class CatalogReader(StriveContext context) : ICatalogReader
         {
             var term = search.Trim();
 
+            // Hashes are stored lowercase (Convert.ToHexStringLower), so a hash pasted from a tool
+            // that emits uppercase — sha256sum on some platforms, most Windows utilities — would
+            // otherwise match nothing at all, with no hint as to why. Lowercased here rather than
+            // in SQL so the comparison stays a plain index-friendly prefix match.
+            var hashTerm = term.ToLowerInvariant();
+
             // Match either the blob's own hash or any path it was filed under, so the browser
-            // works whether you paste a hash or remember a filename.
+            // works whether you paste a hash or remember a filename. Path matching stays
+            // case-sensitive: paths inside an archive are, and lowercasing them would need a
+            // function call per row.
             query = query.Where(entry =>
-                entry.Hash.StartsWith(term)
+                entry.Hash.StartsWith(hashTerm)
                 || entry.Occurrences.Any(occurrence => occurrence.PathInArchive.Contains(term))
             );
         }
