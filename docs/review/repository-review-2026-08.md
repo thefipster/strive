@@ -143,8 +143,32 @@ explicitly development-only.
 Not urgent while the platform is mid-rebuild, but it is a gap between the documented deployment
 story and what the repo can actually produce. The tracker's Dockerfile is a good template.
 
-- [ ] Add `src/Fip.Strive.Web/Dockerfile`, modelled on the tracking one
-- [ ] Build it in `strive.yml` so it cannot rot
+- [x] Add `src/Fip.Strive.Web/Dockerfile`, modelled on the tracking one
+- [x] Build it in `strive.yml` so it cannot rot
+
+**Done, and verified by running it rather than by building it.** Multi-stage, non-root, modelled on
+the tracking Dockerfile. `ConnectionStrings__strive` is deliberately not defaulted — there is no
+sensible fallback for "which Postgres", and a wrong default is worse than a missing one. The
+Dockerfile also states the LAN-only decision from C4, since the image is the thing somebody is about
+to publish.
+
+Built the image, ran it against a real Postgres container, and checked the result:
+
+```
+{ "status": "Healthy",
+  "results": [ { "name": "postgres", "status": "Healthy",
+                 "description": "The catalog database answered." } ] }
+```
+
+Pages render inside the MudBlazor shell, and the process runs as `uid=1654(app)`. That incidentally
+confirms A2's health check working in a real container rather than only under `WebApplicationFactory`.
+
+One thing the attempt taught, recorded because it looks like a bug and is not: copying the lock
+files in and restoring with locked mode fails with `NU1004`. The SDK adds implicit references —
+`Microsoft.AspNetCore.App.Internal.Assets` among them — whose set follows the SDK *patch*, and the
+image resolves whatever 10.x it ships rather than the patch the lock was written against. Enforcing
+the lock is CI's job, where `setup-dotnet` fixes the SDK; the image still gets centrally pinned
+versions. The Dockerfile says so, so the next person does not "fix" it back.
 
 ### A4 — `NuGet.config` does not clear inherited sources *(low)*
 

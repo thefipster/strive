@@ -94,3 +94,8 @@ jobs:
           echo "::error::Vulnerable packages found - see the report above."
           exit 1
         fi
+
+    # Built on every run so the Dockerfile cannot rot behind the code, exactly as tracking.yml
+    # does. Not pushed anywhere — the build succeeding is the whole assertion.
+    - name: Build image
+      run: docker build --file src/Fip.Strive.Web/Dockerfile --tag strive:ci .
