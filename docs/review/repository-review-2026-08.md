@@ -548,8 +548,17 @@ time.
 Either state the assumption in the Readme ("LAN only, never expose"), or reuse the tracker's cookie
 setup. This is a decision to make, not a defect to fix.
 
-- [ ] Decide: document as LAN-only, or add authentication
-- [ ] Record the decision wherever it lands
+- [x] Decide: document as LAN-only, or add authentication
+- [x] Record the decision wherever it lands
+
+**Decided: LAN-only, and written down.** The Readme's "Working with it" section now states it
+outright — every page including the upload form is open, that is deliberate for a homelab tool on a
+trusted network, it is the opposite of the tracker's choice, and the app is never to be exposed.
+
+The point of the finding was never that open access is wrong; it was that two apps in one repository
+making opposite calls, with only one of them explaining itself, is what gets forgotten at deployment
+time. Both now say which they are and why. Revisit if the platform app ever grows a reason to leave
+the LAN — the tracker's cookie setup is there to copy.
 
 ### C5 — Unreferenced blobs are never reclaimed *(low)*
 
@@ -724,8 +733,13 @@ The `make.ps1` one is the worse of the two: it is the *first* command the Readme
 script or replace those blocks with the `dotnet run --project src/Fip.Strive.AppHost` and
 `dotnet test src/strive.slnx` they stood for.
 
-- [ ] Restore `make.ps1` or replace it with the underlying `dotnet` commands
-- [ ] Correct the `test/` row in the layout table
+- [x] Restore `make.ps1` or replace it with the underlying `dotnet` commands
+- [x] Correct the `test/` row in the layout table
+
+**Done.** Replaced with the `dotnet` commands they stood for rather than restoring the script — a
+`make.ps1` would be a third way to invoke a toolchain that already has one, and the PowerShell-only
+entry point sat oddly in a repository whose CI is Ubuntu. The `test/` row became two: the unit test
+projects that run anywhere, and the integration project that needs Docker.
 
 ### E2 — Nothing documents how to run a review of the two solutions *(low)*
 
@@ -733,7 +747,13 @@ script or replace those blocks with the `dotnet run --project src/Fip.Strive.App
 that it needs Docker for Testcontainers, is only implied. A short "Working with it" subsection
 listing both solutions and their prerequisites would save the next reader a false start.
 
-- [ ] Document both solutions' build/test commands and prerequisites
+- [x] Document both solutions' build/test commands and prerequisites
+
+**Done, in the same rewrite as E1.** "Working with it" now carries a table of every task against its
+command and whether it needs Docker, which is the fact that actually bites: `dotnet test
+src/strive.slnx` *fails* without a daemon rather than skipping, and the way round it — run
+`tracking.slnx` or the unit test project directly — was not written down anywhere. `dotnet tool
+restore` is documented as the once-after-cloning step, since formatting is now checked in CI.
 
 ---
 

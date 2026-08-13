@@ -19,27 +19,57 @@ Strive is being rebuilt incrementally against the
 | `src/Fip.Strive.AppHost` | Aspire orchestration for development only — brings up Postgres alongside the app. |
 | `src/Fip.Strive.Tracking.Web` | The tracker — a second, standalone Blazor Server app. Shares nothing with the platform above but the repo. |
 | `src/Fip.Strive.Tracking.Application` | Its application layer: trackers, custom fields, events. Stores everything in one SQLite file. |
-| `test/` | xunit projects: pure unit tests, plus integration tests against real Postgres via Testcontainers. |
+| `src/*.UnitTests` | xunit projects, one per application layer. No infrastructure — they run anywhere. |
+| `src/Fip.Strive.IntegrationTests` | Boots the real host against a throwaway Postgres via Testcontainers. Needs Docker. |
 | `docs/` | Spec, roadmap, a detail document per roadmap step, and [export guides](docs/guide/Readme.md) per provider. |
 | `legacy/` | Two earlier generations, read-only reference. See [legacy/Readme.md](legacy/Readme.md). |
 | `testdata/` | Seed corpus of real exports. Local only, never committed. |
 
 ## Working with it
 
-```powershell
-./make.ps1 run
+Everything needs the .NET 10 SDK, pinned in `src/global.json`. There are two solutions, and they
+have deliberately different prerequisites — the tracker is meant to be workable with nothing
+installed but the SDK.
+
+```bash
+dotnet tool restore
 ```
 
-That starts the Aspire AppHost, which brings up Postgres (with a persistent data volume and
-pgAdmin on :8081) and the web app together. Requires the .NET 10 SDK (pinned in `global.json`) and
-a running Docker — also needed by `./make.ps1 test`, whose integration tests spin up a throwaway
-Postgres.
+Once, after cloning. That fetches CSharpier, which is what formats this repository; the version is
+pinned in `.config/dotnet-tools.json` so everyone gets the same one, and CI rejects anything it
+would reformat.
 
-To run the web app on its own, point it at any Postgres:
+```bash
+dotnet run --project src/Fip.Strive.AppHost
+```
+
+Starts the Aspire AppHost, which brings up Postgres (persistent volume, pgAdmin on :8081) and the
+platform app together. **Needs Docker.**
+
+| Task | Command | Needs Docker |
+|---|---|---|
+| Platform app + Postgres | `dotnet run --project src/Fip.Strive.AppHost` | yes |
+| Tracker | `dotnet run --project src/Fip.Strive.Tracking.Web` | no |
+| Everything, both solutions | `dotnet test src/strive.slnx` | yes — Testcontainers |
+| Tracker only | `dotnet test src/tracking.slnx` | no |
+| Unit tests only, no infrastructure | `dotnet test src/Fip.Strive.Application.UnitTests` | no |
+| Check formatting | `dotnet csharpier check src/` | no |
+| Reformat | `dotnet csharpier format src/` | no |
+
+`dotnet test src/strive.slnx` fails rather than skips without a Docker daemon: the integration
+suite starts a throwaway Postgres and there is no fallback. Run `tracking.slnx` or the unit test
+project directly when Docker is not available.
+
+To run the platform app on its own, point it at any Postgres:
 
 ```bash
 ConnectionStrings__strive="Host=localhost;Database=strive;Username=postgres;Password=postgres" dotnet run --project src/Fip.Strive.Web
 ```
+
+**The platform app has no authentication.** Every page, including the upload form that accepts
+multi-gigabyte archives, is open to anyone who can reach the port. That is a deliberate choice for
+a homelab tool sitting on a trusted LAN, and it is the opposite of the choice the tracker makes —
+so keep it on the LAN and never expose it. The tracker is the one built to face the internet.
 
 ## Configuration
 
