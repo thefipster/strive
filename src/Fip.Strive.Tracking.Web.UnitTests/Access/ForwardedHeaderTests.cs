@@ -72,12 +72,61 @@ public class ForwardedHeaderTests : TrackingWebTest
             .Be(HttpStatusCode.Found, "a different caller has its own allowance");
     }
 
+    [Fact]
+    public async Task A_named_proxy_is_honoured()
+    {
+        var client = ProductionClient(
+            new Dictionary<string, string>
+            {
+                ["Proxy:Enabled"] = "true",
+                // The in-memory test server reports the caller as ::1.
+                ["Proxy:KnownProxies:0"] = "::1",
+            }
+        );
+
+        var response = await GetAsProxiedAsync(client, "198.51.100.7");
+
+        response.Headers.Contains("Strict-Transport-Security").Should().BeTrue();
+    }
+
+    [Fact]
+    public void A_mistyped_proxy_address_refuses_to_start()
+    {
+        var client = () =>
+            ProductionClient(
+                new Dictionary<string, string>
+                {
+                    ["Proxy:Enabled"] = "true",
+                    ["Proxy:KnownProxies:0"] = "10.0.0.999",
+                }
+            );
+
+        // Silently dropping it would be the worst outcome: this list decides who may rewrite a
+        // caller's address, so a typo would narrow the trust with nothing to say it had.
+        client.Should().Throw<InvalidOperationException>().WithMessage("*10.0.0.999*");
+    }
+
+    [Fact]
+    public void A_mistyped_network_refuses_to_start()
+    {
+        var client = () =>
+            ProductionClient(
+                new Dictionary<string, string>
+                {
+                    ["Proxy:Enabled"] = "true",
+                    ["Proxy:KnownNetworks:0"] = "10.0.0.0/not-a-prefix",
+                }
+            );
+
+        client.Should().Throw<InvalidOperationException>().WithMessage("*10.0.0.0/not-a-prefix*");
+    }
+
     private static async Task<HttpResponseMessage> GetAsProxiedAsync(
         HttpClient client,
         string caller
     )
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/login.html");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/login.html");
         AddProxyHeaders(request, caller);
 
         return await client.SendAsync(request);
@@ -88,7 +137,9 @@ public class ForwardedHeaderTests : TrackingWebTest
         string caller
     )
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "/auth/login")
+        // Disposing the request disposes the content it owns, so the body needs no `using` of
+        // its own. Safe here because the response is fully buffered by the time SendAsync returns.
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/auth/login")
         {
             Content = new FormUrlEncodedContent([
                 new KeyValuePair<string, string>("password", "not the password"),

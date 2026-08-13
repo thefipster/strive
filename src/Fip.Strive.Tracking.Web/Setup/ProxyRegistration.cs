@@ -16,6 +16,14 @@ public static class ProxyRegistration
         if (!options.Enabled)
             return;
 
+        // Parsed here rather than inside the callback below, so a typo is refused while the host is
+        // being built — the same treatment a malformed password hash gets. Silently dropping an
+        // unparseable entry would be the worst outcome available: this list decides who is trusted
+        // to rewrite a caller's address, and a narrower list than the operator wrote is a change to
+        // the security posture that nothing would report.
+        var proxies = options.KnownProxies.Select(ParseAddress).ToArray();
+        var networks = options.KnownNetworks.Select(ParseNetwork).ToArray();
+
         services.Configure<ForwardedHeadersOptions>(forwarded =>
         {
             // Only these two. X-Forwarded-Host is not honoured: nothing here builds absolute URLs
@@ -29,17 +37,31 @@ public static class ProxyRegistration
             forwarded.KnownProxies.Clear();
             forwarded.KnownIPNetworks.Clear();
 
-            foreach (var proxy in options.KnownProxies)
-                if (IPAddress.TryParse(proxy, out var address))
-                    forwarded.KnownProxies.Add(address);
+            foreach (var address in proxies)
+                forwarded.KnownProxies.Add(address);
 
-            // Fully qualified: Microsoft.AspNetCore.HttpOverrides has its own IPNetwork, and it is
-            // the deprecated one.
-            foreach (var network in options.KnownNetworks)
-                if (System.Net.IPNetwork.TryParse(network, out var parsed))
-                    forwarded.KnownIPNetworks.Add(parsed);
+            foreach (var network in networks)
+                forwarded.KnownIPNetworks.Add(network);
         });
     }
+
+    private static IPAddress ParseAddress(string value) =>
+        IPAddress.TryParse(value, out var address)
+            ? address
+            : throw new InvalidOperationException(
+                $"'{ProxyOptions.SectionName}:{nameof(ProxyOptions.KnownProxies)}' contains "
+                    + $"'{value}', which is not an IP address."
+            );
+
+    // Fully qualified: Microsoft.AspNetCore.HttpOverrides has its own IPNetwork, and it is the
+    // deprecated one.
+    private static System.Net.IPNetwork ParseNetwork(string value) =>
+        System.Net.IPNetwork.TryParse(value, out var network)
+            ? network
+            : throw new InvalidOperationException(
+                $"'{ProxyOptions.SectionName}:{nameof(ProxyOptions.KnownNetworks)}' contains "
+                    + $"'{value}', which is not a CIDR network such as 10.0.0.0/8."
+            );
 
     /// <summary>
     /// Has to run before anything that reads the scheme or the caller's address — request logging,

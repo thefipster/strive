@@ -512,7 +512,13 @@ because `dotnet list package --vulnerable` exits 0 whatever it finds — a step 
 command would have passed forever. Running it by hand while writing this is what turned up B7, so
 the gate had already earned itself before it existed.
 
-CodeQL runs on `main`, on pull requests, and weekly. The schedule is the part worth keeping: query
+CodeQL runs on `main`, on pull requests, and weekly, with the `security-extended` pack. It was
+first configured with `security-and-quality`, which produced 15 pull-request comments on its first
+run of which **none carried a security severity** — missing `Dispose` calls in tests, a
+`Path.Combine` warning that cannot fire because the later arguments are always relative, and the
+deliberate catch-all in both health checks, which a readiness probe must have. Six of the disposals
+were real and were fixed; the rest were noise that the .NET analyzers and `-warnaserror` already
+cover better, on every branch rather than only on pull requests. Narrowed accordingly. The schedule is the part worth keeping: query
 packs and advisories change without the code changing, so a scan that only fires on push stops
 learning anything the moment work pauses. `build-mode: none` avoids needing Docker for the
 Testcontainers projects and cannot be broken by a build change; it costs some precision, which is

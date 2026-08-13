@@ -105,20 +105,22 @@ public class SignInTests : TrackingWebTest
         response.Headers.Location?.OriginalString.Should().Be("/");
     }
 
-    private async Task<HttpResponseMessage> PostPasswordAsync(string password, string? returnUrl) =>
-        await Client()
-            .PostAsync(
-                "/auth/login",
-                new FormUrlEncodedContent([
-                    new KeyValuePair<string, string>("password", password),
-                    new KeyValuePair<string, string>("returnUrl", returnUrl ?? string.Empty),
-                ])
-            );
+    private async Task<HttpResponseMessage> PostPasswordAsync(string password, string? returnUrl)
+    {
+        using var form = new FormUrlEncodedContent([
+            new KeyValuePair<string, string>("password", password),
+            new KeyValuePair<string, string>("returnUrl", returnUrl ?? string.Empty),
+        ]);
 
-    private async Task<HttpResponseMessage> PostPasswordAsync(string password) =>
-        await Client()
-            .PostAsync(
-                "/auth/login",
-                new FormUrlEncodedContent([new KeyValuePair<string, string>("password", password)])
-            );
+        return await Client().PostAsync("/auth/login", form);
+    }
+
+    private async Task<HttpResponseMessage> PostPasswordAsync(string password)
+    {
+        using var form = new FormUrlEncodedContent([
+            new KeyValuePair<string, string>("password", password),
+        ]);
+
+        return await Client().PostAsync("/auth/login", form);
+    }
 }

@@ -50,12 +50,11 @@ public class ShellRenderTests : TrackingWebTest
     {
         var client = Client();
 
-        var response = await client.PostAsync(
-            "/auth/login",
-            new FormUrlEncodedContent([
-                new KeyValuePair<string, string>("password", TrackingAppFactory.Password),
-            ])
-        );
+        using var form = new FormUrlEncodedContent([
+            new KeyValuePair<string, string>("password", TrackingAppFactory.Password),
+        ]);
+
+        var response = await client.PostAsync("/auth/login", form);
 
         var cookie = response
             .Headers.GetValues("Set-Cookie")
