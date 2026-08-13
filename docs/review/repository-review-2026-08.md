@@ -201,9 +201,32 @@ the cookie: A7's forwarded-headers handling makes `Request.IsHttps` true behind 
 direct HTTP deployment should then be refused or warned about loudly at startup rather than
 silently producing a login that cannot complete.
 
-- [ ] Decide and document whether the container is ever meant to be reached over plain HTTP
-- [ ] Warn or refuse at startup when `SecurePolicy.Always` is combined with no HTTPS
+- [x] Decide and document whether the container is ever meant to be reached over plain HTTP
+- [x] Warn or refuse at startup when `SecurePolicy.Always` is combined with no HTTPS
 - [ ] Confirm the loop in a browser against a plain-HTTP container
+
+**Done — and the finding needs one correction in fairness to the code.** The Readme already said
+"Put it behind TLS … sign-in simply will not work over plain HTTP — which is the intended failure."
+So this was a documented decision, not an oversight, and the severity should be read as *medium*
+rather than *high*: nothing is wrong, it is only undiscoverable. The first pass missed that line and
+this pass reported the symptom without checking whether it had been decided already.
+
+What was genuinely missing is the signposting. The failure produces no error, no log line and no
+broken page — the cookie is silently discarded and the browser returns to the login form — so
+someone who has not read that Readme sentence has nothing to go on. The app now warns at startup
+when it sees no HTTPS endpoint and no proxy configured, naming both the cause and the fix. Confirmed
+against a real Production process over plain HTTP:
+
+```
+[WRN] No HTTPS endpoint is configured and Proxy:Enabled is off. The session cookie is issued with
+      Secure, so a browser reaching this over plain HTTP discards it and sign-in loops back to the
+      login page. Terminate TLS in front of this and set Proxy__Enabled=true.
+```
+
+The deployment answer is that the container is only ever reached through a TLS-terminating proxy,
+which is now stated in the Readme and in the Dockerfile rather than implied. The browser
+confirmation stays open — it is the one claim in this document still argued from the cookie
+specification rather than observed, and it no longer blocks anything.
 
 ### A7 — nothing handles forwarded headers *(medium, **new**)*
 
@@ -227,8 +250,36 @@ HTTP, from the proxy's address:
 `KnownNetworks` rather than trusting any hop — an unrestricted configuration lets a caller spoof
 both their address and the scheme.
 
-- [ ] Add forwarded-headers handling ahead of `UseAccess`, restricted to the known proxy
-- [ ] Re-check the rate limiter's partitioning once the real address is visible
+- [x] Add forwarded-headers handling ahead of `UseAccess`, restricted to the known proxy
+- [x] Re-check the rate limiter's partitioning once the real address is visible
+
+**Done, and this was the more serious half of the pair.** A6 does not occur behind a TLS-terminating
+proxy — the browser leg is HTTPS, so the cookie survives. A7 *only* occurs there, which makes it the
+one that applies to the real deployment. Two consequences, both measured against a running
+Production instance before the fix:
+
+- **HSTS was never sent.** The middleware adds the header only to requests that already look
+  secure, and without forwarded headers none do. An internet-facing site was serving no HSTS at all.
+- **The login rate limiter put everyone in one bucket.** Twelve requests carrying twelve different
+  `X-Forwarded-For` values, all against the stock 10-per-5-minutes policy: the first ten passed, the
+  eleventh and twelfth got 429. That is not merely "less precise", as the code comment had it — it
+  is a lockout. One attacker spending ten attempts denies the real user their own login for five
+  minutes, repeatedly and for free.
+
+`Proxy:Enabled` is off by default, which matters: honouring `X-Forwarded-For` from a caller who is
+not a trusted proxy is worse than ignoring it, because anyone reaching the app directly could then
+vary the header per request and evade the rate limit completely. `KnownProxies` and `KnownNetworks`
+narrow the trust when the proxy has a stable address; empty trusts the immediate upstream, which is
+what a container network usually forces, and that case logs a warning saying so.
+
+`X-Forwarded-Host` is deliberately not honoured — nothing here builds absolute URLs from the host,
+so accepting it would add redirect and cache poisoning risk for no benefit.
+
+Four tests in `ForwardedHeaderTests` pin all of it, and they pin the *broken* behaviour as
+deliberately as the fixed one: HSTS absent while untrusted and present once trusted, the limit
+shared while untrusted and per-caller once trusted. `UseHttpsRedirection`'s "Failed to determine the
+https port" is unchanged and still harmless — it is a no-op either way, and worth removing on the
+day someone decides it should be.
 
 ### A8 — the package bump reopened the conflict its own comment warns against *(medium, **new**)*
 
@@ -747,8 +798,17 @@ The same blind spot covers the rest of the environment-conditional pipeline —
 `UseExceptionHandler`, `UseHsts` and `UseHttpsRedirection` are all `if (!IsDevelopment())` and none
 of them is exercised. A factory variant pinned to `Production` would cover all of it at once.
 
-- [ ] Add a `Production` variant of `TrackingAppFactory`
-- [ ] Assert the cookie's `Secure`, `HttpOnly` and `SameSite` attributes in both environments
+- [x] Add a `Production` variant of `TrackingAppFactory`
+- [x] Assert the cookie's `Secure`, `HttpOnly` and `SameSite` attributes in both environments
+
+**Done, alongside A7.** `TrackingAppFactory` now takes an environment and extra settings, and
+`ProductionClient()` boots the host as `Production` — which is what reaches the
+`if (!IsDevelopment())` half of the pipeline that nothing previously executed. It sends requests to
+a non-`localhost` host as well, because HSTS excludes localhost by default and a test asserting on
+that header would otherwise pass for the wrong reason.
+
+`SessionCookieTests` covers the attributes in both environments, including the `Secure` flag that
+A6 turns on. Six new tests in total; the web suite goes from 14 to 20.
 
 ### F2 — the strive integration suite cannot run without Docker *(low, **new**)*
 

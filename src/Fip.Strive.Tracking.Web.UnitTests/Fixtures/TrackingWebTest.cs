@@ -32,6 +32,38 @@ public abstract class TrackingWebTest : IAsyncLifetime
         );
     }
 
+    /// <summary>
+    /// A host running as <c>Production</c>, which is the only way to reach the environment-gated
+    /// half of the pipeline. One client per test: the login rate limiter keeps its buckets on the
+    /// host, so a second host would silently reset them mid-test.
+    /// </summary>
+    /// <param name="host">
+    /// Becomes the request's <c>Host</c>. HSTS skips <c>localhost</c> by default, so anything
+    /// asserting on that header has to arrive as something else.
+    /// </param>
+    protected HttpClient ProductionClient(
+        IReadOnlyDictionary<string, string>? settings = null,
+        string host = "tracker.example"
+    )
+    {
+        var factory = new TrackingAppFactory(
+            _dataDirectory,
+            TrackingAppFactory.ApiKey,
+            "Production",
+            settings
+        );
+
+        _factories.Add(factory);
+
+        return factory.CreateClient(
+            new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false,
+                BaseAddress = new Uri($"http://{host}/"),
+            }
+        );
+    }
+
     public Task InitializeAsync() => Task.CompletedTask;
 
     public async Task DisposeAsync()

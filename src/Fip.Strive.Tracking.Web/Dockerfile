@@ -40,6 +40,14 @@ RUN mkdir -p /data /app/logs \
 #
 # The database lands in the volume. Everything the app knows is in that one file — copy it away
 # and that is your backup.
+#
+# This image speaks plain HTTP and expects TLS to be terminated in front of it. Set
+# Proxy__Enabled=true when you do that, or the app reads every request as HTTP from the proxy's own
+# address: HSTS is then never sent, and the login rate limiter puts the whole internet in one
+# bucket, so a single attacker can lock the real user out. It says so at startup if you forget.
+#
+# Reaching this over plain HTTP does not work at all: outside development the session cookie is
+# issued with Secure, and browsers discard those on an insecure connection, so sign-in loops.
 ENV Tracking__DataDirectory=/data \
     ASPNETCORE_HTTP_PORTS=8080
 

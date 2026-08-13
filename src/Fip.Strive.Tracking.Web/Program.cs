@@ -17,6 +17,7 @@ if (args is ["hash-password", ..])
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMonitoring(builder.Configuration);
+builder.Services.AddProxy(builder.Configuration);
 builder.Services.AddFrontend();
 builder.Services.AddHealthEndpoint();
 builder.Services.AddAccess(builder.Configuration, builder.Environment);
@@ -31,6 +32,10 @@ builder.Services.ConfigureHttpJsonOptions(json =>
 var app = builder.Build();
 
 await app.EnsureDatabaseReadyAsync();
+
+// First in the pipeline: everything below reads either the scheme or the caller's address, and
+// both are still the proxy's until this has run.
+app.UseProxy();
 
 app.UseRequestLogging();
 app.UseErrorHandling();

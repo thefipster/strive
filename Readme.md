@@ -92,6 +92,7 @@ docker build -f src/Fip.Strive.Tracking.Web/Dockerfile -t strive-tracking .
 docker run -d -p 8080:8080 -v strive-tracking-data:/data \
   -e "Access__PasswordHash=$(echo 'your password' | docker run --rm -i strive-tracking hash-password)" \
   -e "Access__ApiKey=$(openssl rand -hex 32)" \
+  -e "Proxy__Enabled=true" \
   strive-tracking
 ```
 
@@ -113,15 +114,31 @@ probe that could only ever get a 401 would read as a permanently unhealthy conta
 which of the two it is in its startup log.
 
 **Put it behind TLS.** The session cookie is issued `Secure` outside Development, so sign-in simply
-will not work over plain HTTP — which is the intended failure.
+will not work over plain HTTP — which is the intended failure. It is a quiet one, though: the
+browser discards the cookie and bounces back to the login page with nothing logged and no error
+shown. The app therefore says so at startup when it sees no HTTPS endpoint and no proxy configured.
+
+**And tell it about the proxy.** Terminating TLS in front of the container means the app itself only
+ever sees plain HTTP from the proxy's address, and two things quietly stop working: HSTS is never
+sent — the header is only added to requests that already look secure — and the login rate limiter
+puts every caller on the internet in a single bucket, so one attacker exhausting the allowance locks
+the real user out. `Proxy__Enabled=true` makes the app read `X-Forwarded-Proto` and
+`X-Forwarded-For`, which fixes both and puts real client addresses in the log.
+
+It is off by default on purpose. Honouring `X-Forwarded-For` from a caller who is *not* a trusted
+proxy is worse than ignoring it: anyone able to reach the app directly could vary the header per
+request and step around the rate limit entirely. Only turn it on when nothing but the proxy can
+reach the app, and name `Proxy__KnownProxies__0` or `Proxy__KnownNetworks__0` when the proxy has a
+stable address.
 
 ### Getting in
 
 One user, one password, no user table — the hash lives in configuration. Signing in sets a cookie
 and everything except `/login.html`, `/auth/*`, `/health` and the API needs it. Those last two are
 not open, they are keyed rather than cookied — both want `X-Api-Key`. The login form is
-rate limited to 10 attempts per 5 minutes per caller address; behind a reverse proxy that is one
-bucket for everyone, which still bounds a brute force.
+rate limited to 10 attempts per 5 minutes per caller address — which is a per-caller limit only when
+`Proxy:Enabled` is on. Without it every request carries the proxy's address, so the ten attempts are
+shared by everyone and one attacker can lock you out of your own login.
 
 | Setting | Env var | Default | What |
 |---|---|---|---|
@@ -131,6 +148,9 @@ bucket for everyone, which still bounds a brute force.
 | `Access:ApiKey` | `Access__ApiKey` | — | Key for the pull API. Empty means the API is not mapped at all. At least 32 characters. |
 | `Access:UserName` | `Access__UserName` | `admin` | Cosmetic — shown in the app bar. |
 | `Access:SessionDays` | `Access__SessionDays` | `14` | How long a sign-in lasts. Sliding. |
+| `Proxy:Enabled` | `Proxy__Enabled` | `false` | Honour `X-Forwarded-Proto` and `X-Forwarded-For`. Turn on when TLS is terminated in front of the app, and only when nothing else can reach it. |
+| `Proxy:KnownProxies` | `Proxy__KnownProxies__0` | — | Proxy addresses to trust. Empty trusts the immediate upstream, which is usually what a container network forces. |
+| `Proxy:KnownNetworks` | `Proxy__KnownNetworks__0` | — | Same, in CIDR form. |
 
 ### Pulling the data out
 
