@@ -8,6 +8,7 @@ using Fip.Strive.Application.Features.Storage.Services.Contracts;
 using Fip.Strive.Application.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.IntegrationTests.Fixtures;
 
@@ -58,6 +59,12 @@ public sealed class ImportHarness : IAsyncDisposable
 
     public ICatalogReader CreateCatalogReader(StriveContext context) => new CatalogReader(context);
 
+    /// <summary>
+    /// Expansion ceilings the importer runs under. Settable so a test can lower them to something
+    /// a small crafted archive can breach, rather than crafting a genuinely enormous one.
+    /// </summary>
+    public StorageOptions Limits { get; set; } = new();
+
     /// <summary>Stages and imports an archive exactly as the import page does.</summary>
     public async Task<ImportResult> ImportAsync(string archivePath)
     {
@@ -71,6 +78,7 @@ public sealed class ImportHarness : IAsyncDisposable
                 context,
                 Blobs,
                 TimeProvider.System,
+                Options.Create(Limits),
                 NullLogger<PackageImporter>.Instance
             );
 

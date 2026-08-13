@@ -2,11 +2,13 @@ using System.IO.Compression;
 using Fip.Strive.Application.Features.Catalog.Models;
 using Fip.Strive.Application.Features.Import.Models;
 using Fip.Strive.Application.Features.Import.Services.Contracts;
+using Fip.Strive.Application.Features.Storage;
 using Fip.Strive.Application.Features.Storage.Models;
 using Fip.Strive.Application.Features.Storage.Services.Contracts;
 using Fip.Strive.Application.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.Application.Features.Import.Services;
 
@@ -14,6 +16,7 @@ public sealed class PackageImporter(
     StriveContext context,
     IBlobStore blobStore,
     TimeProvider timeProvider,
+    IOptions<StorageOptions> storage,
     ILogger<PackageImporter> logger
 ) : IPackageImporter
 {
@@ -61,6 +64,12 @@ public sealed class PackageImporter(
         using var zip = ZipFile.OpenRead(archive.Path);
 
         var entries = zip.Entries.Where(IsFile).ToList();
+
+        // Before a single byte is written: MaxUploadBytes bounded what arrived, not what it
+        // expands to.
+        var guard = new ExpansionGuard(storage.Value);
+        guard.CheckDeclared(entries);
+
         var manifest = new List<ManifestLine>(entries.Count);
         var seenPaths = new HashSet<string>(StringComparer.Ordinal);
         var processed = 0;
@@ -84,7 +93,11 @@ public sealed class PackageImporter(
             }
 
             await using var content = entry.Open();
-            var blob = await blobStore.WriteAsync(content, cancellationToken);
+
+            // The declared length is attacker-supplied, so the pre-flight above is a courtesy
+            // rather than a guarantee. This is the one that holds.
+            var blob = await blobStore.WriteAsync(guard.Bound(entry, content), cancellationToken);
+            guard.Written(blob.SizeBytes);
 
             manifest.Add(new ManifestLine(path, blob.Hash, blob.SizeBytes));
             progress?.Report(new ImportProgress(++processed, entries.Count, path));

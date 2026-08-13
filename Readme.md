@@ -77,7 +77,14 @@ so keep it on the LAN and never expose it. The tracker is the one built to face 
 |---|---|---|---|
 | `ConnectionStrings:strive` | `ConnectionStrings__strive` | — | Postgres connection. Supplied by the AppHost in development; required otherwise. |
 | `Storage:DataDirectory` | `Storage__DataDirectory` | `data` | Root for everything written to disk — `blobs/` and `incoming/` hang off it. Relative paths resolve against the content root, absolute paths are used as-is. |
-| `Storage:MaxUploadBytes` | `Storage__MaxUploadBytes` | 8 GiB | Largest archive the upload page accepts. |
+| `Storage:MaxUploadBytes` | `Storage__MaxUploadBytes` | 8 GiB | Largest archive the upload page accepts. Bounds the *compressed* upload. |
+| `Storage:MaxArchiveEntries` | `Storage__MaxArchiveEntries` | 500,000 | How many files one archive may contain. |
+| `Storage:MaxEntryBytes` | `Storage__MaxEntryBytes` | 4 GiB | Largest single file an archive may unpack to. |
+| `Storage:MaxTotalUncompressedBytes` | `Storage__MaxTotalUncompressedBytes` | 64 GiB | Largest total an archive may unpack to. |
+
+The three expansion limits are what a compression bomb actually meets. `MaxUploadBytes` bounds what
+arrives, which says nothing about what it becomes — a megabyte of zeros compresses to a few hundred
+bytes. Defaults sit well above any real vendor takeout; raise them if a genuine export is refused.
 
 The schema is migrated on startup.
 

@@ -513,8 +513,25 @@ attacker-supplied.
 Suggested shape: configurable `MaxEntryCount`, `MaxEntryBytes` and `MaxTotalUncompressedBytes`,
 defaulted generously enough that real takeouts pass, and a clear error when they do not.
 
-- [ ] Add expansion limits to `PackageImporter` with configurable ceilings
-- [ ] Cover them with a test using a small crafted high-ratio archive
+- [x] Add expansion limits to `PackageImporter` with configurable ceilings
+- [x] Cover them with a test using a small crafted high-ratio archive
+
+**Done.** Three ceilings on `StorageOptions` — `MaxArchiveEntries` (500,000), `MaxEntryBytes` (4 GiB)
+and `MaxTotalUncompressedBytes` (64 GiB) — all set well above any real vendor takeout, since a limit
+that refuses genuine exports gets raised to infinity by the first person it inconveniences.
+
+Enforced twice, which is the part that matters. `ZipArchiveEntry.Length` is cheap and lets an
+obvious bomb be refused before a byte is written, but it is a number supplied by the file being
+validated, so a hostile archive can simply lie about it. Every entry is therefore also read through
+a counting stream that aborts mid-entry once the smaller of the per-entry cap and the archive's
+remaining total is passed. Waiting until an entry finished would mean the damage was already on
+disk.
+
+`ExpansionGuard` holds both halves, deliberately separate from `PackageImporter` so it is testable
+without a database — the importer needs Postgres, which is exactly why its unit-level paths were
+uncovered. Seven tests build real `ZipArchive` instances rather than stubs, because the thing being
+defended against is an archive whose declared sizes disagree with its contents, and only a real one
+can disagree. `Fip.Strive.Application.UnitTests` goes from 20 tests to 27.
 
 ### C2 — Whole manifest is built and saved in one go *(medium)*
 
