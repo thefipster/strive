@@ -1,20 +1,60 @@
 # Repository Review — August 2026
 
-A full read-through of the repository as of `2dbe5ce`, covering both applications (`strive` and
-`tracking`), their build files, CI, container and documentation. Findings are grouped by area and
-carry a severity and a checkbox, so this document doubles as the work list.
-
-**Scope note.** This was a static review — no .NET SDK was available in the review environment, so
-no finding below was confirmed by building or running the test suite. Every finding was derived from
-reading the source. Items marked *(verify)* need a build or a run to confirm before acting on them.
-
-The fixes applied since (A1, A2, F) *were* verified, by CI on the branch rather than locally: the
-`tracking-build` workflow restores, builds, runs both test projects and builds the container image,
-and is green. That covers the tracking side end to end. The strive side is only as covered as its
-existing suite — see F.
+A full read-through of the repository, covering both applications (`strive` and `tracking`), their
+build files, CI, container and documentation. Findings are grouped by area and carry a severity and
+a checkbox, so this document doubles as the work list.
 
 **Severity.** `high` = wrong behaviour or a real exposure; `medium` = will bite as data or usage
 grows, or a real operational hazard; `low` = hygiene, consistency, polish.
+
+---
+
+## Revision history
+
+**First pass — static, as of `2dbe5ce`.** Written without a .NET SDK in the environment, so nothing
+was confirmed by building or running. Every finding came from reading the source, and items needing
+a build were marked *(verify)*. The fixes applied during that pass (A1, A2, F) were verified by CI
+on the branch rather than locally.
+
+**Second pass — build- and run-verified, as of `b11d453`.** Re-done on a machine with SDK 10.0.101,
+which is what the first pass could not do. Everything below has now been checked against a real
+build, a real test run, and — for the tracking app — a real running instance. Findings added in this
+pass are marked **new**; the *(verify)* markers have been resolved and removed.
+
+### What the second pass actually ran
+
+| Check | Result |
+|---|---|
+| `dotnet build src/tracking.slnx` | Succeeds, **0 warnings** |
+| `dotnet test src/tracking.slnx` | **69 passed**, 0 failed (55 application + 14 web) |
+| `dotnet build src/strive.slnx` | Succeeds, **7 warnings** — see A8 and G1 |
+| `dotnet test` on `Fip.Strive.Application.UnitTests` | **20 passed**, 0 failed |
+| `Fip.Strive.IntegrationTests` | **Not run** — needs Docker for Testcontainers, no daemon available locally |
+| `dotnet ef migrations script` (strive) | Generates valid Postgres DDL — the EF stack works despite A8 |
+| Tracking app booted in `Production` over plain HTTP | Starts, serves, authorises — but see A6 and A7 |
+
+Two caveats on the above. The strive integration suite is the one thing this pass still could not
+execute, so `ImportTests` and `ShellTests` remain CI-only coverage; nothing in this pass contradicts
+them, but nothing confirms them either. And the tracking app was exercised with `curl`, not a
+browser — which matters for A6, where the consequence is a browser behaviour and is argued from the
+cookie specification rather than reproduced.
+
+### What the second pass changed about the first
+
+The static pass held up well. Every finding it raised is real, and the three it marked as fixed are
+genuinely fixed. Three corrections and one addition are worth calling out:
+
+- **B3 is confirmed, not merely suspected.** It carried the document's only *(verify)* marker, and
+  that marker is now resolved: none of the paths Dependabot and `strive.yml` point at are tracked at
+  the repository root.
+- **B1's premise needed re-checking and survives.** A `test/` directory and a root `NuGet.Config`
+  *do* exist on disk, which initially looked like the finding was wrong. Both are untracked
+  leftovers from the `c1dd7d7` restructure — `git ls-files` returns nothing for either — so the path
+  filters really are dead. See B6 for the leftovers themselves.
+- **C1, D1, D2, D6, D7 and the E-series were re-read against the source** and all hold exactly as
+  described. E1's two Readme mismatches are still present; `make.ps1` still does not exist.
+- **The most serious findings in this document are now the two the first pass could not see** — G1
+  and A6 — because both are invisible without a compiler and a running process respectively.
 
 ## What is in good shape
 
@@ -125,6 +165,100 @@ repo already carries a note about dodging a vulnerable transitive `SQLitePCLRaw`
 - [ ] Enable `RestorePackagesWithLockFile` and commit the lock files
 - [ ] Add `--locked-mode` to the CI restore steps
 
+### A6 — the tracker's session cookie is `Secure` on an HTTP-only container *(high, **new**)*
+
+The Dockerfile configures `ASPNETCORE_HTTP_PORTS=8080` and nothing else — the image speaks plain
+HTTP only. A container with no `ASPNETCORE_ENVIRONMENT` set runs as `Production`, and in
+`Production` `AccessRegistration` sets `cookie.Cookie.SecurePolicy = CookieSecurePolicy.Always`.
+
+Booting the app exactly as the image does — `Production`, HTTP on one port — and posting a correct
+password returns:
+
+```
+HTTP/1.1 302 Found
+Location: /
+Set-Cookie: strive.tracking=CfDJ8G…; expires=…; path=/; secure; samesite=lax; httponly
+```
+
+The cookie is flagged `secure` on a response delivered over plain HTTP. Per RFC 6265bis §5.5 a user
+agent ignores a `Set-Cookie` carrying `Secure` when the request was not made over a secure channel,
+and every current browser implements this. So somebody who runs `docker run -p 8080:8080` and
+browses to `http://host:8080` signs in successfully, has the cookie discarded by their browser, gets
+redirected to `/`, is unauthenticated there, and lands back on the login page — with no error
+message, because nothing failed. An unbroken login loop.
+
+Two honest limits on this finding. The `secure` attribute over HTTP is directly observed, quoted
+above. The loop itself is *inferred* from the cookie specification, not reproduced: `curl` was used
+rather than a browser, and `curl` stores and replays the cookie regardless, so the request that
+followed succeeded. Confirming this needs one browser against a plain-HTTP container.
+
+Behind a TLS-terminating reverse proxy the browser leg is HTTPS, so the cookie survives and the loop
+does not appear — which is precisely why this can sit undiscovered until somebody runs the container
+directly. See A7, which is the same root cause seen from the other side.
+
+The fix is to make the app aware of the scheme it is really being reached on, rather than to weaken
+the cookie: A7's forwarded-headers handling makes `Request.IsHttps` true behind a proxy, and a
+direct HTTP deployment should then be refused or warned about loudly at startup rather than
+silently producing a login that cannot complete.
+
+- [ ] Decide and document whether the container is ever meant to be reached over plain HTTP
+- [ ] Warn or refuse at startup when `SecurePolicy.Always` is combined with no HTTPS
+- [ ] Confirm the loop in a browser against a plain-HTTP container
+
+### A7 — nothing handles forwarded headers *(medium, **new**)*
+
+There is no `UseForwardedHeaders`, no `ForwardedHeadersOptions`, and no
+`ASPNETCORE_FORWARDEDHEADERS_ENABLED` anywhere in the repository or the Dockerfile. The app is
+documented as one that "is meant to sit on the open internet", which in practice means behind a
+reverse proxy terminating TLS. Without forwarded-headers handling the app sees every request as
+HTTP, from the proxy's address:
+
+- `Request.IsHttps` is false, which is what makes A6 reachable and what `UseHttpsRedirection` keys
+  off. Running the app for real logs `Failed to determine the https port for redirect.` — observed
+  in the startup log — so the middleware is a no-op rather than a redirect loop. Harmless today,
+  but it is not doing the job its presence implies.
+- `RemoteIpAddress` is the proxy's, so the login rate limiter partitions every caller on the
+  internet into a single bucket. The comment in `AccessRegistration` already anticipates this and
+  calls it "less precise"; forwarded headers are what would make it precise again.
+- The same address is what the rejection warnings in `ApiKeyFilter` and `AccessEndpoints` log, so
+  the audit trail for a brute-force attempt records the proxy every time.
+
+`UseForwardedHeaders` must run before authentication, and should name `KnownProxies` or
+`KnownNetworks` rather than trusting any hop — an unrestricted configuration lets a caller spoof
+both their address and the scheme.
+
+- [ ] Add forwarded-headers handling ahead of `UseAccess`, restricted to the known proxy
+- [ ] Re-check the rate limiter's partitioning once the real address is visible
+
+### A8 — the package bump reopened the conflict its own comment warns against *(medium, **new**)*
+
+`Directory.Packages.props:18` says: *"Pinned to what the Npgsql provider builds against; a higher EF
+Core trips MSB3277."* Commit `b11d453` then raised EF Core from `10.0.4` to `10.0.11` while leaving
+`Npgsql.EntityFrameworkCore.PostgreSQL` at `10.0.3` — and left the comment in place. The warning it
+describes is now firing: `dotnet build src/strive.slnx` emits **7 warnings**, all MSB3277 assembly
+conflicts on `Microsoft.EntityFrameworkCore.Relational`, across `Fip.Strive.Application`,
+`Fip.Strive.Web`, `Fip.Strive.Application.UnitTests` and `Fip.Strive.IntegrationTests`.
+
+MSBuild resolves the conflict *downwards* — `"10.0.4 was chosen because it was primary"` — and the
+copy that lands in `Fip.Strive.Web/bin` is file version `10.0.426.12010`, i.e. 10.0.4, while parts
+of the graph were compiled expecting 10.0.11. That is the classic setup for a
+`MissingMethodException` at runtime rather than at build time.
+
+In practice it is currently benign: `dotnet ef migrations script` generates the full, correct
+Postgres DDL against the resolved stack, so nothing in this application touches an API that moved
+between those two patch levels. The cost today is a build that is no longer clean, a comment that
+now says the opposite of what the file does, and a latent hazard the next bump could turn real.
+
+The tracking solution is unaffected and still builds with zero warnings — it uses the SQLite
+provider, which is versioned in step with EF Core.
+
+Either put EF Core back to what Npgsql builds against, or move Npgsql up to a build that targets
+10.0.11 — and update the comment either way, because it is currently misleading.
+
+- [ ] Realign EF Core and the Npgsql provider so `strive.slnx` builds clean again
+- [ ] Correct or remove the pin comment in `Directory.Packages.props`
+- [ ] Consider `TreatWarningsAsErrors` for this class of drift (see B5)
+
 ---
 
 ## B. CI & repository automation
@@ -154,7 +288,11 @@ Either mirror the tracker's trigger, or write down why the two apps are treated 
 
 - [ ] Make `strive.yml` build on branch pushes, or document the asymmetry
 
-### B3 — Dependabot almost certainly updates nothing *(medium, verify)*
+### B3 — Dependabot almost certainly updates nothing *(medium)*
+
+*Second pass: confirmed. `git ls-files` finds no `strive.slnx`, `Directory.Build.props`,
+`Directory.Packages.props`, `global.json` or `NuGet.Config` tracked at the repository root — the
+untracked copies on disk are covered by B6. There is nothing at `/` for Dependabot to discover.*
 
 `.github/dependabot.yml` points the NuGet ecosystem at `directory: "/"`. There is no project,
 solution or manifest at the repository root — everything is under `src/`, and the solutions are
@@ -195,6 +333,25 @@ that is not switched on.
 - [ ] Add an `.editorconfig` capturing the current style
 - [ ] Add a `dotnet format --verify-no-changes` step to CI
 - [ ] Enable `EnableNETAnalyzers` / set an `AnalysisLevel`, then revisit the stale suppression
+
+*Second pass: all three confirmed. No `.editorconfig` is tracked anywhere, and
+`Directory.Build.props` sets only `TargetFramework`, `Nullable`, `ImplicitUsings`, `LangVersion` and
+two metadata properties — no analyzers, no `TreatWarningsAsErrors`. A8 and G1 are both cases a
+warnings-as-errors gate would have stopped at the commit that introduced them.*
+
+### B6 — untracked build leftovers still sit where the old layout was *(low, **new**)*
+
+`test/` and a root `NuGet.Config` exist on disk but are tracked by neither git nor any solution.
+`test/` holds ten files, all of them `obj/` restore artefacts — `project.assets.json`,
+`*.nuget.g.props` and friends — left behind by `c1dd7d7`, the commit that moved the test projects
+under `src/`.
+
+Nothing builds from them and `git status` is clean, so this is cosmetic. It is worth clearing
+anyway, for one specific reason: reviewing B1 and B3 means asking "does this path exist?", and the
+honest answer on a working copy is "yes, but not really". That cost this pass a detour, and it will
+cost the next one the same detour. `git clean -ndX` will show them.
+
+- [ ] Delete the stale `test/` and root `NuGet.Config` leftovers from working copies
 
 ---
 
@@ -385,6 +542,40 @@ through. Minor, and only noticeable on a session expiry mid-navigation.
 
 - [ ] Round-trip `ReturnUrl` through the login form and honour it with `LocalRedirect`
 
+*Second pass: confirmed against a running instance. `GET /trackers/{id}` while signed out redirects
+to `/login.html?ReturnUrl=%2Ftrackers%2F…`, and posting the correct password answers
+`Location: /` — the return URL is produced correctly and then dropped.*
+
+### D8 — the pull API filters and sorts on an unindexed column *(medium, **new**)*
+
+`ExportReader.GetEventsAsync` filters on `RecordedUtc >= floor`, orders by `RecordedUtc` then `Id`,
+and counts the whole filtered set. `tracker_events` carries exactly one index. From the database the
+app actually created:
+
+```
+CREATE INDEX "IX_tracker_events_TrackerId_OccurredUtc" ON "tracker_events" ("TrackerId", "OccurredUtc")
+```
+
+Nothing on `RecordedUtc`. So every call to `/api/v1/events` — the endpoint whose whole purpose is
+"the homelab pulls with this, repeatedly, forever" — is a full scan of `tracker_events` plus a sort,
+and the `CountAsync` is a second full scan. The index that exists answers the *page* queries
+(`TrackerId`, newest first by `OccurredUtc`), which is what its comment claims and is correct for
+the UI; it cannot serve the export.
+
+This is the same shape as D2 but on the other table, and it deserves its own line because
+`tracker_events` is named in D6 as "the table that grows without bound" and because a puller on a
+timer is the one caller guaranteed to hit it forever. An index on `RecordedUtc` — or on
+`(RecordedUtc, Id)`, matching the sort exactly — is a one-line configuration change.
+
+Worth noting alongside: `since` is an inclusive lower bound and `nextSince` is the last row's
+`RecordedUtc`, so a puller that follows `nextSince` re-receives the boundary event every time. That
+is deliberate and documented, and the timestamps are stored at 100-nanosecond resolution so
+collisions are not a practical concern — but a consumer still has to deduplicate, and that is not
+said anywhere a consumer would read it.
+
+- [ ] Index `tracker_events` on `RecordedUtc` to match the export's filter and sort
+- [ ] Document that `since` is inclusive, so consumers deduplicate the boundary event
+
 ---
 
 ## E. Documentation
@@ -462,32 +653,124 @@ reports on Postgres rather than on nothing.
 - [ ] Assert the `postgres` check in `ShellTests`, mirroring the tracker's health test
 - [ ] Remove the stale `InternalsVisibleTo`, or create the project it names
 
+### F1 — the suite runs in Development, so production-only behaviour is untested *(medium, **new**)*
+
+`Fip.Strive.Tracking.Web.UnitTests` boots the real host, which is exactly right, and
+`SignInTests.The_right_password_sets_the_session_cookie` asserts that signing in issues a
+`strive.tracking` cookie. It asserts nothing about the cookie's *attributes*, and
+`WebApplicationFactory` runs the host in `Development` — where `AccessRegistration` deliberately
+chooses `CookieSecurePolicy.SameAsRequest` instead of the `Always` that production gets.
+
+The consequence is that A6, a high-severity defect in the shipped configuration, sits underneath a
+green test that is specifically about signing in. The test is not wrong; it is testing the one
+environment where the problem does not exist.
+
+The same blind spot covers the rest of the environment-conditional pipeline —
+`UseExceptionHandler`, `UseHsts` and `UseHttpsRedirection` are all `if (!IsDevelopment())` and none
+of them is exercised. A factory variant pinned to `Production` would cover all of it at once.
+
+- [ ] Add a `Production` variant of `TrackingAppFactory`
+- [ ] Assert the cookie's `Secure`, `HttpOnly` and `SameSite` attributes in both environments
+
+### F2 — the strive integration suite cannot run without Docker *(low, **new**)*
+
+`Fip.Strive.IntegrationTests` starts Postgres through Testcontainers, so `dotnet test src/strive.slnx`
+fails outright on a machine with no Docker daemon rather than skipping. CI has Docker and the
+workflow comment says so, so this is a local-development note, not a CI defect — but it means the
+strive side has no runnable-anywhere suite at all, and it is why this pass could not execute
+`ImportTests` or `ShellTests`.
+
+`Fip.Strive.Application.UnitTests` runs fine standalone (20 tests, no infrastructure). The tracking
+app's split is the better model: `tracking.slnx` runs end to end with nothing installed.
+
+- [ ] Document the Docker prerequisite next to the test command (folds into E2)
+- [ ] Consider skipping rather than failing the integration suite when no daemon is reachable
+
+---
+
+## G. Frontend
+
+### G1 — the MudBlazor 9 upgrade silently deletes the import page's drop zone *(high, **new**)*
+
+Commit `b11d453` raised MudBlazor from `8.15.0` to `9.8.0` — a **major** version — as one line in a
+commit titled "Bumped nuget packages". `ImportPage.razor:34` still wraps its drop zone in
+`<ActivatorContent>`, and that parameter no longer exists on `MudFileUpload<T>` in 9.x. Building
+`strive.slnx` says so twice:
+
+```
+ImportPage.razor(34,5): warning RZ10012: Found markup element with unexpected name 'ActivatorContent'.
+ImportPage.razor(1,1):  warning MUD0002: Illegal Attribute 'ChildContent' on 'MudFileUpload'
+```
+
+Razor does not recognise the element, so it folds the markup into `ChildContent`, which
+`MudFileUpload` does not accept either. **Both are warnings. The build succeeds.**
+
+Rendering the exact markup against both versions shows what that costs:
+
+| MudBlazor | Renders the drop zone? | What the user gets |
+|---|---|---|
+| `8.15.0` | yes — `mud-paper` with the heading | The dashed drop area, the cloud icon, the size hint |
+| `9.8.0` | **no** — neither the paper nor the text survives | MudBlazor's default "Open file" button |
+
+Reflecting over `MudFileUpload<T>` in 9.8.0 confirms the cause: its only `RenderFragment`
+parameters are `CustomContent` and `SelectedTemplate`. `ActivatorContent` is gone.
+
+Nothing throws. The hidden `<input type="file">` is still emitted, so uploading still *works* via
+the substituted button — which is why this could ship unnoticed. What is lost is the entire designed
+affordance: the drop target, the "Drop takeout archives here" heading, and the
+`up to @ByteSize.Format(MaxUploadBytes) each` hint, which is the only place in the UI that tells a
+user the size limit before they hit it.
+
+The fix is a rename to `<CustomContent>`, but the upgrade should not be assumed to have cost only
+this: a major version was crossed in a bulk bump, and this is the instance loud enough to warn.
+The tracking app's Razor compiles clean, so it is unaffected.
+
+- [ ] Rename `ActivatorContent` to `CustomContent` in `ImportPage.razor` and check the result in a browser
+- [ ] Review the rest of the MudBlazor 8 → 9 breaking changes against both apps' components
+- [ ] Add a warnings-as-errors gate so the next silent Razor break fails the build (see B5)
+
 ---
 
 ## Suggested order
 
 Grouped by what they cost against what they buy, rather than strictly by severity.
 
+**Zeroth — regressions from `b11d453`, none of them visible without a build**
+
+The most recent commit bumped packages in bulk, crossing one major version, and introduced all
+three of these. They are first because they are new, because they are cheap, and because two of
+them are currently shipping.
+
+1. G1 — restore the import drop zone (`ActivatorContent` → `CustomContent`), then review the rest
+   of the MudBlazor 8 → 9 breaking changes
+2. A8 — realign EF Core with the Npgsql provider and fix the now-false pin comment
+3. B5 — a warnings-as-errors gate, promoted from hygiene: it is what would have caught both of the
+   above at the commit that introduced them
+
 **First — small, and each closes a real hole**
-1. ~~A1 — remove the `E:\` path~~ — **done**
-2. E1 — fix the Readme's remaining mismatches
-3. B1, B2 — correct `strive.yml`'s filters and triggers
-4. ~~F — auth/API integration tests for the tracker~~ — **done**
+4. ~~A1 — remove the `E:\` path~~ — **done**
+5. A6 — the `Secure` cookie on an HTTP-only container, and A7's forwarded headers with it; confirm
+   in a browser first, since the consequence is argued rather than reproduced
+6. E1 — fix the Readme's remaining mismatches
+7. B1, B2 — correct `strive.yml`'s filters and triggers
+8. ~~F — auth/API integration tests for the tracker~~ — **done**
 
 **Second — bounded work, prevents future damage**
-5. C1 — archive expansion limits
-6. ~~A2 — real health checks~~ — **done**, and covered by F
-7. B3, B4 — Dependabot targeting, vulnerable-package scan, CodeQL
-8. D1 — schema version stamp
+9. C1 — archive expansion limits
+10. ~~A2 — real health checks~~ — **done**, and covered by F
+11. F1 — a `Production` test factory, which is what would have caught A6
+12. B3, B4 — Dependabot targeting, vulnerable-package scan, CodeQL
+13. D1 — schema version stamp
 
 **Third — do before the data gets big**
-9. C2 — batch the manifest insert
-10. D2 — stop recomputing statistics on every write
-11. C6 — search fixes
+14. D8 — index `tracker_events` on `RecordedUtc`; a one-line change on the endpoint polled forever
+15. C2 — batch the manifest insert
+16. D2 — stop recomputing statistics on every write
+17. C6 — search fixes
 
 **Ongoing hygiene**
-12. B5 — `.editorconfig`, format check, analyzers
-13. A4, A5 — NuGet source hygiene and lock files
-14. D3–D7, C3, C5 — the small consistency and robustness items
-15. C4 — decide the platform app's authentication posture
-16. A3 — Dockerfile for the platform app
+18. A4, A5 — NuGet source hygiene and lock files
+19. D3–D7, C3, C5 — the small consistency and robustness items
+20. B6, F2 — clear the stale leftovers, document the Docker prerequisite
+21. C4 — decide the platform app's authentication posture
+22. A3 — Dockerfile for the platform app
