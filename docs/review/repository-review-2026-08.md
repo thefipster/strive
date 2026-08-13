@@ -664,7 +664,21 @@ Keep the no-migrations decision; make the failure legible. A `user_version` prag
 creation and checked at startup turns a confusing runtime error into a startup message that names
 the problem and the fix.
 
-- [ ] Stamp and verify a schema version at startup, failing fast with an actionable message
+- [x] Stamp and verify a schema version at startup, failing fast with an actionable message
+
+**Done.** `PRAGMA user_version` — a four-byte slot in the SQLite header the database itself never
+uses, so there is no table to create, nothing to migrate, and it survives anything that copies the
+file. Stamped when `EnsureCreated` actually creates, checked on every start after that.
+
+The no-migrations decision is untouched; the remedy is still to move the old file aside. What
+changes is that the app now says so, naming the version it found and the one it wanted, instead of
+starting cheerfully and failing later with `SQLite Error 1: no such column`.
+
+One case needed care. Every file written before this existed reports `user_version = 0`, and those
+files match the current model — the check arrived alongside version 1, not after a change. They are
+adopted and stamped rather than rejected, because refusing to start on a database that is fine would
+be a worse bug than the one being fixed. Four tests cover creation, restart, adoption and the stale
+file.
 
 ### D2 — Number statistics load every value into memory *(medium)*
 
