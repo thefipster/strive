@@ -191,25 +191,39 @@ Central package management pins versions, which is good, but transitive dependen
 a restore reproducible and makes transitive changes visible in review — which matters given the
 repo already carries a note about dodging a vulnerable transitive `SQLitePCLRaw`.
 
-- [x] Enable `RestorePackagesWithLockFile` and commit the lock files
-- [x] Add locked mode to the CI restore steps
+- [ ] ~~Enable `RestorePackagesWithLockFile` and commit the lock files~~ — tried, reverted
+- [ ] ~~Add locked mode to the CI restore steps~~ — tried, reverted
 
-**Done.** Nine lock files, one per project, and both workflows restore in locked mode so a
-transitive change fails CI instead of silently differing between machines. The finding's rationale
-was borne out twice on this very branch: B7 was a vulnerable package arriving transitively through
-Testcontainers, and A8 was an EF Core package resolving at a provider's floor. Both would have shown
-up as a lock diff.
+**Tried, and reverted after CI proved it cannot work here.** Recorded rather than quietly dropped,
+because the recommendation is a good one in general and the next person will otherwise reach for it
+again.
 
-Verified that the gate actually gates, which took two attempts. Editing a `resolved` version in the
-lock file changed nothing — locked mode does not validate that field — so the first check passed and
-proved nothing. Removing a package reference produces `NU1004` and fails the restore, which is the
-case that matters.
+Lock files were added and both workflows switched to locked mode. It passed locally and failed on
+the first CI run, on both workflows, for two independent reasons:
 
-One trap on the way in, worth recording because the error blamed the wrong thing entirely. Writing
-`--locked-mode` inside the XML comment in `Directory.Build.props` made the file unparseable — XML
-comments cannot contain a double hyphen — so `TargetFramework` never got set and *every* project
-failed restore with "The TargetFramework value '' was not recognized". Nothing in that message
-points at a comment.
+```
+NU1004: The package reference Microsoft.AspNetCore.App.Internal.Assets version has changed
+        from [10.0.1, ) to [10.0.11, )
+NU1004: A new package reference was found Aspire.Dashboard.Sdk.linux-x64
+```
+
+The first is an SDK-patch problem. `Microsoft.AspNetCore.App.Internal.Assets` is an implicit
+reference added by the Web SDK, and its version tracks the bundled ASP.NET Core runtime — 10.0.1
+under the local SDK 10.0.101, 10.0.11 under the 10.0.400 that `dotnet-version: 10.0.x` installs on
+the runner. Solvable, by pinning an exact SDK in `global.json` and in both workflows, at the cost of
+a maintenance chore on every patch and of contradicting the deliberately loose
+`rollForward: latestMajor` already there.
+
+The second is not solvable. `Aspire.Dashboard.Sdk.win-x64` is what a Windows machine resolves and
+`Aspire.Dashboard.Sdk.linux-x64` is what the Ubuntu runner needs, and one committed lock file cannot
+contain both. A lock generated on Windows is wrong on Linux by construction, so every CI run would
+demand a regeneration that then breaks the developer's machine.
+
+The value on offer was making transitive changes visible in review. The cost was a gate that is red
+on every machine that is not the one which last ran restore. `Directory.Packages.props` already pins
+every direct version centrally, and B4's vulnerable-package check catches the case that actually
+motivated this — a bad transitive arriving unnoticed, which is exactly how B7 was found. Worth
+revisiting if the AppHost ever leaves the solution, since Aspire is the blocker.
 
 ### A6 — the tracker's session cookie is `Secure` on an HTTP-only container *(high, **new**)*
 

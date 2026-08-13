@@ -10,14 +10,9 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # The manifests first and on their own, so editing a razor file does not invalidate the
-# restore layer and re-download every package.
-#
-# The lock files are deliberately not copied and locked mode is deliberately not used here. The
-# SDK adds implicit references — Microsoft.AspNetCore.App.Internal.Assets among them — whose exact
-# set follows the SDK patch, and this image resolves whatever 10.x it ships rather than the patch
-# the lock was written against. Locked mode then fails with NU1004 on a graph that is not actually
-# wrong. Enforcing the lock is CI's job, where setup-dotnet fixes the SDK; versions here are still
-# pinned centrally by Directory.Packages.props.
+# restore layer and re-download every package. Versions are pinned centrally by
+# Directory.Packages.props; there are no lock files, for the reasons recorded under A5 in
+# docs/review/repository-review-2026-08.md.
 COPY src/global.json src/NuGet.config src/Directory.Build.props src/Directory.Packages.props ./
 COPY src/Fip.Strive.Application/Fip.Strive.Application.csproj Fip.Strive.Application/
 COPY src/Fip.Strive.Web/Fip.Strive.Web.csproj Fip.Strive.Web/

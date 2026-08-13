@@ -21,18 +21,4 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
-  <!--
-    Central package management pins what this repository asks for; it says nothing about what those
-    packages in turn drag in. The lock files pin the whole resolved graph, so a restore is
-    reproducible and a transitive change shows up as a reviewable diff rather than as a silent
-    difference between two machines. That matters here specifically: two of the findings on this
-    branch were transitive — a vulnerable SSH.NET arriving through Testcontainers, and an EF Core
-    package resolving at a provider's floor.
-
-    CI restores in locked mode, which fails rather than quietly updating the lock. Locally the lock
-    is refreshed by an ordinary restore, so adding a package stages a lock change alongside it.
-  -->
-  <PropertyGroup>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-  </PropertyGroup>
 </Project>
