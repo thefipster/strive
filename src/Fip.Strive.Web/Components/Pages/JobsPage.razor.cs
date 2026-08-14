@@ -1,4 +1,5 @@
 using Fip.Strive.Application.Features.Jobs.Models;
+using Fip.Strive.Application.Features.Jobs.Services;
 using Fip.Strive.Application.Features.Jobs.Services.Contracts;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -28,10 +29,12 @@ public partial class JobsPage : IDisposable
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
 
+    private readonly RefreshWindow _window = new(RefreshInterval);
+    private readonly CancellationTokenSource _closing = new();
+
     private IDisposable? _subscription;
     private IReadOnlyList<JobRow>? _jobs;
     private JobCounts _counts = new(0, 0, 0, 0, 0);
-    private DateTimeOffset _lastRefresh = DateTimeOffset.MinValue;
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,13 +46,35 @@ public partial class JobsPage : IDisposable
 
     private void RequestRefresh()
     {
-        var now = Clock.GetUtcNow();
+        if (_window.Request(Clock.GetUtcNow()) is { } delay)
+            _ = RefreshAfterAsync(delay);
+    }
 
-        if (now - _lastRefresh < RefreshInterval)
-            return;
+    /// <summary>
+    /// Waits out the coalescing window, then reads. Reading on the way in rather than on the way
+    /// out would drop the last notification of a burst — the one that says the job finished.
+    /// </summary>
+    private async Task RefreshAfterAsync(TimeSpan delay)
+    {
+        try
+        {
+            if (delay > TimeSpan.Zero)
+                await Task.Delay(delay, Clock, _closing.Token);
 
-        _lastRefresh = now;
-        _ = InvokeAsync(RefreshAsync);
+            await InvokeAsync(RefreshAsync);
+        }
+        catch (OperationCanceledException)
+        {
+            // The page went away while we were waiting.
+        }
+        catch (ObjectDisposedException)
+        {
+            // Likewise, and the renderer noticed first.
+        }
+        finally
+        {
+            _window.Completed(Clock.GetUtcNow());
+        }
     }
 
     private async Task RefreshAsync()
@@ -87,5 +112,11 @@ public partial class JobsPage : IDisposable
     private static string Shorten(string targetKey) =>
         targetKey.Length <= 16 ? targetKey : targetKey[..16];
 
-    public void Dispose() => _subscription?.Dispose();
+    public void Dispose()
+    {
+        // Unsubscribed first, so nothing schedules a refresh against a cancelled token.
+        _subscription?.Dispose();
+        _closing.Cancel();
+        _closing.Dispose();
+    }
 }

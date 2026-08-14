@@ -47,8 +47,11 @@ else
                 <MudTd DataLabel="Kind">
                     <MudStack Spacing="0">
                         <MudText Typo="Typo.body2">@context.Kind</MudText>
+                        @* Interpolated rather than written as "v@context.ComponentVersion":
+                           Razor reads an @ preceded by a letter as part of an email address and
+                           emits it verbatim. *@
                         <MudText Typo="Typo.caption" Class="mud-text-secondary">
-                            @context.ComponentId v@context.ComponentVersion
+                            @($"{context.ComponentId} v{context.ComponentVersion}")
                         </MudText>
                     </MudStack>
                 </MudTd>
