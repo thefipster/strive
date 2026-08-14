@@ -29,6 +29,7 @@ public sealed class JobHarness : IAsyncDisposable
 
         services.AddSingleton<JobSignal>();
         services.AddScoped<IJobQueue, JobQueue>();
+        services.AddScoped<IJobStore, JobStore>();
 
         // Handlers and anything they need are registered by the caller, exactly as a feature
         // registers its own handler in Registration.
