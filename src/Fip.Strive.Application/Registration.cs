@@ -84,6 +84,10 @@ public static class Registration
     {
         services.AddScoped<ICatalogReader, CatalogReader>();
         services.AddScoped<IPackageImporter, PackageImporter>();
+
+        // Scoped, because it depends on the scoped importer. The registry keeps only its identity;
+        // the runner resolves the instance it executes from the job's own scope.
+        services.AddScoped<IJobHandler, UnpackJobHandler>();
     }
 
     private static void AddJobs(this IServiceCollection services, IConfiguration configuration)

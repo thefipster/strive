@@ -1,7 +1,7 @@
 using Fip.Strive.Application.Features.Catalog.Models;
 using Fip.Strive.Application.Features.Catalog.Services.Contracts;
-using Fip.Strive.Application.Features.Import.Models;
-using Fip.Strive.Application.Features.Import.Services.Contracts;
+using Fip.Strive.Application.Features.Import.Services;
+using Fip.Strive.Application.Features.Jobs.Services.Contracts;
 using Fip.Strive.Application.Features.Storage;
 using Fip.Strive.Application.Features.Storage.Models;
 using Fip.Strive.Application.Features.Storage.Services.Contracts;
@@ -16,7 +16,7 @@ namespace Fip.Strive.Web.Components.Pages;
 public partial class ImportPage : IDisposable
 {
     /// <summary>
-    /// Progress arrives per file and per byte; re-rendering that often would swamp the circuit.
+    /// Progress arrives per byte; re-rendering that often would swamp the circuit.
     /// </summary>
     private static readonly TimeSpan RenderInterval = TimeSpan.FromMilliseconds(200);
 
@@ -27,7 +27,7 @@ public partial class ImportPage : IDisposable
     private ICatalogReader Catalog { get; set; } = default!;
 
     [Inject]
-    private IServiceScopeFactory ScopeFactory { get; set; } = default!;
+    private IJobQueue Jobs { get; set; } = default!;
 
     [Inject]
     private IOptions<StorageOptions> StorageOptions { get; set; } = default!;
@@ -71,19 +71,22 @@ public partial class ImportPage : IDisposable
         }
     }
 
+    /// <summary>
+    /// Uploads and queues, and that is all. Unpacking belongs to the job engine now, so nothing
+    /// here waits on it and closing the tab cannot abandon it.
+    /// </summary>
     private async Task ImportAsync(IBrowserFile file, CancellationToken cancellationToken)
     {
         var job = new UploadJob(file.Name, file.Size);
         _jobs.Insert(0, job);
         await InvokeAsync(StateHasChanged);
 
-        StagedArchive? staged = null;
-
         try
         {
-            staged = await StageAsync(file, job, cancellationToken);
-            var result = await UnpackAsync(staged, job, cancellationToken);
-            Announce(job, result);
+            var staged = await StageAsync(file, job, cancellationToken);
+            await QueueAsync(staged, job);
+
+            Snackbar.Add($"{file.Name} queued for unpacking.", Severity.Success);
         }
         catch (OperationCanceledException)
         {
@@ -91,18 +94,13 @@ public partial class ImportPage : IDisposable
         }
         catch (Exception exception)
         {
-            Logger.LogError(exception, "Import of {FileName} failed", file.Name);
+            Logger.LogError(exception, "Upload of {FileName} failed", file.Name);
             job.Phase = UploadPhase.Failed;
             job.Error = exception.Message;
             Snackbar.Add($"{file.Name} failed: {exception.Message}", Severity.Error);
         }
         finally
         {
-            // The archive's contents are in the blob store now; keeping the ZIP too would just
-            // double the disk bill.
-            if (staged is not null)
-                Staging.Discard(staged);
-
             await InvokeAsync(StateHasChanged);
         }
     }
@@ -123,48 +121,15 @@ public partial class ImportPage : IDisposable
         return await Staging.StageAsync(file.Name, stream, progress, cancellationToken);
     }
 
-    private async Task<ImportResult> UnpackAsync(
-        StagedArchive staged,
-        UploadJob job,
-        CancellationToken cancellationToken
-    )
+    /// <summary>
+    /// Keyed by the archive hash, so re-uploading the same bytes reuses the work unit rather than
+    /// queueing a second one. The staged file is the handler's to delete from here on.
+    /// </summary>
+    private async Task QueueAsync(StagedArchive staged, UploadJob job)
     {
-        job.Phase = UploadPhase.Unpacking;
-        await InvokeAsync(StateHasChanged);
+        await Jobs.EnqueueAsync(UnpackJobHandler.JobKind, staged.Hash, staged);
 
-        var progress = new Progress<ImportProgress>(update =>
-        {
-            job.FilesProcessed = update.FilesProcessed;
-            job.TotalFiles = update.TotalFiles;
-            RequestRender();
-        });
-
-        // A scope per import keeps the DbContext short-lived instead of living as long as the
-        // circuit. Step 2 moves this onto the job engine entirely.
-        await using var scope = ScopeFactory.CreateAsyncScope();
-        var importer = scope.ServiceProvider.GetRequiredService<IPackageImporter>();
-
-        return await importer.ImportAsync(staged, progress, cancellationToken);
-    }
-
-    private void Announce(UploadJob job, ImportResult result)
-    {
-        job.Result = result;
-        job.Phase =
-            result.Outcome == ImportOutcome.DuplicateArchive
-                ? UploadPhase.Duplicate
-                : UploadPhase.Imported;
-
-        if (result.Outcome == ImportOutcome.DuplicateArchive)
-        {
-            Snackbar.Add($"{job.FileName} was already imported — nothing to do.", Severity.Info);
-            return;
-        }
-
-        Snackbar.Add(
-            $"{job.FileName}: {result.FileCount} files, {result.NewEntryCount} new.",
-            Severity.Success
-        );
+        job.Phase = UploadPhase.Queued;
     }
 
     private void Cancel() => _cancellation?.Cancel();
@@ -189,8 +154,7 @@ public partial class ImportPage : IDisposable
     private static string IconFor(UploadJob job) =>
         job.Phase switch
         {
-            UploadPhase.Imported => Icons.Material.Outlined.CheckCircle,
-            UploadPhase.Duplicate => Icons.Material.Outlined.ContentCopy,
+            UploadPhase.Queued => Icons.Material.Outlined.Schedule,
             UploadPhase.Failed => Icons.Material.Outlined.ErrorOutline,
             UploadPhase.Cancelled => Icons.Material.Outlined.Cancel,
             _ => Icons.Material.Outlined.HourglassTop,
@@ -199,8 +163,7 @@ public partial class ImportPage : IDisposable
     private static Color ColorFor(UploadJob job) =>
         job.Phase switch
         {
-            UploadPhase.Imported => Color.Success,
-            UploadPhase.Duplicate => Color.Info,
+            UploadPhase.Queued => Color.Info,
             UploadPhase.Failed => Color.Error,
             UploadPhase.Cancelled => Color.Warning,
             _ => Color.Default,
@@ -211,9 +174,7 @@ public partial class ImportPage : IDisposable
     private enum UploadPhase
     {
         Uploading,
-        Unpacking,
-        Imported,
-        Duplicate,
+        Queued,
         Cancelled,
         Failed,
     }
@@ -228,21 +189,14 @@ public partial class ImportPage : IDisposable
 
         public long BytesUploaded { get; set; }
 
-        public int FilesProcessed { get; set; }
-
-        public int TotalFiles { get; set; }
-
-        public ImportResult? Result { get; set; }
-
         public string? Error { get; set; }
 
-        public bool ShowsProgress => Phase is UploadPhase.Uploading or UploadPhase.Unpacking;
+        public bool ShowsProgress => Phase is UploadPhase.Uploading;
 
         public double Percent =>
             Phase switch
             {
                 UploadPhase.Uploading => SizeBytes == 0 ? 0 : 100d * BytesUploaded / SizeBytes,
-                UploadPhase.Unpacking => TotalFiles == 0 ? 0 : 100d * FilesProcessed / TotalFiles,
                 _ => 100,
             };
 
@@ -250,12 +204,7 @@ public partial class ImportPage : IDisposable
             Phase switch
             {
                 UploadPhase.Uploading => $"Uploading — {ByteSize.Format(BytesUploaded)}",
-                UploadPhase.Unpacking => $"Unpacking — {FilesProcessed} of {TotalFiles} files",
-                UploadPhase.Imported => Result is null
-                    ? "Imported"
-                    : $"{Result.FileCount} files, {Result.NewEntryCount} new, "
-                        + $"{Result.FileCount - Result.NewEntryCount} already known",
-                UploadPhase.Duplicate => "Already imported — no work done",
+                UploadPhase.Queued => "Queued for unpacking",
                 UploadPhase.Cancelled => "Cancelled",
                 UploadPhase.Failed => Error ?? "Failed",
                 _ => string.Empty,
