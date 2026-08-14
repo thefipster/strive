@@ -191,8 +191,13 @@ A jobs page at `/jobs`, added to the nav menu.
 
 Live updates come from a singleton `IJobNotifier`. The runner signals it on every state transition
 and on each throttled progress tick. The notification carries only the fact that something changed;
-the page re-reads through `IJobReader` on a ~200 ms throttle, reusing the render-throttle pattern
-`ImportPage` already has.
+the page re-reads through `IJobReader`, coalescing bursts into one read per ~200 ms.
+
+**Coalescing, not throttling.** A leading-edge throttle — let the first notification of a burst
+through, drop the rest — is the obvious implementation and is wrong: the notification it drops is
+the terminal one, so a finished job stays displayed as running until something unrelated happens to
+notify again. The window therefore reads on the way *out* of the interval rather than on the way in,
+so whatever the burst settled on is what gets rendered.
 
 Pushing job state through the notification itself would create two representations of the same row
 that can disagree after a dropped or reordered message. A re-read cannot.

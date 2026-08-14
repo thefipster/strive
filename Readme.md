@@ -81,10 +81,18 @@ so keep it on the LAN and never expose it. The tracker is the one built to face 
 | `Storage:MaxArchiveEntries` | `Storage__MaxArchiveEntries` | 500,000 | How many files one archive may contain. |
 | `Storage:MaxEntryBytes` | `Storage__MaxEntryBytes` | 4 GiB | Largest single file an archive may unpack to. |
 | `Storage:MaxTotalUncompressedBytes` | `Storage__MaxTotalUncompressedBytes` | 64 GiB | Largest total an archive may unpack to. |
+| `Jobs:Enabled` | `Jobs__Enabled` | `true` | Whether the background job runner starts. Off only for tests that drive jobs themselves. |
+| `Jobs:Parallelism` | `Jobs__Parallelism` | processors, max 8 | Concurrent job workers. |
+| `Jobs:PollInterval` | `Jobs__PollInterval` | `00:00:05` | How long the pump waits for a signal before looking anyway. |
+| `Jobs:ProgressInterval` | `Jobs__ProgressInterval` | `00:00:00.5` | Floor between persisted progress writes. |
 
 The three expansion limits are what a compression bomb actually meets. `MaxUploadBytes` bounds what
 arrives, which says nothing about what it becomes — a megabyte of zeros compresses to a few hundred
 bytes. Defaults sit well above any real vendor takeout; raise them if a genuine export is refused.
+
+Unpacking runs as a background job, not on the request that uploaded the archive. Closing the
+browser tab during a run has no effect on it, and a run interrupted by a restart resumes from the
+job table. Watch progress on `/jobs`, which is also where a failed job is retried.
 
 The schema is migrated on startup.
 
