@@ -34,6 +34,7 @@ public sealed class JobHarness : IAsyncDisposable
         services.AddSingleton<IJobNotifier, JobNotifier>();
         services.AddScoped<IJobQueue, JobQueue>();
         services.AddScoped<IJobStore, JobStore>();
+        services.AddScoped<IJobReader, JobReader>();
 
         // Short poll so a test never waits five seconds for the pump to look again.
         services.Configure<JobOptions>(options =>

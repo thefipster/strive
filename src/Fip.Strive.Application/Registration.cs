@@ -108,6 +108,7 @@ public static class Registration
 
         services.AddScoped<IJobQueue, JobQueue>();
         services.AddScoped<IJobStore, JobStore>();
+        services.AddScoped<IJobReader, JobReader>();
 
         services.AddHostedService<JobRunner>();
     }

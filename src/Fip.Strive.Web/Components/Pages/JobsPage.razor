@@ -1,0 +1,93 @@
+@page "/jobs"
+@using Fip.Strive.Application.Features.Jobs.Models
+
+<PageTitle>Jobs — Strive</PageTitle>
+
+<Headline Text="Jobs"/>
+
+@if (_jobs is null)
+{
+    <MudProgressLinear Indeterminate="true"/>
+}
+else
+{
+    <MudStack Row="true" Spacing="2" Class="mb-4">
+        <MudChip T="string" Icon="@Icons.Material.Outlined.Schedule" Color="Color.Default">
+            @_counts.Pending pending
+        </MudChip>
+        <MudChip T="string" Icon="@Icons.Material.Outlined.PlayArrow" Color="Color.Info">
+            @_counts.Running running
+        </MudChip>
+        <MudChip T="string" Icon="@Icons.Material.Outlined.CheckCircle" Color="Color.Success">
+            @_counts.Succeeded succeeded
+        </MudChip>
+        <MudChip T="string" Icon="@Icons.Material.Outlined.ErrorOutline" Color="Color.Error">
+            @_counts.Failed failed
+        </MudChip>
+    </MudStack>
+
+    @if (_jobs.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info">
+            Nothing queued yet. <MudLink Href="/import">Upload a takeout archive</MudLink> to get started.
+        </MudAlert>
+    }
+    else
+    {
+        <MudTable Items="_jobs" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm">
+            <HeaderContent>
+                <MudTh>Kind</MudTh>
+                <MudTh>Target</MudTh>
+                <MudTh>State</MudTh>
+                <MudTh>Progress</MudTh>
+                <MudTh Style="text-align: right">Duration</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Kind">
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.body2">@context.Kind</MudText>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                            @context.ComponentId v@context.ComponentVersion
+                        </MudText>
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Target"><code>@Shorten(context.TargetKey)</code></MudTd>
+                <MudTd DataLabel="State">
+                    <MudStack Spacing="0">
+                        <MudChip T="string" Size="Size.Small" Color="@ColorFor(context.State)">
+                            @context.State
+                        </MudChip>
+                        @if (context.Error is not null)
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Error">@context.Error</MudText>
+                        }
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="Progress" Style="min-width: 160px">
+                    @if (context.Percent is { } percent)
+                    {
+                        <MudTooltip Text="@context.ProgressNote">
+                            <MudProgressLinear Value="percent" Color="Color.Primary"/>
+                        </MudTooltip>
+                        <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                            @context.ProgressCurrent of @context.ProgressTotal
+                        </MudText>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Duration" Style="text-align: right">@FormatDuration(context)</MudTd>
+                <MudTd>
+                    @if (context.State == JobState.Failed)
+                    {
+                        <MudButton Size="Size.Small"
+                                   Variant="Variant.Outlined"
+                                   StartIcon="@Icons.Material.Outlined.Refresh"
+                                   OnClick="@(() => RetryAsync(context))">
+                            Retry
+                        </MudButton>
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+}
