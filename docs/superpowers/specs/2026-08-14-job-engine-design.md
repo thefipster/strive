@@ -27,7 +27,7 @@ naming, matching the existing configurations.
 | `target_key` | `text` | the work unit's natural key — archive hash for unpack, catalog hash for step 3 |
 | `component_id` | `text` | from the registry |
 | `component_version` | `integer` | from the registry, stamped at enqueue |
-| `state` | `text` | `pending \| running \| succeeded \| failed \| stale`; a `JobState` enum converted to its name, so the column stays readable in psql and is not reordered by an enum edit |
+| `state` | `text` | `Pending \| Running \| Succeeded \| Failed \| Stale`; a `JobState` enum converted to its name, so the column stays readable in psql and is not reordered by an enum edit |
 | `attempts` | `integer` | incremented when execution starts |
 | `payload` | `jsonb` | kind-specific; for unpack the staged path, file name and size |
 | `error` | `text` | nullable |
@@ -44,7 +44,7 @@ Unique index on `(kind, target_key)`. Enqueueing a unit that already exists upse
 `pending` rather than appending a row.
 
 This is what the spec means by a unit recording the version that last succeeded. It makes step 3's
-sweep a single statement — `UPDATE jobs SET state = 'stale' WHERE component_id = @id AND
+sweep a single statement — `UPDATE jobs SET state = 'Stale' WHERE component_id = @id AND
 component_version < @version` — and it bounds the table by work-unit count instead of run count.
 Step 3 will hold roughly one row per catalog entry; per-run rows would grow without limit across
 replays.
@@ -137,7 +137,7 @@ not start.
 Before the pump starts:
 
 ```sql
-UPDATE jobs SET state = 'pending', started_utc = NULL WHERE state IN ('running', 'stale')
+UPDATE jobs SET state = 'Pending', started_utc = NULL WHERE state IN ('Running', 'Stale')
 ```
 
 The recovered count is logged. Only one instance runs, so a `running` row at startup is by
