@@ -172,6 +172,54 @@ public sealed class JobHarness : IAsyncDisposable
         await runner.StopAsync(CancellationToken.None);
     }
 
+    /// <summary>
+    /// Starts a runner, waits until a job is actually running, then drops it without a graceful
+    /// stop and leaves the row marked <c>Running</c> — the state a killed process leaves behind,
+    /// and the state startup recovery exists to clean up.
+    /// </summary>
+    public async Task KillMidRunAsync(TimeSpan? timeout = null)
+    {
+        Resolve<IOptions<JobOptions>>().Value.Enabled = true;
+
+        var runner = CreateRunner();
+        await runner.StartAsync(CancellationToken.None);
+
+        var deadline = DateTimeOffset.UtcNow + (timeout ?? TimeSpan.FromSeconds(30));
+        var sawRunning = false;
+
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            await using var context = CreateContext();
+
+            if (await context.Jobs.AnyAsync(job => job.State == JobState.Running))
+            {
+                sawRunning = true;
+                break;
+            }
+
+            await Task.Delay(10);
+        }
+
+        Assert.True(sawRunning, "no job started running, so nothing was interrupted");
+
+        // Dispose without StopAsync: cancels, does not drain.
+        runner.Dispose();
+
+        // An in-process runner cancels cooperatively, so its worker still gets to release the job —
+        // which a killed process would not. Let that settle, then put the row back the way a hard
+        // kill leaves it. Forcing it is the whole point: otherwise this tests a graceful stop.
+        await Task.Delay(500);
+
+        await using var writer = CreateContext();
+        await writer
+            .Jobs.Where(job => job.State != JobState.Succeeded)
+            .ExecuteUpdateAsync(setters =>
+                setters
+                    .SetProperty(job => job.State, JobState.Running)
+                    .SetProperty(job => job.StartedUtc, DateTimeOffset.UtcNow)
+            );
+    }
+
     public async ValueTask DisposeAsync()
     {
         await using (var context = CreateContext())
