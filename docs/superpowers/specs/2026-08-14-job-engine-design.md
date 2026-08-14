@@ -17,8 +17,8 @@ Four questions the step document left open, and what was chosen:
 
 ## Data model
 
-One new table, `jobs`, in a new EF migration alongside the step 1 catalog tables. Snake-case
-naming, matching the existing configurations.
+One new table, `jobs`, in a new EF migration alongside the step 1 catalog tables. Table name snake_case, columns left as their property names — matching the existing
+configurations, which map `ToTable` and nothing else.
 
 | Column | Type | Notes |
 |---|---|---|
@@ -44,8 +44,8 @@ Unique index on `(kind, target_key)`. Enqueueing a unit that already exists upse
 `pending` rather than appending a row.
 
 This is what the spec means by a unit recording the version that last succeeded. It makes step 3's
-sweep a single statement — `UPDATE jobs SET state = 'Stale' WHERE component_id = @id AND
-component_version < @version` — and it bounds the table by work-unit count instead of run count.
+sweep a single statement — `UPDATE jobs SET "State" = 'Stale' WHERE "ComponentId" = @id AND
+"ComponentVersion" < @version` — and it bounds the table by work-unit count instead of run count.
 Step 3 will hold roughly one row per catalog entry; per-run rows would grow without limit across
 replays.
 
@@ -137,7 +137,7 @@ not start.
 Before the pump starts:
 
 ```sql
-UPDATE jobs SET state = 'Pending', started_utc = NULL WHERE state IN ('Running', 'Stale')
+UPDATE jobs SET "State" = 'Pending', "StartedUtc" = NULL WHERE "State" IN ('Running', 'Stale')
 ```
 
 The recovered count is logged. Only one instance runs, so a `running` row at startup is by

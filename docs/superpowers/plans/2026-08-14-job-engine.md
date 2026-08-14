@@ -16,7 +16,7 @@
 - **Central package management.** Never put a `Version=` on a `PackageReference`. Versions live in `src/Directory.Packages.props`.
 - **Nullable and implicit usings are on** solution-wide (`src/Directory.Build.props`). Do not add `using System;` and friends.
 - **Analyzers run as errors in CI** (`-warnaserror`). Local builds warn.
-- **Naming:** tables and columns are `snake_case`; C# is standard PascalCase. Test method names use `Underscores_between_words` and read as sentences.
+- **Naming:** tables are `snake_case` (`catalog_entries`, `jobs`); **columns keep their property names in PascalCase** — the existing configurations map `ToTable` only. Raw SQL must therefore quote column identifiers (`"State"`, `"EnqueuedUtc"`), because Postgres folds unquoted ones to lowercase. Test method names use `Underscores_between_words` and read as sentences.
 - **Timestamps** are `DateTimeOffset` stored as `timestamptz`, always UTC, always from an injected `TimeProvider` — never `DateTimeOffset.UtcNow` in application code. Test code may use it freely.
 - **Ids** are `Guid.CreateVersion7()`.
 - **`JobState` persists as its enum name** (`Pending`, `Running`, `Succeeded`, `Failed`, `Stale`) via `HasConversion<string>()`, never as an ordinal.
@@ -1290,15 +1290,15 @@ public sealed class JobStore(
     /// </summary>
     private const string ClaimSql = """
         UPDATE jobs
-        SET state = 'Running', started_utc = {0}, attempts = attempts + 1
-        WHERE id IN (
-            SELECT id FROM jobs
-            WHERE state = 'Pending'
-            ORDER BY enqueued_utc
+        SET "State" = 'Running', "StartedUtc" = {0}, "Attempts" = "Attempts" + 1
+        WHERE "Id" IN (
+            SELECT "Id" FROM jobs
+            WHERE "State" = 'Pending'
+            ORDER BY "EnqueuedUtc"
             LIMIT {1}
             FOR UPDATE SKIP LOCKED
         )
-        RETURNING id AS "Value"
+        RETURNING "Id" AS "Value"
         """;
 
     public async Task<IReadOnlyList<Guid>> ClaimAsync(int max, CancellationToken cancellationToken)

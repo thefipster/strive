@@ -1,4 +1,5 @@
 using Fip.Strive.Application.Features.Catalog.Models;
+using Fip.Strive.Application.Features.Jobs.Models;
 using Fip.Strive.Application.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,8 @@ public class StriveContext(DbContextOptions<StriveContext> options) : DbContext(
 
     public DbSet<PackageFile> PackageFiles => Set<PackageFile>();
 
+    public DbSet<Job> Jobs => Set<Job>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Registered explicitly rather than by assembly scan: the scan would also have to load
@@ -19,6 +22,7 @@ public class StriveContext(DbContextOptions<StriveContext> options) : DbContext(
         modelBuilder.ApplyConfiguration(new CatalogEntryConfiguration());
         modelBuilder.ApplyConfiguration(new ImportPackageConfiguration());
         modelBuilder.ApplyConfiguration(new PackageFileConfiguration());
+        modelBuilder.ApplyConfiguration(new JobConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
