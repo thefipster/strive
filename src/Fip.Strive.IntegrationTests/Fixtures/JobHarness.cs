@@ -1,9 +1,12 @@
+using Fip.Strive.Application.Features.Jobs;
 using Fip.Strive.Application.Features.Jobs.Models;
 using Fip.Strive.Application.Features.Jobs.Services;
 using Fip.Strive.Application.Features.Jobs.Services.Contracts;
 using Fip.Strive.Application.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Fip.Strive.IntegrationTests.Fixtures;
 
@@ -28,8 +31,14 @@ public sealed class JobHarness : IAsyncDisposable
         services.AddDbContext<StriveContext>(builder => builder.UseNpgsql(connectionString));
 
         services.AddSingleton<JobSignal>();
+        services.AddSingleton<IJobNotifier, JobNotifier>();
         services.AddScoped<IJobQueue, JobQueue>();
         services.AddScoped<IJobStore, JobStore>();
+
+        // Short poll so a test never waits five seconds for the pump to look again.
+        services.Configure<JobOptions>(options =>
+            options.PollInterval = TimeSpan.FromMilliseconds(100)
+        );
 
         // Handlers and anything they need are registered by the caller, exactly as a feature
         // registers its own handler in Registration.
@@ -119,6 +128,47 @@ public sealed class JobHarness : IAsyncDisposable
         await context.SaveChangesAsync();
 
         return job.Id;
+    }
+
+    /// <summary>`using`, not `await using`: BackgroundService implements IDisposable only.</summary>
+    public JobRunner CreateRunner() =>
+        new(
+            _provider,
+            Resolve<JobSignal>(),
+            Resolve<IJobNotifier>(),
+            Resolve<IOptions<JobOptions>>(),
+            TimeProvider.System,
+            Resolve<ILogger<JobRunner>>()
+        );
+
+    /// <summary>
+    /// Starts a runner, waits for the queue to drain, then stops it. Bounded by a hard timeout so a
+    /// hung handler fails the test rather than the suite.
+    /// </summary>
+    public async Task RunUntilIdleAsync(TimeSpan? timeout = null, bool enabled = true)
+    {
+        Resolve<IOptions<JobOptions>>().Value.Enabled = enabled;
+
+        using var runner = CreateRunner();
+        await runner.StartAsync(CancellationToken.None);
+
+        var deadline = DateTimeOffset.UtcNow + (timeout ?? TimeSpan.FromSeconds(60));
+
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            await using var context = CreateContext();
+
+            var outstanding = await context.Jobs.CountAsync(job =>
+                job.State == JobState.Pending || job.State == JobState.Running
+            );
+
+            if (outstanding == 0)
+                break;
+
+            await Task.Delay(50);
+        }
+
+        await runner.StopAsync(CancellationToken.None);
     }
 
     public async ValueTask DisposeAsync()

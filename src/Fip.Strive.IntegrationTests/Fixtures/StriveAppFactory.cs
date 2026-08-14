@@ -15,5 +15,9 @@ public sealed class StriveAppFactory(string connectionString, string dataDirecto
     {
         builder.UseSetting($"ConnectionStrings:{Registration.DatabaseName}", connectionString);
         builder.UseSetting("Storage:DataDirectory", dataDirectory);
+
+        // These tests boot the host to exercise something else. A live runner polling in the
+        // background would be noise at best and a race at worst.
+        builder.UseSetting("Jobs:Enabled", "false");
     }
 }
