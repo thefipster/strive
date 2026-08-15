@@ -32,8 +32,6 @@ public sealed class JobRunner(
             return;
         }
 
-        await RecoverAsync(stoppingToken);
-
         // Twice the worker count: enough that a worker finishing never waits on the pump, small
         // enough that rows do not sit marked Running in a buffer nobody is working on.
         var capacity = _options.Parallelism * 2;
@@ -56,12 +54,20 @@ public sealed class JobRunner(
             _options.Parallelism
         );
 
-        await PumpAsync(channel.Writer, capacity, stoppingToken);
+        await PumpAsync(channel, capacity, stoppingToken);
         channel.Writer.Complete();
 
         await Task.WhenAll(workers);
     }
 
+    /// <summary>Re-queues what a previous process left running.</summary>
+    /// <remarks>
+    /// Called from inside the pump's loop rather than awaited before it, so that a failure is
+    /// retried on the next poll like any other. An exception escaping
+    /// <see cref="BackgroundService.ExecuteAsync"/> stops the host by default, so a single failed
+    /// recovery query on a cold start — the moment a database is least likely to be reachable —
+    /// would otherwise take the whole site down with it.
+    /// </remarks>
     private async Task RecoverAsync(CancellationToken cancellationToken)
     {
         await using var scope = services.CreateAsyncScope();
@@ -72,21 +78,40 @@ public sealed class JobRunner(
     }
 
     /// <summary>
-    /// Claims only as much as the channel can take. Claiming ahead would flip rows to
+    /// Claims only as much as the channel can take right now. Claiming ahead would flip rows to
     /// <c>Running</c> while they sat in a buffer — a state the jobs page would display and startup
     /// recovery would have to undo.
     /// </summary>
     private async Task PumpAsync(
-        ChannelWriter<Guid> writer,
+        Channel<Guid> channel,
         int capacity,
         CancellationToken stoppingToken
     )
     {
+        var recovered = false;
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                var claimed = await ClaimAsync(capacity, stoppingToken);
+                if (!recovered)
+                {
+                    await RecoverAsync(stoppingToken);
+                    recovered = true;
+                }
+
+                // What is already buffered has been claimed but not started. Asking for the full
+                // capacity regardless would mark up to that many more rows Running and then block
+                // on the write, which is the behaviour this method exists to avoid.
+                var room = capacity - channel.Reader.Count;
+
+                if (room <= 0)
+                {
+                    await channel.Writer.WaitToWriteAsync(stoppingToken);
+                    continue;
+                }
+
+                var claimed = await ClaimAsync(room, stoppingToken);
 
                 if (claimed.Count == 0)
                 {
@@ -98,7 +123,7 @@ public sealed class JobRunner(
                 notifier.Notify();
 
                 foreach (var id in claimed)
-                    await writer.WriteAsync(id, stoppingToken);
+                    await channel.Writer.WriteAsync(id, stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
             {
@@ -106,10 +131,20 @@ public sealed class JobRunner(
             }
             catch (Exception exception)
             {
-                // A database blip must not kill the pump for the life of the process.
+                // A database blip must not kill the pump for the life of the process — and on a
+                // cold start this is the path a failed recovery takes, so it has to be survivable
+                // for as long as the database is unreachable.
                 logger.LogError(exception, "The job pump failed; retrying after the poll interval");
 
-                await Task.Delay(_options.PollInterval, timeProvider, CancellationToken.None);
+                try
+                {
+                    // Cancellable, so shutting down during the back-off is not made to wait it out.
+                    await Task.Delay(_options.PollInterval, timeProvider, stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
             }
         }
     }
@@ -122,12 +157,34 @@ public sealed class JobRunner(
         return await store.ClaimAsync(max, cancellationToken);
     }
 
+    /// <summary>
+    /// A worker outlives the jobs it runs. <see cref="ExecuteOneAsync"/> handles what a handler
+    /// throws, but the store calls around it can throw too — and an exception reaching this loop
+    /// would end it for the life of the process, silently costing a worker. Enough of those and
+    /// the pump fills the channel and blocks against nobody, with the queue stalled and nothing
+    /// saying why.
+    /// </summary>
     private async Task WorkAsync(ChannelReader<Guid> reader, CancellationToken stoppingToken)
     {
         // Read with None: a worker drains what has already been claimed rather than abandoning it,
         // and the per-job token below is what actually stops work in progress.
         await foreach (var id in reader.ReadAllAsync(CancellationToken.None))
-            await ExecuteOneAsync(id, stoppingToken);
+        {
+            try
+            {
+                await ExecuteOneAsync(id, stoppingToken);
+            }
+            catch (Exception exception)
+            {
+                // The row stays Running and startup recovery re-queues it. Losing the row is the
+                // lesser problem; losing the worker is what stalls everything behind it.
+                logger.LogError(
+                    exception,
+                    "Job {JobId} could not be run to a conclusion; the worker continues",
+                    id
+                );
+            }
+        }
     }
 
     /// <summary>
