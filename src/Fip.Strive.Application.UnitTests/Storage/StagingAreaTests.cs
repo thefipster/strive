@@ -76,6 +76,22 @@ public class StagingAreaTests : IDisposable
     }
 
     [Fact]
+    public async Task Staging_the_same_archive_twice_reuses_the_one_file()
+    {
+        var content = RandomNumberGenerator.GetBytes(64 * 1024);
+
+        var first = await _staging.StageAsync("takeout.zip", new MemoryStream(content));
+        var second = await _staging.StageAsync("takeout-again.zip", new MemoryStream(content));
+
+        // Named after its content, so an archive uploaded twice cannot leave the first copy
+        // behind as an orphan nothing knows how to find.
+        second.Path.Should().Be(first.Path);
+        File.ReadAllBytes(first.Path).Should().Equal(content);
+
+        Directory.EnumerateFiles(_paths.Incoming).Should().ContainSingle();
+    }
+
+    [Fact]
     public async Task Leaves_nothing_behind_when_the_source_stream_fails()
     {
         var act = async () => await _staging.StageAsync("broken.zip", new ThrowingStream());
