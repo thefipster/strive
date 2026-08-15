@@ -1,6 +1,7 @@
 using Fip.Strive.Application.Features.Catalog.Models;
 using Fip.Strive.Application.Features.Catalog.Services.Contracts;
 using Fip.Strive.Application.Features.Import.Services;
+using Fip.Strive.Application.Features.Jobs.Models;
 using Fip.Strive.Application.Features.Jobs.Services.Contracts;
 using Fip.Strive.Application.Features.Storage;
 using Fip.Strive.Application.Features.Storage.Models;
@@ -85,8 +86,6 @@ public partial class ImportPage : IDisposable
         {
             var staged = await StageAsync(file, job, cancellationToken);
             await QueueAsync(staged, job);
-
-            Snackbar.Add($"{file.Name} queued for unpacking.", Severity.Success);
         }
         catch (OperationCanceledException)
         {
@@ -123,13 +122,25 @@ public partial class ImportPage : IDisposable
 
     /// <summary>
     /// Keyed by the archive hash, so re-uploading the same bytes reuses the work unit rather than
-    /// queueing a second one. The staged file is the handler's to delete from here on.
+    /// queueing a second one. The staged file is the handler's to delete from here on — and it is
+    /// content-addressed, so an upload that never reaches a job is reclaimed by the next attempt at
+    /// the same archive rather than left behind as a second copy.
     /// </summary>
     private async Task QueueAsync(StagedArchive staged, UploadJob job)
     {
-        await Jobs.EnqueueAsync(UnpackJobHandler.JobKind, staged.Hash, staged);
+        var result = await Jobs.EnqueueAsync(UnpackJobHandler.JobKind, staged.Hash, staged);
+
+        // A unit already running is left as it is rather than re-queued, so say so instead of
+        // promising a run that is not going to be scheduled.
+        if (result.Outcome == EnqueueOutcome.AlreadyRunning)
+        {
+            job.Phase = UploadPhase.AlreadyRunning;
+            Snackbar.Add($"{job.FileName} is already being unpacked.", Severity.Info);
+            return;
+        }
 
         job.Phase = UploadPhase.Queued;
+        Snackbar.Add($"{job.FileName} queued for unpacking.", Severity.Success);
     }
 
     private void Cancel() => _cancellation?.Cancel();
@@ -155,6 +166,7 @@ public partial class ImportPage : IDisposable
         job.Phase switch
         {
             UploadPhase.Queued => Icons.Material.Outlined.Schedule,
+            UploadPhase.AlreadyRunning => Icons.Material.Outlined.PlayArrow,
             UploadPhase.Failed => Icons.Material.Outlined.ErrorOutline,
             UploadPhase.Cancelled => Icons.Material.Outlined.Cancel,
             _ => Icons.Material.Outlined.HourglassTop,
@@ -164,6 +176,7 @@ public partial class ImportPage : IDisposable
         job.Phase switch
         {
             UploadPhase.Queued => Color.Info,
+            UploadPhase.AlreadyRunning => Color.Info,
             UploadPhase.Failed => Color.Error,
             UploadPhase.Cancelled => Color.Warning,
             _ => Color.Default,
@@ -175,6 +188,10 @@ public partial class ImportPage : IDisposable
     {
         Uploading,
         Queued,
+
+        /// <summary>Uploaded, but a run for these bytes was already under way.</summary>
+        AlreadyRunning,
+
         Cancelled,
         Failed,
     }
@@ -205,6 +222,7 @@ public partial class ImportPage : IDisposable
             {
                 UploadPhase.Uploading => $"Uploading — {ByteSize.Format(BytesUploaded)}",
                 UploadPhase.Queued => "Queued for unpacking",
+                UploadPhase.AlreadyRunning => "Already being unpacked",
                 UploadPhase.Cancelled => "Cancelled",
                 UploadPhase.Failed => Error ?? "Failed",
                 _ => string.Empty,

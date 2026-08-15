@@ -94,7 +94,11 @@ public sealed class JobHarness : IAsyncDisposable
     public T Resolve<T>()
         where T : notnull => _provider.GetRequiredService<T>();
 
-    public async Task<Guid> EnqueueAsync(string kind, string targetKey, object? payload = null)
+    public async Task<EnqueueResult> EnqueueAsync(
+        string kind,
+        string targetKey,
+        object? payload = null
+    )
     {
         await using var scope = Scope();
         return await scope

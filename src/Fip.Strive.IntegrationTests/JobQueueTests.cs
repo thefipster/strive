@@ -90,6 +90,85 @@ public class JobQueueTests(PostgresFixture postgres)
     }
 
     [Fact]
+    public async Task Enqueueing_a_unit_that_is_already_running_leaves_it_alone()
+    {
+        await using var harness = await JobHarness.CreateAsync(postgres, new NoopHandler(1));
+
+        var id = await harness.SeedAsync("noop", "target-1", JobState.Running, attempts: 1);
+
+        var result = await harness.EnqueueAsync("noop", "target-1", new { Path = "/tmp/b.zip" });
+
+        result.JobId.Should().Be(id);
+        result.Outcome.Should().Be(EnqueueOutcome.AlreadyRunning);
+
+        await using var reader = harness.CreateContext();
+        var job = await reader.Jobs.SingleAsync();
+
+        // Putting a claimed row back to Pending does not interrupt the worker holding it; it
+        // simply lets the pump hand the same unit to a second one.
+        job.State.Should().Be(JobState.Running);
+        job.StartedUtc.Should().NotBeNull();
+        job.Payload.Should().BeNull("the run under way keeps the input it started with");
+    }
+
+    [Fact]
+    public async Task Enqueueing_a_settled_unit_reports_it_as_re_queued()
+    {
+        await using var harness = await JobHarness.CreateAsync(postgres, new NoopHandler(1));
+
+        var id = await harness.SeedAsync("noop", "target-1", JobState.Failed);
+
+        var result = await harness.EnqueueAsync("noop", "target-1");
+
+        result.JobId.Should().Be(id);
+        result.Outcome.Should().Be(EnqueueOutcome.Requeued);
+    }
+
+    [Fact]
+    public async Task Losing_the_insert_race_settles_on_the_winner_s_row()
+    {
+        await using var harness = await JobHarness.CreateAsync(postgres, new NoopHandler(1));
+
+        await using var blocker = harness.CreateContext();
+        await using var transaction = await blocker.Database.BeginTransactionAsync();
+
+        // The same unit, inserted by another writer and not yet committed. Read committed hides
+        // the row from the enqueue below, so it finds nothing to update and inserts too — and then
+        // waits on the unique index until this transaction says which of them won.
+        blocker.Jobs.Add(
+            new Job
+            {
+                Id = Guid.CreateVersion7(),
+                Kind = "noop",
+                TargetKey = "target-1",
+                ComponentId = "noop",
+                ComponentVersion = 1,
+                State = JobState.Pending,
+                EnqueuedUtc = DateTimeOffset.UtcNow,
+            }
+        );
+
+        await blocker.SaveChangesAsync();
+
+        var enqueue = harness.EnqueueAsync("noop", "target-1", new { Path = "/tmp/a.zip" });
+
+        await Task.Delay(TimeSpan.FromMilliseconds(500));
+        enqueue.IsCompleted.Should().BeFalse("it is blocked on the other writer's index entry");
+
+        await transaction.CommitAsync();
+
+        // Losing is not failing: the work unit the caller asked for exists, which is all it wanted.
+        (await enqueue)
+            .Outcome.Should()
+            .Be(EnqueueOutcome.Requeued);
+
+        await using var reader = harness.CreateContext();
+        var job = await reader.Jobs.SingleAsync();
+
+        job.Payload.Should().Contain("/tmp/a.zip", "the retry applied the payload it was given");
+    }
+
+    [Fact]
     public async Task Enqueueing_an_unregistered_kind_is_refused()
     {
         await using var harness = await JobHarness.CreateAsync(postgres, new NoopHandler(1));
