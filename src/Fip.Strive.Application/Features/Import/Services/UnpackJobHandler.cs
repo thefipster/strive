@@ -47,11 +47,7 @@ public sealed class UnpackJobHandler(
                 $"Unpack job {context.Job.Id} carries no usable payload."
             );
 
-        var progress = new Progress<ImportProgress>(update =>
-            context.Progress.Report(
-                new JobProgress(update.FilesProcessed, update.TotalFiles, update.CurrentPath)
-            )
-        );
+        var progress = new Relay(context.Progress);
 
         var result = await importer.ImportAsync(archive, progress, cancellationToken);
 
@@ -65,5 +61,20 @@ public sealed class UnpackJobHandler(
             result.Outcome,
             result.FileCount
         );
+    }
+
+    /// <summary>
+    /// Hands each import report straight to the job's progress on the thread that reported it.
+    /// Deliberately not <see cref="Progress{T}"/>: with no synchronisation context to capture — and
+    /// a job handler never has one — it posts every callback to the thread pool separately, so the
+    /// reports arrive in whatever order the pool runs them and a job can finish displaying a
+    /// position it passed several files ago.
+    /// </summary>
+    private sealed class Relay(IProgress<JobProgress> target) : IProgress<ImportProgress>
+    {
+        public void Report(ImportProgress value) =>
+            target.Report(
+                new JobProgress(value.FilesProcessed, value.TotalFiles, value.CurrentPath)
+            );
     }
 }

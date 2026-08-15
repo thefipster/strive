@@ -76,6 +76,66 @@ public class ThrottledProgressTests
     }
 
     [Fact]
+    public async Task Flushing_waits_for_a_write_that_is_still_in_flight()
+    {
+        var gate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var written = new List<JobProgress>();
+
+        var progress = new ThrottledProgress(
+            async value =>
+            {
+                await gate.Task;
+                written.Add(value);
+            },
+            Interval,
+            new StubClock(DateTimeOffset.UnixEpoch)
+        );
+
+        progress.Report(new JobProgress(1, 10));
+
+        var flush = progress.FlushAsync();
+        flush.IsCompleted.Should().BeFalse("the write it started has not landed yet");
+
+        gate.SetResult();
+        await flush;
+
+        // The job's terminal state is written the moment this returns. A write still in flight
+        // here would land on a row that has already finished.
+        written.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task Writes_land_in_the_order_they_were_reported()
+    {
+        var first = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var written = new List<JobProgress>();
+        var clock = new StubClock(DateTimeOffset.UnixEpoch);
+
+        var progress = new ThrottledProgress(
+            async value =>
+            {
+                // Only the earlier write is held up. Started independently, the later one would
+                // overtake it and leave the row displaying a position the job had already passed.
+                if (value.Current == 1)
+                    await first.Task;
+
+                written.Add(value);
+            },
+            Interval,
+            clock
+        );
+
+        progress.Report(new JobProgress(1, 10));
+        clock.Advance(Interval);
+        progress.Report(new JobProgress(2, 10));
+
+        first.SetResult();
+        await progress.FlushAsync();
+
+        written.Select(value => value.Current).Should().Equal(1, 2);
+    }
+
+    [Fact]
     public void A_failing_write_does_not_reach_the_handler()
     {
         var progress = new ThrottledProgress(

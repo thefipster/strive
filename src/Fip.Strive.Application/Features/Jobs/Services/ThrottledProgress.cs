@@ -18,6 +18,15 @@ public sealed class ThrottledProgress(
     private DateTimeOffset _lastWrite = DateTimeOffset.MinValue;
     private JobProgress? _held;
 
+    /// <summary>
+    /// The tail of the write chain. Every write is queued behind the one before it rather than
+    /// started on its own, for two reasons: two reports that both clear the throttle would
+    /// otherwise race to the row and the older position could be the one that lands last, and
+    /// <see cref="FlushAsync"/> needs something to wait on or a write can still be in flight when
+    /// the job's terminal state is written.
+    /// </summary>
+    private Task _chain = Task.CompletedTask;
+
     public void Report(JobProgress value)
     {
         lock (_gate)
@@ -33,37 +42,47 @@ public sealed class ThrottledProgress(
 
             _lastWrite = now;
             _held = null;
+            _chain = AppendAsync(_chain, value);
         }
-
-        // Not awaited: IProgress.Report is void by contract, and a handler blocking on a database
-        // write to say where it is would make reporting cost more than the work being reported.
-        _ = WriteSafelyAsync(value);
     }
 
     /// <summary>
-    /// Writes whatever the throttle is holding, and waits for it. Called before a job's terminal
-    /// state is written, so the last position the UI shows is the real one.
+    /// Writes whatever the throttle is holding and waits for every write this instance started,
+    /// not just that one. Called before a job's terminal state is written, so the last position the
+    /// UI shows is the real one.
     /// </summary>
     public async Task FlushAsync()
     {
-        JobProgress? held;
+        Task chain;
 
         lock (_gate)
         {
-            held = _held;
-            _held = null;
-
-            if (held is not null)
+            if (_held is { } held)
+            {
                 _lastWrite = clock.GetUtcNow();
+                _held = null;
+                _chain = AppendAsync(_chain, held);
+            }
+
+            chain = _chain;
         }
 
-        if (held is not null)
-            await WriteSafelyAsync(held.Value);
+        await chain;
+    }
+
+    /// <summary>
+    /// Queues a write behind the previous one. <paramref name="previous"/> is safe to await
+    /// unguarded because every link swallows its own failure.
+    /// </summary>
+    private async Task AppendAsync(Task previous, JobProgress value)
+    {
+        await previous;
+        await WriteSafelyAsync(value);
     }
 
     /// <summary>
     /// Progress is advisory. Losing a position is not worth failing the job that reported it, and
-    /// a throw on the fire-and-forget path would be unobserved anyway.
+    /// a throw on the write chain would fault every write queued behind it.
     /// </summary>
     private async Task WriteSafelyAsync(JobProgress value)
     {
