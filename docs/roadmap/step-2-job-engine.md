@@ -41,7 +41,8 @@ Start a large unpack run, **kill the app mid-run, restart** — the run resumes 
 Designed in [2026-08-14-job-engine-design.md](../superpowers/specs/2026-08-14-job-engine-design.md).
 
 **Schema** — one `jobs` table, **one row per work unit rather than per run**, with a unique index on
-`(Kind, TargetKey)`. Enqueueing a unit that already exists upserts it back to `Pending`. That is
+`(Kind, TargetKey)`. Enqueueing a unit that already exists upserts it back to `Pending`, unless it
+is already `Running` — a claimed row is left to the worker holding it. That is
 what the spec means by a unit recording the version that last succeeded: it bounds the table by how
 much work exists instead of by how often it has been replayed, and it makes step 3's sweep one
 statement. The cost is that no per-run history is kept — a job shows its last outcome only. Nothing
@@ -91,5 +92,6 @@ archives of 300, 1 200, 7 000 and 9 000 files were queued while the jobs page wa
 picked up unprompted, ticked its progress live, and settled on `Succeeded` without a reload.
 
 **Known limits:** a permanently failed unpack keeps its archive in `incoming/` so a retry has
-something to read, and nothing cleans those up. There is no per-run history. The UI shows the most
-recent 100 units, unpaged.
+something to read, and nothing cleans those up — staged files are content-addressed, so the residue
+is one file per distinct archive rather than one per attempt, but it is still residue. There is no
+per-run history. The UI shows the most recent 100 units, unpaged.

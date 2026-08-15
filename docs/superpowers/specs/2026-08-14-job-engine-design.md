@@ -41,7 +41,9 @@ configurations, which map `ToTable` and nothing else.
 ### One row per work unit
 
 Unique index on `(kind, target_key)`. Enqueueing a unit that already exists upserts it back to
-`pending` rather than appending a row.
+`pending` rather than appending a row — unless it is `running`, which is left exactly as it is. A
+claimed row belongs to the worker holding it, and resetting it does not interrupt that worker; it
+only lets the pump hand the same unit to a second one.
 
 This is what the spec means by a unit recording the version that last succeeded. It makes step 3's
 sweep a single statement — `UPDATE jobs SET "State" = 'Stale' WHERE "ComponentId" = @id AND
@@ -96,6 +98,11 @@ will read to compare declared versions against stored ones. That sweep is not wr
 the row to `pending` with the stamped version and a cleared error, and signals the pump. The insert
 and the signal are ordered: the row is committed before the signal, so a signal never arrives for a
 row that is not yet visible.
+
+It returns an `EnqueueResult` rather than a bare id, because the outcome — `Queued`, `Requeued` or
+`AlreadyRunning` — is the only thing that tells a caller whether the payload it brought was taken.
+Two callers can also both read no row and both insert; the loser of that race re-reads and takes the
+update path, so a unique violation on `(kind, target_key)` is resolved rather than surfaced.
 
 ### Executor
 
@@ -181,6 +188,12 @@ import commits or is found to be a duplicate, and **keeps it when the job fails*
 has something to read. A permanently failed job therefore leaves a file in `incoming/`. That is a
 documented cost rather than a bug, and it is the same trade the blob store already makes with
 unreferenced blobs.
+
+Staged files are content-addressed for that reason — `incoming/<hash>.zip`, written to a temporary
+name and moved, keeping any copy already there. An archive has one staged name however many times it
+is uploaded, so a second upload cannot orphan the first, and an upload whose enqueue failed is
+reclaimed by the next attempt at the same archive instead of accumulating beside it. The residue is
+bounded by the number of distinct archives that failed to queue, not by how often they were tried.
 
 ## UI
 
