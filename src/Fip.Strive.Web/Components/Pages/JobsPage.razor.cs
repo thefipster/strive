@@ -29,6 +29,9 @@ public partial class JobsPage : IDisposable
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
 
+    [Inject]
+    private ILogger<JobsPage> Logger { get; set; } = default!;
+
     private readonly RefreshWindow _window = new(RefreshInterval);
     private readonly CancellationTokenSource _closing = new();
 
@@ -70,6 +73,13 @@ public partial class JobsPage : IDisposable
         catch (ObjectDisposedException)
         {
             // Likewise, and the renderer noticed first.
+        }
+        catch (Exception exception)
+        {
+            // Nothing awaits this task, so without logging here a failed read is invisible: the
+            // page simply stops updating and the fault surfaces, if at all, as an unobserved task
+            // exception at some later collection.
+            Logger.LogError(exception, "Refreshing the jobs page failed");
         }
         finally
         {
