@@ -83,7 +83,11 @@ public partial class JobsPage : IDisposable
         }
         finally
         {
-            _window.Completed(Clock.GetUtcNow());
+            // A notification that landed after the read above has nothing else to bring it to the
+            // screen — the job it announced has finished and will not notify again — so the window
+            // hands back a delay and the burst continues until a read goes by unannounced.
+            if (_window.Completed(Clock.GetUtcNow()) is { } again)
+                _ = RefreshAfterAsync(again);
         }
     }
 

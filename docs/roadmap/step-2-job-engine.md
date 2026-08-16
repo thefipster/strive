@@ -85,6 +85,15 @@ throttled**: a leading-edge throttle drops the terminal notification and leaves 
 displayed as running, which is exactly what the first hand-run of the page did before `RefreshWindow`
 was introduced. It reads on the way out of the interval instead.
 
+Reading on the way out is necessary but was not sufficient, and the same symptom came back in a
+narrower window. A notification arriving *while the read was in flight* was folded into a read that
+had already been to the database, and since the job it announced had finished, nothing was left to
+notify again. A run ends with two writes a single round-trip apart — the flushed final progress, then
+the terminal state — so the second landed inside the first one's read often enough to see: a full
+progress bar on a row still marked `Running`, until an unrelated notification or a reload dislodged
+it. `RefreshWindow` now remembers that a folded notification happened and hands the page another
+delay when the read completes, so a burst ends with a read that nothing arrived during.
+
 Verified by `JobRecoveryTests`, which kills a runner mid-unpack of a 400-file archive, forces the row
 back to `Running` the way a dead process would leave it, and asserts a fresh runner finishes with
 exactly one package and no duplicated or lost files. Also run by hand against a real Postgres:

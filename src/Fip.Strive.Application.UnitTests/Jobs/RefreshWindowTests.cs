@@ -66,6 +66,42 @@ public class RefreshWindowTests
     }
 
     [Fact]
+    public void A_change_announced_while_the_refresh_is_reading_earns_another_read()
+    {
+        var window = new RefreshWindow(Interval);
+
+        // The read is under way when the job's terminal notification arrives, so the state it
+        // returns with is the one from a moment before the job finished.
+        window.Request(Start);
+        window.Request(Start + TimeSpan.FromMilliseconds(1));
+
+        window.Completed(Start + TimeSpan.FromMilliseconds(2)).Should().Be(Interval);
+    }
+
+    [Fact]
+    public void A_refresh_nothing_arrived_during_ends_the_burst()
+    {
+        var window = new RefreshWindow(Interval);
+
+        window.Request(Start);
+
+        window.Completed(Start).Should().BeNull();
+    }
+
+    [Fact]
+    public void The_follow_up_read_holds_the_window_the_way_the_first_one_did()
+    {
+        var window = new RefreshWindow(Interval);
+
+        window.Request(Start);
+        window.Request(Start + TimeSpan.FromMilliseconds(1));
+        window.Completed(Start + TimeSpan.FromMilliseconds(2));
+
+        // Only ever one read in flight: this one folds into the follow-up rather than racing it.
+        window.Request(Start + TimeSpan.FromMilliseconds(3)).Should().BeNull();
+    }
+
+    [Fact]
     public void A_request_after_the_window_has_passed_refreshes_straight_away()
     {
         var window = new RefreshWindow(Interval);
