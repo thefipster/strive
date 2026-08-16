@@ -60,16 +60,10 @@
     <PackageVersion Include="AwesomeAssertions" Version="9.5.0" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
-    <!--
-      Referenced directly only to get off the 2025.1.0 Testcontainers would otherwise drag in,
-      which carries GHSA-q939-rpr3-3284. Drop the reference once Testcontainers' own floor has
-      moved past it — the same arrangement, and the same reason, as SQLitePCLRaw above.
-    -->
-    <PackageVersion Include="SSH.NET" Version="2026.0.0" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.13.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.14.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
   </ItemGroup>
 </Project>
