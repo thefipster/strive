@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <RootNamespace>Fip.Strive.Web</RootNamespace>
+    <UserSecretsId>6e78e155-d4e1-4f87-abd3-c5ce036016f5</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MudBlazor" />

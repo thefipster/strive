@@ -27,6 +27,13 @@ public sealed class PackageImporter(
     /// </summary>
     private const int InsertBatchSize = 5_000;
 
+    /// <summary>
+    /// How many times to rebuild the catalog write after losing a race for a shared content hash.
+    /// One retry settles the ordinary case, because the second pass reads the winner's entries as
+    /// already known; the rest are headroom for an import unlucky enough to lose twice.
+    /// </summary>
+    private const int MaxRecordAttempts = 3;
+
     public async Task<ImportResult> ImportAsync(
         StagedArchive archive,
         IProgress<ImportProgress>? progress = null,
@@ -114,6 +121,61 @@ public sealed class PackageImporter(
     }
 
     /// <summary>
+    /// Records the import, retrying the write when it loses a race for content another importer
+    /// was introducing at the same moment.
+    /// </summary>
+    /// <remarks>
+    /// A unique violation here has two causes and they need opposite responses. Another importer
+    /// may have committed this same archive, in which case there is nothing left to do and the
+    /// winner is the answer. Or it may have committed a <em>catalog entry</em> this import also
+    /// computed as new — both read <c>known</c> before either wrote, so both believed they were
+    /// introducing the same content hash. That one is not a duplicate archive and must not be
+    /// reported as one: it is a lost race, and the next pass reads the winner's entry as already
+    /// known and writes the package this import was always owed.
+    /// </remarks>
+    private async Task<ImportResult> RecordAsync(
+        StagedArchive archive,
+        List<ManifestLine> manifest,
+        CancellationToken cancellationToken
+    )
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return await TryRecordAsync(archive, manifest, cancellationToken);
+            }
+            catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+            {
+                // The failed save left its rows in the tracker, and the transaction they belonged
+                // to has rolled back out from under them.
+                context.ChangeTracker.Clear();
+
+                if (await DuplicateOfAsync(archive, cancellationToken) is { } duplicate)
+                {
+                    logger.LogInformation(
+                        "Archive {ArchiveHash} was imported concurrently; reporting the winner",
+                        archive.Hash
+                    );
+
+                    return duplicate;
+                }
+
+                if (attempt == MaxRecordAttempts)
+                    throw;
+
+                logger.LogInformation(
+                    exception,
+                    "Lost a catalog race importing {FileName}; rebuilding the write (attempt {Attempt} of {MaxAttempts})",
+                    archive.FileName,
+                    attempt,
+                    MaxRecordAttempts
+                );
+            }
+        }
+    }
+
+    /// <summary>
     /// Writes the catalog entries, the package and its manifest in a single transaction, so a
     /// package never exists half-catalogued. Blobs are already on disk at this point; if this
     /// fails they are simply unreferenced bytes that a retry deduplicates against.
@@ -125,9 +187,10 @@ public sealed class PackageImporter(
     /// The transaction is explicit for exactly that reason: batching means several
     /// <c>SaveChangesAsync</c> calls, and without a transaction wrapped round them a failure
     /// half-way would leave precisely the half-catalogued package the original design was built to
-    /// prevent.
+    /// prevent. Everything the attempt read is re-read on the next one, which is what makes a
+    /// retry after a lost race correct rather than merely another go at the same doomed write.
     /// </remarks>
-    private async Task<ImportResult> RecordAsync(
+    private async Task<ImportResult> TryRecordAsync(
         StagedArchive archive,
         List<ManifestLine> manifest,
         CancellationToken cancellationToken
@@ -167,44 +230,28 @@ public sealed class PackageImporter(
             NewEntryCount = newEntries.Count,
         };
 
+        // Disposed on the way out of a failed attempt, which rolls it back before the caller
+        // re-reads through this same context.
         await using var transaction = await context.Database.BeginTransactionAsync(
             cancellationToken
         );
 
-        try
-        {
-            context.ImportPackages.Add(package);
-            await context.SaveChangesAsync(cancellationToken);
+        context.ImportPackages.Add(package);
+        await context.SaveChangesAsync(cancellationToken);
 
-            await InsertInBatchesAsync(newEntries, cancellationToken);
+        await InsertInBatchesAsync(newEntries, cancellationToken);
 
-            await InsertInBatchesAsync(
-                manifest.Select(line => new PackageFile
-                {
-                    PackageId = package.Id,
-                    PathInArchive = line.Path,
-                    Hash = line.Hash,
-                }),
-                cancellationToken
-            );
+        await InsertInBatchesAsync(
+            manifest.Select(line => new PackageFile
+            {
+                PackageId = package.Id,
+                PathInArchive = line.Path,
+                Hash = line.Hash,
+            }),
+            cancellationToken
+        );
 
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch (DbUpdateException exception) when (IsDuplicateArchive(exception))
-        {
-            // Two circuits importing the same bytes at once. The unique index makes the outcome
-            // safe — two packages for one archive are impossible — but the loser was getting a raw
-            // EF exception and a failure snackbar for something that is not a failure. Re-read and
-            // report it as the duplicate it is.
-            await transaction.RollbackAsync(cancellationToken);
-
-            logger.LogInformation(
-                "Archive {ArchiveHash} was imported concurrently; reporting the winner",
-                archive.Hash
-            );
-
-            return await DuplicateOfAsync(archive, exception, cancellationToken);
-        }
+        await transaction.CommitAsync(cancellationToken);
 
         logger.LogInformation(
             "Imported {FileName} as package {PackageId}: {FileCount} files, {NewEntryCount} new to the catalog",
@@ -246,52 +293,36 @@ public sealed class PackageImporter(
 
     /// <summary>
     /// Postgres reports a broken unique index as SQLSTATE 23505. Matched on the state rather than
-    /// the constraint name so a renamed index does not silently turn this back into a raw failure,
-    /// and narrowly enough that a foreign-key or not-null violation — which would be a bug here,
-    /// not a race — still surfaces as one.
+    /// the constraint name so a renamed index does not silently turn this back into a raw failure —
+    /// which index broke is then established by reading, not by trusting a name. A foreign-key or
+    /// not-null violation would be a bug here rather than a race, and still surfaces as one.
     /// </summary>
-    private static bool IsDuplicateArchive(DbUpdateException exception) =>
+    private static bool IsUniqueViolation(DbUpdateException exception) =>
         exception.InnerException
             is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation };
 
     /// <summary>
-    /// Reports the package the winning writer created. The context is poisoned by the failed save,
-    /// so this reads through a fresh one rather than through a change tracker that still believes
-    /// in the row it could not write.
+    /// The package another writer created for these bytes, or <c>null</c> when the violation was
+    /// not about this archive at all — which is the ordinary case when two imports share a file
+    /// neither had seen before.
     /// </summary>
-    private async Task<ImportResult> DuplicateOfAsync(
+    private async Task<ImportResult?> DuplicateOfAsync(
         StagedArchive archive,
-        DbUpdateException exception,
         CancellationToken cancellationToken
     )
     {
-        await using var fresh = new StriveContext(
-            new DbContextOptionsBuilder<StriveContext>()
-                .UseNpgsql(context.Database.GetConnectionString())
-                .Options
-        );
+        var winner = await context
+            .ImportPackages.AsNoTracking()
+            .FirstOrDefaultAsync(package => package.ArchiveHash == archive.Hash, cancellationToken);
 
-        var winner =
-            await fresh
-                .ImportPackages.AsNoTracking()
-                .FirstOrDefaultAsync(
-                    package => package.ArchiveHash == archive.Hash,
-                    cancellationToken
-                )
-            // The unique index fired, so a row with this hash exists; not finding it means the
-            // violation was something else entirely and swallowing it would hide a real fault.
-            ?? throw new InvalidOperationException(
-                $"A unique violation was reported for archive {archive.Hash}, but no package with "
-                    + "that hash could be read back.",
-                exception
+        return winner is null
+            ? null
+            : new ImportResult(
+                ImportOutcome.DuplicateArchive,
+                winner.Id,
+                winner.FileCount,
+                NewEntryCount: 0
             );
-
-        return new ImportResult(
-            ImportOutcome.DuplicateArchive,
-            winner.Id,
-            winner.FileCount,
-            NewEntryCount: 0
-        );
     }
 
     /// <summary>Directory entries carry no content and end in a separator.</summary>
