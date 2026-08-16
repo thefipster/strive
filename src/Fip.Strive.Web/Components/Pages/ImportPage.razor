@@ -49,6 +49,11 @@
     </CustomContent>
 </MudFileUpload>
 
+<MudText Typo="Typo.body2" Class="mud-text-secondary mb-6">
+    Uploads are unpacked in the background. Watch them on the <MudLink Href="/jobs">Jobs</MudLink>
+    page — closing this tab does not stop a run.
+</MudText>
+
 @if (_busy)
 {
     <MudButton Variant="Variant.Outlined"

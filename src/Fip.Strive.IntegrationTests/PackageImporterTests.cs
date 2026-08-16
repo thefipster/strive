@@ -59,6 +59,45 @@ public class PackageImporterTests(PostgresFixture postgres)
     }
 
     [Fact]
+    public async Task Archives_that_introduce_the_same_content_at_once_all_import()
+    {
+        await using var harness = await ImportHarness.CreateAsync(postgres);
+
+        // Every archive carries the same twenty files plus one of its own, so all four read the
+        // catalog before any of them writes and all four compute the shared content as new. Three
+        // have to lose the insert. Losing it is a race, not a duplicate archive: these are four
+        // different uploads and all four are owed a package.
+        var shared = Enumerable
+            .Range(0, 20)
+            .Select(index => ($"shared/{index}.json", $"shared payload {index}"))
+            .ToArray();
+
+        var archives = Enumerable
+            .Range(0, 4)
+            .Select(index =>
+                ZipBuilder.Create(
+                    harness.ArchiveDirectory,
+                    $"export-{index}.zip",
+                    [.. shared, ($"own/{index}.json", $"payload {index}")]
+                )
+            )
+            .ToList();
+
+        var results = await Task.WhenAll(archives.Select(path => harness.ImportAsync(path)));
+
+        results.Should().AllSatisfy(result => result.Outcome.Should().Be(ImportOutcome.Imported));
+
+        await using var context = harness.CreateContext();
+
+        (await context.ImportPackages.CountAsync()).Should().Be(4);
+        (await context.PackageFiles.CountAsync()).Should().Be(4 * 21);
+
+        (await context.CatalogEntries.CountAsync())
+            .Should()
+            .Be(24, "shared content is one catalog entry however many archives introduced it");
+    }
+
+    [Fact]
     public async Task Cancelling_leaves_no_package_behind()
     {
         await using var harness = await ImportHarness.CreateAsync(postgres);

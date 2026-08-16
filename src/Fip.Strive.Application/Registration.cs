@@ -2,6 +2,9 @@ using Fip.Strive.Application.Features.Catalog.Services;
 using Fip.Strive.Application.Features.Catalog.Services.Contracts;
 using Fip.Strive.Application.Features.Import.Services;
 using Fip.Strive.Application.Features.Import.Services.Contracts;
+using Fip.Strive.Application.Features.Jobs;
+using Fip.Strive.Application.Features.Jobs.Services;
+using Fip.Strive.Application.Features.Jobs.Services.Contracts;
 using Fip.Strive.Application.Features.Storage;
 using Fip.Strive.Application.Features.Storage.Services;
 using Fip.Strive.Application.Features.Storage.Services.Contracts;
@@ -31,6 +34,7 @@ public static class Registration
         services.AddPersistence(configuration);
         services.AddStorage(configuration, basePath);
         services.AddCatalog();
+        services.AddJobs(configuration);
 
         services.TryAddTimeProvider();
 
@@ -80,6 +84,33 @@ public static class Registration
     {
         services.AddScoped<ICatalogReader, CatalogReader>();
         services.AddScoped<IPackageImporter, PackageImporter>();
+
+        // Scoped, because it depends on the scoped importer. The registry keeps only its identity;
+        // the runner resolves the instance it executes from the job's own scope.
+        services.AddScoped<IJobHandler, UnpackJobHandler>();
+    }
+
+    private static void AddJobs(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<JobOptions>(configuration.GetSection(JobOptions.SectionName));
+
+        // The signal and the notifier are the two things every scope shares.
+        services.AddSingleton<JobSignal>();
+        services.AddSingleton<IJobNotifier, JobNotifier>();
+
+        // Built once from a throwaway scope. It keeps only each handler's identity, never the
+        // handler, so nothing outlives the scope it was resolved from.
+        services.AddSingleton<IJobRegistry>(provider =>
+        {
+            using var scope = provider.CreateScope();
+            return new JobRegistry(scope.ServiceProvider.GetServices<IJobHandler>());
+        });
+
+        services.AddScoped<IJobQueue, JobQueue>();
+        services.AddScoped<IJobStore, JobStore>();
+        services.AddScoped<IJobReader, JobReader>();
+
+        services.AddHostedService<JobRunner>();
     }
 
     private static void TryAddTimeProvider(this IServiceCollection services)
