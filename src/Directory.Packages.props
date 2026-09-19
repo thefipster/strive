@@ -8,7 +8,7 @@
     roadmap step actually needs them.
   -->
   <ItemGroup Label="Frontend">
-    <PackageVersion Include="MudBlazor" Version="9.8.0" />
+    <PackageVersion Include="MudBlazor" Version="9.10.0" />
   </ItemGroup>
   <!-- Development-time orchestration only. Nothing outside the AppHost references Aspire. -->
   <ItemGroup Label="Orchestration">
