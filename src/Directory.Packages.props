@@ -45,7 +45,7 @@
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
     <PackageVersion
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="10.0.11"
+      Version="10.0.13"
     />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
     <!-- BackgroundService only. Abstractions, so the application layer stays host-agnostic. -->
@@ -53,7 +53,7 @@
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.4" />
     <PackageVersion
       Include="Microsoft.Extensions.Options.ConfigurationExtensions"
-      Version="10.0.11"
+      Version="10.0.13"
     />
   </ItemGroup>
   <ItemGroup Label="Testing">
