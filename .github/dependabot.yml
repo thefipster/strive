@@ -22,6 +22,15 @@ updates:
         patterns:
           - "Microsoft.EntityFrameworkCore*"
           - "Npgsql.EntityFrameworkCore*"
+      # Microsoft.Extensions.* ship in lockstep with EF Core and reference each other at the same
+      # patch; bumped one at a time, each PR trips NU1605 (package downgrade) against the rest.
+      microsoft-extensions:
+        patterns:
+          - "Microsoft.Extensions*"
+      # The AppHost SDK and the hosting packages have to agree on the Aspire version.
+      aspire:
+        patterns:
+          - "Aspire*"
       # Test-only packages, which can be reviewed as a batch rather than one at a time.
       testing:
         patterns:
@@ -39,6 +48,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      # init and analyze refuse to run at different versions, so split PRs always fail CodeQL.
+      codeql-action:
+        patterns:
+          - "github/codeql-action*"
 
   - package-ecosystem: "docker"
     directory: "/src/Fip.Strive.Tracking.Web"

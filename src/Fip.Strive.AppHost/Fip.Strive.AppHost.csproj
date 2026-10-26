@@ -1,9 +1,14 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.4.6">
+<Project Sdk="Aspire.AppHost.Sdk/13.6.4">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>Fip.Strive.AppHost</RootNamespace>
     <IsAspireHost>true</IsAspireHost>
     <UserSecretsId>d7f2a1c4-6b3e-4a19-9f52-0c8e5d31b7a6</UserSecretsId>
+    <!--
+      Aspire 13.6 warns when the AppHost runs without the Aspire CLI bundle. The AppHost is started
+      with dotnet run and needs none of the bundle-only features, and CI builds with -warnaserror.
+    -->
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" />
