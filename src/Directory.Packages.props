@@ -42,10 +42,10 @@
   </ItemGroup>
   <ItemGroup Label="Application">
     <!-- Kept in step with EF Core, which transitively demands the same patch level. -->
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
     <PackageVersion
       Include="Microsoft.Extensions.DependencyInjection.Abstractions"
-      Version="10.0.13"
+      Version="10.0.14"
     />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
     <!-- BackgroundService only. Abstractions, so the application layer stays host-agnostic. -->
