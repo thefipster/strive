@@ -6,7 +6,7 @@
 #
 #   docker build -f src/Fip.Strive.Tracking.Web/Dockerfile -t strive-tracking .
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 # The manifests first and on their own, so editing a razor file does not invalidate the
